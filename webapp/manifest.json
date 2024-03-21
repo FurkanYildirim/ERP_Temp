@@ -1,0 +1,95 @@
+{
+	"_version": "1.12.0",
+
+	"sap.app": {
+		"id": "ERP_Temp",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"applicationVersion": {
+			"version": "1.0.0"
+		}
+	},
+
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "ERP_Temp.view.rootView",
+			"type": "XML",
+			"async": true,
+			"id": "app"
+		},
+
+		"dependencies": {
+			"minUI5Version": "1.115.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.ui.layout": {},
+				"sap.ui.unified": {},
+				"sap.m": {}
+			}
+		},
+
+		"handleValidation": true,
+
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "ERP_Temp.i18n.i18n"
+				}
+			}
+		},
+
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "ERP_Temp.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"async": true
+			},
+			"routes": [
+				{
+					"pattern": "",
+					"name": "home",
+					"target": "home"
+					},
+				{
+					"pattern": "test",
+					"name": "test",
+					"target": "test"
+				  	}
+			],
+			"targets": {
+				"home": {
+					"viewName": "home",
+					"viewLevel": 1
+				  },
+				  "test": {
+					"viewType": "XML",
+					"viewName": "test",
+					"viewLevel": 2
+				  }
+			}
+		}
+	}
+}

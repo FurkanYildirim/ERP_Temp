@@ -1,0 +1,24 @@
+{
+  "name": "ERP_Temp",
+  "version": "1.0.0",
+  "description": "UI5 Application: ERP_Temp",
+  "author": "ERP_Temp",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "ui5 build --clean-dest",
+    "build:opt": "ui5 build self-contained --clean-dest --all",
+    "start": "ui5 serve --port 8080 -o index.html",
+    "lint": "eslint webapp"
+  },
+  "devDependencies": {
+    "@openui5/ts-types-esm": "1.115.0",
+    "@ui5/cli": "^3.9.1",
+    "eslint": "^8.27.0",
+    "ui5-middleware-livereload": "^0.7.0"
+  },
+  "ui5": {
+    "dependencies": [
+      "ui5-middleware-livereload"
+    ]
+  }
+}

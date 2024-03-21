@@ -1,0 +1,19 @@
+<mvc:View controllerName="ERP_Temp.controller.test"
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:tnt="sap.tnt"
+	xmlns="sap.m">
+	<App >
+		<pages>
+			<Page title="Test">
+				<content>
+					<Panel headerText="Panel" expandable="true">
+						<content>
+							<Text text="Test!" />
+						</content>
+					</Panel>
+				</content>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

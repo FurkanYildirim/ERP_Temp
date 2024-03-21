@@ -1,0 +1,36 @@
+<mvc:View controllerName="ERP_Temp.controller.rootView"
+    xmlns:html="http://www.w3.org/1999/xhtml" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+    xmlns:mvc="sap.ui.core.mvc">
+
+    <App height="100%">
+        <tnt:ToolPage sideExpanded="true" id="toolPage">
+            <tnt:header>
+                <tnt:ToolHeader>
+                    <Button icon="sap-icon://menu2" press=".onCollapseExpandPress" />
+                    <Image densityAware="false" src="../images/logo.png" width="100px" height="60px"/>
+                </tnt:ToolHeader>
+            </tnt:header>
+            <tnt:sideContent>
+                <tnt:SideNavigation id="sideNavigation" selectedKey="subItem3" itemSelect=".onItemSelect">
+                    <tnt:NavigationList>
+                        <tnt:NavigationListItem text="Test" icon="sap-icon://circle-task" key="test" />
+                      
+                    </tnt:NavigationList>
+                    <tnt:fixedItem>
+                        <tnt:NavigationList>
+                            <tnt:NavigationListItem text="Ana Sayfa" icon="sap-icon://home" key="home"/>
+                           
+                        </tnt:NavigationList>
+                    </tnt:fixedItem>
+                </tnt:SideNavigation>
+            </tnt:sideContent>
+            <tnt:mainContents>
+                <App id="app"/>
+            </tnt:mainContents>
+        </tnt:ToolPage>
+
+    </App>
+
+</mvc:View>
