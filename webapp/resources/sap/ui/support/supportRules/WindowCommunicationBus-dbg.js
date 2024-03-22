@@ -22,11 +22,9 @@ sap.ui.define([
 	 * Each of these child classes are singletons, so they will have one instance per window.
 	 * If you need to share the exact same data between the two frames, use global variables
 	 * @class
-	 * @constructor
-	 * @name sap.ui.support.WindowCommunicationBus
-	 * @memberof sap.ui.support
+	 * @alias sap.ui.support.WindowCommunicationBus
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 */
 	var WindowCommunicationBus = BaseObject.extend("sap.ui.support.supportRules.WindowCommunicationBus", {
@@ -48,9 +46,6 @@ sap.ui.define([
 
 	/**
 	 * Subscribes to a channel with callback and given context
-	 * @method
-	 * @name sap.ui.support.WindowCommunicationBus.subscribe
-	 * @memberof sap.ui.support.WindowCommunicationBus
 	 * @param {string} sChannelName Name of the channel to subscribe
 	 * @param {function} fnCallback Callback for the SupportAssistant
 	 * @param {object} oContext Context for the subscribed channel
@@ -69,9 +64,6 @@ sap.ui.define([
 
 	/**
 	 * Publishes given channel by name and settings
-	 * @method
-	 * @name sap.ui.support.WindowCommunicationBus.publish
-	 * @memberof sap.ui.support.WindowCommunicationBus
 	 * @param {string} sChannelName Name of the channel to publish
 	 * @param {string} aParams Settings passed to the SupportAssistant
 	 */
@@ -96,7 +88,6 @@ sap.ui.define([
 
 	/**
 	 * mark an iframe as a valid participant in the communication
-	 * @method
 	 * @param {object} oOptions information about the iframe
 	 */
 	WindowCommunicationBus.prototype.allowFrame = function (oOptions) {
@@ -112,9 +103,6 @@ sap.ui.define([
 	/**
 	 * Clears all subscribed channels from the WindowCommunicationBus
 	 * @private
-	 * @method
-	 * @name sap.ui.support.WindowCommunicationBus.destroyChannels
-	 * @memberof sap.ui.support.WindowCommunicationBus
 	 */
 	WindowCommunicationBus.prototype.destroyChannels = function () {
 		this._channels = {};
@@ -123,9 +111,6 @@ sap.ui.define([
 	/**
 	 * This is the message handler used for communication between the WindowCommunicationBus and {@link sap.ui.support.WCBChannels}
 	 * @private
-	 * @method
-	 * @name sap.ui.support.WindowCommunicationBus._onmessage
-	 * @memberof sap.ui.support.WindowCommunicationBus
 	 * @param {EventListener} eMessage Event fired by the channels attached to the WindowCommunicationBus
 	 */
 	WindowCommunicationBus.prototype._onmessage = function (eMessage) {
@@ -145,7 +130,6 @@ sap.ui.define([
 	 * validate messages published from external window to application window (i.e. from tool frame to opener window)
 	 * no validation needed the other way (i.e. from opener window to tool frame)
 	 * @private
-	 * @method
 	 * @param {EventListener} eMessage Event fired by the channels attached to the WindowCommunicationBus
 	 * @returns {boolean} true if the message is valid
 	 */

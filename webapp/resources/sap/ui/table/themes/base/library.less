@@ -623,6 +623,11 @@
 	&.sapUiTableRowHvr {
 		background-color: @sapUiListHoverBackground;
 		color: @_sap_ui_table_Row_ColorHovered;
+		cursor: pointer;
+
+		[data-sap-ui] {
+			cursor: pointer;
+		}
 	}
 
 	&.sapUiTableRowSel.sapUiTableRowHvr {
@@ -955,10 +960,21 @@
 		opacity: 0.3;
 		pointer-events: none;
 	}
+
+	&:not(.sapUiTableSelAllDisabled), &:not(.sapUiTableSelAllDisabled) .sapUiIcon {
+		cursor: pointer;
+	}
 }
 
 .sapUiTableHeaderDataCell {
 	padding: 7px 0;
+
+	&.sapUiTableHeaderCellActive {
+		cursor: pointer;
+		.sapMLabel, .sapMText, .sapUiIcon {
+			cursor: pointer;
+		}
+	}
 
 	&.sapUiTableHeaderCellActive:active {
 		// The active state background color and text color should not be applied if column reordering is in progress.
@@ -1108,6 +1124,10 @@
 	}
 }
 
+.sapUiTableRowSelectionCell {
+	cursor: pointer;
+}
+
 .sapUiTableRowSelectionCell,
 .sapUiTableRowActionCell {
 	position: relative;
@@ -1167,6 +1187,22 @@
 .sapUiTableRowHidden > .sapUiTableCell > *,
 .sapUiTableCellHidden > * {
 	display: none;
+}
+
+/**
+ * If there is no element (selection/highlight/expand/collapse) at the left most of the table
+ * then the first cell must have 1rem left padding while regular cells have 0.5rem left padding
+ * this additional 0.5rem padding decreases the max content width of the column cells 0.5rem.
+ * The selector below is adding additional 0.5rem padding to the first th elements of the table.
+ * Since the box-sizing is content-box for table cells this will increase the DOM column width
+ * 0.5rem when compared to the width property of the column. Although this might not be desired
+ * it is now aligned with the resposive table behavior.
+ * Another alternative would be rendering a dummy 0.5rem width column. While this can solve the
+ * API and DOM column width difference, changing the table layout might be expensive.
+ */
+.sapUiTable:not(.sapUiTableRowSelectors,.sapUiTableRowHighlights) .sapUiTableFirstVisibleColumnTH {
+	padding-left: .25rem;
+	padding-right: .25rem;
 }
 /* END "Cell.less" */
 

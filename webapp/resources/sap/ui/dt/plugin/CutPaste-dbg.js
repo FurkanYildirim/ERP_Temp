@@ -33,7 +33,7 @@ sap.ui.define([
 	 * @class The CutPaste enables Cut & Paste functionality for the overlays based on aggregation types
 	 * @extends sap.ui.dt.Plugin
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.34
@@ -226,7 +226,7 @@ sap.ui.define([
 	};
 
 	CutPaste.prototype._getTargetZoneAggregation = function(oTargetOverlay) {
-		var aAggregationOverlays = oTargetOverlay.getAggregationOverlays();
+		var aAggregationOverlays = oTargetOverlay.getChildren();
 		var aPossibleTargetZones = aAggregationOverlays.filter(function(oAggregationOverlay) {
 			return oAggregationOverlay.isTargetZone();
 		});

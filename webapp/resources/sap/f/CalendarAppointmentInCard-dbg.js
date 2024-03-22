@@ -21,7 +21,7 @@ sap.ui.define([
 	 * This calendar appointment is used in card content of type Calendar.
 	 *
 	 * @extends sap.ui.unified.CalendarAppointment
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private

@@ -29,7 +29,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -75,7 +75,7 @@ sap.ui.define([
 	  metadata: {
 	    interfaces : ["sap.ui.commons.ToolbarItem"],
 	    properties : {
-	      text : {name : "text", type : "string", group : "Appearance", defaultValue : ''}
+	      text : {type : "string", group : "Appearance", defaultValue : ''}
 	    }
 	  }
 

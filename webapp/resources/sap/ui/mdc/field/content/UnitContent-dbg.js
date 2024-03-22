@@ -9,13 +9,19 @@ sap.ui.define([
 	"sap/base/util/isEmptyObject",
 	"sap/base/util/merge",
 	"sap/base/util/ObjectPath",
-	"sap/ui/mdc/enum/EditMode"
-], function(DefaultContent, Filter, isEmptyObject, merge, ObjectPath, EditMode) {
+	"sap/ui/mdc/enums/FieldEditMode"
+], function(DefaultContent, Filter, isEmptyObject, merge, ObjectPath, FieldEditMode) {
 	"use strict";
+
+
+	var _getUnitTypeInstance = function (oTypeUtil, oType, oFormatOptions, oConstraints, bShowNumber, bShowMeasure) {
+		return oTypeUtil.getUnitTypeInstance ? oTypeUtil.getUnitTypeInstance(oType, bShowNumber, bShowMeasure) : oTypeUtil.getDataTypeInstance(oType.getMetadata().getName(), oFormatOptions, oConstraints, {showNumber: bShowNumber, showMeasure: bShowMeasure});
+	};
 
 	/**
 	 * Object-based definition of the unit content type that is used in the {@link sap.ui.mdc.field.content.ContentFactory}.
-	 * This defines which controls to load and create for a given {@link sap.ui.mdc.enum.ContentMode}.
+	 * This defines which controls to load and create for a given {@link sap.ui.mdc.enums.ContentMode}.
+	 * @namespace
 	 * @author SAP SE
 	 * @private
 	 * @ui5-restricted sap.ui.mdc
@@ -23,7 +29,6 @@ sap.ui.define([
 	 * @since 1.87
 	 * @alias sap.ui.mdc.field.content.UnitContent
 	 * @extends sap.ui.mdc.field.content.DefaultContent
-	 * @MDC_PUBLIC_CANDIDATE
 	 */
 	var UnitContent = Object.assign({}, DefaultContent, {
 		getEdit: function() {
@@ -72,8 +77,6 @@ sap.ui.define([
 			aControls.push(oInput1);
 			aControls = this._addUnitControl(oContentFactory, aControls, sId, Input, InvisibleText);
 
-			oContentFactory.setBoundProperty("value");
-
 			return aControls;
 		},
 		createEditMultiValue: function(oContentFactory, aControlClasses, sId) {
@@ -83,6 +86,7 @@ sap.ui.define([
 			var Input = aControlClasses[1];
 			var InvisibleText = aControlClasses[3];
 			var oConditionType = oContentFactory.getConditionType();
+			var oConditionsType = oContentFactory.getConditionsType();
 			this._adjustDataTypeForUnit(oContentFactory);
 
 			var aControls = [];
@@ -107,6 +111,7 @@ sap.ui.define([
 
 			var sInvisibleTextId = InvisibleText.getStaticId("sap.ui.mdc", "field.NUMBER");
 			var oMultiInput = new MultiInput(sId, {
+				value: { path: "$field>/conditions", type: oConditionsType }, // only for parsing
 				placeholder: "{$field>/placeholder}",
 				textAlign: "{$field>/textAlign}",
 				textDirection: "{$field>/textDirection}",
@@ -131,8 +136,6 @@ sap.ui.define([
 			aControls.push(oMultiInput);
 			aControls = this._addUnitControl(oContentFactory, aControls, sId, Input, InvisibleText);
 
-			oContentFactory.setBoundProperty("value");
-
 			return aControls;
 		},
 		createEditMultiLine: function() {
@@ -141,7 +144,7 @@ sap.ui.define([
 		_addUnitControl: function(oContentFactory, aControls, sId, Input, InvisibleText) {
 			var oUnitConditionsType = oContentFactory.getUnitConditionsType();
 
-			if (oContentFactory.getField().getEditMode() === EditMode.EditableDisplay) {
+			if (oContentFactory.getField().getEditMode() === FieldEditMode.EditableDisplay) {
 				aControls[0].bindProperty("description", { path: "$field>/conditions", type: oUnitConditionsType });
 				aControls[0].setWidth("100%");
 				aControls[0].setFieldWidth("70%");
@@ -187,34 +190,28 @@ sap.ui.define([
 		},
 		_adjustDataTypeForUnit: function(oContentFactory) {
 			var oField = oContentFactory.getField();
+			var TypeMap = oField.getTypeMap();
 			var oType = oContentFactory.retrieveDataType();
-			var sName = oType.getMetadata().getName();
 			var oFormatOptions = oType.getFormatOptions();
-			var oConstraints = isEmptyObject(oType.getConstraints()) ? undefined : oType.getConstraints();
+			var oConstraints = oType.getConstraints();
 			var bShowMeasure = !oFormatOptions || !oFormatOptions.hasOwnProperty("showMeasure") || oFormatOptions.showMeasure;
 			var bShowNumber = !oFormatOptions || !oFormatOptions.hasOwnProperty("showNumber") || oFormatOptions.showNumber;
 
 			// if measure and number needs to be shown -> create new type
 			if (bShowMeasure && bShowNumber) {
+				var oClonedFormatOptions = merge({},oFormatOptions);
+				var oClonedConstraints = isEmptyObject(oConstraints) ? undefined : merge({}, oConstraints);
+
 				// Type for number
-				oFormatOptions = merge({}, oFormatOptions); // do not manipulate original object
-				oFormatOptions.showMeasure = false;
-				oFormatOptions.showNumber = true;
-				oFormatOptions.strictParsing = true; // do not allow to enter unit in number field
-				var TypeClass = ObjectPath.get(sName);
+				var oNewType = _getUnitTypeInstance(TypeMap, oType, oClonedFormatOptions, oClonedConstraints, true, false);
 				oContentFactory.setUnitOriginalType(oContentFactory.getDataType());
-				oContentFactory.setDataType(new TypeClass(oFormatOptions, oConstraints));
-				oField.getControlDelegate().initializeInternalUnitType(oField.getPayload(), oContentFactory.getDataType(), oContentFactory.getFieldTypeInitialization());
+				TypeMap.initializeInternalType(oNewType, oContentFactory.getFieldTypeInitialization());
+				oContentFactory.setDataType(oNewType);
 
 				// type for unit
-				oFormatOptions = merge({}, oFormatOptions); // do not manipulate original object
-				oFormatOptions.showMeasure = true;
-				oFormatOptions.showNumber = false;
-				oFormatOptions.strictParsing = true; // do not allow to enter number in unit field
-				TypeClass = ObjectPath.get(sName);
-				oContentFactory.setUnitType(new TypeClass(oFormatOptions, oConstraints));
-				oField.getControlDelegate().initializeInternalUnitType(oField.getPayload(), oContentFactory.getUnitType(), oContentFactory.getFieldTypeInitialization());
-
+				oNewType = _getUnitTypeInstance(TypeMap, oType, oClonedFormatOptions, oClonedConstraints, false, true);
+				TypeMap.initializeInternalType(oNewType, oContentFactory.getFieldTypeInitialization());
+				oContentFactory.setUnitType(oNewType);
 				oContentFactory.updateConditionType();
 			}
 		}

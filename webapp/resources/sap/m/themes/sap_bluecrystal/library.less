@@ -1592,7 +1592,7 @@ html.sap-phone {
 }
 
 /* if Panel is not expandable, we do wish header to come with own border */
-.sapMPanel > .sapMPanelHdr,
+.sapMPanel .sapMPanelHeadingDiv > .sapMPanelHdr,
 /* notice: sapMPanelWrappingDiv is available if Panel is expandable */
 .sapMPanelWrappingDiv,
 /* do not want border if expanded and if only header text */
@@ -3073,7 +3073,7 @@ html.sap-desktop .sapMToken.sapMTokenSelected:focus {
 	border-bottom: 1px solid @sapUiListBorderColor;
 }
 
-html.sap-desktop .sapMTB-Info-CTX.sapMTBActive:focus {
+html.sap-desktop .sapMTB-Info-CTX.sapMTBActive.sapMTBFocused {
 	outline: 1px dotted @sapUiContentContrastFocusColor;
 	outline-offset: -0.125rem;
 }

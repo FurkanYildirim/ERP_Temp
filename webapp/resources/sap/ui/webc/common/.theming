@@ -1,6 +1,6 @@
 {
   "sEntity": "Library",
   "sId": "sap/ui/webc/common",
-  "sVersion": "1.108.14",
+  "sVersion": "1.115.1",
   "bIgnore": true
 }

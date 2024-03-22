@@ -48,10 +48,9 @@ sap.ui.define([
 	 * @extends sap.m.p13n.BasePanel
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
-	 * @experimental Since 1.96.
 	 * @since 1.96
 	 * @alias sap.m.p13n.SelectionPanel
 	 */
@@ -264,7 +263,9 @@ sap.ui.define([
 		}
 		//Store (new) hovered item and set its icon to visible: false + add move buttons to it
 		var oIcon = oHoveredItem.getCells()[1].getItems()[0];
-		oIcon.setVisible(false);
+		if (oHoveredItem.getSelected()) {
+			oIcon.setVisible(false);
+		}
 		this._oHoveredItem = oHoveredItem;
 		this._updateEnableOfMoveButtons(oHoveredItem, false);
 		this._addMoveButtons(oHoveredItem);

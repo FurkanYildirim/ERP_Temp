@@ -39,14 +39,14 @@ sap.ui.define(
 		};
 
 		/**
+		 * @class
 		 * Provides a caching mechanism for promises.
 		 * This API features Promise cancellation: resolve or reject handlers won't be called after removal of the promise, cache destruction or manual cancellation.
 		 * Destroying the cache will cancel all registered promises and delete references. Convenience methods for promise creation, wrapping and replacement are offered.
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @alias sap.ui.mdc.util.PromiseCache
-		 * @namespace
 		 * @since 1.85.0
 		 * @private
 		 * @experimental
@@ -74,8 +74,8 @@ sap.ui.define(
 			 *
 			 * @protected
 			 * @param {string} [sName] Promise identifier
-			 * @param {function(oPromise,fnResolve,fnReject,fnRemove)|Promise} [fnCreate] creation method or pre-created promise
-			 * @returns {Promise} Returns the newly created <code>Promise</code>
+			 * @param {function(Promise,function,function,function)|Promise} [fnCreate] creation method or pre-created promise
+			 * @returns {Promise<*>} Returns the newly created <code>Promise</code>
 			 */
 			add: function (sName, fnCreate) {
 				_checkAndPrepareAdd.call(this, sName);
@@ -151,7 +151,7 @@ sap.ui.define(
 			 *
 			 * @protected
 			 * @param {string|Promise} vPromise Promise or identifier
-			 * @returns {Promise} Returns the canceled <code>Promise</code>
+			 * @returns {Promise<*>} Returns the canceled <code>Promise</code>
 			 */
 			cancel: function (vPromise) {
 				var oPromiseConfig = _findConfigByKeyOrPromise.call(this, vPromise, true);
@@ -174,7 +174,7 @@ sap.ui.define(
 			 *
 			 * @protected
 			 * @param {string} sName Promise identifier
-			 * @param {function(oPromise,fnResolve,fnReject,fnRemove)|Promise} [fnCreate] creation method or pre-created promise
+			 * @param {function(Promise,function,function,function)|Promise<*>} [fnCreate] creation method or pre-created promise
 			 * @returns {Promise} Returns the newly created <code>Promise</code>
 			 */
 			retrieve: function (sName, fnCreate) {
@@ -207,7 +207,7 @@ sap.ui.define(
 			 * Removes an existing promise from the promise cache
 			 *
 			 * @protected
-			 * @param {string|Promise} vPromise Promise or identifier
+			 * @param {string|Promise<*>} vPromise Promise or identifier
 			 */
 			remove: function (vPromise) {
 				var sKey = typeof vPromise === "string" ? vPromise : _findKeyForPromise.call(this, vPromise);
@@ -223,7 +223,7 @@ sap.ui.define(
 			 * @protected
 			 * @param {string|Promise} vPromise Promise or identifier
 			 * @param {string} [oValue] Promise result
-			 * @returns {Promise} Returns the resolved <code>Promise</code>
+			 * @returns {Promise<*>} Returns the resolved <code>Promise</code>
 			 */
 			resolve: function (vPromise, oValue) {
 				var oConfig = _findConfigByKeyOrPromise.call(this, vPromise, true);
@@ -236,7 +236,7 @@ sap.ui.define(
 			 * @protected
 			 * @param {string|Promise} vPromise Promise or identifier
 			 * @param {string} [oValue] Promise error
-			 * @returns {Promise} Returns the rejected <code>Promise</code>
+			 * @returns {Promise<*>} Returns the rejected <code>Promise</code>
 			 */
 			reject: function (vPromise, oValue) {
 				var oConfig = _findConfigByKeyOrPromise.call(this, vPromise, true);

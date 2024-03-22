@@ -22,7 +22,7 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new element
 	 * @class Content for the {@link sap.ui.mdc.valuehelp.base.Container Container} element to provide a value help for boolean fields.
 	 * @extends sap.ui.mdc.valuehelp.content.FixedList
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @abstract
 	 * @private
@@ -69,10 +69,10 @@ sap.ui.define([
 	Bool.prototype.getContent = function () {
 		return this._retrievePromise("boolContent", function () {
 			return loadModules([
-				"sap/ui/mdc/field/ListFieldHelpItem",
+				"sap/ui/mdc/valuehelp/content/FixedListItem",
 				"sap/ui/model/json/JSONModel"
 			]).then(function (aModules) {
-				var ListFieldHelpItem = aModules[0];
+				var FixedListItem = aModules[0];
 				var JSONModel = aModules[1];
 				this._oModel = new JSONModel({
 					"type": "",
@@ -89,7 +89,7 @@ sap.ui.define([
 				});
 				_updateModel.call(this, this.getConfig());
 
-				var oItem = new ListFieldHelpItem(this.getId() + "-Item", {
+				var oItem = new FixedListItem(this.getId() + "-Item", {
 					key: {path: "$Bool>key"},
 					text: {path: "$Bool>text"}
 				});
@@ -145,13 +145,19 @@ sap.ui.define([
 
 	};
 
-	Bool.prototype._observeChanges = function(oChanges) {
+	Bool.prototype.isNavigationEnabled = function(iStep) {
+
+		return true; // always enable, even if items are created lately on opening or navigation
+
+	};
+
+	Bool.prototype.observeChanges = function(oChanges) {
 
 		if (oChanges.type === "property" && oChanges.name === "config") {
 			_updateModel.call(this, oChanges.current);
 		}
 
-		FixedList.prototype._observeChanges.apply(this, arguments);
+		FixedList.prototype.observeChanges.apply(this, arguments);
 	};
 
 	function _updateModel(oConfig) {
@@ -176,11 +182,10 @@ sap.ui.define([
 	 *
 	 * <b>Note:</b> Do not add items to the <code>Bool</code> content. The items will be filled by itself
 	 *
-	 * @param {sap.ui.mdc.field.ListFieldHelpItem} oItem The item to add; if empty, nothing is inserted
+	 * @param {sap.ui.mdc.valuehelp.content.FixedListItem} oItem The item to add; if empty, nothing is inserted
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the items are automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#addItem
@@ -192,12 +197,11 @@ sap.ui.define([
 	 *
 	 * <b>Note:</b> Do not add items to the <code>Bool</code> content. The items will be filled by itself
 	 *
-	 * @param {sap.ui.mdc.field.ListFieldHelpItem} oItem The item to add; if empty, nothing is inserted
+	 * @param {sap.ui.mdc.valuehelp.content.FixedListItem} oItem The item to add; if empty, nothing is inserted
 	 * @param {int} iIndex The 0-based index the item should be inserted at; for a negative value of iIndex, the item is inserted at position 0; for a value greater than the current size of the aggregation, the item is inserted at the last position
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the items are automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#insertItem
@@ -212,7 +216,6 @@ sap.ui.define([
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the items are automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#destroyItems
@@ -224,10 +227,9 @@ sap.ui.define([
 	 *
 	 * <b>Note:</b> Do not change items to the <code>Bool</code> content. The items will be filled by itself
 	 *
-	 * @returns {sap.ui.mdc.field.ListFieldHelpItem[]} An array of the removed elements (might be empty)
+	 * @returns {sap.ui.mdc.valuehelp.content.FixedListItem[]} An array of the removed elements (might be empty)
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the items are automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#removeAllItems
@@ -239,11 +241,10 @@ sap.ui.define([
 	 *
 	 * <b>Note:</b> Do not change items to the <code>Bool</code> content. The items will be filled by itself
 	 *
-	 * @param {int|string|sap.ui.mdc.field.ListFieldHelpItem} vItem The item to remove or its index or ID
-	 * @returns {sap.ui.mdc.field.ListFieldHelpItem|null} The removed item or <code>null</code>
+	 * @param {int|string|sap.ui.mdc.valuehelp.content.FixedListItem} vItem The item to remove or its index or ID
+	 * @returns {sap.ui.mdc.valuehelp.content.FixedListItem|null} The removed item or <code>null</code>
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the items are automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#removeItem
@@ -259,7 +260,6 @@ sap.ui.define([
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the property is automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#setUseFirstMatch
@@ -275,7 +275,6 @@ sap.ui.define([
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the property is automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#setUseAsValueHelp
@@ -291,7 +290,6 @@ sap.ui.define([
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the property is automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#setFilterList
@@ -307,7 +305,6 @@ sap.ui.define([
 	 * @returns {this} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the property is automatically set.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.valuehelp.content.Bool#setCaseSensitive

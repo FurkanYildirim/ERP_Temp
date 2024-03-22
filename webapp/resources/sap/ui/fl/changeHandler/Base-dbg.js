@@ -14,7 +14,7 @@ sap.ui.define([
 	/**
 	 * Base functionality for all change handlers, which provides some reuse methods
 	 * @namespace sap.ui.fl.changeHandler.Base
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted change handlers
 	 */
@@ -27,7 +27,7 @@ sap.ui.define([
 		 * @param {string} sText - Text value
 		 * @param {string} sType - Translation text type, e.g. XBUT, XTIT, XTOL, XFLD
 		 *
-		 * @deprecated
+		 * @deprecated As of version 1.107
 		 * @private
 		 * @ui5-restricted
 		 */
@@ -44,7 +44,7 @@ sap.ui.define([
 
 		/**
 		 * Instantiates an XML fragment inside a change.
-		 * @param {sap.ui.fl.Change} oChange - Change object with instructions to be applied on the control
+		 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object with instructions to be applied on the control
 		 * @param {object} mPropertyBag - Property bag
 		 * @param {sap.ui.core.util.reflection.BaseTreeModifier} mPropertyBag.modifier - Modifier for the controls
 		 * @param {object} mPropertyBag.appComponent - App component
@@ -53,12 +53,13 @@ sap.ui.define([
 		 * @public
 		 */
 		instantiateFragment: function(oChange, mPropertyBag) {
-			var sModuleName = oChange.getModuleName();
+			var oFlexObjectMetadata = oChange.getFlexObjectMetadata();
+			var sModuleName = oFlexObjectMetadata.moduleName;
 			if (!sModuleName) {
 				return Promise.reject(new Error("The module name of the fragment is not set. This should happen in the backend"));
 			}
 			var sViewId = mPropertyBag.viewId ? mPropertyBag.viewId + "--" : "";
-			var sProjectId = oChange.getProjectId() || "";
+			var sProjectId = oFlexObjectMetadata.projectId || "";
 			var sFragmentId = (
 				oChange.getExtensionPointInfo
 				&& oChange.getExtensionPointInfo()

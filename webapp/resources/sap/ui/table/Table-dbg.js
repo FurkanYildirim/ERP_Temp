@@ -92,7 +92,7 @@ sap.ui.define([
 	 *     the data model and binding being used.
 	 * </p>
 	 * @extends sap.ui.core.Control
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -101,15 +101,15 @@ sap.ui.define([
 	 * @see {@link topic:148892ff9aea4a18b912829791e38f3e Tables: Which One Should I Choose?}
 	 * @see {@link fiori:/grid-table/ Grid Table}
 	 */
-	var Table = Control.extend("sap.ui.table.Table", /** @lends sap.ui.table.Table.prototype */ { metadata : {
-		library : "sap.ui.table",
-		dnd : true,
-		properties : {
+	var Table = Control.extend("sap.ui.table.Table", /** @lends sap.ui.table.Table.prototype */ {metadata: {
+		library: "sap.ui.table",
+		dnd: true,
+		properties: {
 
 			/**
 			 * Width of the Table.
 			 */
-			width : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : 'auto'},
+			width: {type: "sap.ui.core.CSSSize", group: "Dimension", defaultValue: 'auto'},
 
 			/**
 			 * Row height in pixel.
@@ -126,7 +126,7 @@ sap.ui.define([
 			 * If no value is set (includes 0), a default height is applied based on the content density configuration. In any
 			 * <code>visibleRowCountMode</code>, the actual height can increase based on the content.
 			 */
-			rowHeight : {type : "int", group : "Appearance", defaultValue : null},
+			rowHeight: {type: "int", group: "Appearance", defaultValue: null},
 
 			/**
 			 * Header row height in pixel. If a value greater than 0 is set, it overrides the height defined in the <code>rowHeight</code> property
@@ -136,7 +136,7 @@ sap.ui.define([
 			 * <b>Note</b>: In a {@link sap.ui.table.Column#getMultiLabels MultiLabel} scenario, the height is applied to each individual row of the
 			 * table's header.
 			 */
-			columnHeaderHeight : {type : "int", group : "Appearance", defaultValue : null},
+			columnHeaderHeight: {type: "int", group: "Appearance", defaultValue: null},
 
 			/**
 			 * Flag whether the column header is visible or not.
@@ -144,17 +144,17 @@ sap.ui.define([
 			 * <b>Caution:</b> Please be aware that when setting this property to <code>false</code>,
 			 * a 100% accessibility of the table can't be guaranteed any more.
 			 */
-			columnHeaderVisible : {type : "boolean", group : "Appearance", defaultValue : true},
+			columnHeaderVisible: {type: "boolean", group: "Appearance", defaultValue: true},
 
 			/**
 			 * Number of visible rows of the table.
 			 */
-			visibleRowCount : {type : "int", group : "Appearance", defaultValue : 10},
+			visibleRowCount: {type: "int", group: "Appearance", defaultValue: 10},
 
 			/**
 			 * First visible row.
 			 */
-			firstVisibleRow : {type : "int", group : "Appearance", defaultValue : 0},
+			firstVisibleRow: {type: "int", group: "Appearance", defaultValue: 0},
 
 			/**
 			 * Selection mode of the Table. This property controls whether single or multiple rows can be selected and
@@ -164,7 +164,7 @@ sap.ui.define([
 			 * functionality (depends on table type) is enabled, even if <code>sap.ui.table.SelectionMode.None</code> is set.
 			 * <b>Note:</b> If a selection plugin is applied to the table, the selection mode is controlled by the plugin.
 			 */
-			selectionMode : {type : "sap.ui.table.SelectionMode", group : "Behavior", defaultValue : SelectionMode.MultiToggle},
+			selectionMode: {type: "sap.ui.table.SelectionMode", group: "Behavior", defaultValue: SelectionMode.MultiToggle},
 
 			/**
 			 * Selection behavior of the Table. This property defines whether the row selector is displayed and whether the row, the row selector or
@@ -172,7 +172,7 @@ sap.ui.define([
 			 * <b>Note:</b> Since the group header visualization relies on the row selectors, the row selectors are always shown if the grouping
 			 * functionality (depends on table type) is enabled, even if <code>sap.ui.table.SelectionBehavior.RowOnly</code> is set.
 			 */
-			selectionBehavior : {type : "sap.ui.table.SelectionBehavior", group : "Behavior", defaultValue : SelectionBehavior.RowSelector},
+			selectionBehavior: {type: "sap.ui.table.SelectionBehavior", group: "Behavior", defaultValue: SelectionBehavior.RowSelector},
 
 			/**
 			 * Zero-based index of selected item. Index value for no selection is -1.
@@ -185,19 +185,21 @@ sap.ui.define([
 			 * @deprecated As of version 1.69, replaced by {@link sap.ui.table.Table#getSelectedIndices} and
 			 * {@link sap.ui.table.Table#setSelectedIndex}
 			 */
-			selectedIndex : {type : "int", group : "Appearance", defaultValue : -1, deprecated: true},
+			selectedIndex: {type: "int", group: "Appearance", defaultValue: -1, deprecated: true},
 
 			/**
 			 * Flag whether the controls of the Table are editable or not (currently this only controls the background color in certain themes!)
+			 *
+			 * @deprecated As of version 1.115
 			 */
-			editable : {type : "boolean", group : "Behavior", defaultValue : true},
+			editable: {type: "boolean", group: "Behavior", defaultValue: true, deprecated: true},
 
 			/**
 			 * This property has been deprecated and must not be used anymore, since <code>Scrollbar</code> is the only supported option.
 			 *
 			 * @deprecated As of version 1.38
 			 */
-			navigationMode : {type : "sap.ui.table.NavigationMode", group : "Behavior", defaultValue : NavigationMode.Scrollbar, deprecated: true},
+			navigationMode: {type: "sap.ui.table.NavigationMode", group: "Behavior", defaultValue: NavigationMode.Scrollbar, deprecated: true},
 
 			/**
 			 * Defines how many additional (not yet visible) data records from the back-end system are pre-fetched to enable smooth scrolling.
@@ -207,12 +209,12 @@ sap.ui.define([
 			 * fixed rows), this number is used as the <code>threshold</code>.
 			 * If the value is 0, thresholding is disabled.
 			 */
-			threshold : {type : "int", group : "Appearance", defaultValue : 100},
+			threshold: {type: "int", group: "Appearance", defaultValue: 100},
 
 			/**
 			 * Flag to enable or disable column reordering
 			 */
-			enableColumnReordering : {type : "boolean", group : "Behavior", defaultValue : true},
+			enableColumnReordering: {type: "boolean", group: "Behavior", defaultValue: true},
 
 			/**
 			 * Enables or disables grouping. If grouping is enabled, the table is grouped by the column which is defined
@@ -230,22 +232,22 @@ sap.ui.define([
 			 *      column or grouping is disabled.</li>
 			 * </ul>
 			 *
-			 * @experimental As of 1.28. This feature has a limited functionality.
 			 * @see sap.ui.table.Table#setGroupBy
+			 * @deprecated As of version 1.110, this feature has a limited functionality and should not be used anymore.
 			 */
-			enableGrouping : {type : "boolean", group : "Behavior", defaultValue : false},
+			enableGrouping: {type: "boolean", group: "Behavior", defaultValue: false},
 
 			/**
 			 * Flag to show or hide the column visibility menu. This menu will get displayed in each
 			 * generated column header menu. It allows to show or hide columns
 			 */
-			showColumnVisibilityMenu : {type : "boolean", group : "Appearance", defaultValue : false},
+			showColumnVisibilityMenu: {type: "boolean", group: "Appearance", defaultValue: false},
 
 			/**
 			 * Flag whether to show the no data overlay or not once the table is empty. If set to false
 			 * the table will just show a grid of empty cells
 			 */
-			showNoData : {type : "boolean", group : "Appearance", defaultValue : true},
+			showNoData: {type: "boolean", group: "Appearance", defaultValue: true},
 
 			/**
 			 * Defines how the table handles the visible rows in the table.
@@ -267,13 +269,13 @@ sap.ui.define([
 			 *
 			 * @since 1.9.2
 			 */
-			visibleRowCountMode : {type : "sap.ui.table.VisibleRowCountMode", group : "Appearance", defaultValue : VisibleRowCountMode.Fixed},
+			visibleRowCountMode: {type: "sap.ui.table.VisibleRowCountMode", group: "Appearance", defaultValue: VisibleRowCountMode.Fixed},
 
 			/**
 			 * This property is used to set the minimum count of visible rows when the property visibleRowCountMode is set to Auto or Interactive.
 			 * For any other visibleRowCountMode, it is ignored.
 			 */
-			minAutoRowCount : {type : "int", group : "Appearance", defaultValue : 5},
+			minAutoRowCount: {type: "int", group: "Appearance", defaultValue: 5},
 
 			/**
 			 * Number of columns that are fixed on the left. Only columns which are not fixed can be scrolled horizontally.
@@ -285,14 +287,14 @@ sap.ui.define([
 			 *  property and adapts the behavior in an appropriate way to ensure that the user is still able to scroll horizontally.</li>
 			 * </ul>
 			 */
-			fixedColumnCount : {type : "int", group : "Appearance", defaultValue : 0},
+			fixedColumnCount: {type: "int", group: "Appearance", defaultValue: 0},
 
 			/**
 			 * Number of rows that are fix on the top. When you use a vertical scrollbar, only the rows which are not fixed, will scroll.
 			 *
 			 * This property is only supported if the <code>rows</code> aggregation is bound to a {@link sap.ui.model.ClientModel client model}.
 			 */
-			fixedRowCount : {type : "int", group : "Appearance", defaultValue : 0},
+			fixedRowCount: {type: "int", group: "Appearance", defaultValue: 0},
 
 			/**
 			 * Number of rows that are fix on the bottom. When you use a vertical scrollbar, only the rows which are not fixed, will scroll.
@@ -301,39 +303,39 @@ sap.ui.define([
 			 *
 			 * @since 1.18.7
 			 */
-			fixedBottomRowCount : {type : "int", group : "Appearance", defaultValue : 0},
+			fixedBottomRowCount: {type: "int", group: "Appearance", defaultValue: 0},
 
 			/**
 			 * Flag whether to show or hide the column menu item to freeze or unfreeze a column.
 			 * @since 1.21.0
 			 */
-			enableColumnFreeze : {type : "boolean", group : "Behavior", defaultValue : false},
+			enableColumnFreeze: {type: "boolean", group: "Behavior", defaultValue: false},
 
 			/**
 			 * Flag whether to enable or disable the context menu on cells to trigger a filtering with the cell value.
 			 * @since 1.21.0
 			 */
-			enableCellFilter : {type : "boolean", group : "Behavior", defaultValue : false},
+			enableCellFilter: {type: "boolean", group: "Behavior", defaultValue: false},
 
 			/**
 			 * Setting this property to true will show an overlay on top of the Table content and users cannot click anymore on the Table content.
 			 * @since 1.21.2
 			 */
-			showOverlay : {type : "boolean", group : "Appearance", defaultValue : false},
+			showOverlay: {type: "boolean", group: "Appearance", defaultValue: false},
 
 			/**
 			 * Specifies if a select all button should be displayed in the top left corner. This button is only displayed
 			 * if the row selector is visible and the selection mode is set to any kind of multi selection.
 			 * @since 1.23.0
 			 */
-			enableSelectAll : {type : "boolean", group : "Behavior", defaultValue : true},
+			enableSelectAll: {type: "boolean", group: "Behavior", defaultValue: true},
 
 			/**
 			 * Set this parameter to true to implement your own filter behaviour. Instead of the filter input box a button
 			 * will be rendered for which' press event (customFilter) you can register an event handler.
 			 * @since 1.23.0
 			 */
-			enableCustomFilter : {type : "boolean", group : "Behavior", defaultValue : false},
+			enableCustomFilter: {type: "boolean", group: "Behavior", defaultValue: false},
 
 			/**
 			 * If set to <code>true</code>, the table changes its busy state, resulting in showing or hiding the busy indicator.
@@ -342,21 +344,21 @@ sap.ui.define([
 			 * The busy state of the table can still be set manually by calling {@link sap.ui.core.Control#setBusy}.
 			 * @since 1.27.0
 			 */
-			enableBusyIndicator : {type : "boolean", group : "Behavior", defaultValue : false},
+			enableBusyIndicator: {type: "boolean", group: "Behavior", defaultValue: false},
 
 			/**
 			 * Number of row actions made visible which determines the width of the row action column.
 			 * The values <code>0</code>, <code>1</code> and <code>2</code> are possible.
 			 * @since 1.45.0
 			 */
-			rowActionCount : {type : "int", group : "Appearance", defaultValue : 0},
+			rowActionCount: {type: "int", group: "Appearance", defaultValue: 0},
 
 			/**
 			 * Enables alternating table row colors.
 			 * Alternate row coloring is not available for the tree mode.
 			 * @since 1.52
 			 */
-			alternateRowColors : {type : "boolean", group : "Appearance", defaultValue : false},
+			alternateRowColors: {type: "boolean", group: "Appearance", defaultValue: false},
 
 			/**
 			 * Constraints on the row counts of the table. May impact the result of the row count computation in the row modes.
@@ -366,42 +368,42 @@ sap.ui.define([
 			 * @see sap.ui.table.rowmodes.RowMode#getRowCountConstraints
 			 * @private
 			 */
-			rowCountConstraints : {type: "object", visibility: "hidden"}
+			rowCountConstraints: {type: "object", visibility: "hidden"}
 		},
-		defaultAggregation : "columns",
-		aggregations : {
+		defaultAggregation: "columns",
+		aggregations: {
 
 			/**
 			 * Control or text of title section of the Table (if not set it will be hidden)
 			 *
-			 * @deprecated As of 1.72. Use the <code>extension</code> aggregation instead.
+			 * @deprecated As of version 1.72. Use, for example, a <code>sap.m.Title</code> control in the <code>extension</code> aggregation instead.
 			 */
-			title : {type : "sap.ui.core.Control", altTypes : ["string"], multiple : false, deprecated: true},
+			title: {type: "sap.ui.core.Control", altTypes: ["string"], multiple: false, deprecated: true},
 
 			/**
 			 * Control or text of footer section of the Table (if not set it will be hidden)
 			 */
-			footer : {type : "sap.ui.core.Control", altTypes : ["string"], multiple : false},
+			footer: {type: "sap.ui.core.Control", altTypes: ["string"], multiple: false},
 
 			/**
 			 * Toolbar of the Table
 			 * If not set, no toolbar area will be rendered.
 			 * Note: The CSS class sapMTBHeader-CTX is applied on the given toolbar.
-			 * @deprecated Since version 1.38. This aggregation is deprecated, use the <code>extension</code> aggregation instead.
+			 * @deprecated As of version 1.38. This aggregation is deprecated, use the <code>extension</code> aggregation instead.
 			 */
-			toolbar : {type : "sap.ui.core.Toolbar", multiple : false, deprecated: true},
+			toolbar: {type: "sap.ui.core.Toolbar", multiple: false, deprecated: true},
 
 			/**
 			 * Extension section of the Table.
 			 * If not set, no extension area will be rendered.
 			 * Note: In case a <code>sap.m.Toolbar</code> is used as header the CSS class sapMTBHeader-CTX should be applied on this toolbar.
 			 */
-			extension : {type : "sap.ui.core.Control", multiple : true, singularName : "extension"},
+			extension: {type: "sap.ui.core.Control", multiple: true, singularName: "extension"},
 
 			/**
 			 * Columns of the Table
 			 */
-			columns : {type : "sap.ui.table.Column", multiple : true, singularName : "column", bindable : "bindable", dnd : { layout: "Horizontal" } },
+			columns: {type: "sap.ui.table.Column", multiple: true, singularName: "column", bindable: "bindable", dnd: {layout: "Horizontal"}},
 
 			/**
 			 * This aggregation is managed by the table itself. It can only be used with data binding, is read-only, and does not support templates or
@@ -417,8 +419,13 @@ sap.ui.define([
 			 * The actions of rows can be defined with the {@link sap.ui.table.Table#setRowActionTemplate rowActionTemplate} aggregation of the table.
 			 * Furthermore, row-specific settings can be defined with the {@link sap.ui.table.Table#setRowSettingsTemplate rowSettingsTemplate}
 			 * aggregation of the table.
+			 *
+			 * <b>Note:</b> During the binding of rows, the (exact) count needs to be available in the table and has to be requested.
+			 * If the count is not requested, this may lead to unexpected behavior in the table, such as scrolling, accessibility, or keyboard issues.
+			 * Please refer to the documentation of the used model for information on requesting the count, for example, {@link sap.ui.model.odata.v2.ODataModel}
+			 * or {@link sap.ui.model.odata.v4.ODataModel}.
 			 */
-			rows : {type : "sap.ui.table.Row", multiple : true, singularName : "row", bindable : "bindable", selector : "#{id}-tableCCnt", dnd : true},
+			rows: {type: "sap.ui.table.Row", multiple: true, singularName: "row", bindable: "bindable", selector: "#{id}-tableCCnt", dnd: true},
 
 			// TODO: should row modes be implemented as plugins?
 			// TODO: The type should be sap.ui.table.rowmodes.RowMode, but then the build fails because RowMode is a private class.
@@ -428,7 +435,7 @@ sap.ui.define([
 			 * @private
 			 * @ui5-restricted sap.ui.mdc
 			 */
-			rowMode : {type : "sap.ui.core.Element", multiple : false, visibility : "hidden"},
+			rowMode: {type: "sap.ui.core.Element", multiple: false, visibility: "hidden"},
 
 			/**
 			 * This row can be used for user input to create new data.
@@ -439,14 +446,14 @@ sap.ui.define([
 			 * @private
 			 * @ui5-restricted sap.ui.mdc
 			 */
-			creationRow : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"},
+			creationRow: {type: "sap.ui.core.Control", multiple: false, visibility: "hidden"},
 
 			/**
 			 * The value for the noData aggregation can be either a string value or a control instance.
 			 * The control is shown, in case there is no data for the Table available. In case of a string
 			 * value this will simply replace the no data text.
 			 */
-			noData : {type : "sap.ui.core.Control", altTypes : ["string"], multiple : false},
+			noData: {type: "sap.ui.core.Control", altTypes: ["string"], multiple: false},
 
 			/**
 			 * The control that is shown in case the Table has no visible columns.
@@ -454,21 +461,21 @@ sap.ui.define([
 			 * @private
 			 * @ui5-restricted sap.ui.mdc, sap.ui.comp
 			 */
-			_noColumnsMessage: {type : "sap.ui.core.Control", multiple : false, visibility: "hidden"},
+			_noColumnsMessage: {type: "sap.ui.core.Control", multiple: false, visibility: "hidden"},
 
 			/**
 			 * Template for row actions. A template is decoupled from the row or table. Each time
 			 * the template's properties or aggregations are changed, the template has to be applied again via
 			 * <code>setRowActionTemplate</code> for the changes to take effect.
 			 */
-			rowActionTemplate : {type : "sap.ui.table.RowAction", multiple : false},
+			rowActionTemplate: {type: "sap.ui.table.RowAction", multiple: false},
 
 			/**
 			 * Template for row settings. A template is decoupled from the row or table. Each time
 			 * the template's properties or aggregations are changed, the template has to be applied again via
 			 * <code>setRowSettingsTemplate</code> for the changes to take effect.
 			 */
-			rowSettingsTemplate : {type : "sap.ui.table.RowSettings", multiple : false},
+			rowSettingsTemplate: {type: "sap.ui.table.RowSettings", multiple: false},
 
 			/**
 			 * Defines the context menu for the table.
@@ -481,7 +488,7 @@ sap.ui.define([
 			 *
 			 * @since 1.54
 			 */
-			contextMenu : {type : "sap.ui.core.IContextMenu", multiple : false},
+			contextMenu: {type: "sap.ui.core.IContextMenu", multiple: false},
 
 			/**
 			 * Plugin section of the table. Multiple plugins are possible, but always only <b>one</b> of a certain type.
@@ -495,13 +502,13 @@ sap.ui.define([
 			 *
 			 * @since 1.64
 			 */
-			plugins : {type : "sap.ui.table.plugins.SelectionPlugin", multiple : true, singularName : "plugin"},
+			plugins: {type: "sap.ui.table.plugins.SelectionPlugin", multiple: true, singularName: "plugin"},
 
 			/**
 			 * Defines the message strip to display binding-related messages.
 			 * @since 1.73
 			 */
-			_messageStrip : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"},
+			_messageStrip: {type: "sap.ui.core.Control", multiple: false, visibility: "hidden"},
 
 			/**
 			 * Hidden dependents are dependents that are not cloned. But like for normal dependents, their data binding context and
@@ -509,9 +516,9 @@ sap.ui.define([
 			 *
 			 * @since 1.75
 			 */
-			_hiddenDependents : {type : "sap.ui.core.Element", multiple : true, visibility : "hidden"}
+			_hiddenDependents: {type: "sap.ui.core.Element", multiple: true, visibility: "hidden"}
 		},
-		associations : {
+		associations: {
 
 			/**
 			 * The column by which the table is grouped. Grouping will only be performed if <code>enableGrouping</code> is set to <code>true</code>.
@@ -521,14 +528,14 @@ sap.ui.define([
 			 * @experimental Since 1.28. This feature has a limited functionality.
 			 * @see sap.ui.table.Table#setEnableGrouping
 			 */
-			groupBy : {type : "sap.ui.table.Column", multiple : false},
+			groupBy: {type: "sap.ui.table.Column", multiple: false},
 
 			/**
 			 * Association to controls / ids which label this control (see WAI-ARIA attribute aria-labelledby).
 			 */
-			ariaLabelledBy : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaLabelledBy"}
+			ariaLabelledBy: {type: "sap.ui.core.Control", multiple: true, singularName: "ariaLabelledBy"}
 		},
-		events : {
+		events: {
 
 			/**
 			 * fired when the row selection of the table has been changed (the event parameters can be used to determine
@@ -536,28 +543,28 @@ sap.ui.define([
 			 *
 			 * <b>Note:</b> If a selection plugin is applied to the table, this event won't be fired.
 			 */
-			rowSelectionChange : {
-				parameters : {
+			rowSelectionChange: {
+				parameters: {
 
 					/**
 					 * row index which has been clicked so that the selection has been changed (either selected or deselected)
 					 */
-					rowIndex : {type : "int"},
+					rowIndex: {type: "int"},
 
 					/**
 					 * binding context of the row which has been clicked so that selection has been changed
 					 */
-					rowContext : {type : "sap.ui.model.Context"},
+					rowContext: {type: "sap.ui.model.Context"},
 
 					/**
 					 * array of row indices which selection has been changed (either selected or deselected)
 					 */
-					rowIndices : {type : "int[]"},
+					rowIndices: {type: "int[]"},
 
 					/**
 					 * indicator if "select all" function is used to select rows
 					 */
-					selectAll : {type : "boolean"},
+					selectAll: {type: "boolean"},
 
 					/**
 					 * indicates that the event was fired due to an explicit user interaction like clicking the row header
@@ -570,52 +577,52 @@ sap.ui.define([
 			/**
 			 * fired when a column of the table has been selected
 			 */
-			columnSelect : {
-				allowPreventDefault : true,
-				parameters : {
+			columnSelect: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * reference to the selected column
 					 */
-					column : {type : "sap.ui.table.Column"}
+					column: {type: "sap.ui.table.Column"}
 				}
 			},
 
 			/**
 			 * fired when a table column is resized.
 			 */
-			columnResize : {
-				allowPreventDefault : true,
-				parameters : {
+			columnResize: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * resized column.
 					 */
-					column : {type : "sap.ui.table.Column"},
+					column: {type: "sap.ui.table.Column"},
 
 					/**
 					 * new width of the table column as CSS Size definition.
 					 */
-					width : {type : "sap.ui.core.CSSSize"}
+					width: {type: "sap.ui.core.CSSSize"}
 				}
 			},
 
 			/**
 			 * fired when a table column is moved.
 			 */
-			columnMove : {
-				allowPreventDefault : true,
-				parameters : {
+			columnMove: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * moved column.
 					 */
-					column : {type : "sap.ui.table.Column"},
+					column: {type: "sap.ui.table.Column"},
 
 					/**
 					 * new position of the column.
 					 */
-					newPos : {type : "int"}
+					newPos: {type: "int"}
 				}
 			},
 
@@ -628,24 +635,24 @@ sap.ui.define([
 			 * Sorters that are directly applied to the table
 			 * binding will not fire this event.
 			 */
-			sort : {
-				allowPreventDefault : true,
-				parameters : {
+			sort: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * sorted column.
 					 */
-					column : {type : "sap.ui.table.Column"},
+					column: {type: "sap.ui.table.Column"},
 
 					/**
 					 * Sort Order
 					 */
-					sortOrder : {type : "sap.ui.table.SortOrder"},
+					sortOrder: {type: "sap.ui.table.SortOrder"},
 
 					/**
 					 * If column was added to sorter this is true. If new sort is started this is set to false
 					 */
-					columnAdded : {type : "boolean"}
+					columnAdded: {type: "boolean"}
 				}
 			},
 
@@ -658,51 +665,51 @@ sap.ui.define([
 			 * Filters that are directly applied to the table
 			 * binding will not fire this event.
 			 */
-			filter : {
-				allowPreventDefault : true,
-				parameters : {
+			filter: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * filtered column.
 					 */
-					column : {type : "sap.ui.table.Column"},
+					column: {type: "sap.ui.table.Column"},
 
 					/**
 					 * filter value.
 					 */
-					value : {type : "string"}
+					value: {type: "string"}
 				}
 			},
 
 			/**
 			 * fired when the table is grouped (experimental!).
 			 */
-			group : {
-				allowPreventDefault : true,
-				parameters : {
+			group: {
+				allowPreventDefault: true,
+				parameters: {
 					/**
 					 * grouped column.
 					 */
-					column : {type : "sap.ui.table.Column"}
+					column: {type: "sap.ui.table.Column"}
 				}
 			},
 
 			/**
 			 * fired when the visibility of a table column is changed.
 			 */
-			columnVisibility : {
-				allowPreventDefault : true,
-				parameters : {
+			columnVisibility: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * affected column.
 					 */
-					column : {type : "sap.ui.table.Column"},
+					column: {type: "sap.ui.table.Column"},
 
 					/**
 					 * new value of the visible property.
 					 */
-					newVisible : {type : "boolean"}
+					newVisible: {type: "boolean"}
 				}
 			},
 
@@ -710,80 +717,80 @@ sap.ui.define([
 			 * fired when the user clicks a cell of the table (experimental!).
 			 * @since 1.21.0
 			 */
-			cellClick : {
-				allowPreventDefault : true,
-				parameters : {
+			cellClick: {
+				allowPreventDefault: true,
+				parameters: {
 					/**
 					 * The control of the cell.
 					 */
-					cellControl : {type : "sap.ui.core.Control"},
+					cellControl: {type: "sap.ui.core.Control"},
 
 					/**
 					 * DOM reference of the clicked cell. Can be used to position the context menu.
 					 */
-					cellDomRef : {type : "Object"},
+					cellDomRef: {type: "Object"},
 
 					/**
 					 * Row index of the selected cell.
 					 */
-					rowIndex : {type : "int"},
+					rowIndex: {type: "int"},
 
 					/**
 					 * Column index of the selected cell. This is the index of visible columns and might differ from
 					 * the index maintained in the column aggregation.
 					 */
-					columnIndex : {type : "int"},
+					columnIndex: {type: "int"},
 
 					/**
 					 * Column ID of the selected cell.
 					 */
-					columnId : {type : "string"},
+					columnId: {type: "string"},
 
 					/**
 					 * Row binding context of the selected cell.
 					 */
-					rowBindingContext : {type : "sap.ui.model.Context"}
+					rowBindingContext: {type: "sap.ui.model.Context"}
 				}
 			},
 
 			/**
 			 * fired when the user clicks a cell of the table.
 			 * @since 1.21.0
-			 * @deprecated As of 1.54, replaced by <code>beforeOpenContextMenu</code>.
+			 * @deprecated As of version 1.54, replaced by <code>beforeOpenContextMenu</code>.
 			 */
-			cellContextmenu : {
-				allowPreventDefault : true,
-				parameters : {
+			cellContextmenu: {
+				allowPreventDefault: true,
+				parameters: {
 					/**
 					 * The control of the cell.
 					 */
-					cellControl : {type : "sap.ui.core.Control"},
+					cellControl: {type: "sap.ui.core.Control"},
 
 					/**
 					 * DOM reference of the clicked cell. Can be used to position the context menu.
 					 */
-					cellDomRef : {type : "Object"},
+					cellDomRef: {type: "Object"},
 
 					/**
 					 * Row index of the selected cell.
 					 */
-					rowIndex : {type : "int"},
+					rowIndex: {type: "int"},
 
 					/**
 					 * Column index of the selected cell. This is the index of visible columns and might differ from
 					 * the index maintained in the column aggregation.
 					 */
-					columnIndex : {type : "int"},
+					columnIndex: {type: "int"},
 
 					/**
 					 * Column ID of the selected cell.
 					 */
-					columnId : {type : "string"},
+					columnId: {type: "string"},
 
 					/**
 					 * Row binding context of the selected cell.
 					 */
-					rowBindingContext : {type : "sap.ui.model.Context"}
+					rowBindingContext: {type: "sap.ui.model.Context"}
 				},
 				deprecated: true
 			},
@@ -792,24 +799,24 @@ sap.ui.define([
 			 * Fired when the user requests the context menu for a table cell.
 			 * @since 1.54
 			 */
-			beforeOpenContextMenu : {
-				allowPreventDefault : true,
+			beforeOpenContextMenu: {
+				allowPreventDefault: true,
 				parameters: {
 					/**
 					 * Row index where the context menu opens.
 					 */
-					rowIndex : {type : "int"},
+					rowIndex: {type: "int"},
 
 					/**
 					 * Column index where the context menu opens.
 					 * This is the index of the column in the <code>columns</code> aggregation.
 					 */
-					columnIndex : {type : "int"},
+					columnIndex: {type: "int"},
 
 					/**
 					 * Context menu
 					 */
-					contextMenu : {type : "sap.ui.core.IContextMenu"}
+					contextMenu: {type: "sap.ui.core.IContextMenu"}
 				}
 			},
 
@@ -817,14 +824,14 @@ sap.ui.define([
 			 * fired when a column of the table should be freezed
 			 * @since 1.21.0
 			 */
-			columnFreeze : {
-				allowPreventDefault : true,
-				parameters : {
+			columnFreeze: {
+				allowPreventDefault: true,
+				parameters: {
 
 					/**
 					 * reference to the column to freeze
 					 */
-					column : {type : "sap.ui.table.Column"}
+					column: {type: "sap.ui.table.Column"}
 				}
 			},
 
@@ -833,16 +840,18 @@ sap.ui.define([
 			 * passed as parameter.
 			 * @since 1.23.0
 			 */
-			customFilter : {
-				/**
-				 * The column instance on which the custom filter button was pressed.
-				 */
-				column : {type : "sap.ui.table.Column"},
+			customFilter: {
+				parameters: {
+					/**
+					 * The column instance on which the custom filter button was pressed.
+					 */
+					column: {type: "sap.ui.table.Column"},
 
-				/**
-				 * Filter value.
-				 */
-				value : {type : "string"}
+					/**
+					 * Filter value.
+					 */
+					value: {type: "string"}
+				}
 			},
 
 			/**
@@ -851,11 +860,13 @@ sap.ui.define([
 			 * @since 1.37.0
 			 * @protected
 			 */
-			firstVisibleRowChanged : {
-				/**
-				 * First visible row
-				 */
-				firstVisibleRow : {type : "int"}
+			firstVisibleRowChanged: {
+				parameters: {
+					/**
+					 * First visible row
+					 */
+					firstVisibleRow: {type: "int"}
+				}
 			},
 
 			/**
@@ -863,11 +874,13 @@ sap.ui.define([
 			 * @since 1.37.0
 			 * @protected
 			 */
-			busyStateChanged : {
-				/**
-				 * busy state
-				 */
-				busy : {type : "boolean"}
+			busyStateChanged: {
+				parameters: {
+					/**
+					 * busy state
+					 */
+					busy: {type: "boolean"}
+				}
 			},
 
 			/**
@@ -875,14 +888,14 @@ sap.ui.define([
 			 * Pasting can be done with the standard keyboard shortcut, if the focus is inside the table.
 			 * @since 1.60
 			 */
-			paste : {
+			paste: {
 				allowPreventDefault: true,
-				parameters : {
+				parameters: {
 					/**
 					 * 2D array of strings with data from the clipboard. The first dimension represents the rows, and the
 					 * second dimension represents the cells of the tabular data.
 					 */
-					data : {type : "string[][]"}
+					data: {type: "string[][]"}
 				}
 			},
 
@@ -894,11 +907,11 @@ sap.ui.define([
 			 *
 			 * @since 1.86
 			 */
-			rowsUpdated : {
+			rowsUpdated: {
 
 			}
 		},
-		designtime:  "sap/ui/table/designtime/Table.designtime"
+		designtime: "sap/ui/table/designtime/Table.designtime"
 	}, renderer: TableRenderer});
 
 	/**
@@ -931,7 +944,6 @@ sap.ui.define([
 	 * @public
 	 * @since 1.52
 	 */
-
 
 	// =============================================================================
 	// BASIC CONTROL API
@@ -987,7 +999,7 @@ sap.ui.define([
 		this._mAnimationFrames = {};
 
 		// TBD: Tooltips are not desired by Visual Design, discuss whether to switch it off by default
-		this._bHideStandardTooltips = false;
+		this._setHideStandardTooltips(false);
 
 		this._aRowHeights = [];
 		this._aSortedColumns = [];
@@ -1014,10 +1026,12 @@ sap.ui.define([
 	 * @inheritDoc
 	 */
 	Table.prototype.applySettings = function(mSettings, oScope) {
+		// The threshold must be set before the OData binding for the "rows" aggregation is initialized. If the metadata is already loaded, a
+		// getContexts call may be triggered immediately with the default threshold (100) instead of the one in the settings.
 		// Some settings might rely on the existence of a row mode or plugin. If row modes and plugins are in the settings and applied before
 		// other settings, initialization of legacy row modes and plugins can be avoided.
 		if (mSettings) {
-			var aEarlySettings = ["rowMode", "plugins"];
+			var aEarlySettings = ["threshold", "rowMode", "plugins"];
 			var mEarlySettings = {};
 
 			for (var i = 0; i < aEarlySettings.length; i++) {
@@ -1066,7 +1080,6 @@ sap.ui.define([
 		this._bExtensionsInitialized = true;
 	};
 
-
 	/**
 	 * Termination of the Table control
 	 * @private
@@ -1081,12 +1094,11 @@ sap.ui.define([
 		delete this._aTableHeaders;
 	};
 
-
 	/**
 	 * Detach table extensions
 	 * @private
 	 */
-	Table.prototype._detachExtensions = function(){
+	Table.prototype._detachExtensions = function() {
 		ExtensionBase.cleanup(this);
 	};
 
@@ -1122,7 +1134,6 @@ sap.ui.define([
 			this.invalidate();
 		}
 	};
-
 
 	/**
 	 * Localization changed
@@ -1516,11 +1527,11 @@ sap.ui.define([
 					domWidth = colHeader ? colHeader.offsetWidth : null;
 					if (domWidth !== null) {
 						if (domWidth <= minWidth) {
-							return {headers : aColHeaders, newWidth: calcNewWidth(domWidth, minWidth)};
+							return {headers: aColHeaders, newWidth: calcNewWidth(domWidth, minWidth)};
 						} else if (colHeader && colHeader.style.width != colWidth) {
 							aNotFixedVariableColumns.push({col: col, header: colHeader, minWidth: minWidth, headers: aColHeaders});
 							// reset the minimum style width that was set previously
-							return {headers : aColHeaders, newWidth: colWidth};
+							return {headers: aColHeaders, newWidth: colWidth};
 						}
 						aNotFixedVariableColumns.push({col: col, header: colHeader, minWidth: minWidth, headers: aColHeaders});
 					}
@@ -1575,21 +1586,16 @@ sap.ui.define([
 			var oDummyColumn = this.getDomRef("dummycolhdr");
 
 			if (oDummyColumn) {
-				// This complexity is required because of Chrome's zoom math.
-				var oTableElement = this.getDomRef("header");
-				var iTableWidth = oTableElement.clientWidth;
-				var iColumnsWidth = this.getColumns().reduce(function(iColumnsWidth, oColumn) {
-					if (oColumn.getDomRef() && oColumn.getIndex() >= this.getComputedFixedColumnCount()) {
-						return iColumnsWidth + TableUtils.convertCSSSizeToPixel(oColumn.getWidth());
-					}
-					return iColumnsWidth;
-				}.bind(this), 0);
-				var bDummyColumnHasWidth = iTableWidth > iColumnsWidth + 1;
-				// when the column widths contain subpixels, iTableWidth might be higher than iColumnsWidth
-				// for just a fraction of a pixel even though no dummy column is needed. To avoid left positioning
-				// of the row actions instead of absolute right, the calculation is adjusted with +1 pixel.
+				var bDummyColumnHasWidth = oDummyColumn.clientWidth > 1;
 
 				if (!bHasFlexibleRowActions && bDummyColumnHasWidth) {
+					var iColumnsWidth = this.getColumns().reduce(function(iColumnsWidth, oColumn) {
+						var oDomRef = oColumn.getDomRef();
+						if (oDomRef && oColumn.getIndex() >= this.getComputedFixedColumnCount()) {
+							iColumnsWidth += oDomRef.offsetWidth;
+						}
+						return iColumnsWidth;
+					}.bind(this), 0);
 					var iRowActionPos = iColumnsWidth + oTableSizes.tableRowHdrScrWidth + oTableSizes.tableCtrlFixedWidth;
 					var oRowActionStyles = {};
 					if (!TableUtils.hasRowActions(this)) {
@@ -1652,7 +1658,6 @@ sap.ui.define([
 		}
 	};
 
-
 	// =============================================================================
 	// FOCUS
 	// =============================================================================
@@ -1660,8 +1665,8 @@ sap.ui.define([
 	/**
 	 * Sets the focus to the stored focus DOM reference.
 	 *
-	 * If {@param oFocusInfo.targetInfo} is of type {@type sap.ui.core.message.Message},
-	 * the focus will be set as accurately as possible according to the information provided by {@type sap.ui.core.message.Message}.
+	 * If <code>oFocusInfo.targetInfo</code> is of type {@link sap.ui.core.message.Message},
+	 * the focus will be set as accurately as possible according to the information provided by {@link sap.ui.core.message.Message}.
 	 *
 	 * @param {object} [oFocusInfo={}] Options for setting the focus
 	 * @param {boolean} [oFocusInfo.preventScroll=false] @since 1.60 If set to <code>true</code>, the focused
@@ -1691,8 +1696,13 @@ sap.ui.define([
 	 * @see JSDoc generated by SAPUI5 control
 	 */
 	Table.prototype.applyFocusInfo = function(mFocusInfo) {
+		delete this._bApplyFocusInfoFailed;
 		if (mFocusInfo && mFocusInfo.customId) {
-			jQuery(document.getElementById(mFocusInfo.customId)).trigger("focus");
+			if (document.getElementById(mFocusInfo.customId)) {
+				jQuery(document.getElementById(mFocusInfo.customId)).trigger("focus");
+			} else {
+				this._bApplyFocusInfoFailed = true;
+			}
 		} else {
 			Control.prototype.applyFocusInfo.apply(this, arguments);
 		}
@@ -1718,7 +1728,6 @@ sap.ui.define([
 		return this;
 	};
 
-
 	/*
 	 * @see JSDoc generated by SAPUI5 control API generator
 	 */
@@ -1732,7 +1741,6 @@ sap.ui.define([
 		this.setAggregation("footer", oFooter);
 		return this;
 	};
-
 
 	/**
 	 * Sets the selection mode. The current selection is lost.
@@ -2604,7 +2612,6 @@ sap.ui.define([
 		this._getPointerExtension().doAutoResizeColumn(iColIndex);
 	};
 
-
 	// =============================================================================
 	// EVENT HANDLING & CLEANUP
 	// =============================================================================
@@ -2617,7 +2624,7 @@ sap.ui.define([
 		var $this = this.$();
 		var sTableId = this.getId();
 
-		if (Configuration.getAnimation()) {
+		if (Configuration.getAnimationMode() !== Configuration.AnimationMode.none) {
 			jQuery(document.body).on("webkitTransitionEnd." + sTableId + " transitionend." + sTableId,
 				function(oEvent) {
 					if (jQuery(oEvent.target).has($this).length > 0) {
@@ -2727,7 +2734,6 @@ sap.ui.define([
 		onColumnsAggregationChange(this);
 		return oResult;
 	};
-
 
 	/*
 	 * @see JSDoc generated by SAPUI5 control API generator
@@ -2919,7 +2925,7 @@ sap.ui.define([
 		}
 	};
 
-	Table.prototype._adjustOutlineOffset = function(){
+	Table.prototype._adjustOutlineOffset = function() {
 		if (window.devicePixelRatio < 1) {
 			this.addStyleClass("sapUiTableZoomout");
 		} else {
@@ -3106,10 +3112,9 @@ sap.ui.define([
 		}
 
 		if (this.getColumns().indexOf(oColumn) >= 0) {
-			oColumn.sort(oSortOrder === SortOrder.Descending, bAdd);
+			oColumn._sort(oSortOrder === SortOrder.Descending, bAdd);
 		}
 	};
-
 
 	/**
 	 * Filters a column by a value.
@@ -3130,7 +3135,6 @@ sap.ui.define([
 			oColumn.filter(sValue);
 		}
 	};
-
 
 	// =============================================================================
 	// SELECTION HANDLING
@@ -3166,7 +3170,7 @@ sap.ui.define([
 		}
 
 		if (mRenderConfig.headerSelector.type === "toggle") {
-			var bAllRowsSelected = TableUtils.areAllRowsSelected(this);
+			var bAllRowsSelected = mRenderConfig.headerSelector.selected;
 
 			$SelectAll.toggleClass("sapUiTableSelAll", !bAllRowsSelected);
 			this._getAccExtension().setSelectAllState(bAllRowsSelected);
@@ -3185,46 +3189,69 @@ sap.ui.define([
 
 		if (sSelectAllResourceTextID) {
 			sSelectAllText = TableUtils.getResourceText(sSelectAllResourceTextID);
-			if (this._getShowStandardTooltips()) {
-				$SelectAll.attr('title', sSelectAllText);
-			} else if (mRenderConfig.headerSelector.type === "toggle") {
-				this.getDomRef("ariaselectall").innerText = sSelectAllText;
-			}
+			$SelectAll.attr('title', sSelectAllText);
 		}
 	};
 
 	/**
-	 * Returns <code>true</code>, if the standard tooltips (e.g. for selection should be shown).
+	 * Returns whether certain additional standard tooltips should be shown or not.
+	 *
+	 * see <code>_setHideStandardTooltips</code> for more details
+	 *
 	 * @private
+	 * @returns {boolean} <code>true</code>, when additional standard tooltips should be shown
 	 */
-	Table.prototype._getShowStandardTooltips = function() {
-		return !this._bHideStandardTooltips;
+	Table.prototype._getHideStandardTooltips = function() {
+		return this._bHideStandardTooltips;
 	};
 
+	/**
+	 * Defines whether certain additional standard tooltips should be shown or hidden.
+	 * The tooltips which are affected by this setting are:
+	 *
+	 * <ul>
+	 *  <li>Text on Group headers</li>
+	 *  <li>Tooltips on Row Selectors and Row for Selection</li>
+	 *  <li>Default tooltips on AnalyticalColumn headers</li>
+	 * </ul>
+	 *
+	 * Other tooltips like for Select All / Clear All icons, Expand / Collapse icons or Row Actions are not affected.
+	 *
+	 * <b>Note: The changes only take effect after a full invalidation / rerendering of the table.</b>
+	 *
+	 * @param {boolean} bHideStandardTooltips Whether to show the additional tooltips or not
+	 * @private
+	 * @ui5-restricted sap.ui.comp, sap.ui.mdc
+	 */
+	Table.prototype._setHideStandardTooltips = function(bHideStandardTooltips) {
+		this._bHideStandardTooltips = bHideStandardTooltips;
+	};
 
 	/**
 	 * Notifies the selection listeners about the changed rows.
 	 * @private
 	 */
 	Table.prototype._onSelectionChanged = function(oEvent) {
+		this._updateSelection();
+
+		// If a selection plugin is applied to the table, the "rowSelectionChange" event should not be fired.
+		if (this._hasSelectionPlugin()) {
+			return;
+		}
+
 		var oSelectionPlugin = this._getSelectionPlugin();
 		var aRowIndices = oEvent.getParameter("rowIndices");
 		var bSelectAll = oEvent.getParameter("selectAll");
 		var iRowIndex = this._iSourceRowIndex !== undefined ? this._iSourceRowIndex : oSelectionPlugin.getSelectedIndex();
 
-		this._updateSelection();
-
-		// If a selection plugin is applied to the table, the "rowSelectionChange" event should not be fired.
-		if (!this._hasSelectionPlugin()) {
-			this.setProperty("selectedIndex", oSelectionPlugin.getSelectedIndex(), true);
-			this.fireRowSelectionChange({
-				rowIndex: iRowIndex,
-				rowContext: this.getContextByIndex(iRowIndex),
-				rowIndices: aRowIndices,
-				selectAll: bSelectAll,
-				userInteraction: this._iSourceRowIndex !== undefined
-			});
-		}
+		this.setProperty("selectedIndex", oSelectionPlugin.getSelectedIndex(), true);
+		this.fireRowSelectionChange({
+			rowIndex: iRowIndex,
+			rowContext: this.getContextByIndex(iRowIndex),
+			rowIndices: aRowIndices,
+			selectAll: bSelectAll,
+			userInteraction: this._iSourceRowIndex !== undefined
+		});
 	};
 
 	/**
@@ -3830,7 +3857,7 @@ sap.ui.define([
 	 * @param {object} [mSettings] settings for the new Export, see {@link sap.ui.core.util.Export} <code>constructor</code>
 	 * @returns {sap.ui.core.util.Export} Export object
 	 * @experimental Experimental because the property for the column/cell definitions (sortProperty) could change in future.
-	 * @deprecated As of 1.56, replaced by the <code>sap.ui.export</code> library.
+	 * @deprecated As of version 1.56, replaced by the <code>sap.ui.export</code> library.
 	 * @public
 	 */
 	Table.prototype.exportData = function(mSettings) {
@@ -3917,29 +3944,6 @@ sap.ui.define([
 				oBinding.sort(aSorters);
 			}
 		}
-	};
-
-	/**
-	 * Toggles the selection state of all cells.
-	 * @private
-	 */
-	Table.prototype._toggleSelectAll = function() {
-		if (!TableUtils.hasData(this) || this.getSelectionMode() !== SelectionMode.MultiToggle) {
-			return;
-		}
-
-		var oSelectionPlugin = this._getSelectionPlugin();
-
-		// in order to fire the rowSelectionChanged event, the SourceRowIndex mus be set to -1
-		// to indicate that the selection was changed by user interaction
-		if (TableUtils.areAllRowsSelected(this)) {
-			this._iSourceRowIndex = -1;
-			oSelectionPlugin.clearSelection();
-		} else {
-			this._iSourceRowIndex = 0;
-			oSelectionPlugin.selectAll();
-		}
-		this._iSourceRowIndex = undefined;
 	};
 
 	Table.prototype.setBusy = function(bBusy) {
@@ -4431,6 +4435,7 @@ sap.ui.define([
 	 * @throws {Error} If a selection plugin is applied
 	 * @private
 	 * @ui5-restricted sap.watt.hanaplugins.editor.plugin.hdbcalculationview
+	 * @deprecated As of version 1.115
 	 */
 	Table.prototype._enableLegacyMultiSelection = function() {
 		if (this._hasSelectionPlugin()) {
@@ -4451,7 +4456,7 @@ sap.ui.define([
 				} else {
 					this.setSelectedIndex(iIndex);
 				}
-			} else if (bAdd || this._getSelectionPlugin().getSelectedCount() === 1) {
+			} else if (bAdd || this.getSelectedIndices().length === 1) {
 				this.removeSelectionInterval(iIndex, iIndex);
 			} else {
 				this.setSelectedIndex(iIndex);

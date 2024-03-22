@@ -5,34 +5,30 @@
  */
 
 sap.ui.define([
-	"sap/m/GroupHeaderListItem",
-	"sap/ui/thirdparty/jquery"
+	"sap/m/GroupHeaderListItem"
 ], function(
-	GroupHeaderListItem,
-	jQuery
+	GroupHeaderListItem
 ) {
 	"use strict";
-
+	var aExcludeList = [{
+		category: "NS",
+		name: "LREP_HOME_CONTENT",
+		ns: "UIF/"
+	}, {
+		category: "NS",
+		name: "virtual~",
+		ns: "/"
+	}];
 	/**
 	 * Provides data utility functions for the Content Browser.
 	 *
 	 * @constructor
 	 * @alias sap.ui.fl.support.apps.contentbrowser.utils.DataUtils
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @experimental Since 1.45
 	 */
 	var DataUtils = {
-		aExcludeList: [{
-			category: "NS",
-			name: "LREP_HOME_CONTENT",
-			ns: "UIF/"
-		}, {
-			category: "NS",
-			name: "virtual~",
-			ns: "/"
-		}],
-
 		/**
 		 * Pretty printer for specific file types.
 		 *
@@ -84,10 +80,12 @@ sap.ui.define([
 		 */
 		isNotExcluded: function (oContentItem) {
 			var bNotExcluded = true;
-			jQuery.each(this.aExcludeList, function (index, mExcludeListElement) {
+			aExcludeList.forEach(function (mExcludeListElement) {
 				var bAllPropertiesMatched = true;
 
-				jQuery.each(mExcludeListElement, function (sProperty, sValue) {
+				Object.entries(mExcludeListElement).forEach(function (aEntry) {
+					var sProperty = aEntry[0];
+					var sValue = aEntry[1];
 					bAllPropertiesMatched = bAllPropertiesMatched && oContentItem[sProperty] === sValue;
 				});
 

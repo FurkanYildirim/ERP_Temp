@@ -27,7 +27,7 @@ sap.ui.define([
 	 * @extends sap.m.HBox
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -184,10 +184,11 @@ sap.ui.define([
 
 	/**
 	 * Makes the Toolbar visible
+	 * @param {function} fnAdjustToolbarCallback - Called before the animation is triggered, e.g. for initial width calculations
 	 * @returns {Promise} A Promise which resolves after animation has been completed
 	 * @public
 	 */
-	Base.prototype.show = function() {
+	Base.prototype.show = function(fnAdjustToolbarCallback) {
 		// 1) create Promise and wait until DomRef is available
 		return new Promise(function (fnResolve) {
 			var oDelegate = {
@@ -202,8 +203,11 @@ sap.ui.define([
 		}.bind(this))
 		// 2) animate DomRef
 		.then(function () {
+			if (fnAdjustToolbarCallback && typeof fnAdjustToolbarCallback === "function") {
+				fnAdjustToolbarCallback();
+			}
 			return this.animation
-				? Animation.waitTransition(this.$(), this.addStyleClass.bind(this, "is_visible"))
+				? Animation.waitTransition(this.getDomRef(), this.addStyleClass.bind(this, "is_visible"))
 				: Promise.resolve();
 		}.bind(this))
 		// 3) focus on Toolbar
@@ -225,7 +229,7 @@ sap.ui.define([
 			if (bSkipTransition) {
 				this.removeStyleClass("is_visible");
 			} else {
-				oPromise = Animation.waitTransition(this.$(), this.removeStyleClass.bind(this, "is_visible"));
+				oPromise = Animation.waitTransition(this.getDomRef(), this.removeStyleClass.bind(this, "is_visible"));
 			}
 		}
 		return oPromise

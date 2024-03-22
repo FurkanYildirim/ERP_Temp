@@ -9,10 +9,11 @@
  */
 sap.ui.define([
 		"sap/ui/webc/common/library",
+		"sap/ui/core/Lib",
 		"./thirdparty/Assets",
 		"./library.config"
 	], // library dependency
-	function(commonLibrary) {
+	function(commonLibrary, Library) {
 
 		"use strict";
 
@@ -22,17 +23,17 @@ sap.ui.define([
 		 * @namespace
 		 * @alias sap.ui.webc.fiori
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @public
 		 * @since 1.92.0
 		 * @experimental Since 1.92.0 This API is experimental and might change significantly.
 		 */
-		var thisLib = sap.ui.getCore().initLibrary({
+		var thisLib = Library.init({
 			name: "sap.ui.webc.fiori",
-			version: "1.108.14",
+			version: "1.115.1",
 			dependencies: ["sap.ui.core", "sap.ui.webc.common"],
 			noLibraryCSS: true,
-			designtime: "sap/ui/webc/main/designtime/library.designtime",
+			designtime: "sap/ui/webc/fiori/designtime/library.designtime",
 			interfaces: [
 				"sap.ui.webc.fiori.IBar",
 				"sap.ui.webc.fiori.IFilterItem",

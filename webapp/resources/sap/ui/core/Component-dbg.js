@@ -9,11 +9,13 @@ sap.ui.define([
 	'./Manifest',
 	'./ComponentMetadata',
 	'./Element',
+	'sap/base/config',
 	'sap/base/util/extend',
 	'sap/base/util/deepExtend',
 	'sap/base/util/merge',
 	'sap/ui/base/ManagedObject',
 	'sap/ui/base/ManagedObjectRegistry',
+	'sap/ui/core/Lib',
 	'sap/ui/core/ResizeHandler',
 	'sap/ui/thirdparty/URI',
 	'sap/ui/performance/trace/Interaction',
@@ -23,6 +25,7 @@ sap.ui.define([
 	'sap/base/util/UriParameters',
 	'sap/base/util/isPlainObject',
 	'sap/base/util/LoaderExtensions',
+	'sap/base/strings/camelize',
 	'sap/ui/core/_UrlResolver',
 	'sap/ui/VersionInfo',
 	'sap/ui/core/mvc/ViewType',
@@ -31,11 +34,13 @@ sap.ui.define([
 	Manifest,
 	ComponentMetadata,
 	Element,
+	BaseConfig,
 	extend,
 	deepExtend,
 	merge,
 	ManagedObject,
 	ManagedObjectRegistry,
+	Library,
 	ResizeHandler,
 	URI,
 	Interaction,
@@ -45,6 +50,7 @@ sap.ui.define([
 	UriParameters,
 	isPlainObject,
 	LoaderExtensions,
+	camelize,
 	_UrlResolver,
 	VersionInfo,
 	ViewType,
@@ -60,6 +66,9 @@ sap.ui.define([
 		waitFor: "waitFor"
 	};
 
+	function getConfigParam(sName) {
+		return {name: sName, type: BaseConfig.Type.String, external: true};
+	}
 	/**
 	 * Utility function which adds SAP-specific parameters to a URI instance
 	 *
@@ -69,7 +78,7 @@ sap.ui.define([
 	function addSapParams(oUri) {
 		['sap-client', 'sap-server'].forEach(function(sName) {
 			if (!oUri.hasSearch(sName)) {
-				var sValue = Configuration.getSAPParam(sName);
+				var sValue = BaseConfig.get(getConfigParam(camelize(sName)));
 				if (sValue) {
 					oUri.addSearch(sName, sValue);
 				}
@@ -223,7 +232,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @alias sap.ui.core.Component
 	 * @since 1.9.2
 	 */
@@ -377,6 +386,43 @@ sap.ui.define([
 			}, sComponentId);
 		}
 	});
+
+	/**
+	 * Creates a new subclass of class <code>sap.ui.core.Component</code> with name
+	 * <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.
+	 *
+	 * <code>oClassInfo</code> might contain the same kind of information as described in
+	 * {@link sap.ui.base.ManagedObject.extend}, plus the <code>manifest</code> property in the 'metadata'
+	 * object literal, indicating that the component configuration should be read from a manifest.json file.
+	 *
+	 * @param {string} sClassName
+	 *            Qualified name of the newly created class
+	 * @param {object} [oClassInfo]
+	 *            Object literal with information about the class
+	 * @param {sap.ui.core.Component.MetadataOptions} [oClassInfo.metadata]
+	 *            The metadata object describing the class.
+	 *            See {@link sap.ui.core.Component.MetadataOptions MetadataOptions} for the values allowed in every extend.
+	 * @param {function} [FNMetaImpl=sap.ui.core.ComponentMetadata]
+	 *            Constructor function for the metadata object. If not given, it defaults to an
+	 *            internal subclass of <code>sap.ui.core.ComponentMetadata</code>.
+	 * @returns {function} The created class / constructor function
+	 * @name sap.ui.core.Component.extend
+	 * @function
+	 * @static
+	 * @public
+	 */
+
+	/**
+	 * @typedef {sap.ui.base.ManagedObject.MetadataOptions} sap.ui.core.Component.MetadataOptions
+	 *
+	 * The structure of the "metadata" object which is passed when inheriting from sap.ui.core.Component using its static "extend" method.
+	 * See {@link sap.ui.core.Component.extend} for details on its usage.
+	 *
+	 * @property {"json"} [manifest]  When set to the string literal "json", this property indicates that the component configuration
+	 *            should be read from a manifest.json file which is assumed to exist next to the Component.js file.
+	 *
+	 * @public
+	 */
 
 	/**
 	 * Executes the given callback function for each sap.ui.core.Element whose owner-component
@@ -859,7 +905,10 @@ sap.ui.define([
 		ManagedObject.prototype.destroy.apply(this, arguments);
 
 		// unregister for messaging (on MessageManager)
-		sap.ui.getCore().getMessageManager().unregisterObject(this);
+		var MessageManager = sap.ui.require("sap/ui/core/message/MessageManager");
+		if (MessageManager) {
+			MessageManager.unregisterObject(this);
+		}
 
 		// manifest exit (unload includes, ... / unregister customzing)
 		//   => either call exit on the instance specific manifest or the static one on the ComponentMetadata
@@ -1070,7 +1119,7 @@ sap.ui.define([
 	 * </pre>
 	 *
 	 * @param {string} sLocalServiceAlias Local service alias as defined in the manifest.json
-	 * @return {Promise} Promise which will be resolved with the Service interface
+	 * @return {Promise<sap.ui.core.service.Service>} Promise which will be resolved with the Service interface
 	 * @public
 	 * @since 1.37.0
 	 */
@@ -1221,7 +1270,7 @@ sap.ui.define([
 	 * @param {boolean} [vUsage.async=true] Indicates whether the component creation is done asynchronously (You should use synchronous creation only if really necessary, because this has a negative impact on performance.)
 	 * @param {object} [vUsage.settings] Settings for the nested component like for {#link sap.ui.component} or the component constructor
 	 * @param {object} [vUsage.componentData] Initial data of the component (@see sap.ui.core.Component#getComponentData)
-	 * @return {sap.ui.core.Component|Promise} Component instance or Promise which will be resolved with the component instance (defaults to Promise / asynchronous behavior)
+	 * @return {sap.ui.core.Component|Promise<sap.ui.core.Component>} Component instance or Promise which will be resolved with the component instance (defaults to Promise / asynchronous behavior)
 	 * @public
 	 * @since 1.47.0
 	 */
@@ -1419,7 +1468,6 @@ sap.ui.define([
 	};
 
 	Component._applyCacheToken = function(oUri, oLogInfo, mMetadataUrlParams) {
-		var oConfig = Configuration;
 		var sSource = mMetadataUrlParams ? "Model" : "DataSource";
 		var sManifestPath = mMetadataUrlParams ? "[\"sap.ui5\"][\"models\"]" : "[\"sap.app\"][\"dataSources\"]";
 		var sLanguage = mMetadataUrlParams && mMetadataUrlParams["sap-language"] || oUri.search(true)["sap-language"];
@@ -1441,10 +1489,11 @@ sap.ui.define([
 			return;
 		}
 
-		// 3. "sap-client" must equal to the value of "sap.ui.getCore().getConfiguration().getSAPParam("sap-client")"
-		if (sClient !== oConfig.getSAPParam("sap-client")) {
+		// 3. "sap-client" must equal to the value of Configuration "sap-client"
+		var sClientFromConfig = BaseConfig.get(getConfigParam("sapClient"));
+		if (sClient !== sClientFromConfig) {
 			Log.warning("Component Manifest: Ignoring provided \"sap-context-token=" + oLogInfo.cacheToken + "\" for " + sSource + " \"" + oLogInfo.dataSource + "\" (" + oUri.toString() + "). " +
-				"URI parameter \"sap-client=" + sClient + "\" must be identical with configuration \"sap-client=" + oConfig.getSAPParam("sap-client") + "\"",
+				"URI parameter \"sap-client=" + sClient + "\" must be identical with configuration \"sap-client=" + sClientFromConfig + "\"",
 				sManifestPath + "[\"" + oLogInfo.dataSource + "\"]", oLogInfo.componentName);
 			return;
 		}
@@ -1683,68 +1732,77 @@ sap.ui.define([
 						bIsDataSourceUri = true;
 					}
 
-					if (oDataSource.type === 'OData' && oDataSource.settings && typeof oDataSource.settings.maxAge === "number") {
+					if (oDataSource.type === 'OData' && oDataSource.settings) {
 						oModelConfig.settings = oModelConfig.settings || {};
-						oModelConfig.settings.headers = oModelConfig.settings.headers || {};
-						oModelConfig.settings.headers["Cache-Control"] = "max-age=" + oDataSource.settings.maxAge;
-					}
 
-					// read out OData annotations and create ODataModel settings for it
-					if (oDataSource.type === 'OData' && oDataSource.settings && oDataSource.settings.annotations) {
-						var aAnnotations = oDataSource.settings.annotations;
-
-						for (var i = 0; i < aAnnotations.length; i++) {
-							var sAnnotation = aAnnotations[i];
-							var oAnnotation = mConfig.dataSources[sAnnotation];
-
-							// dataSource entry should be defined!
-							if (!oAnnotation) {
-								Log.error("Component Manifest: ODataAnnotation \"" + sAnnotation + "\" for dataSource \"" + oModelConfig.dataSource + "\" could not be found in manifest", "[\"sap.app\"][\"dataSources\"][\"" + sAnnotation + "\"]", sLogComponentName);
-								continue;
-							}
-
-							// type should be ODataAnnotation!
-							if (oAnnotation.type !== 'ODataAnnotation') {
-								Log.error("Component Manifest: dataSource \"" + sAnnotation + "\" was expected to have type \"ODataAnnotation\" but was \"" + oAnnotation.type + "\"", "[\"sap.app\"][\"dataSources\"][\"" + sAnnotation + "\"]", sLogComponentName);
-								continue;
-							}
-
-							// uri is required!
-							if (!oAnnotation.uri) {
-								Log.error("Component Manifest: Missing \"uri\" for ODataAnnotation \"" + sAnnotation + "\"", "[\"sap.app\"][\"dataSources\"][\"" + sAnnotation + "\"]", sLogComponentName);
-								continue;
-							}
-
-							var oAnnotationUri = new URI(oAnnotation.uri);
-
-							if (bIsV2Model || bIsV4Model) {
-								/* eslint-disable no-loop-func */
-								["sap-language", "sap-client"].forEach(function(sName) {
-									if (!oAnnotationUri.hasQuery(sName) && oConfig.getSAPParam(sName)) {
-										oAnnotationUri.setQuery(sName, oConfig.getSAPParam(sName));
-									}
-								});
-								/* eslint-enable no-loop-func */
-
-								var sCacheTokenForAnnotation = mCacheTokens.dataSources && mCacheTokens.dataSources[oAnnotation.uri];
-								if (sCacheTokenForAnnotation) {
-									Component._applyCacheToken(oAnnotationUri, {
-										cacheToken: sCacheTokenForAnnotation,
-										componentName: sLogComponentName,
-										dataSource: sAnnotation
-									});
-								}
-							}
-
-							// resolve relative to component, ui5:// URLs are already resolved upfront
-							var oAnnotationSourceManifest = mConfig.origin.dataSources[aAnnotations[i]] || oManifest;
-							var sAnnotationUri = oAnnotationSourceManifest.resolveUri(oAnnotationUri.toString());
-
-							// add uri to annotationURI array in settings (this parameter applies for ODataModel v1 & v2)
-							oModelConfig.settings = oModelConfig.settings || {};
-							oModelConfig.settings.annotationURI = oModelConfig.settings.annotationURI || [];
-							oModelConfig.settings.annotationURI.push(sAnnotationUri);
+						if (typeof oDataSource.settings.maxAge === "number") {
+							oModelConfig.settings.headers = oModelConfig.settings.headers || {};
+							oModelConfig.settings.headers["Cache-Control"] = "max-age=" + oDataSource.settings.maxAge;
 						}
+
+						// Pass the ODataModel's "ignoreAnnotationsFromMetadata" setting, if specified
+						if ("ignoreAnnotationsFromMetadata" in oDataSource.settings) {
+							oModelConfig.settings.ignoreAnnotationsFromMetadata = oDataSource.settings.ignoreAnnotationsFromMetadata;
+						}
+
+						// read out OData annotations and create ODataModel settings for it
+						if (oDataSource.settings.annotations) {
+							var aAnnotations = oDataSource.settings.annotations;
+
+							for (var i = 0; i < aAnnotations.length; i++) {
+								var sAnnotation = aAnnotations[i];
+								var oAnnotation = mConfig.dataSources[sAnnotation];
+
+								// dataSource entry should be defined!
+								if (!oAnnotation) {
+									Log.error("Component Manifest: ODataAnnotation \"" + sAnnotation + "\" for dataSource \"" + oModelConfig.dataSource + "\" could not be found in manifest", "[\"sap.app\"][\"dataSources\"][\"" + sAnnotation + "\"]", sLogComponentName);
+									continue;
+								}
+
+								// type should be ODataAnnotation!
+								if (oAnnotation.type !== 'ODataAnnotation') {
+									Log.error("Component Manifest: dataSource \"" + sAnnotation + "\" was expected to have type \"ODataAnnotation\" but was \"" + oAnnotation.type + "\"", "[\"sap.app\"][\"dataSources\"][\"" + sAnnotation + "\"]", sLogComponentName);
+									continue;
+								}
+
+								// uri is required!
+								if (!oAnnotation.uri) {
+									Log.error("Component Manifest: Missing \"uri\" for ODataAnnotation \"" + sAnnotation + "\"", "[\"sap.app\"][\"dataSources\"][\"" + sAnnotation + "\"]", sLogComponentName);
+									continue;
+								}
+
+								var oAnnotationUri = new URI(oAnnotation.uri);
+
+								if (bIsV2Model || bIsV4Model) {
+									var sValueFromConfig = Configuration.getSAPLogonLanguage();
+									if (!oAnnotationUri.hasQuery("sap-language") && sValueFromConfig) {
+										oAnnotationUri.setQuery("sap-language", sValueFromConfig);
+									}
+									sValueFromConfig = BaseConfig.get(getConfigParam("sapClient"));
+									if (!oAnnotationUri.hasQuery("sap-client") && sValueFromConfig) {
+										oAnnotationUri.setQuery("sap-client", sValueFromConfig);
+									}
+
+									var sCacheTokenForAnnotation = mCacheTokens.dataSources && mCacheTokens.dataSources[oAnnotation.uri];
+									if (sCacheTokenForAnnotation) {
+										Component._applyCacheToken(oAnnotationUri, {
+											cacheToken: sCacheTokenForAnnotation,
+											componentName: sLogComponentName,
+											dataSource: sAnnotation
+										});
+									}
+								}
+
+								// resolve relative to component, ui5:// URLs are already resolved upfront
+								var oAnnotationSourceManifest = mConfig.origin.dataSources[aAnnotations[i]] || oManifest;
+								var sAnnotationUri = oAnnotationSourceManifest.resolveUri(oAnnotationUri.toString());
+
+								// add uri to annotationURI array in settings (this parameter applies for ODataModel v1 & v2)
+								oModelConfig.settings.annotationURI = oModelConfig.settings.annotationURI || [];
+								oModelConfig.settings.annotationURI.push(sAnnotationUri);
+							}
+						}
+
 					}
 
 				} else {
@@ -1799,7 +1857,7 @@ sap.ui.define([
 						mMetadataUrlParams = oModelConfig.settings && oModelConfig.settings.metadataUrlParams;
 						var bNeedsLanguage = (!mMetadataUrlParams || typeof mMetadataUrlParams['sap-language'] === 'undefined')
 							&& !oUri.hasQuery('sap-language')
-							&& oConfig.getSAPParam('sap-language');
+							&& oConfig.getSAPLogonLanguage();
 
 						if (bNeedsLanguage || sCacheToken) {
 							// Lazy initialize settings and metadataUrlParams objects
@@ -1808,7 +1866,7 @@ sap.ui.define([
 
 							// Add sap-language only to $metadata URL params
 							if (bNeedsLanguage) {
-								mMetadataUrlParams['sap-language'] = oConfig.getSAPParam('sap-language');
+								mMetadataUrlParams['sap-language'] = oConfig.getSAPLogonLanguage();
 							}
 						}
 
@@ -1849,7 +1907,7 @@ sap.ui.define([
 			sSystemParameter = oComponentData && oComponentData.startupParameters && oComponentData.startupParameters["sap-system"];
 			// Check the URL as "fallback", the system parameter of the componentData.startup has precedence over a URL parameter
 			if (!sSystemParameter) {
-				sSystemParameter = oConfig.getSAPParam("sap-system");
+				sSystemParameter = BaseConfig.get(getConfigParam("sapSystem"));
 			}
 
 			// lazy load the ODataUtils if systemParameter is given
@@ -1975,9 +2033,12 @@ sap.ui.define([
 		for (var sModelName in mModelConfigurations) {
 			var oModelConfig = mModelConfigurations[sModelName];
 
-			// The tests for the Model creation make use of a constructor stub,
-			// and this only works from the global namespace export.
-			var fnModelClass = ObjectPath.get(oModelConfig.type);
+			// TODO The tests for the Model creation make use of a constructor stub,
+			// and this only works from the global namespace export, not via probing require.
+			// To keep those tests working, the global name is checked first. Only in a context
+			// where global names don't exist or when the model is unknown, the fallback will be used.
+			var fnModelClass = ObjectPath.get(oModelConfig.type)
+				|| sap.ui.require(oModelConfig.type.replace(/\./g, "/"));
 
 			// create arguments array with leading "null" value so that it can be passed to the apply function
 			var aArgs = [null].concat(oModelConfig.settings || []);
@@ -2517,7 +2578,16 @@ sap.ui.define([
 			 */
 			var bHandleValidation = oInstance.getMetadata()._getManifestEntry("/sap.ui5/handleValidation");
 			if (bHandleValidation !== undefined || vConfig.handleValidation) {
-				sap.ui.getCore().getMessageManager().registerObject(oInstance, bHandleValidation === undefined ? vConfig.handleValidation : bHandleValidation);
+				var MessageManager = sap.ui.require("sap/ui/core/message/MessageManager");
+				if (MessageManager) {
+					MessageManager.registerObject(oInstance, bHandleValidation === undefined ? vConfig.handleValidation : bHandleValidation);
+				} else {
+					sap.ui.require(["sap/ui/core/message/MessageManager"], function(MessageManager) {
+						if (!oInstance.isDestroyed()) {
+							MessageManager.registerObject(oInstance, bHandleValidation === undefined ? vConfig.handleValidation : bHandleValidation);
+						}
+					});
+				}
 			}
 
 			// Some services may demand immediate startup
@@ -2997,7 +3067,7 @@ sap.ui.define([
 						Array.prototype.push.apply(aLibs, oTransitiveDependencies.dependencies);
 
 						// load library preload for every transitive dependency
-						return sap.ui.getCore().loadLibraries( aLibs, { preloadOnly: true } ).catch(errorLogging(oTransitiveDependencies.library, true));
+						return Library._load( aLibs, { preloadOnly: true } ).catch(errorLogging(oTransitiveDependencies.library, true));
 					} else {
 						sPreloadName = sController.replace(/\./g, "/") + (http2 ? '-h2-preload.js' : '-preload.js'); // URN
 						return sap.ui.loader._.loadJSResourceAsync(sPreloadName).catch(errorLogging(sPreloadName, true));
@@ -3006,7 +3076,7 @@ sap.ui.define([
 
 				try {
 					sPreloadName = sController + '-preload'; // Module name
-					sap.ui.requireSync(sPreloadName.replace(/\./g, "/"));
+					sap.ui.requireSync(sPreloadName.replace(/\./g, "/")); // legacy-relevant: Sync path
 				} catch (e) {
 					errorLogging(sPreloadName, false)(e);
 				}
@@ -3034,8 +3104,8 @@ sap.ui.define([
 				}
 				if (aLibs.length > 0) {
 					Log.info("Component \"" + sComponentName + "\" is loading libraries: \"" + aLibs.join(", ") + "\"");
-					fnCollect(sap.ui.getCore().loadLibraries(aLibs, {
-						async: bAsync
+					fnCollect(Library._load(aLibs, {
+						sync: !bAsync
 					}));
 				}
 			}
@@ -3127,7 +3197,7 @@ sap.ui.define([
 			if ( Array.isArray(hints.libs) ) {
 				libs = hints.libs.map(processOptions).filter(identity);
 				phase1Preloads.push(
-					sap.ui.getCore().loadLibraries( libs, { preloadOnly: true } )
+					Library._load( libs, { preloadOnly: true } )
 				);
 			}
 
@@ -3137,7 +3207,7 @@ sap.ui.define([
 			phase1Preloads = Promise.all( phase1Preloads );
 			if ( libs && !mOptions.preloadOnly ) {
 				phase1Preloads = phase1Preloads.then( function() {
-					return sap.ui.getCore().loadLibraries( libs );
+					return Library._load( libs );
 				});
 			}
 			collect( phase1Preloads );

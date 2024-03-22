@@ -23,7 +23,7 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new control
 	 * @class The <code>FieldMultiInput</code> control is used to render a multi-input field inside a control based on {@link sap.ui.mdc.field.FieldBase FieldBase}.
 	 * @extends sap.m.MultiInput
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @abstract
 	 * @private

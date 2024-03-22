@@ -4,23 +4,25 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/rta/command/BaseCommand",
-	"sap/ui/rta/library",
-	"sap/ui/core/util/reflection/JsControlTreeModifier",
-	"sap/ui/fl/Utils",
-	"sap/base/Log",
 	"sap/base/util/merge",
+	"sap/base/util/values",
+	"sap/base/Log",
+	"sap/ui/core/util/reflection/JsControlTreeModifier",
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI",
 	"sap/ui/fl/write/api/ChangesWriteAPI",
-	"sap/base/util/values"
+	"sap/ui/fl/Utils",
+	"sap/ui/rta/command/BaseCommand",
+	"sap/ui/rta/library"
 ], function(
-	BaseCommand,
-	rtaLibrary,
-	JsControlTreeModifier,
-	FlUtils,
-	Log,
 	merge,
+	objectValues,
+	Log,
+	JsControlTreeModifier,
+	ControlVariantApplyAPI,
 	ChangesWriteAPI,
-	objectValues
+	FlUtils,
+	BaseCommand,
+	rtaLibrary
 ) {
 	"use strict";
 
@@ -31,7 +33,7 @@ sap.ui.define([
 	 * @extends sap.ui.rta.command.BaseCommand
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -195,7 +197,7 @@ sap.ui.define([
 			mChangeSpecificData = merge({}, mChangeSpecificData, mFlexSettings);
 		}
 		mChangeSpecificData.jsOnly = this.getJsOnly();
-		var oModel = this.getAppComponent().getModel(FlUtils.VARIANT_MODEL_NAME);
+		var oModel = this.getAppComponent().getModel(ControlVariantApplyAPI.getVariantModelName());
 		var sVariantReference;
 		if (oModel && sVariantManagementReference) {
 			sVariantReference = oModel.getCurrentVariantReference(sVariantManagementReference);
@@ -237,7 +239,7 @@ sap.ui.define([
 
 	/**
 	 * @private
-	 * @param {sap.ui.fl.Change|Object} vChange Change object or map containing the change object
+	 * @param {sap.ui.fl.apply._internal.flexObjects.UIChange|Object} vChange Change object or map containing the change object
 	 * @returns {Promise} Returns an empty promise
 	 */
 	FlexCommand.prototype._applyChange = function(vChange) {

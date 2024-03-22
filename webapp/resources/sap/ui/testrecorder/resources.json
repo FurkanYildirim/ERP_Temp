@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 534
+			"size": 533
 		},
 		{
 			"name": ".supportrc",
@@ -11,7 +11,7 @@
 		},
 		{
 			"name": ".theming",
-			"size": 103
+			"size": 102
 		},
 		{
 			"name": "Bootstrap-dbg.js",
@@ -240,25 +240,25 @@
 		{
 			"name": "codeSnippets/ControlSnippetGenerator-dbg.js",
 			"module": "sap/ui/testrecorder/codeSnippets/ControlSnippetGenerator.js",
-			"size": 2887,
+			"size": 2892,
 			"isDebug": true,
 			"required": [
-				"sap/ui/base/Object.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/base/util/deepExtend.js",
+				"sap/ui/base/Object.js"
 			]
 		},
 		{
 			"name": "codeSnippets/ControlSnippetGenerator.js",
 			"module": "sap/ui/testrecorder/codeSnippets/ControlSnippetGenerator.js",
-			"size": 912,
+			"size": 900,
 			"required": [
-				"sap/ui/base/Object.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/base/util/deepExtend.js",
+				"sap/ui/base/Object.js"
 			]
 		},
 		{
 			"name": "codeSnippets/ControlSnippetGenerator.js.map",
-			"size": 1167,
+			"size": 1166,
 			"isDebug": true
 		},
 		{
@@ -456,9 +456,10 @@
 		{
 			"name": "inspector/ControlInspector-dbg.js",
 			"module": "sap/ui/testrecorder/inspector/ControlInspector.js",
-			"size": 10398,
+			"size": 10397,
 			"isDebug": true,
 			"required": [
+				"sap/base/util/extend.js",
 				"sap/ui/base/Object.js",
 				"sap/ui/support/supportRules/ui/external/Highlighter.js",
 				"sap/ui/test/_ControlFinder.js",
@@ -475,15 +476,15 @@
 				"sap/ui/testrecorder/inspector/ControlInspectorRepo.js",
 				"sap/ui/testrecorder/mutationObservers/AppMutationObserver.js",
 				"sap/ui/testrecorder/mutationObservers/ElementMutationObserver.js",
-				"sap/ui/testrecorder/ui/models/SharedModel.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/testrecorder/ui/models/SharedModel.js"
 			]
 		},
 		{
 			"name": "inspector/ControlInspector.js",
 			"module": "sap/ui/testrecorder/inspector/ControlInspector.js",
-			"size": 4235,
+			"size": 4224,
 			"required": [
+				"sap/base/util/extend.js",
 				"sap/ui/base/Object.js",
 				"sap/ui/support/supportRules/ui/external/Highlighter.js",
 				"sap/ui/test/_ControlFinder.js",
@@ -500,13 +501,12 @@
 				"sap/ui/testrecorder/inspector/ControlInspectorRepo.js",
 				"sap/ui/testrecorder/mutationObservers/AppMutationObserver.js",
 				"sap/ui/testrecorder/mutationObservers/ElementMutationObserver.js",
-				"sap/ui/testrecorder/ui/models/SharedModel.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/testrecorder/ui/models/SharedModel.js"
 			]
 		},
 		{
 			"name": "inspector/ControlInspector.js.map",
-			"size": 5421,
+			"size": 5410,
 			"isDebug": true
 		},
 		{
@@ -608,10 +608,11 @@
 		{
 			"name": "interaction/ContextMenu-dbg.js",
 			"module": "sap/ui/testrecorder/interaction/ContextMenu.js",
-			"size": 6687,
+			"size": 6637,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/Object.js",
+				"sap/ui/core/Element.js",
 				"sap/ui/testrecorder/CommunicationBus.js",
 				"sap/ui/testrecorder/CommunicationChannels.js",
 				"sap/ui/testrecorder/Constants.js",
@@ -623,9 +624,10 @@
 		{
 			"name": "interaction/ContextMenu.js",
 			"module": "sap/ui/testrecorder/interaction/ContextMenu.js",
-			"size": 2996,
+			"size": 2985,
 			"required": [
 				"sap/ui/base/Object.js",
+				"sap/ui/core/Element.js",
 				"sap/ui/testrecorder/CommunicationBus.js",
 				"sap/ui/testrecorder/CommunicationChannels.js",
 				"sap/ui/testrecorder/Constants.js",
@@ -636,7 +638,7 @@
 		},
 		{
 			"name": "interaction/ContextMenu.js.map",
-			"size": 4402,
+			"size": 4358,
 			"isDebug": true
 		},
 		{
@@ -768,7 +770,7 @@
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/testrecorder/library.js",
-			"size": 1109,
+			"size": 1107,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Core.js",
@@ -779,11 +781,13 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/testrecorder/library-preload.js",
-			"size": 62196,
+			"size": 62159,
 			"merged": true,
 			"required": [
 				"sap/base/Log.js",
 				"sap/base/strings/capitalize.js",
+				"sap/base/util/deepExtend.js",
+				"sap/base/util/extend.js",
 				"sap/base/util/restricted/_debounce.js",
 				"sap/m/Bar.js",
 				"sap/m/Button.js",
@@ -811,6 +815,7 @@
 				"sap/ui/codeeditor/CodeEditor.js",
 				"sap/ui/core/Configuration.js",
 				"sap/ui/core/Core.js",
+				"sap/ui/core/Element.js",
 				"sap/ui/core/HTML.js",
 				"sap/ui/core/Icon.js",
 				"sap/ui/core/Item.js",
@@ -879,13 +884,13 @@
 		},
 		{
 			"name": "library-preload.js.map",
-			"size": 65103,
+			"size": 65047,
 			"isDebug": true
 		},
 		{
 			"name": "library.js",
 			"module": "sap/ui/testrecorder/library.js",
-			"size": 541,
+			"size": 540,
 			"required": [
 				"sap/ui/core/Core.js",
 				"sap/ui/core/library.js",
@@ -900,7 +905,7 @@
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/testrecorder/manifest.json",
-			"size": 772
+			"size": 770
 		},
 		{
 			"name": "mutationObservers/AppMutationObserver-dbg.js",
@@ -976,7 +981,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 32735
+			"size": 32883
 		},
 		{
 			"name": "ui/Overlay-dbg.js",

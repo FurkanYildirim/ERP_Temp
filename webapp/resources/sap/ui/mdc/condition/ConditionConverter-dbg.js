@@ -5,16 +5,16 @@
  */
 sap.ui.define([
 	'sap/ui/mdc/condition/Condition',
-	'sap/ui/mdc/enum/ConditionValidated',
+	'sap/ui/mdc/enums/ConditionValidated',
+	'sap/ui/mdc/enums/OperatorValueType',
 	'sap/ui/mdc/condition/FilterOperatorUtil',
-	'sap/ui/mdc/condition/Operator',
 	'sap/base/util/merge'
 ],
 	function(
 		Condition,
 		ConditionValidated,
+		OperatorValueType,
 		FilterOperatorUtil,
-		Operator,
 		merge
 	) {
 		"use strict";
@@ -24,7 +24,7 @@ sap.ui.define([
 		 *
 		 * @namespace
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @private
 		 * @ui5-restricted sap.ui.mdc
 		 * @experimental As of version 1.74
@@ -42,7 +42,7 @@ sap.ui.define([
 			 *
 			 * @param {sap.ui.mdc.condition.ConditionObject} oCondition Condition
 			 * @param {sap.ui.model.SimpleType|sap.ui.mdc.TypeConfig} vType given dataType mapping configuration
-			 * @param {sap.ui.mdc.util.TypeUtil} oTypeUtil delegate dependent <code>TypeUtil</code> implementation
+			 * @param {sap.ui.mdc.util.TypeMap} oTypeUtil delegate dependent <code>TypeMap</code> implementation
 			 * @returns {sap.ui.mdc.condition.ConditionObject} stringified condition
 			 * @private
 			 * @ui5-restricted sap.ui.mdc
@@ -86,7 +86,7 @@ sap.ui.define([
 			 *
 			 * @param {sap.ui.mdc.condition.ConditionObject} oCondition stringified condition
 			 * @param {sap.ui.model.SimpleType|sap.ui.mdc.TypeConfig} vType given dataType mapping configuration
-			 * @param {sap.ui.mdc.util.TypeUtil} oTypeUtil delegate dependent <code>TypeUtil</code> implementation
+			 * @param {sap.ui.mdc.util.TypeMap} oTypeUtil delegate dependent <code>TypeMap</code> implementation
 			 * @returns {sap.ui.mdc.condition.ConditionObject} condition
 			 * @private
 			 * @ui5-restricted sap.ui.mdc
@@ -127,7 +127,7 @@ sap.ui.define([
 		};
 
 		function _getLocalType (oTypeInstance, oOperator) {
-			if (oOperator && oOperator.valueTypes[0] && (oOperator.valueTypes[0] !== Operator.ValueType.Self && oOperator.valueTypes[0] !== Operator.ValueType.Static)) {
+			if (oOperator && oOperator.valueTypes[0] && (oOperator.valueTypes[0] !== OperatorValueType.Self && oOperator.valueTypes[0] !== OperatorValueType.Static)) {
 				// we have to create the type instance for the values
 				return oOperator._createLocalType(oOperator.valueTypes[0], oTypeInstance); //TODO: type for all values must be the same
 			}
@@ -139,7 +139,7 @@ sap.ui.define([
 			var aResult = [];
 
 			for (var i = 0; i < aValues.length; i++) {
-				if (!oOperator || (oOperator.valueTypes[i] && oOperator.valueTypes[i] !== Operator.ValueType.Static)) {
+				if (!oOperator || (oOperator.valueTypes[i] && oOperator.valueTypes[i] !== OperatorValueType.Static)) {
 					// only add real values (no description in EQ case or static texts) (for unknown operators just copy to be compatible)
 					var vValue = aValues[i];
 					aResult.push(oTypeUtil.externalizeValue(vValue, oTypeInstance));

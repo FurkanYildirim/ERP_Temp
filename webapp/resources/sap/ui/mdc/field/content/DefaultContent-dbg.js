@@ -5,7 +5,7 @@
  */
 sap.ui.define([
 	"sap/m/library",
-	"sap/ui/mdc/enum/ContentMode"
+	"sap/ui/mdc/enums/ContentMode"
 ], function(
 	mLibrary,
 	ContentMode
@@ -18,14 +18,14 @@ sap.ui.define([
 	/**
 	 * Object-based definition of the default content type that is used in the {@link sap.ui.mdc.field.content.ContentFactory}.
 	 * Default content can be overwritten to create new content types.
-	 * This defines which controls to load and create for a given {@link sap.ui.mdc.enum.ContentMode}.
+	 * This defines which controls to load and create for a given {@link sap.ui.mdc.enums.ContentMode}.
+	 * @namespace
 	 * @author SAP SE
 	 * @private
 	 * @ui5-restricted sap.ui.mdc
 	 * @experimental As of version 1.87
 	 * @since 1.87
 	 * @alias sap.ui.mdc.field.content.DefaultContent
-	 * @MDC_PUBLIC_CANDIDATE
 	 */
 	var DefaultContent = {
 		getDisplay: function() {
@@ -59,8 +59,8 @@ sap.ui.define([
 			return { name: "defineConditions", oneOperatorSingle: false, oneOperatorMulti: false, single: true, multi: true };
 		},
 		/**
-		 * Determines which controls to return for a given {@link sap.ui.mdc.enum.ContentMode}.
-		 * @param {sap.ui.mdc.enum.ContentMode} sContentMode The given content mode
+		 * Determines which controls to return for a given {@link sap.ui.mdc.enums.ContentMode}.
+		 * @param {sap.ui.mdc.enums.ContentMode} sContentMode The given content mode
 		 * @param {string} sOperator Name of the operator if the <code>EditOperator</code> content mode is used
 		 * @returns {string[]} aControlNames Names of the determined controls
 		 */
@@ -101,9 +101,21 @@ sap.ui.define([
 			throw new Error("No control defined for content mode " + sContentMode);
 		},
 		/**
+		 * Determines if formatting of all conditions to a single value is supported for a {@link sap.ui.mdc.enums.ContentMode}.
+		 * @param {sap.ui.mdc.enums.ContentMode} sContentMode The given content mode
+		 * @returns {boolean} If set, the conditions will not be formatted (MultiInput value-property case)
+		 */
+		getNoFormatting: function(sContentMode) {
+			if (sContentMode === ContentMode.EditMultiValue) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		/**
 		 * Creates the suitable controls for the given content mode and returns the control instances.
 		 * @param {sap.ui.mdc.field.content.ContentFactory} oContentFactory The content factory that calls this function
-		 * @param {sap.ui.mdc.enum.ContentMode} sContentMode a given content mode
+		 * @param {sap.ui.mdc.enums.ContentMode} sContentMode a given content mode
 		 * @param {string} sOperator Name of the operator if the <code>EditOperator</code> content mode is used
 		 * @param {Object[]} aControls Array containing the control classes that are to be created
 		 * @param {string} sId ID of the {@link sap.ui.mdc.field.FieldBase}
@@ -164,7 +176,6 @@ sap.ui.define([
 			});
 
 			oInput._setPreferUserInteraction(true);
-			oContentFactory.setBoundProperty("value");
 			oContentFactory.setAriaLabelledBy(oInput);
 
 			return [oInput];
@@ -180,6 +191,7 @@ sap.ui.define([
 			var Input = aControlClasses[0];
 			var Token = aControlClasses[1];
 			var oConditionType = oContentFactory.getConditionType();
+			var oConditionsType = oContentFactory.getConditionsType();
 			var oToken = new Token(sId + "-token", {
 				text: {
 					path: '$field>',
@@ -188,6 +200,7 @@ sap.ui.define([
 			});
 
 			var oMultiInput = new Input(sId, {
+				value: { path: "$field>/conditions", type: oConditionsType }, // only for parsing
 				placeholder: "{$field>/placeholder}",
 				textAlign: "{$field>/textAlign}",
 				textDirection: "{$field>/textDirection}",
@@ -244,7 +257,6 @@ sap.ui.define([
 			});
 
 			oTextArea._setPreferUserInteraction(true);
-			oContentFactory.setBoundProperty("value");
 			oContentFactory.setAriaLabelledBy(oTextArea);
 
 			return [oTextArea];
@@ -268,7 +280,6 @@ sap.ui.define([
 				tooltip: "{$field>/tooltip}",
 				emptyIndicatorMode: EmptyIndicatorMode.Auto
 			});
-			oContentFactory.setBoundProperty("text");
 
 			return [oText];
 		},
@@ -290,7 +301,6 @@ sap.ui.define([
 				tooltip: "{$field>/tooltip}",
 				emptyIndicatorMode: EmptyIndicatorMode.Auto
 			});
-			oContentFactory.setBoundProperty("text");
 
 			return [oExpandableText];
 		},

@@ -13,8 +13,25 @@
  * where CONTROL is a camel-cased version of the getMetadata().getName() value, f.e. "sap.m.Button" becomes "sapMButton"
  */
 
-sap.ui.define(['sap/ui/base/Object', './OverflowToolbarButton', './OverflowToolbarToggleButton', './ToggleButton', './Button', 'sap/m/library', "sap/base/Log"],
-	function(BaseObject, OverflowToolbarButton, OverflowToolbarToggleButton, ToggleButton, Button, library, Log) {
+sap.ui.define([
+	'sap/ui/base/Object',
+	'./OverflowToolbarButton',
+	'./OverflowToolbarMenuButton',
+	'./OverflowToolbarToggleButton',
+	'./ToggleButton',
+	'./Button',
+	'sap/m/library',
+	"sap/base/Log"
+], function(
+	BaseObject,
+	OverflowToolbarButton,
+	OverflowToolbarMenuButton,
+	OverflowToolbarToggleButton,
+	ToggleButton,
+	Button,
+	library,
+	Log
+	) {
 		"use strict";
 
 		// shortcut for sap.m.ButtonType
@@ -84,6 +101,16 @@ sap.ui.define(['sap/ui/base/Object', './OverflowToolbarButton', './OverflowToolb
 			this._postProcessSapMButton(oControl);
 		};
 
+		// OverflowToolbarMenuButton - Same as button with the _bInOverflow trigger
+		OverflowToolbarAssociativePopoverControls.prototype._preProcessSapMOverflowToolbarMenuButton = function(oControl) {
+			this._preProcessSapMButton(oControl);
+			oControl._bInOverflow = true;
+		};
+
+		OverflowToolbarAssociativePopoverControls.prototype._postProcessSapMOverflowToolbarMenuButton = function(oControl) {
+			delete oControl._bInOverflow;
+			this._postProcessSapMButton(oControl);
+		};
 
 		// ToggleButton - same as button
 		OverflowToolbarAssociativePopoverControls.prototype._preProcessSapMToggleButton = function(oControl) {
@@ -126,10 +153,15 @@ sap.ui.define(['sap/ui/base/Object', './OverflowToolbarButton', './OverflowToolb
 				listenForEvents: ["defaultAction", "_menuItemSelected"],
 				noInvalidationProps: ["enabled", "text", "icon"]
 			},
+			"sap.m.OverflowToolbarMenuButton": {
+				canOverflow: true,
+				listenForEvents: ["defaultAction", "_menuItemSelected"],
+				noInvalidationProps: ["enabled", "text", "icon"]
+			},
 			"sap.m.OverflowToolbarToggleButton": {
 				canOverflow: true,
 				listenForEvents: ["press"],
-				noInvalidationProps: ["enabled", "type", "pressed"]
+				noInvalidationProps: ["enabled", "type", "pressed", "accesskey"]
 			},
 			"sap.m.CheckBox": {
 				canOverflow: true,
@@ -139,7 +171,7 @@ sap.ui.define(['sap/ui/base/Object', './OverflowToolbarButton', './OverflowToolb
 			"sap.m.ToggleButton": {
 				canOverflow: true,
 				listenForEvents: ["press"],
-				noInvalidationProps: ["enabled", "pressed"]
+				noInvalidationProps: ["enabled", "pressed", "accesskey"]
 			},
 			"sap.m.ComboBox": {
 				canOverflow: true,
@@ -218,7 +250,7 @@ sap.ui.define(['sap/ui/base/Object', './OverflowToolbarButton', './OverflowToolb
 			var oConfig;
 
 			// First check if the control's class implements the sap.m.IOverflowToolbarContent interface
-			if (oControl.getMetadata().getInterfaces().indexOf("sap.m.IOverflowToolbarContent") !== -1) {
+			if (oControl.isA("sap.m.IOverflowToolbarContent")) {
 				if (typeof oControl.getOverflowToolbarConfig !== "function") {
 					Log.error("Required method getOverflowToolbarConfig not implemented by: " + oControl.getMetadata().getName());
 					return;
@@ -281,6 +313,8 @@ sap.ui.define(['sap/ui/base/Object', './OverflowToolbarButton', './OverflowToolb
 			// For now only custom classes, extending the sap.m.Button and its derivatives, are supported for overflow
 			if (oControl instanceof OverflowToolbarButton) {
 				return "sap.m.OverflowToolbarButton";
+			} else if (oControl instanceof OverflowToolbarMenuButton) {
+				return "sap.m.OverflowToolbarMenuButton";
 			} else if (oControl instanceof OverflowToolbarToggleButton) {
 				return "sap.m.OverflowToolbarToggleButton";
 			} else if (oControl instanceof ToggleButton) {

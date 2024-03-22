@@ -28,8 +28,7 @@ sap.ui.define([
 	"sap/base/Log",
 	"sap/ui/core/Configuration",
 	"sap/ui/dom/jquery/Focusable", // jQuery Plugin "firstFocusableDomRef", "lastFocusableDomRef"
-	"sap/ui/dom/jquery/rect", // jQuery Plugin "rect"
-	"sap/ui/dom/jquery/control" // jQuery Plugin "control"
+	"sap/ui/dom/jquery/rect" // jQuery Plugin "rect"
 ],
 	function(
 		Bar,
@@ -121,7 +120,7 @@ sap.ui.define([
 		* @extends sap.ui.core.Control
 		* @implements sap.ui.core.PopupInterface
 		* @author SAP SE
-		* @version 1.108.14
+		* @version 1.115.1
 		*
 		* @public
 		* @alias sap.m.Popover
@@ -147,6 +146,7 @@ sap.ui.define([
 
 					/**
 					 * If a header should be shown at the top of the popover.
+					 * *Note:* The heading level of the popover is H1. Headings in the popover content should start with H2 heading level.
 					 */
 					showHeader: {type: "boolean", group: "Appearance", defaultValue: true},
 
@@ -198,7 +198,6 @@ sap.ui.define([
 					/**
 					 * This property is deprecated. Please use properties verticalScrolling and horizontalScrolling instead. If you still use this property it will be mapped on the new properties verticalScrolling and horizontalScrolling.
 					 * @deprecated Since version 1.15.0.
-					 * This property is deprecated. Please use properties verticalScrolling and horizontalScrolling instead. If you still use this property it will be mapped on the new properties verticalScrolling and horizontalScrolling.
 					 */
 					enableScrolling: {type: "boolean", group: "Misc", defaultValue: true, deprecated: true},
 
@@ -490,8 +489,7 @@ sap.ui.define([
 
 			this._oRestoreFocusDelegate = {
 				onBeforeRendering: function () {
-					var $ActiveElement = jQuery(document.activeElement),
-						oActiveControl = $ActiveElement.control(0);
+					var oActiveControl = Element.closestTo(document.activeElement);
 					this._sFocusControlId = oActiveControl && oActiveControl.getId();
 				},
 				onAfterRendering: function () {
@@ -684,8 +682,7 @@ sap.ui.define([
 				this._bContentChanged = false;
 				oNavContent = this._getSingleNavContent();
 				oPageContent = this._getSinglePageContent();
-				// TODO: migration not possible. jQuery.sap.simulateMobileOnDesktop is a testing flag which should not be used.
-				if (oNavContent && !this.getModal() && !Device.system.phone && !jQuery.sap.simulateMobileOnDesktop) {
+				if (oNavContent && !this.getModal() && !Device.system.phone) {
 					//gain the focus back to popover in order to prevent the autoclose of the popover
 					oNavContent.attachEvent("afterNavigate", function (oEvent) {
 						var oDomRef = this.getDomRef();
@@ -719,8 +716,8 @@ sap.ui.define([
 			}
 
 			// title alignment
-			if (oHeader && oHeader.getTitleAlignment) {
-				oHeader.setProperty("titleAlignment", this.getTitleAlignment(), true);
+			if (oHeader && oHeader.setTitleAlignment) {
+				oHeader.setTitleAlignment(this.getTitleAlignment());
 			}
 
 		};
@@ -803,8 +800,8 @@ sap.ui.define([
 		/**
 		 * Opens the Popover and sets the Popover position according to the {@link #getPlacement() placement} property around the <code>oControl</code> parameter.
 		 *
-		 * @param {object} oControl This is the control to which the Popover will be placed. It can be not only a UI5 control, but also an existing DOM reference. The side of the placement depends on the placement property set in the Popover.
-		 * @param {boolean} bSkipInstanceManager Indicates whether popover should be managed by InstanceManager or not
+		 * @param {sap.ui.core.Control|HTMLElement} oControl This is the control to which the Popover will be placed. It can be not only a UI5 control, but also an existing DOM reference. The side of the placement depends on the placement property set in the Popover.
+		 * @param {boolean} [bSkipInstanceManager=false] Indicates whether popover should be managed by InstanceManager or not.
 		 * @returns {this} Reference to the control instance for chaining
 		 * @public
 		 */
@@ -1568,15 +1565,13 @@ sap.ui.define([
 				} else {
 					this._calcBestPos();
 				}
-			} else {
-				if (this._checkVertical()) {
+			} else if (this._checkVertical()) {
 					this._calcVertical();
 				} else if (this._checkHorizontal()) {
 					this._calcHorizontal();
 				} else {
 					this._calcBestPos();
 				}
-			}
 
 		};
 
@@ -1716,7 +1711,7 @@ sap.ui.define([
 		 * Calculate outerHeight of the element; used as hook for SVG elements
 		 * @param {HTMLElement} oElement An Element for which outerHeight will be calculated.
 		 * @param {boolean} [bIncludeMargin=false] Determines if the margins should be included in the calculated outerHeight
-		 * * @returns {number} The outer height of the element
+		 * @returns {number} The outer height of the element
 		 * @protected
 		 */
 		Popover.outerHeight = function (oElement, bIncludeMargin) {
@@ -1855,8 +1850,7 @@ sap.ui.define([
 			if (bExceedHorizontal) {
 				iLeft = oPosParams._fPopoverMarginLeft;
 				iRight = oPosParams._fPopoverMarginRight;
-			} else {
-				if (bOverLeft) {
+			} else if (bOverLeft) {
 					iLeft = oPosParams._fPopoverMarginLeft;
 					if (bRtl) {
 						// when only one side of the popover goes beyond the defined border make sure that
@@ -1871,21 +1865,18 @@ sap.ui.define([
 					// can't react to content size change when both are set
 					iLeft = "";
 				}
-			}
 
 			if (bExceedVertical) {
 				iTop = oPosParams._fPopoverMarginTop;
 				iBottom = oPosParams._fPopoverMarginBottom;
-			} else {
-				if (bOverTop) {
-					iTop = oPosParams._fPopoverMarginTop;
-				} else if (bOverBottom) {
-					iBottom = oPosParams._fPopoverMarginBottom;
-					// when only one side of the popover goes beyond the defined border make sure that
-					// only one from the iLeft and iRight is set because Popover has a fixed size and
-					// can't react to content size change when both are set
-					iTop = "";
-				}
+			} else if (bOverTop) {
+				iTop = oPosParams._fPopoverMarginTop;
+			} else if (bOverBottom) {
+				iBottom = oPosParams._fPopoverMarginBottom;
+				// when only one side of the popover goes beyond the defined border make sure that
+				// only one from the iLeft and iRight is set because Popover has a fixed size and
+				// can't react to content size change when both are set
+				iTop = "";
 			}
 
 			var mPosition = {
@@ -2222,17 +2213,15 @@ sap.ui.define([
 		/**
 		 * If customHeader is set, this will return the customHeaer. Otherwise it creates a header and put the
 		 * title and buttons if needed inside, and finally return this newly create header.
-		 * @returns {object} The created header
+		 * @returns {sap.ui.core.Control|sap.m.Bar} The created header
 		 * @protected
 		 */
 		Popover.prototype._getAnyHeader = function () {
 			if (this.getCustomHeader()) {
 				return this.getCustomHeader();
-			} else {
-				if (this.getShowHeader()) {
-					this._createInternalHeader();
-					return this._internalHeader;
-				}
+			} else if (this.getShowHeader()) {
+				this._createInternalHeader();
+				return this._internalHeader;
 			}
 		};
 
@@ -2463,7 +2452,7 @@ sap.ui.define([
 			if (!this._headerTitle) {
 				this._headerTitle = new Title(this.getId() + "-title", {
 					text: this.getTitle(),
-					level: "H2"
+					level: "H1"
 				});
 
 				this._createInternalHeader();
@@ -2677,7 +2666,7 @@ sap.ui.define([
 		};
 
 		Popover.prototype.destroyAggregation = function (sAggregationName, bSuppressInvalidate) {
-			var oActiveControl = jQuery(document.activeElement).control(0);
+			var oActiveControl = Element.closestTo(document.activeElement);
 			if (sAggregationName === "beginButton" || sAggregationName === "endButton") {
 				var sButton = this["_" + sAggregationName];
 				if (sButton) {

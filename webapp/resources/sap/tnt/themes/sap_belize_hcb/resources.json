@@ -14,7 +14,7 @@
 		},
 		{
 			"name": "NavigationList.less",
-			"size": 423,
+			"size": 340,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
@@ -26,40 +26,40 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 4622,
+			"size": 8495,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 118762,
+			"size": 147072,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 118394,
+			"size": 146704,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 14987,
+			"size": 18307,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/tnt/themes/sap_belize_hcb/library-parameters.json",
-			"size": 1900,
+			"size": 3633,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library.css",
-			"size": 14984,
+			"size": 18306,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library.less",
-			"size": 2887,
+			"size": 2804,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
@@ -71,12 +71,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 15271,
+			"size": 17888,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 15268,
+			"size": 17887,
 			"theme": "sap_belize_hcb"
 		},
 		{

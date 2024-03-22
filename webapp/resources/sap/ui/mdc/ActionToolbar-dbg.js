@@ -10,9 +10,9 @@ sap.ui.define([
 	"sap/m/ToolbarSpacer",
 	"sap/m/ToolbarSeparator",
 	"sap/m/library",
-	"sap/ui/mdc/enum/ActionToolbarActionAlignment",
+	"sap/ui/mdc/enums/ActionToolbarActionAlignment",
 	"sap/ui/mdc/p13n/subcontroller/ActionToolbarController",
-	"sap/ui/mdc/p13n/Engine"
+	"sap/m/p13n/Engine"
 ], function(OverflowToolbar, OverflowToolbarRenderer, ToolbarSpacer, ToolbarSeparator, mobileLibrary, ActionToolbarActionAlignment, ActionToolbarController, Engine) {
 	"use strict";
 
@@ -31,12 +31,10 @@ sap.ui.define([
 	 * @class The column for the metadata driven table, that hold the template to be shown when the rows has data.
 	 * @extends sap.m.OverflowToolbar
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
-	 * @private
 	 * @since 1.58
-	 * @experimental As of version 1.58
-	 * @ui5-restricted sap.ui.mdc
+	 * @public
 	 * @alias sap.ui.mdc.ActionToolbar
 	 */
 
@@ -132,9 +130,9 @@ sap.ui.define([
 
 		this.setUseAsHeader(true);
 
-		Engine.getInstance().registerAdaptation(this, {
+		Engine.getInstance().register(this, {
 			controller: {
-				actionsKey: ActionToolbarController
+				actionsKey: new ActionToolbarController({control: this})
 			}
 		});
 	};
@@ -328,8 +326,8 @@ sap.ui.define([
 	};
 
 	/*
-		* Overwrite generated functions to use internal array to look for aggregation
-		*/
+	* Overwrite generated functions to use internal array to look for aggregation
+	*/
 	ActionToolbar.prototype.indexOfContent = function(oObject) {
 		return this.getContent().indexOf(oObject);
 	};

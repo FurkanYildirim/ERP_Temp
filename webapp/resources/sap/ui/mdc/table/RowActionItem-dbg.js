@@ -6,13 +6,11 @@
 
 sap.ui.define([
 	'sap/ui/core/Element',
-	'../library',
 	'sap/ui/core/IconPool',
-	'sap/ui/core/Core'
-], function(Element, library, IconPool, Core) {
+	'sap/ui/core/Core',
+	'sap/ui/mdc/enums/TableRowAction'
+], function(Element, IconPool, Core, TableRowAction) {
 	"use strict";
-
-	var RowAction = library.RowAction;
 
 	/**
 	 * Constructor for new RowActionItem.
@@ -24,13 +22,10 @@ sap.ui.define([
 	 * The <code>RowActionItem</code> control represents a action for a row.
 	 * This control can only be used in the context of <code>sap.ui.mdc.Table</code> control to define row actions.
 	 * @extends sap.ui.core.Element
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
-	 * @experimental
-	 * @private
-	 * @ui5-restricted sap.fe
-	 * MDC_PUBLIC_CANDIDATE
+	 * @public
 	 * @alias sap.ui.mdc.table.RowActionItem
 	 */
 
@@ -41,11 +36,11 @@ sap.ui.define([
 				/**
 				 * Type of the row action item.
 				 *
-				 * As of version 1.98, only sap.ui.mdc.RowAction.Navigation is available.
+				 * As of version 1.98, only sap.ui.mdc.enums.TableRowAction.Navigation is available.
 				 * Setting the type ensures default values for the properties <code>icon</code> and <code>text</code>.
 				 * If an icon or text is set explicitly this setting is used.
 				 */
-				type: {type: "sap.ui.mdc.RowAction"},
+				type: {type: "sap.ui.mdc.enums.TableRowAction"},
 				/**
 				 * Text for the row action item.
 				 *
@@ -98,7 +93,7 @@ sap.ui.define([
 			sText = this.getText();
 		} else {
 			var oResourceBundle = Core.getLibraryResourceBundle("sap.ui.mdc");
-			if (this.getType() === RowAction.Navigation) {
+			if (this.getType() === TableRowAction.Navigation) {
 				sText = oResourceBundle.getText("table.ROW_ACTION_ITEM_NAVIGATE");
 			}
 		}
@@ -109,10 +104,16 @@ sap.ui.define([
 		var oIcon;
 		if (this.getIcon()) {
 			oIcon = this.getIcon();
-		} else if (this.getType() === RowAction.Navigation) {
+		} else if (this.getType() === TableRowAction.Navigation) {
 			oIcon = IconPool.getIconURI(mThemeParameters["navigationIcon"]);
 		}
 		return oIcon;
+	};
+
+	RowActionItem.prototype._onPress = function(mPropertyBag) {
+		this.firePress({
+			bindingContext: mPropertyBag.bindingContext
+		});
 	};
 
 	return RowActionItem;

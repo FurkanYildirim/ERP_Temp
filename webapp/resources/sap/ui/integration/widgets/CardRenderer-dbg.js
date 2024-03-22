@@ -5,13 +5,16 @@
  */
 
 sap.ui.define([
-	"sap/f/CardRenderer"
-], function (FCardRenderer) {
+	"sap/f/CardRenderer",
+	"sap/ui/integration/library"
+], function (FCardRenderer, library) {
 	"use strict";
 
 	var MANIFEST_PATHS = {
 		TYPE: "/sap.card/type"
 	};
+	var CardDesign = library.CardDesign;
+	var CardPreviewMode = library.CardPreviewMode;
 
 	return FCardRenderer.extend("sap.ui.integration.widgets.CardRenderer", {
 		apiVersion: 2,
@@ -32,6 +35,14 @@ sap.ui.define([
 
 			if (oCard.getCardFooter() && oCard.getCardFooter().getVisible()) {
 				oRm.class("sapUiIntCardWithFooter");
+			}
+
+			if (oCard.getDesign() === CardDesign.Transparent) {
+				oRm.class("sapFCardTransparent");
+			}
+
+			if (oCard.getPreviewMode() === CardPreviewMode.Abstract) {
+				oRm.class("sapFCardPreview");
 			}
 		},
 

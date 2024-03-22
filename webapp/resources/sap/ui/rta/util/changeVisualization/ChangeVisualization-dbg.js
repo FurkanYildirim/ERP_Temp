@@ -5,12 +5,14 @@
  */
 
 sap.ui.define([
+	"sap/ui/core/Core",
 	"sap/ui/core/Fragment",
 	"sap/base/util/restricted/_difference",
 	"sap/base/util/deepEqual",
 	"sap/ui/core/util/reflection/JsControlTreeModifier",
 	"sap/ui/core/Control",
 	"sap/ui/dt/OverlayRegistry",
+	"sap/ui/dt/OverlayUtil",
 	"sap/ui/dt/ElementUtil",
 	"sap/ui/fl/write/api/PersistenceWriteAPI",
 	"sap/ui/fl/Layer",
@@ -22,12 +24,14 @@ sap.ui.define([
 	"sap/ui/rta/util/changeVisualization/ChangeCategories",
 	"sap/ui/rta/util/changeVisualization/ChangeStates"
 ], function(
+	Core,
 	Fragment,
 	difference,
 	deepEqual,
 	JsControlTreeModifier,
 	Control,
 	OverlayRegistry,
+	OverlayUtil,
 	ElementUtil,
 	PersistenceWriteAPI,
 	Layer,
@@ -51,6 +55,10 @@ sap.ui.define([
 		}
 	}
 
+	function _isOverlayInvisible(oOverlay) {
+		return !oOverlay || !oOverlay.getDomRef() || !oOverlay.isVisible();
+	}
+
 	/**
 	 * @class
 	 * Root control for RTA change visualization.
@@ -59,7 +67,7 @@ sap.ui.define([
 	 * @alias sap.ui.rta.util.changeVisualization.ChangeVisualization
 	 * @author SAP SE
 	 * @since 1.84.0
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 */
 	var ChangeVisualization = Control.extend("sap.ui.rta.util.changeVisualization.ChangeVisualization", {
@@ -94,15 +102,16 @@ sap.ui.define([
 
 			Control.prototype.constructor.apply(this, arguments);
 
-			this._oTextBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.rta");
+			this._oTextBundle = Core.getLibraryResourceBundle("sap.ui.rta");
 			this.setModel(new ResourceModel({
 				bundle: this._oTextBundle
 			}), "i18n");
 
 			this._oChangeVisualizationModel = new JSONModel({
-				active: this.getIsActive()
+				active: this.getIsActive(),
+				changeState: ChangeStates.ALL
 			});
-			this._oChangeVisualizationModel.setDefaultBindingMode("OneWay");
+			this._oChangeVisualizationModel.setDefaultBindingMode("TwoWay");
 			this._sSelectedChangeCategory = ChangeCategories.ALL;
 			this._bSetModeChanged = false;
 
@@ -145,38 +154,110 @@ sap.ui.define([
 		this._toggleRootOverlayClickHandler(false);
 	};
 
+	/**
+	 * Updates CViz after save
+	 *
+	 * @param {sap.ui.rta.toolbar.Base} oToolbar - Toolbar of RTA
+	 */
+	ChangeVisualization.prototype.updateAfterSave = function(oToolbar) {
+		if (this.getProperty("rootControlId")) {
+			this._oChangeIndicatorRegistry.reset();
+			this._updateChangeRegistry()
+				.then(function() {
+					this._selectChangeCategory(this._sSelectedChangeCategory);
+					this._selectChangeState(ChangeStates.ALL);
+					this._updateVisualizationModelMenuData();
+					oToolbar.setModel(this._oChangeVisualizationModel, "visualizationModel");
+				}.bind(this));
+		}
+	};
+
 	ChangeVisualization.prototype._reset = function() {
 		this._oChangeIndicatorRegistry.reset();
 	};
 
-	ChangeVisualization.prototype._updateVisualizationModelMenuData = function() {
-		var aAllRegisteredChanges = this._oChangeIndicatorRegistry.getAllRegisteredChanges();
-		var aHiddenChanges = this._oChangeVisualizationModel.getData().hiddenChanges;
-		var aHiddenChangeIds = aHiddenChanges.map(function(oHiddenChange) {
-			return oHiddenChange.id;
+	ChangeVisualization.prototype._determineChangeVisibility = function(aRegisteredIndependentChanges, aAllRelevantChanges, sVisualizedChangeState) {
+		function filterRelevantChanges(aChanges) {
+			return aChanges.filter(function(oChange) {
+				if (
+					!sVisualizedChangeState ||
+					sVisualizedChangeState === ChangeStates.ALL ||
+					oChange.changeStates.includes(sVisualizedChangeState)
+				) {
+					return true;
+				}
+				return false;
+			});
+		}
+		// Array of all Hidden Changes
+		var aHiddenChanges = [];
+		// Array of all Visualized Changes
+		var aVisualizedChanges = [];
+
+		var bHasDraftChanges = false;
+		var bHasDirtyChanges = false;
+
+		var aAllRelevantChangeIds = aAllRelevantChanges.map(function(oChange) {
+			return oChange.id;
 		});
+
+		aRegisteredIndependentChanges.forEach(function (oChange) {
+			if (oChange.changeStates.includes(ChangeStates.DIRTY)) {
+				bHasDraftChanges = true;
+				bHasDirtyChanges = true;
+			} else if (oChange.changeStates.includes(ChangeStates.DRAFT)) {
+				bHasDraftChanges = true;
+			}
+
+			var oOverlay = OverlayRegistry.getOverlay(oChange.visualizationInfo.displayElementIds[0]);
+
+			if (!aAllRelevantChangeIds.includes(oChange.change.getId())) {
+				aHiddenChanges.push(oChange);
+			} else if (_isOverlayInvisible(oOverlay)) {
+				aHiddenChanges.push(oChange);
+			} else {
+				aVisualizedChanges.push(oChange);
+			}
+		});
+		var aRelevantHiddenChanges = filterRelevantChanges(aHiddenChanges);
+		var aRelevantVisualizedChanges = filterRelevantChanges(aVisualizedChanges);
+		return {
+			relevantHiddenChanges: aRelevantHiddenChanges,
+			relevantVisualizedChanges: aRelevantVisualizedChanges,
+			hasDirtyChanges: bHasDirtyChanges,
+			hasDraftChanges: bHasDraftChanges
+		};
+	};
+
+	ChangeVisualization.prototype._updateVisualizationModelMenuData = function() {
+		// Get selected change state and change category
 		var sVisualizedChangeState = this._oChangeVisualizationModel.getData().changeState;
-		var aHiddenChangesPerChangeState = aHiddenChanges.filter(function (oHiddenChange) {
-			if (!sVisualizedChangeState || sVisualizedChangeState === "all") {
+
+		// Get all registered and relevant change ids
+		var aAllRegisteredChanges = this._oChangeIndicatorRegistry.getAllRegisteredChanges();
+		var aAllRelevantChanges = this._oChangeIndicatorRegistry.getRelevantChangesWithSelector();
+
+		// Filter allRegisteredChanges for independent changes and get the ids
+		var aRegisteredIndependentChanges = aAllRegisteredChanges.filter(function(oChange) {
+			if (!oChange.dependent) {
 				return true;
 			}
-			return oHiddenChange.changeStates.includes(sVisualizedChangeState);
+			return false;
 		});
-		var aVisualizedChanges = aAllRegisteredChanges.filter(function (oChange) {
-			var bIsChangeVisible = !aHiddenChangeIds.includes(oChange.change.getId());
-			if (!sVisualizedChangeState || sVisualizedChangeState === "all") {
-				return bIsChangeVisible;
-			}
-			return bIsChangeVisible && oChange.changeStates.includes(sVisualizedChangeState);
-		});
+
+		var oSortedChanges = this._determineChangeVisibility(
+			aRegisteredIndependentChanges,
+			aAllRelevantChanges,
+			sVisualizedChangeState
+		);
 		var aCommandData = Object.keys(ChangeCategories.getCategories()).map(function(sChangeCategoryName) {
 			var sTitle = this._getChangeCategoryLabel(
 				sChangeCategoryName,
-				this._getChangesForChangeCategory(sChangeCategoryName, aVisualizedChanges).length
+				this._getChangesForChangeCategory(sChangeCategoryName, oSortedChanges.relevantVisualizedChanges).length
 			);
 			return {
 				key: sChangeCategoryName,
-				count: this._getChangesForChangeCategory(sChangeCategoryName, aVisualizedChanges).length,
+				count: this._getChangesForChangeCategory(sChangeCategoryName, oSortedChanges.relevantVisualizedChanges).length,
 				title: sTitle,
 				icon: ChangeCategories.getIconForCategory(sChangeCategoryName)
 			};
@@ -184,19 +265,20 @@ sap.ui.define([
 
 		aCommandData.unshift({
 			key: ChangeCategories.ALL,
-			count: this._getChangesForChangeCategory(ChangeCategories.ALL, aVisualizedChanges).length,
-			title: this._getChangeCategoryLabel(ChangeCategories.ALL, this._getChangesForChangeCategory(ChangeCategories.ALL, aVisualizedChanges).length),
+			count: this._getChangesForChangeCategory(ChangeCategories.ALL, oSortedChanges.relevantVisualizedChanges).length,
+			title: this._getChangeCategoryLabel(ChangeCategories.ALL, this._getChangesForChangeCategory(ChangeCategories.ALL, oSortedChanges.relevantVisualizedChanges).length),
 			icon: ChangeCategories.getIconForCategory(ChangeCategories.ALL)
 		});
 
 		this._updateVisualizationModel({
 			changeCategories: aCommandData,
-			hasDraftChanges: this._oChangeVisualizationModel.getData().draftChanges.length > 0,
-			hasDirtyChanges: this._oChangeVisualizationModel.getData().dirtyChanges.length > 0,
+			hasDraftChanges: oSortedChanges.hasDraftChanges,
+			hasDirtyChanges: oSortedChanges.hasDirtyChanges,
 			popupInfoMessage: this._oTextBundle.getText(
 				"MSG_CHANGEVISUALIZATION_HIDDEN_CHANGES_INFO",
-				[aHiddenChangesPerChangeState.length]
-			)
+				[oSortedChanges.relevantHiddenChanges.length]
+			),
+			sortedChanges: oSortedChanges
 		});
 	};
 
@@ -221,14 +303,14 @@ sap.ui.define([
 	ChangeVisualization.prototype.openChangeCategorySelectionPopover = function(oEvent) {
 		if (!this._oToolbarButton) {
 			// Event bubbled through the toolbar, get original source
-			this._oToolbarButton = sap.ui.getCore().byId(oEvent.getParameter("id"));
+			this._oToolbarButton = Core.byId(oEvent.getParameter("id"));
 		}
 		var oPopover = this.getPopover();
 
 		if (!oPopover) {
 			Fragment.load({
 				name: "sap.ui.rta.util.changeVisualization.ChangeIndicatorCategorySelection",
-				id: this._getComponent().createId("changeVisualization_changesListPopover"),
+				id: this._getComponent().createId("changeVisualization_changesList"),
 				controller: this
 			})
 				.then(function(oPopover) {
@@ -299,6 +381,10 @@ sap.ui.define([
 			return sCommand;
 		}
 
+		if (!oChange.getSelector || !oChange.getSelector()) {
+			return false;
+		}
+
 		var oComponent = this._getComponent();
 		var oSelectorControl = JsControlTreeModifier.bySelector(oChange.getSelector(), oComponent);
 		var oLastDependentSelector = oChange.getDependentSelectorList().slice(-1)[0];
@@ -342,7 +428,7 @@ sap.ui.define([
 		var mPropertyBag = {
 			selector: oComponent,
 			invalidateCache: false,
-			// includeCtrlVariants: true,
+			includeCtrlVariants: true,
 			currentLayer: Layer.CUSTOMER,
 			includeDirtyChanges: true,
 			onlyCurrentVariants: true
@@ -352,14 +438,16 @@ sap.ui.define([
 
 	ChangeVisualization.prototype._updateChangeRegistry = function() {
 		return this._collectChanges().then(function(aChanges) {
+			// remove updated changes
 			this._oChangeIndicatorRegistry.removeOutdatedRegisteredChanges();
+			// remove changes with incomplete vizInfo
+			this._oChangeIndicatorRegistry.removeRegisteredChangesWithoutVizInfo();
+			// remove all registered changes after versions activation
+			if (this._oChangeVisualizationModel.getData().displayedVersion !== "0") {
+				this._oChangeIndicatorRegistry.reset();
+			}
 			var aRegisteredChangeIds = this._oChangeIndicatorRegistry.getRegisteredChangeIds();
 			var oCurrentChanges = aChanges
-				.filter(function(oChange) {
-					// Filter out changes with different fileTypes (e.g. variant)
-					// or without selectors (e.g. App Descriptor changes)
-					return oChange.getFileType() === "change" && oChange.getSelector();
-				})
 				.reduce(function(oChanges, oChange) {
 					oChanges[oChange.getId()] = oChange;
 					return oChanges;
@@ -370,7 +458,6 @@ sap.ui.define([
 			difference(aRegisteredChangeIds, aCurrentChangeIds).forEach(function(sChangeIdToRemove) {
 				this._oChangeIndicatorRegistry.removeRegisteredChange(sChangeIdToRemove);
 			}.bind(this));
-
 			var aPromises = [];
 			// Register missing changes
 			difference(aCurrentChangeIds, aRegisteredChangeIds).forEach(function(sChangeIdToAdd) {
@@ -412,29 +499,14 @@ sap.ui.define([
 	ChangeVisualization.prototype._updateChangeIndicators = function() {
 		var oSelectors = this._oChangeIndicatorRegistry.getSelectorsWithRegisteredChanges();
 		var oIndicators = {};
-		var aVisualizedChanges = [];
-		var aActivatedChanges = [];
-		var aDraftChanges = [];
-		var aDirtyChanges = [];
-		var aHiddenChanges = [];
+		this._mDisplayElementsKeyMap = {};
 		Object.keys(oSelectors).forEach(function(sSelectorId) {
-			oSelectors[sSelectorId].forEach(function (oChange) {
-				if (!oChange.dependent) {
-					if (oChange.changeStates.includes(ChangeStates.ACTIVATED)) {
-						aActivatedChanges.push(oChange.id);
-					} else if (oChange.changeStates.includes(ChangeStates.DIRTY)) {
-						aDirtyChanges.push(oChange.id);
-					} else if (oChange.changeStates.includes(ChangeStates.DRAFT)) {
-						aDraftChanges.push(oChange.id);
-					}
-				}
-			});
 			var aChangesOnIndicator = oSelectors[sSelectorId];
 			var aRelevantChanges = this._filterRelevantChanges(oSelectors[sSelectorId]);
 			var oOverlay = OverlayRegistry.getOverlay(sSelectorId);
 			if (!oOverlay) {
 				// When the selector has no Overlay, check if there is a relevant container Overlay
-				// e.g. when a SmartForm group is removed
+				// e.g. change on a SmartForm group (Selector: parent Form; Relevant Container: SmartForm)
 				aChangesOnIndicator.some(function(oChange) {
 					var oElementOverlay = OverlayRegistry.getOverlay(oChange.affectedElementId);
 					var oRelevantContainer = oElementOverlay && oElementOverlay.getRelevantContainer();
@@ -445,22 +517,11 @@ sap.ui.define([
 					return false;
 				});
 			}
-			if (!oOverlay || !oOverlay.getDomRef() || !oOverlay.isVisible()) {
+			if (_isOverlayInvisible(oOverlay)) {
 				// Change is not visible
-				aChangesOnIndicator.forEach(function (oChange) {
-					var aHiddenChangeIds = aHiddenChanges.map(function(oHiddenChange) {
-						return oHiddenChange.id;
-					});
-					if (!aHiddenChangeIds.includes(oChange.id)) {
-						aHiddenChanges.push(oChange);
-					}
-				});
 				return undefined;
 			}
 			var oOverlayPosition = oOverlay.getDomRef().getClientRects()[0] || { left: 0, top: 0 };
-			aRelevantChanges.forEach(function (oChange) {
-				aVisualizedChanges.push(oChange);
-			});
 			oIndicators[sSelectorId] = {
 				posX: parseInt(oOverlayPosition.left),
 				posY: parseInt(oOverlayPosition.top),
@@ -471,6 +532,14 @@ sap.ui.define([
 			var sOverlayId = oOverlay.getId();
 			if (!oChangeIndicator) {
 				this._createChangeIndicator(oOverlay, sSelectorId);
+				// Assumption: all changes on an indicator affect the same elements
+				var sDisplayElementsKey = aChangesOnIndicator[0].displayElementsKey;
+				// This map is built to collect indicators with the same display elements (e.g. OP Section & AnchorBar)
+				if (!this._mDisplayElementsKeyMap[sDisplayElementsKey]) {
+					this._mDisplayElementsKeyMap[sDisplayElementsKey] = [sSelectorId];
+				} else {
+					this._mDisplayElementsKeyMap[sDisplayElementsKey].push(sSelectorId);
+				}
 			} else if (oChangeIndicator.getOverlayId() !== sOverlayId) {
 				// Overlay id might change, e.g. during undo/redo of dirty changes
 				oChangeIndicator.setOverlayId(sOverlayId);
@@ -478,27 +547,58 @@ sap.ui.define([
 			return undefined;
 		}.bind(this));
 
+		this._registerIndicatorBrowserEvents();
+
 		if (
 			!deepEqual(
 				oIndicators,
 				this._oChangeVisualizationModel.getData().content
-			) || !deepEqual(
-				aVisualizedChanges,
-				this._oChangeVisualizationModel.getData().visualizedChanges
-			) || !deepEqual(
-				aHiddenChanges,
-				this._oChangeVisualizationModel.getData().hiddenChanges
 			)
 		) {
 			this._updateVisualizationModel({
-				content: oIndicators,
-				visualizedChanges: aVisualizedChanges,
-				dirtyChanges: aDirtyChanges,
-				activatedChanges: aActivatedChanges,
-				draftChanges: aDraftChanges,
-				hiddenChanges: aHiddenChanges
+				content: oIndicators
 			});
 		}
+	};
+
+	// Multiple indicators can refer to the same control (e.g. OP Section + AnchorBar),
+	// so when one of them is hovered/focused the other must also react to show the connection between them
+	ChangeVisualization.prototype._registerIndicatorBrowserEvents = function() {
+		Object.keys(this._mDisplayElementsKeyMap).forEach(function(sDisplayElementsKey) {
+			var aIndicators = this._mDisplayElementsKeyMap[sDisplayElementsKey].map(function(sSelectorId) {
+				return this._oChangeIndicatorRegistry.getChangeIndicator(sSelectorId);
+			}.bind(this));
+
+			function onIndicatorInteraction(bActivate, oEvent) {
+				aIndicators.forEach(function(oIndicator) {
+					if (oIndicator.getVisible()) {
+						oIndicator.onIndicatorBrowserInteraction(bActivate, oEvent);
+					}
+				});
+			}
+
+			// When the detail popover is opened all connected overlays should be selected
+			function onDetailPopoverOpened(oEvent) {
+				aIndicators.forEach(function(oIndicator) {
+					if (oIndicator.getVisible()) {
+						oIndicator.onDetailPopoverOpened(oEvent);
+					}
+				});
+			}
+
+			aIndicators.forEach(function(oIndicator) {
+				oIndicator.attachBrowserEvent("mouseover", onIndicatorInteraction.bind(this, true));
+				oIndicator.attachBrowserEvent("focusin", onIndicatorInteraction.bind(this, true));
+				oIndicator.attachBrowserEvent("mouseout", onIndicatorInteraction.bind(this, false));
+				oIndicator.attachBrowserEvent("focusout", onIndicatorInteraction.bind(this, false));
+				oIndicator.attachDetailPopoverOpened(onDetailPopoverOpened.bind(this));
+
+				var oOverlay = Core.byId(oIndicator.getOverlayId());
+				// De-selection of connected overlays must happen when the hover/focus leaves the overlay
+				oOverlay.attachBrowserEvent("mouseout", onIndicatorInteraction.bind(this, false));
+				oOverlay.attachBrowserEvent("focusout", onIndicatorInteraction.bind(this, false));
+			});
+		}.bind(this));
 	};
 
 	ChangeVisualization.prototype._filterRelevantChanges = function(aChangeVizInfo) {
@@ -517,7 +617,7 @@ sap.ui.define([
 				)
 				&& (
 					!oRootData.changeState
-					|| oRootData.changeState === "all"
+					|| oRootData.changeState === ChangeStates.ALL
 					|| oChangeVizInfo.changeStates.includes(oRootData.changeState)
 				)
 			);
@@ -544,7 +644,7 @@ sap.ui.define([
 		// Sort the Indicators according XY-Position
 		// Set the tabindex according the sorting
 		// Focus the first visible indicator
-		sap.ui.getCore().applyChanges();
+		Core.applyChanges();
 
 		var aVisibleIndicators = this._oChangeIndicatorRegistry.getChangeIndicators()
 			.filter(function(oIndicator) {
@@ -560,10 +660,22 @@ sap.ui.define([
 		if (aVisibleIndicators.length === 0) {
 			return;
 		}
+
+		var aVisibleIndicatorsOnScrollPosition = [];
 		aVisibleIndicators.forEach(function(oIndicator, iIndex) {
 			oIndicator.getDomRef().tabIndex = iIndex + 2;
+			// Indicators with posY < 0 are outside of the current scroll position
+			if (oIndicator.getPosY() > 0) {
+				aVisibleIndicatorsOnScrollPosition.push(oIndicator);
+			}
 		});
-		aVisibleIndicators[0].focus();
+		if (aVisibleIndicatorsOnScrollPosition.length > 0) {
+			// Indicators visible with the current scroll position get focus
+			// to avoid unexpected scrolling when visualization is started
+			aVisibleIndicatorsOnScrollPosition[0].focus();
+		} else {
+			aVisibleIndicators[0].focus();
+		}
 	};
 
 	ChangeVisualization.prototype._toggleRootOverlayClickHandler = function (bEnable) {
@@ -594,14 +706,17 @@ sap.ui.define([
 	ChangeVisualization.prototype.triggerModeChange = function(oRootControl, oToolbar) {
 		this.oMenuButton = oToolbar.getControl("toggleChangeVisualizationMenuButton");
 		this.oRootOverlay = OverlayRegistry.getOverlay(oRootControl);
-		if (oToolbar.getModel("versions")) {
-			this.setVersionsModel(oToolbar);
+		this.setVersionsModel(oToolbar);
+		if (this.oVersionsModel && this.oVersionsModel.getData().versioningEnabled) {
 			this._updateVisualizationModel({
-				versioningAvailable: this.oVersionsModel.getData().versioningEnabled
+				versioningAvailable: this.oVersionsModel.getData().versioningEnabled,
+				displayedVersion: this.oVersionsModel.getData().displayedVersion
 			});
 		} else {
+			// no versioning available, setting draft version id for caching to be working
 			this._updateVisualizationModel({
-				versioningAvailable: false
+				versioningAvailable: false,
+				displayedVersion: "0"
 			});
 		}
 
@@ -619,6 +734,10 @@ sap.ui.define([
 		this._updateChangeRegistry()
 			.then(function() {
 				this._selectChangeCategory(this._sSelectedChangeCategory);
+				// This is required to avoid flickering of the toolbar when switching
+				// to visualization mode when the mode switcher is displayed as icons
+				oToolbar.adjustToolbarSectionWidths();
+
 				this._updateVisualizationModelMenuData();
 				oToolbar.setModel(this._oChangeVisualizationModel, "visualizationModel");
 			}.bind(this));

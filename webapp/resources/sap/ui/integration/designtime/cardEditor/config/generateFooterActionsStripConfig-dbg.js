@@ -5,12 +5,10 @@
  */
 sap.ui.define([
 	"sap/base/util/restricted/_merge",
-	"sap/ui/integration/designtime/cardEditor/config/generateActionConfig",
-	"sap/m/ButtonType"
+	"sap/ui/integration/designtime/cardEditor/config/generateActionConfig"
 ], function (
 	_merge,
-	generateActionConfig,
-	ButtonType
+	generateActionConfig
 ) {
 	"use strict";
 

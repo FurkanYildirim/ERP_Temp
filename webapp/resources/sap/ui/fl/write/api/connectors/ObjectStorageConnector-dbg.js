@@ -186,7 +186,7 @@ sap.ui.define([
 	 * @extends sap.ui.fl.write.connectors.BaseConnector
 	 * @since 1.84
 	 * @private
-	 * @ui5-restricted sap.ui.fl, SAPUI5 Visual Editor, UX Tools
+	 * @ui5-restricted sap.ui.fl, SAP Web IDE (Visual Editor), UX Tools
 	 * @abstract
 	 */
 	var ObjectStorageConnector = merge({}, BaseConnector, /** @lends sap.ui.fl.write.api.connectors.ObjectStorageConnector */ {
@@ -296,7 +296,8 @@ sap.ui.define([
 				isKeyUser: true,
 				isVariantSharingEnabled: true,
 				isProductiveSystem: false,
-				isCondensingEnabled: true
+				isCondensingEnabled: true,
+				isContextSharingEnabled: false
 			});
 		},
 

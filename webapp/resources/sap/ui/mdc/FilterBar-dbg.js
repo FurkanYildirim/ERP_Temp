@@ -4,8 +4,8 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	'sap/ui/mdc/p13n/subcontroller/FilterController', 'sap/ui/mdc/p13n/subcontroller/AdaptFiltersController', "sap/ui/mdc/filterbar/aligned/FilterContainer", "sap/ui/mdc/filterbar/aligned/FilterItemLayout", "sap/ui/mdc/filterbar/FilterBarBase", "sap/ui/mdc/filterbar/FilterBarBaseRenderer", 'sap/m/library', 'sap/m/Button', "sap/base/util/merge", 'sap/base/Log', "sap/ui/core/library"
-], function(FilterController, AdaptFiltersController, FilterContainer, FilterItemLayout, FilterBarBase, FilterBarBaseRenderer, mLibrary, Button, merge, Log, CoreLibrary) {
+	'sap/ui/mdc/p13n/subcontroller/FilterController', 'sap/ui/mdc/p13n/subcontroller/AdaptFiltersController', "sap/ui/mdc/filterbar/aligned/FilterContainer", "sap/ui/mdc/filterbar/aligned/FilterItemLayout", "sap/ui/mdc/filterbar/FilterBarBase", "sap/ui/mdc/filterbar/FilterBarBaseRenderer", 'sap/m/library', 'sap/m/Button', "sap/base/util/merge", 'sap/base/Log', "sap/ui/core/library", "sap/ui/mdc/enums/FilterBarP13nMode"
+], function(FilterController, AdaptFiltersController, FilterContainer, FilterItemLayout, FilterBarBase, FilterBarBaseRenderer, mLibrary, Button, merge, Log, CoreLibrary, FilterBarP13nMode) {
 	"use strict";
 
 	var HasPopup = CoreLibrary.aria.HasPopup;
@@ -14,21 +14,19 @@ sap.ui.define([
 	 * Constructor for a new FilterBar.
 	 * @param {string} [sId] ID for the new control, generated automatically if no ID is given
 	 * @param {object} [mSettings] initial settings for the new control
-	 * @class The <code>FilterBar</code> control is used to display filter properties in a user-friendly manner to populate values for a query.
+	 * @class The <code>FilterBar</code> control is used to display filter attrtibutes in a user-friendly manner to populate values for a query.
 	 * The filters are arranged in a logical row that is divided depending on the space available and the width of the filters.
-	 * The Go button triggers the search event, and the Advanced Filters button shows the filter dialog.<br>
+	 * The Go button triggers the search event, and the Adapt Filters button shows the filter dialog.<br>
 	 * The <code>FilterBar</code> control creates and handles the filters based on the provided metadata information.
 	 * The metadata information is provided via the {@link sap.ui.mdc.FilterBarDelegate FilterBarDelegate} implementation. This implementation has to be provided by the application.
 	 * @extends sap.ui.mdc.filterbar.FilterBarBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
-	 * @experimental As of version 1.61
-	 * @private
-	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
 	 * @since 1.61.0
 	 * @alias sap.ui.mdc.FilterBar
+   	 * @experimental As of version 1.61.0
 	 */
 	var FilterBar = FilterBarBase.extend("sap.ui.mdc.FilterBar", {
 		metadata: {
@@ -58,20 +56,12 @@ sap.ui.define([
 				 * @since 1.74
 				 */
 				p13nMode: {
-					type: "sap.ui.mdc.FilterBarP13nMode[]"
+					type: "sap.ui.mdc.enums.FilterBarP13nMode[]"
 				},
 				/**
 				 * Specifies if the personalization mode for filter items is supported.
 				 */
 				_p13nModeItem: {
-					type: "boolean",
-					visibility: "hidden",
-					defaultValue: false
-				},
-				/**
-				 * Specifies if the personalization mode for filter conditions is supported.
-				 */
-				_p13nModeValue: {
 					type: "boolean",
 					visibility: "hidden",
 					defaultValue: false
@@ -94,39 +84,27 @@ sap.ui.define([
 	};
 
 	FilterBar.prototype.setP13nMode = function(aMode) {
-		var aOldMode = this.getP13nMode();
 		this.setProperty("p13nMode", aMode || [], false);
 
-		var oRegisterConfig = {};
-		oRegisterConfig.controller = {};
+		var oRegisterConfig = {
+			helper: this.getPropertyHelper(),
+			controller: {}
+		};
 
+		var bItemAssigned = false;
 		aMode && aMode.forEach(function(sMode) {
-			if (!aOldMode || aOldMode.indexOf(sMode) < 0) {
-				this._setP13nMode(sMode, true);
-			}
 			if (sMode == "Item") {
-				oRegisterConfig.controller["Item"] = AdaptFiltersController;
-			}
-			if (sMode == "Value") {
-				oRegisterConfig.controller["Filter"] = FilterController;
-			}
-		}.bind(this));
-		aOldMode && aOldMode.forEach(function(sMode) {
-			if (!aMode || aMode.indexOf(sMode) < 0) {
-				this._setP13nMode(sMode, false);
+				bItemAssigned = true;
+				oRegisterConfig.controller["Item"] = new AdaptFiltersController({control: this});
 			}
 		}.bind(this));
 
-		this.getEngine().registerAdaptation(this, oRegisterConfig);
+		this._setP13nModeItem(bItemAssigned);
+
+		oRegisterConfig.controller["Filter"] = new FilterController({control: this});
+		this.getEngine().register(this, oRegisterConfig);
 
 		return this;
-	};
-
-	FilterBar.prototype._setP13nMode = function(sMode, bValue) {
-		switch (sMode) {
-			case "Item":  this._setP13nModeItem(bValue); break;
-			case "Value": this._setP13nModeValue(bValue); break;
-		}
 	};
 
 	FilterBar.prototype.setFilterConditions = function(mValue, bSuppressInvalidate) {
@@ -146,14 +124,6 @@ sap.ui.define([
 		this._oModel.setProperty("/_p13nModeItem", bValue, true);
 	};
 
-	FilterBar.prototype._getP13nModeValue = function() {
-		return this._oModel.getProperty("/_p13nModeValue");
-	};
-
-	FilterBar.prototype._setP13nModeValue = function(bValue) {
-		this._oModel.setProperty("/_p13nModeValue", bValue, false);
-		this._bPersistValues = bValue;
-	};
 
 	FilterBar.prototype._addButtons = function() {
 
@@ -236,33 +206,45 @@ sap.ui.define([
 	FilterBar.prototype.retrieveInbuiltFilter = function() {
 		var oInbuiltFilterPromise = FilterBarBase.prototype.retrieveInbuiltFilter.apply(this, arguments);
 		return oInbuiltFilterPromise.then(function(oInnerFB){
-			oInnerFB._bPersistValues = this._bPersistValues;
 			return oInnerFB;
-		}.bind(this));
+		});
 	};
-
 
 	FilterBar.prototype.onAdaptFilters = function(oEvent) {
 
 		return this._retrieveMetadata().then(function() {
-			return this.getEngine().uimanager.show(this, "Item", this._btnAdapt);
+			return this.getEngine().uimanager.show(this, "Item", {
+				reset: function(){
+					this.getEngine().reset(this);
+			}.bind(this)
+		})
+		.then(function(oPopup){
+			oPopup.setVerticalScrolling(false);
+			return oPopup;
+		});
 		}.bind(this));
 
 	};
 
+	/**
+	 * Returns the external conditions of the inner condition model.
+	 * <b>Note:</b> This API returns only attributes related to the {@link sap.ui.mdc.FilterBar#p13nMode} property configuration.
+	 * @public
+	 * @returns {sap.ui.mdc.State} Object containing the current status of the <code>FilterBar</code>
+	 */
 	FilterBar.prototype.getCurrentState = function() {
 		var oState = FilterBarBase.prototype.getCurrentState.apply(this, arguments);
 		if (!this.getProperty("_p13nModeItem")) {
 			delete oState.items;
 		}
+
 		return oState;
 	};
 
 	/**
-	 * Sets the focus to the first filter in error state.
-	 * @private
-	 * @ui5-restricted sap.fe
-	 * @returns {sap.ui.mdc.FilterField} Returns the first filter field in error state
+	 * Sets the focus on the first filter in error state.
+	 * @public
+	 * @returns {sap.ui.mdc.FilterField | null} Returns the first filter field in error state
 	 */
 	FilterBar.prototype.setFocusOnFirstErroneousField = function() {
 		return this._setFocusOnFirstErroneousField();

@@ -23,7 +23,7 @@ sap.ui.define(["sap/ui/core/library"],
 	 * @namespace
 	 * @alias sap.ui.support
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.50
 	 * @public
 	 */
@@ -37,7 +37,7 @@ sap.ui.define(["sap/ui/core/library"],
 		controls: [],
 		elements: [],
 		noLibraryCSS: true,
-		version: "1.108.14",
+		version: "1.115.1",
 		extensions: {
 			//Configuration used for rule loading of Support Assistant
 			"sap.ui.support": {
@@ -223,6 +223,23 @@ sap.ui.define(["sap/ui/core/library"],
 			]
 		}
 	};
+
+	/**
+	 * Support Assistant rule configuration
+	 *
+	 * @typedef {object} sap.ui.support.RuleConfiguration
+	 * @property {string} id
+	 * @property {boolean} async
+	 * @property {string} title
+	 * @property {string} resolution
+	 * @property {string} minversion
+	 * @property {sap.ui.support.Categories[]} categories
+	 * @property {sap.ui.support.Audiences[]} audiences
+	 * @property {string} description
+	 * @property {string} resolutionurls
+	 * @property {string} check
+	 * @public
+	 */
 
 	return thisLib;
 });

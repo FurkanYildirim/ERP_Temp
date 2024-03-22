@@ -14,7 +14,8 @@ sap.ui.define([
 	"sap/ui/mdc/link/PanelItem",
 	"sap/ui/layout/form/SimpleForm",
 	"sap/ui/core/Title",
-	"sap/ui/layout/library"
+	"sap/ui/layout/library",
+	"sap/ui/mdc/enums/LinkType"
 ], function(FieldInfoBase,
 	jQuery,
 	BindingMode,
@@ -25,11 +26,44 @@ sap.ui.define([
 	PanelItem,
 	SimpleForm,
 	CoreTitle,
-	layoutLibrary) {
+	layoutLibrary,
+	LinkType) {
 	"use strict";
 
 	// shortcut for sap.ui.layout.form.SimpleFormLayout.ResponsiveGridLayout
 	var ResponsiveGridLayout = layoutLibrary.form.SimpleFormLayout.ResponsiveGridLayout;
+
+	/**
+	 * Object holding the information regarding direct link navigation when there is no other link item.
+	 * @typedef {object} sap.ui.mdc.link.DirectLinkObject
+	 * @property {string} target The target of the retrieved direct link
+	 * @property {string} href The href of the retrieved direct link
+	 * @public
+	 */
+
+	/**
+	 * Object holding the information on which link should be displayed as default on the popover.
+	 * @typedef {object} sap.ui.mdc.link.BaseLineObject
+	 * @property {string} id ID of a base line {@link sap.ui.mdc.link.LinkItem}
+	 * @property {boolean} visible Visibility of a base line {@link sap.ui.mdc.link.LinkItem}
+	 * @public
+	 */
+
+	/**
+	 * Object holding information regarding the behavior of the {@link sap.ui.mdc.Link}.
+	 * @typedef {object} sap.ui.mdc.link.LinkType
+	 * @property {sap.ui.mdc.enums.LinkType} type Text | DirectLink | Popup (default)
+	 * @property {sap.ui.mdc.link.LinkItem} directLink Instance of {@link sap.ui.mdc.link.LinkItem} that is used for direct navigation
+	 * @public
+	 */
+
+	/**
+	 * Object holding an initial {@link sap.ui.mdc.link.LinkType} and an optional <code>Promise</code> resolving into another {@link sap.ui.mdc.link.LinkType} that is used during runtime.
+	 * @typedef {object} sap.ui.mdc.link.LinkTypeWrapper
+	 * @property {sap.ui.mdc.link.LinkType} initialType Initial {@link sap.ui.mdc.link.LinkType}
+	 * @property {Promise<sap.ui.mdc.link.LinkType>} runtimeType Optional <code>Promise</code> that resolves into the {@link sap.ui.mdc.link.LinkType} that overwrites the initial {@link sap.ui.mdc.link.LinkType}.
+	 * @public
+	 */
 
 	/**
 	 * Constructor for the new <code>Link</code>
@@ -38,23 +72,22 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new control
 	 *
 	 * @class
-	 * A <code>Link</code> control can be used to handle navigation scenarios with one or more targets through direct navigation or by opening a <code>Panel</code>.<br>
-	 * It can also be used to display additional content, such as <code>ContactDetails</code> on the <code>Panel</code>.
-	 * <b>Note:</b> Navigation targets are determined by the implementation of a {@link module:sap/ui/mdc/LinkDelegate LinkDelegate}.
+	 * A <code>Link</code> element can be used inside a <code>fieldInfo</code> aggregation of {@link sap.ui.mdc.Field} to enable
+	 * navigation scenarios with one or more targets through direct navigation or by opening a <code>Panel</code>.<br>
+	 * It can also be used to display additional content, such as <code>ContactDetails</code> on the <code>Panel</code>.<br>
+	 * <b>Note:</b> The navigation targets and the behavior of the control are determined by the implementation of a {@link module:sap/ui/mdc/LinkDelegate LinkDelegate}.
 	 *
 	 * @extends sap.ui.mdc.field.FieldInfoBase
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @alias sap.ui.mdc.Link
 	 * @since 1.74
 	 *
-	 * @experimental As of version 1.74
-	 * @private
-	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
+   	 * @experimental As of version 1.74.0
 	 */
 	var Link = FieldInfoBase.extend("sap.ui.mdc.Link", /** @lends sap.ui.mdc.Link.prototype */ {
 		metadata: {
@@ -114,28 +147,35 @@ sap.ui.define([
 	};
 
 	Link.prototype.exit = function() {
-		this._aLinkItems = undefined;
 		this._bLinkItemsFetched = undefined;
 		this._oLinkType = undefined;
 		this._oUseDelegateItemsPromise = undefined;
-
-		this._aAdditionalContent = undefined;
 		this._oUseDelegateAdditionalContentPromise = undefined;
+
+		if (this._aLinkItems) {
+			this._aLinkItems.forEach(function(oLinkItem) {
+				oLinkItem.destroy();
+			});
+			this._aLinkItems = undefined;
+		}
+
+		if (this._aAdditionalContent) {
+			this._aAdditionalContent.forEach(function(oLinkItem) {
+				oLinkItem.destroy();
+			});
+			this._aAdditionalContent = undefined;
+		}
 
 		FieldInfoBase.prototype.exit.apply(this, arguments);
 	};
 
 	// ----------------------- Implementation of 'FieldInfoBase' interface --------------------------------------------
 
-	/**
-	 * Checks if <code>FieldInfo</code> is clickable and therefore rendered as a <code>Link</code> control.
-	 * @returns {Promise} <code>true</code> if <code>FieldInfo</code> is clickable
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
-	 */
 	Link.prototype.isTriggerable = function() {
 		return this.retrieveLinkType().then(function(oLinkTypeObject) {
+			if (!oLinkTypeObject) {
+				return false;
+			}
 			var oRuntimeLinkTypePromise = oLinkTypeObject.runtimeType;
 			var oInitialLinkType = oLinkTypeObject.initialType ? oLinkTypeObject.initialType : oLinkTypeObject;
 
@@ -147,33 +187,24 @@ sap.ui.define([
 					}
 				}.bind(this));
 			}
-			return this._oLinkType ? this._oLinkType.type > 0 : oInitialLinkType.type > 0;
+			return this._oLinkType ?
+					(this._oLinkType.type === LinkType.DirectLink || this._oLinkType.type === LinkType.Popover) :
+					(oInitialLinkType.type === LinkType.DirectLink || oInitialLinkType.type === LinkType.Popover);
 		}.bind(this));
 	};
 
-	/**
-	 * Returns an <code>href</code> of direct link navigation, once the <code>Promise</code> has been resolved.
-	 * @returns {Promise} <code>href</code> of direct link navigation, else <code>null</code>
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
-	 */
 	Link.prototype.getTriggerHref = function() {
 		return this.getDirectLinkHrefAndTarget().then(function(oLinkItem) {
 			return oLinkItem ? oLinkItem.href : null;
 		});
 	};
 
-	/**
-	 * Returns an object containing <code>href</code> and <code>target</code> of the direct navigation.
-	 * Returns <code>null</code> if there is no direct link.
-	 * @returns {Promise} {Object | null}
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
-	 */
 	Link.prototype.getDirectLinkHrefAndTarget = function() {
 		return this._retrieveDirectLinkItem().then(function(oDirectLinkItem) {
+			if (this.isDestroyed()) {
+				return null;
+			}
+
 			this.addDependent(oDirectLinkItem);
 			return oDirectLinkItem ? {
 				target: oDirectLinkItem.getTarget(),
@@ -183,11 +214,15 @@ sap.ui.define([
 	};
 
 	/**
-	 * @returns {Promise} Returns <code>null</code> or a {@link sap.ui.mdc.link.LinkItem}, once resolved
+	 * @returns {Promise<sap.ui.mdc.link.LinkItem|null>} <code>Promise</code> resolving into <code>null</code> or a {@link sap.ui.mdc.link.LinkItem}
 	 * @private
 	 */
 	Link.prototype._retrieveDirectLinkItem = function() {
 		return this.retrieveLinkType().then(function(oLinkTypeObject) {
+			if (!oLinkTypeObject) {
+				return null;
+			}
+
 			if (this._linkTypeHasDirectLink(this._oLinkType)) {
 				return this._oLinkType.directLink;
 			}
@@ -202,23 +237,15 @@ sap.ui.define([
 	};
 
 	/**
-	 * Checks if a given {@link sap.ui.mdc.LinkDelegate.LinkType} contains a directLink value.
-	 * @param {sap.ui.mdc.LinkDelegate.LinkType} oLinkType the <code>LinkType</code> which should be checked
+	 * Checks if a given {@link sap.ui.mdc.link.LinkType} contains a directLink value.
+	 * @param {sap.ui.mdc.link.LinkType} oLinkType the <code>LinkType</code> which should be checked
 	 * @returns {boolean} bHasDirectLink
 	 * @private
 	 */
 	Link.prototype._linkTypeHasDirectLink = function(oLinkType) {
-		return oLinkType && oLinkType.type === 1 && oLinkType.directLink;
+		return oLinkType && oLinkType.type === LinkType.DirectLink && oLinkType.directLink;
 	};
 
-	/**
-	 * Function that is called in the <code>createPopover</code> function of {@link sap.ui.mdc.field.FieldInfoBase}.
-	 * @param {Function} [fnGetAutoClosedControl] Function returning the <code>Popover</code> control that is created in <code>createPopover</code>
-	 * @returns {sap.ui.mdc.link.Panel} Popover panel which is to be displayed after clicking the link
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
-	*/
 	Link.prototype.getContent = function(fnGetAutoClosedControl) {
 		var oLinkItemsPromise = this.retrieveLinkItems();
 		var oAdditionalContentPromise = this.retrieveAdditionalContent();
@@ -384,8 +411,6 @@ sap.ui.define([
 	 * @param {sap.ui.mdc.link.Panel} oPanel Instance of a <code>Panel</code> control
 	 * @returns {object[]} Array of copied property info
 	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
 	 */
 	Link.retrieveAllMetadata = function(oPanel) {
 		if (!oPanel.getModel || !oPanel.getModel("$sapuimdcLink")) {
@@ -408,10 +433,8 @@ sap.ui.define([
 	/**
 	 * Retrieves the items that are initially part of the baseline which is used when a reset is done.
 	 * @param {sap.ui.mdc.link.Panel} oPanel Instance of a <code>Panel</code> control
-	 * @returns {object[]} Array of copied property info
+	 * @returns {sap.ui.mdc.link.BaseLineObject[]} Array containing the <code>ID</code> and <code>visible</code> property of every {@link sap.ui.mdc.link.LinkItem}
 	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
 	 */
 	Link.retrieveBaseline = function(oPanel) {
 		if (!oPanel.getModel || !oPanel.getModel("$sapuimdcLink")) {
@@ -450,7 +473,7 @@ sap.ui.define([
 	/**
 	 * Returns the object of a given binding context.
 	 * @private
-	 * @param {Object} oBindingContext The given binding context
+	 * @param {sap.ui.model.Context|null|undefined} oBindingContext The given binding context
 	 * @returns {Object | undefined} Object of the binding context
 	 */
 	Link.prototype._getContextObject = function(oBindingContext) {
@@ -461,9 +484,7 @@ sap.ui.define([
 
 	/**
 	 * @returns {Promise<sap.ui.core.Control[]>} Resolves an array of type {@link sap.ui.core.Control}
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
 	 */
 	Link.prototype.retrieveAdditionalContent = function() {
 		if (this._aAdditionalContent) {
@@ -479,14 +500,13 @@ sap.ui.define([
 	/**
 	 * Determines the <code>AdditionalContent</code> objects depending on the given <code>LinkDelegate</code>.
 	 * @private
-	 * @returns {Promise} Resolves once the <code>AdditionalContent</code> objects have been retrieved by the delegate. This also sets this._aAdditionalContent.
+	 * @returns {Promise<void>} Resolves once the <code>AdditionalContent</code> objects have been retrieved by the delegate. This also sets this._aAdditionalContent.
 	 */
 	Link.prototype._useDelegateAdditionalContent = function() {
 		if (this.awaitControlDelegate()) {
 			return this.awaitControlDelegate().then(function() {
-				var oPayload = Object.assign({}, this.getPayload());
 				return new Promise(function(resolve) {
-					this.getControlDelegate().fetchAdditionalContent(oPayload, this).then(function(aAdditionalContent) {
+					this.getControlDelegate().fetchAdditionalContent(this, this).then(function(aAdditionalContent) {
 						this._setAdditionalContent(aAdditionalContent === null ? [] : aAdditionalContent);
 						resolve();
 					}.bind(this));
@@ -506,16 +526,13 @@ sap.ui.define([
 	};
 
 	/**
-	 * @returns {Promise} Returns a {@link sap.ui.mdc.LinkDelegate.LinkType}, once resolved
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @returns {Promise<undefined|sap.ui.mdc.link.LinkType>} Returns <code>undefined</code> or a {@link sap.ui.mdc.link.LinkType}, once resolved
+	 * @public
 	 */
 	Link.prototype.retrieveLinkType = function() {
 		if (this.awaitControlDelegate()) {
 			return this.awaitControlDelegate().then(function() {
-				var oPayload = Object.assign({}, this.getPayload());
-				return this.getControlDelegate().fetchLinkType(oPayload, this);
+				return this._bIsBeingDestroyed ? Promise.resolve() : this.getControlDelegate().fetchLinkType(this);
 			}.bind(this));
 		}
 		SapBaseLog.error("mdc.Link retrieveLinkType: control delegate is not set - could not load LinkType from delegate.");
@@ -524,16 +541,13 @@ sap.ui.define([
 
 	/**
 	 * Calls the <code>modifyLinkItems</code> function of <code>Delegate</code> before returning the <code>LinkItem</code> objects.
-	 * @returns {Promise} Resolves an array of type {@link sap.ui.mdc.link.LinkItem}
-	 * @protected
-	 * @ui5-restricted sap.ui.mdc
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @returns {Promise<sap.ui.mdc.link.LinkItem[]>} Resolves an array of type {@link sap.ui.mdc.link.LinkItem}
+	 * @public
 	 */
 	Link.prototype.retrieveLinkItems = function() {
-		var oPayload = Object.assign({}, this.getPayload());
 		var oBindingContext = this._getControlBindingContext();
 		return this._retrieveUnmodifiedLinkItems().then(function(aUnmodifiedLinkItems) {
-			return this.getControlDelegate().modifyLinkItems(oPayload, oBindingContext, aUnmodifiedLinkItems).then(function(aLinkItems) {
+			return this.getControlDelegate().modifyLinkItems(this, oBindingContext, aUnmodifiedLinkItems).then(function(aLinkItems) {
 				return aLinkItems;
 			});
 		}.bind(this));
@@ -541,7 +555,7 @@ sap.ui.define([
 
 	/**
 	 * @private
-	 * @returns {Promise} Resolves an array of type {@link sap.ui.mdc.link.LinkItem}
+	 * @returns {Promise<sap.ui.mdc.link.LinkItem[]>} Resolves an array of type {@link sap.ui.mdc.link.LinkItem}
 	 */
 	Link.prototype._retrieveUnmodifiedLinkItems = function() {
 		if (this._bLinkItemsFetched) {
@@ -557,17 +571,16 @@ sap.ui.define([
 	/**
 	 * Determines the <code>LinkItem</code> objects depending on the given <code>LinkDelegate</code>.
 	 * @private
-	 * @returns {Promise} Resolves once the <code>LinkItem</code> objects have been retrieved by the delegate. This also sets this._aLinkItems.
+	 * @returns {Promise<void>} Resolves once the <code>LinkItem</code> objects have been retrieved by the delegate. This also sets this._aLinkItems.
 	 */
 	Link.prototype._useDelegateItems = function() {
 		if (this.awaitControlDelegate()) {
 			return this.awaitControlDelegate().then(function() {
 				// Assign new Object so payload.id won't get set for the whole Link class
-				var oPayload = Object.assign({}, this.getPayload());
 				var oBindingContext = this._getControlBindingContext();
 				var oInfoLog = this._getInfoLog();
 				return new Promise(function(resolve) {
-					this.getControlDelegate().fetchLinkItems(oPayload, oBindingContext, oInfoLog).then(function(aLinkItems) {
+					this.getControlDelegate().fetchLinkItems(this, oBindingContext, oInfoLog).then(function(aLinkItems) {
 						this._setLinkItems(aLinkItems === null ? [] : aLinkItems);
 						this._bLinkItemsFetched = aLinkItems !== null;
 						resolve();
@@ -597,13 +610,12 @@ sap.ui.define([
 	/**
 	 * Proxy function for the <code>beforeNavigationCallback</code> of the panel.
 	 * @private
-	 * @param {Object} oEvent Object of the event that gets fired by the <code>onPress</code> event of the link on the panel / selection dialog
-	 * @returns {Promise} Returns a Boolean value determining whether navigation takes place , once resolved
+	 * @param {sap.ui.base.Event} oEvent Object of the event that gets fired by the <code>onPress</code> event of the link on the panel / selection dialog
+	 * @returns {Promise<undefined|boolean>} Returns a Boolean value determining whether navigation takes place , once resolved
 	 */
 	Link.prototype._beforeNavigationCallback = function(oEvent) {
 		if (this.awaitControlDelegate()) {
-			var oPayload = Object.assign({}, this.getPayload());
-			return this.getControlDelegate().beforeNavigationCallback(oPayload, oEvent);
+			return this.getControlDelegate().beforeNavigationCallback(this, oEvent);
 		}
 		SapBaseLog.error("mdc.Link _beforeNavigationCallback: control delegate is not set - could not load beforeNavigationCallback from delegate.");
 		return Promise.resolve();
@@ -614,7 +626,7 @@ sap.ui.define([
 	/**
 	 * Returns the binding context of the source control or of the link itself.
 	 * @private
-	 * @returns {Object} The binding context of the SourceControl / link
+	 * @returns {sap.ui.model.Context|null|undefined} The binding context of the SourceControl / link
 	 */
 	Link.prototype._getControlBindingContext = function() {
 		var oControl = this._getSourceControl();

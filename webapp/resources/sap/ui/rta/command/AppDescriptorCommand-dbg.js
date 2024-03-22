@@ -21,7 +21,7 @@ sap.ui.define([
 	 * @extends sap.ui.rta.command.BaseCommand
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -75,7 +75,7 @@ sap.ui.define([
 
 	/**
 	 * Retrieves the prepared change for e.g. undo execution.
-	 * @return {sap.ui.fl.Change} Returns change after being created and stored
+	 * @return {sap.ui.fl.apply._internal.flexObjects.UIChange} Returns change after being created and stored
 	 */
 	AppDescriptorCommand.prototype.getPreparedChange = function () {
 		return this._oPreparedChange;

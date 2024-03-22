@@ -24,7 +24,7 @@ sap.ui.define(['./ListItemBase', './library', './CustomListItemRenderer'],
 	 * @extends sap.m.ListItemBase
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -42,7 +42,7 @@ sap.ui.define(['./ListItemBase', './library', './CustomListItemRenderer'],
 				 * <b>Note:</b> If defined, then only the provided custom accessibility description is announced when there is a focus on the list item.
 				 * @since 1.84
 				 */
-				accDescription: {tpye: "string", group: "Behavior"}
+				accDescription: {type: "string", group: "Behavior"}
 			},
 			aggregations : {
 

@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "Calendar.less",
-			"size": 17233,
+			"size": 18037,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
@@ -71,19 +71,19 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 141152,
+			"size": 164996,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 140774,
+			"size": 164618,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 171220,
+			"size": 171999,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
@@ -94,12 +94,12 @@
 		},
 		{
 			"name": "library.css",
-			"size": 171080,
+			"size": 171859,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library.less",
-			"size": 33845,
+			"size": 34649,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
@@ -111,12 +111,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 179883,
+			"size": 180662,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 179743,
+			"size": 180522,
 			"theme": "sap_fiori_3_dark"
 		},
 		{

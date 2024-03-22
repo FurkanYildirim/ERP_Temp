@@ -12,10 +12,10 @@ sap.ui.define([], function() {
 	 *
 	 * @name sap.ui.fl.interfaces.BaseLoadConnector
 	 * @since 1.79
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
-	 * @ui5-restricted SAPUI5 visual editor, UX Tools
+	 * @ui5-restricted SAP Web IDE (Visual Editor), UX Tools
 	 * @interface
 	 */
 	var BaseConnector = /** @lends sap.ui.fl.interfaces.BaseLoadConnector */ {
@@ -29,7 +29,7 @@ sap.ui.define([], function() {
 		 * @returns {Promise<Object>} Promise resolving with an object containing a flex data response
 		 *
 		 * @private
-		 * @ui5-restricted SAPUI5 visual editor, UX Tools
+		 * @ui5-restricted SAP Web IDE (Visual Editor), UX Tools
 		 */
 		loadFlexData: function (/* mPropertyBag */) {
 			return Promise.reject("loadFlexData is not implemented");

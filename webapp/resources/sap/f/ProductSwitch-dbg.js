@@ -8,7 +8,6 @@
 sap.ui.define([
 	"sap/ui/core/Core",
 	"sap/ui/core/Control",
-	'sap/ui/core/delegate/ItemNavigation',
 	"sap/f/GridContainer",
 	"sap/f/GridContainerSettings",
 	"sap/f/ProductSwitchItem",
@@ -17,7 +16,6 @@ sap.ui.define([
 	function (
 		Core,
 		Control,
-		ItemNavigation,
 		GridContainer,
 		GridContainerSettings,
 		ProductSwitchItem,
@@ -36,7 +34,7 @@ sap.ui.define([
 		 * @extends sap.ui.core.Control
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -100,52 +98,6 @@ sap.ui.define([
 
 		ProductSwitch.prototype.exit = function () {
 			this._oCurrentSelectedItem = null;
-			this._destroyItemNavigation();
-		};
-
-		/**
-		 * Destroys the item navigation delegate
-		 * @private
-		 */
-		ProductSwitch.prototype._destroyItemNavigation = function () {
-			if (this._oItemNavigation) {
-				this.removeEventDelegate(this._oItemNavigation);
-				this._oItemNavigation.destroy();
-				this._oItemNavigation = null;
-			}
-		};
-
-		ProductSwitch.prototype.onAfterRendering = function () {
-			var oDomRef,
-				aChildDomRefs = [];
-
-			if (!this._oItemNavigation) {
-				this._oItemNavigation = new ItemNavigation(null, null);
-				this._oItemNavigation.setDisabledModifiers({
-					// Alt + arrow keys are reserved for browser navigation
-					sapnext: [
-						"alt", // Windows and Linux
-						"meta" // Apple (⌘)
-					],
-					sapprevious: [
-						"alt",
-						"meta"
-					]
-				});
-				this.addEventDelegate(this._oItemNavigation);
-			}
-
-			oDomRef = this.getDomRef();
-
-			// set the root dom node that surrounds the items
-			this._oItemNavigation.setRootDomRef(oDomRef);
-
-			aChildDomRefs = this.getItems().map(function (oItem) {
-				return oItem.getDomRef();
-			});
-
-			// set the array of DOM elements representing the items
-			this._oItemNavigation.setItemDomRefs(aChildDomRefs);
 		};
 
 		/**

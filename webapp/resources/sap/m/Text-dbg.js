@@ -54,7 +54,7 @@ function(library, Core, Control, coreLibrary, Device, HyphenationSupport, TextRe
 	 * @implements sap.ui.core.IShrinkable, sap.ui.core.IFormContent, sap.ui.core.ISemanticFormContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -484,7 +484,7 @@ function(library, Core, Control, coreLibrary, Device, HyphenationSupport, TextRe
 	 * Gets the accessibility information for the text.
 	 *
 	 * @protected
-	 * @returns {object} Accessibility information for the text.
+	 * @returns {sap.ui.core.AccessibilityInfo} Accessibility information for the text.
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 */
 	Text.prototype.getAccessibilityInfo = function () {

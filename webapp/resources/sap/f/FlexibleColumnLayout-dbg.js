@@ -59,7 +59,7 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new control
 	 *
 	 * @class
-	 * Implements the master-detail-detail paradigm by displaying up to three pages in separate columns.
+	 * Implements the list-detail-detail paradigm by displaying up to three pages in separate columns.
 	 *
 	 * <h3>Overview</h3>
 	 *
@@ -97,7 +97,7 @@ sap.ui.define([
 	 *
 	 * @extends sap.ui.core.Control
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -2306,7 +2306,7 @@ sap.ui.define([
 	 * @param {object} mSettings Object containing the aggregation name
 	 * @param {string} mSettings.aggregation The aggregation name to decide on which column/container the placeholder should be shown
 	 * @private
-	 * @ui5-restricted SAPUI5 Distribution libraries only
+	 * @ui5-restricted SAPUI5 Distribution Layer Libraries
 	 * @since 1.91
 	 */
 	FlexibleColumnLayout.prototype.showPlaceholder = function(mSettings) {

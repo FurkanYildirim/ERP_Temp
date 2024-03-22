@@ -30,13 +30,13 @@ sap.ui.define([
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @param {sap.ui.integration.Host} oHost The Host which will be used for resolve CSRF tokens.
 	 * @param {object} oConfiguration The CSRF configuration from the manifest.
 	 * @private
-	 * @ui5-restricted
+	 * @ui5-restricted sap.ui.integration
 	 * @alias sap.ui.integration.util.CsrfTokenHandler
 	 */
 	var CsrfTokenHandler = BaseObject.extend("sap.ui.integration.util.CsrfTokenHandler", {
@@ -64,9 +64,10 @@ sap.ui.define([
 	/**
 	 * Resolves CSRF placeholders to actual values within a data configuration object.
 	 *
-	 * @public
+	 * @private
+	 * @ui5-restricted sap.ui.integration
 	 * @param {object} oDataConfig Data configuration object
-	 * @returns {Promise} A promise which resolves with the data configuration object containing resolved CSRF token values
+	 * @returns {Promise<object>} A promise which resolves with the data configuration object containing resolved CSRF token values
 	 */
 	CsrfTokenHandler.prototype.resolveToken = function (oDataConfig) {
 		var oCsrfTokenContext,
@@ -124,7 +125,8 @@ sap.ui.define([
 	 * Saves a reference to the DataProviderFactory to create own data requests.
 	 * Those CSRF placeholders may contain destinations placeholders which need to be resolved prior to making the request.
 	 *
-	 * @public
+	 * @private
+	 * @ui5-restricted sap.ui.integration
 	 * @param {sap.ui.integration.util.DataProviderFactory} oDataProviderFactory the factory
 	 */
 	CsrfTokenHandler.prototype.setDataProviderFactory = function (oDataProviderFactory) {
@@ -141,15 +143,15 @@ sap.ui.define([
 
 	/**
 	 * Checks if a response contains an expired CSRF Token.
-	 * @param {object} jqXHR The request.
+	 * @param {object} oResponse The response.
 	 */
-	CsrfTokenHandler.prototype.isExpiredToken = function (jqXHR) {
-		if (!jqXHR) {
+	CsrfTokenHandler.prototype.isExpiredToken = function (oResponse) {
+		if (!oResponse) {
 			return false;
 		}
 
-		var sXCSRFHeader = jqXHR.getResponseHeader(TOKEN_DEFAULT_HEADER);
-		return sXCSRFHeader && sXCSRFHeader.toLowerCase() === "required" && jqXHR.status === 403;
+		var sXCSRFHeader = oResponse.headers.get(TOKEN_DEFAULT_HEADER);
+		return sXCSRFHeader && sXCSRFHeader.toLowerCase() === "required" && oResponse.status === 403;
 	};
 
 	/**
@@ -178,7 +180,7 @@ sap.ui.define([
 					sTokenValue = oModel.getProperty(oCsrfTokenConfig.data.path);
 					oModel.destroy();
 				} else {
-					sTokenValue = oCsrfTokenDataProvider.getLastJQXHR().getResponseHeader(TOKEN_DEFAULT_HEADER);
+					sTokenValue = oCsrfTokenDataProvider.getLastResponse().headers.get(TOKEN_DEFAULT_HEADER);
 				}
 
 				resolve(sTokenValue);
@@ -198,7 +200,8 @@ sap.ui.define([
 	/**
 	 * Deletes a token based on a data configuration object which contains a CSRF placeholder in its headers property.
 	 *
-	 * @public
+	 * @private
+	 * @ui5-restricted sap.ui.integration
 	 * @param {object} oDataConfig Data configuration object
 	 */
 	CsrfTokenHandler.prototype.resetTokenByRequest = function (oDataConfig) {

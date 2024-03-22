@@ -18,7 +18,10 @@
 	}
 
 sap.ui.define([
+	'sap/base/util/extend',
+	'sap/base/util/ObjectPath',
 	'sap/ui/thirdparty/jquery',
+	'sap/ui/Global',
 	'sap/ui/base/Object',
 	'sap/ui/core/Element',
 	'sap/ui/core/mvc/View',
@@ -26,7 +29,7 @@ sap.ui.define([
 	'sap/ui/test/matchers/MatcherFactory',
 	'sap/ui/test/pipelines/MatcherPipeline',
 	'sap/ui/test/_OpaLogger'
-], function ($, UI5Object, UI5Element, View, Ancestor, MatcherFactory,
+], function (extend, ObjectPath, $, Global, UI5Object, UI5Element, View, Ancestor, MatcherFactory,
 			MatcherPipeline, _OpaLogger) {
 
 		/**
@@ -50,7 +53,7 @@ sap.ui.define([
 			 *
 			 * @param {Function} [fnConstructorType] the control type, e.g: sap.m.CheckBox
 			 * @param {string} [sControlType] optional control type name, e.g: "sap.m.CheckBox"
-			 * @returns {Array} an array of the found controls (can be empty)
+			 * @returns {Array<sap.ui.core.Element>} an array of the found controls (can be empty)
 			 * @public
 			 */
 			getAllControls : function (fnConstructorType, sControlType) {
@@ -128,8 +131,13 @@ sap.ui.define([
 			 * eg : { viewName : "bar", viewNamespace : "baz." } will return all the Controls in the view with the name baz.bar<br/>
 			 * eg : { viewId : "viewBar" } will return all the controls inside the view with the ID viewBar<br/>
 			 *
-			 * @param {object} oOptions can contain a viewName, viewNamespace, viewId, fragmentId, id and controlType properties.
-			 * oOptions.id can be string, array or regular expression
+			 * @param {object} options can contain a viewName, viewNamespace, viewId, fragmentId, id and controlType properties.
+			 * @param {string} [options.viewName]
+			 * @param {string} [options.viewNamespace]
+			 * @param {string} [options.viewId]
+			 * @param {string} [options.fragmentId]
+			 * @param {string|RegExp|Array<string|RegExp>} [options.id]
+			 * @param {function} [options.controlType]
 			 * @returns {sap.ui.core.Element|sap.ui.core.Element[]|null}
 			 * If oOptions.id is a string, will return the control with such an ID or null.<br/>
 			 * If the view is not found or no control matches the given criteria, will return an empty array <br/>
@@ -419,7 +427,7 @@ sap.ui.define([
 			 */
 			_getFilteredControls : function(oOptions) {
 				var vControl = this._filterControlsByCondition(oOptions);
-				var oFilterOptions = $.extend({}, oOptions);
+				var oFilterOptions = extend({}, oOptions);
 
 				// when on the root level of oOptions, these options are already processed (see _filterControlsByCondition) and should not be processed again,
 				// as this results in error when no controls are passed to the matcher pipeline (see _filterControlsByMatchers)
@@ -456,7 +464,7 @@ sap.ui.define([
 
 			// instantiate any matchers with declarative syntax and run controls through matcher pipeline
 			_filterControlsByMatchers: function (oOptions, vControl) {
-				var oOptionsWithMatchers = $.extend({}, oOptions);
+				var oOptionsWithMatchers = extend({}, oOptions);
 				var aMatchers = this._oMatcherFactory.getFilteringMatchers(oOptionsWithMatchers);
 				var bPluginLooksForControls = this._isLookingForAControl(oOptions);
 				var vResult = null;
@@ -552,16 +560,25 @@ sap.ui.define([
 			 * Gets the constructor function of a certain controlType
 			 *
 			 * @param {string} sControlType the name of the type eg: "sap.m.Button"
-			 * @returns {null|function} When the type is loaded, the contstructor is returned, if it is a lazy stub or not yet loaded, null will be returned and there will be a log entry.
+			 * @returns {null|function} When the type is loaded, the constructor is returned, if it is a lazy stub or not yet loaded, null will be returned and there will be a log entry.
 			 * @public
 			 */
 			getControlConstructor : function (sControlType) {
-				if (sap.ui.lazyRequire._isStub(sControlType)) {
-					this._oLogger.debug("The control type " + sControlType + " is currently a lazy stub.");
-					return null;
+				var sModuleName = sControlType.replace(/\./g, "/");
+				var fnControlType = sap.ui.require(sModuleName);
+				if ( fnControlType == null ) {
+					/**
+					 * @deprecated since 1.56 together with lazy loading as it implies sync loading
+					 */
+					if (Global.lazyRequire._isStub(sControlType)) {
+						this._oLogger.debug("The control type " + sControlType + " is currently a lazy stub.");
+						return null;
+					}
+					fnControlType = ObjectPath.get(sControlType);
+					if ( typeof fnControlType === "function" ) {
+						this._oLogger.debug("The control type " + sControlType + " could only be retrieved via global name.");
+					}
 				}
-
-				var fnControlType = $.sap.getObject(sControlType);
 
 				// no control type
 				if (!fnControlType) {
@@ -569,7 +586,7 @@ sap.ui.define([
 					return null;
 				}
 
-				// some control types only have static methods and cannot be instanciated (e.g.: sap.m.MessageToast)
+				// some control types only have static methods and cannot be instantiated (e.g.: sap.m.MessageToast)
 				if (typeof fnControlType !== "function") {
 					this._oLogger.debug("The control type " + sControlType + " must be a function.");
 					return null;
@@ -607,6 +624,9 @@ sap.ui.define([
 				var vControlType = oOptions.controlType;
 				//retrieve the constructor instance
 				if (typeof vControlType !== "string") {
+					/**
+					 * @deprecated since 1.56 together with lazy loading as it implies sync loading
+					 */
 					if (vControlType && vControlType._sapUiLazyLoader) {
 						// no way of getting the control type's name without actually calling it
 						this._oLogger.debug("The control type is currently a lazy stub");

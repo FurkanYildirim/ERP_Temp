@@ -1,0 +1,1 @@
+{"version":3,"file":"Renderer.d.ts","sourceRoot":"../../../../../../..","sources":["src/sap/feedback/ui/flpplugin/ui/Renderer.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,uCAAuC,CAAC;IAIvD,OAAO,aAAa,MAAM,sCAAsC,CAAC;IAGjE,MAAM,CAAC,OAAO,OAAO,QAAQ;eACd,WAAW,IAAI,OAAO,CAAC,aAAa,CAAC;KAsBnD;CAEA"}

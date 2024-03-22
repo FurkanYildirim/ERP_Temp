@@ -8,16 +8,18 @@ sap.ui.define([], function () {
 
 	function parseHeaders(sAllResponseHeaders) {
 		var result = new Headers();
-		sAllResponseHeaders.trim().split("\r\n").forEach(function (sHeader) {
-			if (sHeader) {
-				var pos = sHeader.indexOf(": ");
-				if (pos > 0) {
-					result.append(sHeader.slice(0, pos), sHeader.slice(pos + 2));
-				} else {
-					result.append(sHeader, "");
+		if (typeof sAllResponseHeaders === "string") {
+			sAllResponseHeaders.trim().split("\r\n").forEach(function (sHeader) {
+				if (sHeader) {
+					var pos = sHeader.indexOf(":");
+					if (pos > 0) {
+						result.append(sHeader.slice(0, pos), sHeader.slice(pos + 1));
+					} else {
+						result.append(sHeader, "");
+					}
 				}
-			}
-		});
+			});
+		}
 		return result;
 	}
 
@@ -50,7 +52,7 @@ sap.ui.define([], function () {
 	 * @interface
 	 * @alias sap.base.util.SimpleResponse
 	 * @private
-	 * @ui5-restricted SAPUI5 Dist
+	 * @ui5-restricted SAPUI5 Distribution Layer Libraries
 	 */
 	function SimpleResponse(xhr, PromiseImpl) {
 		var headers = parseHeaders(xhr.getAllResponseHeaders());
@@ -122,7 +124,7 @@ sap.ui.define([], function () {
 	 *
 	 * @alias module:sap/base/util/fetch
 	 * @private
-	 * @ui5-restricted SAPUI5 Dist
+	 * @ui5-restricted SAPUI5 Distribution Layer Libraries
 	 */
 	function fetch(resource, init, _mImplementations) {
 		/**
@@ -217,7 +219,7 @@ sap.ui.define([], function () {
 	 *
 	 * @type {Object}
 	 * @private
-	 * @ui5-restricted SAPUI5 Dist
+	 * @ui5-restricted SAPUI5 Distribution Layer Libraries
 	 *
 	 */
 	fetch.ContentTypes = {

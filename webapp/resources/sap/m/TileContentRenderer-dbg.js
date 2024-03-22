@@ -76,7 +76,7 @@ sap.ui.define(["./library", "sap/base/security/encodeCSS", "sap/m/GenericTile"],
 			oRm.openStart("div", oControl.getId() + "-failed-icon");
 			oRm.class("sapMTileCntFtrFldIcn");
 			oRm.openEnd();
-			oRm.renderControl(oControl.getParent()._oWarningIcon);
+			oRm.renderControl(oControl.getParent()._oErrorIcon);
 			oRm.close("div");
 			oRm.openStart("div", oControl.getId() + "-failed-text");
 			oRm.class("sapMTileCntFtrFldTxt");
@@ -110,7 +110,6 @@ sap.ui.define(["./library", "sap/base/security/encodeCSS", "sap/m/GenericTile"],
 			bIsActionMode = oTile instanceof GenericTile && oTile.getMode() === GenericTileMode.ActionMode && oTile.getFrameType() === FrameType.TwoByOne,
 			sPriorityText = oControl.getPriorityText(),
 			bRenderPriority = bIsActionMode && oPriority && oPriority !== Priority.None && sPriorityText,
-			sPriority = sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("TEXT_CONTENT_PRIORITY"),
 			iMaxLines = (oPriority !== Priority.None && sPriorityText) ? 1 : 3; //if the Priority is present then the text should have 1 line else 3 lines in ActionMode
 
 		if (oContent) {
@@ -127,23 +126,18 @@ sap.ui.define(["./library", "sap/base/security/encodeCSS", "sap/m/GenericTile"],
 				oRm.openStart("div", oControl.getId() + "-priority-content");
 				oRm.class("sapMTilePriorityCnt");
 				oRm.openEnd();
-				//Border
-				oRm.openStart("div", oControl.getId() + "-priority-border");
-				oRm.class("sapMTilePriorityBorder");
-				oRm.openEnd();
-				oRm.close("div");
 				//Value
 				oRm.openStart("span", oControl.getId() + "-priority-value");
 				oRm.class("sapMTilePriorityValue");
 				oRm.openEnd();
-				oRm.text(sPriorityText + " " + sPriority);
+				oRm.text(sPriorityText);
 				oRm.close("span");
 				oRm.close("div");
 				oRm.close("div");
 				oRm.close("div");
 			}
 			if (oContent.isA("sap.m.Text") && bIsActionMode && (oControl.getFrameType() === FrameType.TwoByOne || oControl.getFrameType() === FrameType.Auto)) {
-				oContent.setProperty("maxLines", iMaxLines,true);
+				oContent.setMaxLines(iMaxLines);
 			}
 			oRm.openStart("div", oControl.getId() + "-content");
 			oRm.class("sapMTileCntContent");

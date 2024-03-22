@@ -53,7 +53,7 @@ sap.ui.define([
 	 * @implements sap.ui.commons.ToolbarItem, sap.ui.core.IFormContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -479,7 +479,7 @@ sap.ui.define([
 	 * Property setter for the ValueState
 	 *
 	 * @param {sap.ui.core.ValueState} oValueState
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setValueState = function(oValueState) {
@@ -524,7 +524,7 @@ sap.ui.define([
 	 * Property setter for the editable state
 	 *
 	 * @param {boolean} bEditable
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setEditable = function(bEditable) {
@@ -546,7 +546,7 @@ sap.ui.define([
 	 * Property setter for the enabled state
 	 *
 	 * @param {boolean} bEnabled
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setEnabled = function(bEnabled) {
@@ -568,7 +568,7 @@ sap.ui.define([
 	 * Property setter for the Required-State
 	 *
 	 * @param {boolean} bRequired:
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setRequired = function(bRequired) {
@@ -596,7 +596,7 @@ sap.ui.define([
 	 * Property setter for the Design
 	 *
 	 * @param {sap.ui.core.Design} sDesign:
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setDesign = function(sDesign) {
@@ -621,7 +621,7 @@ sap.ui.define([
 	 * Property setter for the Value
 	 *
 	 * @param {string} sValue:
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setValue = function(sValue) {
@@ -661,7 +661,7 @@ sap.ui.define([
 	 * Property setter for the Tooltip
 	 *
 	 * @param oTooltip:
-	 * @return {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	TextField.prototype.setTooltip = function(oTooltip) {
@@ -697,12 +697,20 @@ sap.ui.define([
 
 	};
 
+	/**
+	 * @typedef {object} sap.ui.commons.FocusInfo
+	 * @description The object representing the serialized focus information.
+	 * @property {string} [id] ID of the component
+	 * @property {sap.ui.commons.UserInputInfo | null} [userinput] User input
+	 * @protected
+	 */
+
 	/*
 	 * Applies the focus info
 	 * overwrite of the Element method to set the just typed in text again
 	 * and restore the cursor position and selection.
-	 * @param {object} oFocusInfo Focus information
-	 * @return {object} reference to this
+	 * @param {sap.ui.commons.FocusInfo} oFocusInfo Focus information
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @protected
 	 */
 	TextField.prototype.applyFocusInfo = function (oFocusInfo) {
@@ -715,7 +723,7 @@ sap.ui.define([
 
 	/**
 	 * Returns an object representing the serialized focus information
-	 * @return {object} an object representing the serialized focus information
+	 * @returns {sap.ui.commons.FocusInfo} an object representing the serialized focus information
 	 * @protected
 	 * @function
 	 */
@@ -728,7 +736,7 @@ sap.ui.define([
 	 * In case of editing the <code>TextField</code> you can access the current value via this method.
 	 * The validated value is accessible via the property value.
 	 *
-	 * @return {string} live value
+	 * @returns {string} live value
 	 * @public
 	 */
 	TextField.prototype.getLiveValue = function() {
@@ -792,7 +800,20 @@ sap.ui.define([
 
 	};
 
+	/**
+	 * @typedef {object} sap.ui.commons.UserInputInfo
+	 * @description The object representing the user's unsaved input.
+	 * @property {string} [userinput] Text input
+	 * @property {string} [value] Text input
+	 * @property {int} [cursorPos] Cursor position
+	 * @property {int} [selStart] Selection start position
+	 * @property {int} [selEnd] Selection end position
+	 * @private
+	 */
 
+	/**
+	 * @returns {sap.ui.commons.UserInputInfo|null} User input info
+	 */
 	TextField.prototype._getUnsavedUserInputInfo = function() {
 
 		var $tf = this.$();
@@ -835,7 +856,7 @@ sap.ui.define([
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} Current accessibility state of the control
+	 * @returns {sap.ui.core.AccessibilityInfo} Current accessibility state of the control
 	 * @protected
 	 */
 	TextField.prototype.getAccessibilityInfo = function() {

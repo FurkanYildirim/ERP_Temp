@@ -7,11 +7,11 @@
 sap.ui.define([
 	"sap/ui/base/Object",
 	"sap/m/p13n/PersistenceProvider",
-	"sap/ui/fl/Utils"
-], function (BaseObject, PersistenceProvider, FLUtils) {
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI"
+], function (BaseObject, PersistenceProvider, ControlVariantApplyAPI) {
 	"use strict";
 
-	var ERROR_INSTANCING = "DefaultProviderRegistry: This class is a singleton and should not be used without an AdaptationProvider. Please use 'sap.m.p13n.Engine.getInstance().defaultProviderRegistry' instead";
+	var ERROR_INSTANCING = "DefaultProviderRegistry: This class is a singleton and should not be used without an AdaptationProvider. Please use 'Engine.getInstance().defaultProviderRegistry' instead";
 
 	//Singleton storage
 	var oDefaultProviderRegistry;
@@ -26,7 +26,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @since 1.104
@@ -81,6 +81,18 @@ sap.ui.define([
 			oDefaultProvider.addFor(vElement);
 		}
 
+		var oProvider = this._mDefaultProviders[sPersistenceMode];
+
+		var fnAttachVariantModel = function(){
+			var oModel = oElement.getModel(ControlVariantApplyAPI.getVariantModelName());
+			if (oModel) {
+				oProvider.setModel(oModel, ControlVariantApplyAPI.getVariantModelName());
+				oElement.detachEvent("modelContextChange", fnAttachVariantModel);
+			}
+		};
+
+		oElement.attachEvent("modelContextChange", fnAttachVariantModel);
+
 		return oDefaultProvider;
 	};
 
@@ -114,16 +126,6 @@ sap.ui.define([
 			var oProvider = new PersistenceProvider("defaultProviderRegistry" + sPersistenceMode, {
 				mode: sPersistenceMode
 			});
-
-			var fnAttachVariantModel = function(){
-				var oModel = oElement.getModel(FLUtils.VARIANT_MODEL_NAME);
-				if (oModel) {
-					oProvider.setModel(oModel, FLUtils.VARIANT_MODEL_NAME);
-					oElement.detachEvent("modelContextChange", fnAttachVariantModel);
-				}
-			};
-
-			oElement.attachEvent("modelContextChange", fnAttachVariantModel);
 			this._mDefaultProviders[sPersistenceMode] = oProvider;
 		}
 
@@ -131,10 +133,10 @@ sap.ui.define([
 	};
 
 	/**
+	 * This method is the central point of access to the DefaultProviderRegistry Singleton.
+	 *
 	 * @private
 	 * @ui5-restricted sap.m
-	 *
-	 * This method is the central point of access to the DefaultProviderRegistry Singleton.
 	 */
 	 DefaultProviderRegistry.getInstance = function(Engine) {
 		if (!oDefaultProviderRegistry) {

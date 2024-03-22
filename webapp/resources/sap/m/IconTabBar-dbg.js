@@ -94,7 +94,7 @@ sap.ui.define([
 	 * @implements sap.m.ObjectHeaderContainer, sap.f.IDynamicPageStickyContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
 	 * @alias sap.m.IconTabBar
@@ -394,7 +394,7 @@ sap.ui.define([
 	 * Sets the tab density mode.
 	 *
 	 * @public
-	 * @param {sap.m.IconTabHeaderMode} mode New parameter value.
+	 * @param {sap.m.IconTabDensityMode} mode New parameter value.
 	 * @return {this} this IconTabBar reference for chaining.
 	 */
 	IconTabBar.prototype.setTabDensityMode = function (mode) {
@@ -455,7 +455,7 @@ sap.ui.define([
 	 * Sets the ariaTexts property.
 	 *
 	 * @public
-	 * @param {object} oAriaTexts New value for ariaTexts.
+	 * @param {{headerLabel: string, headerDescription: string}} oAriaTexts New value for ariaTexts.
 	 * @returns {this} this Reference to this in order to allow method chaining
 	 */
 	IconTabBar.prototype.setAriaTexts = function (oAriaTexts) {
@@ -470,6 +470,19 @@ sap.ui.define([
 
 		return this;
 	};
+
+	/**
+	 * Gets current value of property {@link #getAriaTexts ariaTexts}.
+	 *
+	 * Specifies optional texts for the screen reader.
+	 *
+	 * The given object can contain the following keys: <code>headerLabel</code> - text to serve as a label for the header, <code>headerDescription</code> - text to serve as a description for the header.
+	 *
+	 * @method
+	 * @returns {{headerLabel: string, headerDescription: string}|null} Value of property <code>ariaTexts</code>
+	 * @public
+	 * @name sap.m.IconTabBar#getAriaTexts
+	 */
 
 	IconTabBar.prototype.addStyleClass = function (sClass, bSuppressRerendering) {
 		var oIconTabHeader = this._getIconTabHeader();

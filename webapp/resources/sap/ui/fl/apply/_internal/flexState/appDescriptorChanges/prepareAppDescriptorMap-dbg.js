@@ -5,9 +5,9 @@
  */
 
 sap.ui.define([
-	"sap/ui/fl/Change"
+	"sap/ui/fl/apply/_internal/flexObjects/FlexObjectFactory"
 ], function(
-	Change
+	FlexObjectFactory
 ) {
 	"use strict";
 
@@ -31,7 +31,7 @@ sap.ui.define([
 		//TODO: add filtering for condensable changeTypes once necessary
 
 		var aChanges = aChangeDefinitions.map(function(oChangeDefinition) {
-			return new Change(oChangeDefinition);
+			return FlexObjectFactory.createFromFileContent(oChangeDefinition);
 		});
 		return {
 			appDescriptorChanges: aChanges

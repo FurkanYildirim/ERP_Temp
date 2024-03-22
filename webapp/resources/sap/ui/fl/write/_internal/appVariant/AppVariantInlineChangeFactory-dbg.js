@@ -33,7 +33,7 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.ui.fl.write._internal.appVariant.AppVariantInlineChangeFactory
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.rta, smart business
 	 */
@@ -918,7 +918,7 @@ sap.ui.define([
 	 * @return {Promise} Resolving when creating the app variant inline change was successful (without back end access)
 	 *
 	 * @private
-	 * @ui5-restricted WebIDE
+	 * @ui5-restricted SAP Web IDE
 	 */
 	AppVariantInlineChangeFactory.create_ui5_setFlexExtensionPointEnabled = function(mPropertyBag) {
 		Utils.checkParameterAndType(mPropertyBag.content, "flexExtensionPointEnabled", "boolean");
@@ -960,11 +960,33 @@ sap.ui.define([
 	 * @return {Promise} Resolving when the descriptor inline change was created successfully (without back-end access)
 	 *
 	 * @private
-	 * @ui5-restricted WebIDE
+	 * @ui5-restricted SAP Web IDE
 	 */
 	 AppVariantInlineChangeFactory.create_fiori_setAbstract = function(mPropertyBag) {
 		Utils.checkParameterAndType(mPropertyBag.content, "abstract", "boolean");
 		Utils.checkParameterAndType(mPropertyBag, "changeType", "string");
+		return _createAppVariantInlineChange(mPropertyBag);
+	};
+
+	/**
+     * Creates an inline change of change type <code>appdescr_fe_changePageConfiguration</code>.
+     *
+     * @param {object} mPropertyBag Parameters of the change type
+     * @param {string} mPropertyBag.changeType Inline change type of an app variant
+     * @param {object} mPropertyBag.content Content of an inline change
+     * @param {object} mPropertyBag.content.page The ID of the page for which the configuration is to be changed.
+     * @param {object} mPropertyBag.content.entityPropertyChange Entity property change
+     * @param {object} mPropertyBag.content.entityPropertyChange.propertyPath The path in the page settings for which the configuration is to be changed.
+     * @param {object} mPropertyBag.content.entityPropertyChange.operation Operation (currently only UPSERT supported)
+     * @param {object} mPropertyBag.content.entityPropertyChange.propertyValue The new value of the configuration. This could be a plain value like a string, or a Boolean, or a structured object.
+     *
+     * @return {Promise} Resolving when creating the app variant inline change was successful (without back end access)
+     *
+     * @private
+     */
+	AppVariantInlineChangeFactory.create_fe_changePageConfiguration = function(mPropertyBag) {
+		Utils.checkParameterAndType(mPropertyBag.content, "page", "string");
+		Utils.checkEntityPropertyChange(mPropertyBag.content);
 		return _createAppVariantInlineChange(mPropertyBag);
 	};
 

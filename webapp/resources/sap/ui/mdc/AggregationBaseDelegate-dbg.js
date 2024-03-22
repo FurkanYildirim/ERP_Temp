@@ -27,7 +27,7 @@ sap.ui.define(['sap/ui/mdc/BaseDelegate', 'sap/ui/core/library'], function (Base
 	 * @since 1.82.0
 	 * @alias sap.ui.mdc.AggregationBaseDelegate
 	 */
-	var AggregationBaseDelegate = Object.assign(BaseDelegate, {
+	var AggregationBaseDelegate = Object.assign({}, BaseDelegate, {
 
 		/**
 	 	 * Retrieves the relevant metadata for a given payload and returns the property info array.
@@ -46,8 +46,8 @@ sap.ui.define(['sap/ui/mdc/BaseDelegate', 'sap/ui/core/library'], function (Base
 		 * Consequently the parameter <code>mPropertyBag</code> is only passed during preprocessing. In runtime scenarios (such as opening a personalization dialog), this
 		 * method might be called without the parameter <code>mPropertyBag</code>.
 		 *
-		 * @param {string} sPropertyName The name of the property info object/JSON
 		 * @param {sap.ui.mdc.Control} oControl Instance of an <code>sap.ui.mdc.Control</code>
+		 * @param {string} sPropertyName The name of the property info object/JSON
 		 * @param {Object} [mPropertyBag] Instance of property bag from SAPUI5 flexibility change API
 		 *
 		 * @returns {Promise} Promise that resolves with an instance of the implementing {@link sap.ui.mdc.Control Control} default aggregation.
@@ -57,7 +57,7 @@ sap.ui.define(['sap/ui/mdc/BaseDelegate', 'sap/ui/core/library'], function (Base
 		 *
 		 * @public
 		 */
-		addItem: function (sPropertyName, oControl, mPropertyBag) {
+		addItem: function (oControl, sPropertyName, mPropertyBag) {
 			return Promise.resolve();
 		},
 
@@ -69,14 +69,14 @@ sap.ui.define(['sap/ui/mdc/BaseDelegate', 'sap/ui/core/library'], function (Base
 		 * Consequently the parameter <code>mPropertyBag</code> is only passed during preprocessing. In runtime scenarios (such as opening a personalization dialog), this
 		 * method might be called without the parameter <code>mPropertyBag</code>.
 		 *
-		 * @param {sap.ui.core.Control} oItem The control instance that was removed
 		 * @param {sap.ui.mdc.Control} oControl Instance of an <code>sap.ui.mdc.Control</code>
+		 * @param {sap.ui.core.Control} oItem The control instance that was removed
 		 * @param {Object} [mPropertyBag] Instance of property bag from SAPUI5 flexibility
 		 *
 		 * @returns {Promise} Promise that resolves with <code>true</code>, <code>false</code> to allow/prevent default behavior of the change
 		 * @public
 		 */
-		removeItem: function(oItem, oControl, mPropertyBag) {
+		removeItem: function(oControl, oItem, mPropertyBag) {
 			return Promise.resolve(true);
 		},
 
@@ -85,7 +85,6 @@ sap.ui.define(['sap/ui/mdc/BaseDelegate', 'sap/ui/core/library'], function (Base
 		 *
 		 * @param {sap.ui.mdc.Control} oControl Instance of a <code>sap.ui.mdc.Control</code>
 		 * @param {Object} oState The theoretical external state representation of an MDC control. The representation of this format is similar as processed by {@link sap.ui.mdc.p13n.StateUtil StateUtil}
-		 *
 		 * @returns {Object} An object that must contain at least the <code>validation</code> attribute {@link sap.ui.core.MessageType MessageType}.
 		 * If <code>warning</code> or <code>error</code> state types have been provided, the <code>message</code> is shown in addition.
 		 */
@@ -109,8 +108,27 @@ sap.ui.define(['sap/ui/mdc/BaseDelegate', 'sap/ui/core/library'], function (Base
 		 */
 		onAfterXMLChangeProcessing: function(oControl, mPropertyBag) {
 			//Neccessary cleanups can be implemented here
-		}
+		},
 
+		/**
+		 * A validator to evaluate the state of a MDC control.
+		 *
+		 * @param {Object<sap.ui.mdc.Control>} oControl Instance of a MDC control
+		 * @param {map} [mValidation] Object Describing the validation result
+
+		 */
+		determineValidationState: function(oControl) {
+            return oControl.checkValidationState ? oControl.checkValidationState() : -1;
+		},
+
+		/**
+		 * Visualizes the validation state of a MDC control.
+		 *
+		 * @param {Object<sap.ui.mdc.Control>} oControl Instance of a MDC control
+		 * @returns {map} mValidation Describes the validation result.
+		 */
+	    visualizeValidationState: function(oControl, mValidation) {
+		}
 	});
 
 	return AggregationBaseDelegate;

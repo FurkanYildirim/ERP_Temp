@@ -25,6 +25,12 @@
 			"theme": "sap_horizon_dark"
 		},
 		{
+			"name": "AdditionalTextButton.less",
+			"size": 363,
+			"designtime": true,
+			"theme": "sap_horizon_dark"
+		},
+		{
 			"name": "Avatar.less",
 			"size": 1725,
 			"designtime": true,
@@ -38,7 +44,7 @@
 		},
 		{
 			"name": "Breadcrumbs.less",
-			"size": 491,
+			"size": 1336,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -56,19 +62,19 @@
 		},
 		{
 			"name": "Button.less",
-			"size": 9696,
+			"size": 10555,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "Carousel.less",
-			"size": 1413,
+			"size": 1493,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "CheckBox.less",
-			"size": 4830,
+			"size": 4427,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -116,7 +122,7 @@
 		},
 		{
 			"name": "FeedInput.less",
-			"size": 370,
+			"size": 364,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -128,7 +134,7 @@
 		},
 		{
 			"name": "GenericTile.less",
-			"size": 12518,
+			"size": 12420,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -146,7 +152,7 @@
 		},
 		{
 			"name": "IconTabBar.less",
-			"size": 16460,
+			"size": 16516,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -164,7 +170,7 @@
 		},
 		{
 			"name": "InputBase.less",
-			"size": 4159,
+			"size": 4440,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -176,19 +182,19 @@
 		},
 		{
 			"name": "LightBox.less",
-			"size": 948,
+			"size": 867,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "Link.less",
-			"size": 1374,
+			"size": 1289,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "ListBase.less",
-			"size": 755,
+			"size": 857,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -201,6 +207,12 @@
 		{
 			"name": "MenuButton.less",
 			"size": 2154,
+			"designtime": true,
+			"theme": "sap_horizon_dark"
+		},
+		{
+			"name": "MenuListItem.less",
+			"size": 244,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -224,7 +236,7 @@
 		},
 		{
 			"name": "MessageView.less",
-			"size": 1923,
+			"size": 1966,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -284,7 +296,7 @@
 		},
 		{
 			"name": "ObjectStatus.less",
-			"size": 4363,
+			"size": 4340,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -302,13 +314,13 @@
 		},
 		{
 			"name": "Panel.less",
-			"size": 2463,
+			"size": 2532,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "PlanningCalendar.less",
-			"size": 5617,
+			"size": 5924,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -344,7 +356,7 @@
 		},
 		{
 			"name": "RadioButton.less",
-			"size": 4890,
+			"size": 4907,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -386,7 +398,7 @@
 		},
 		{
 			"name": "Select.less",
-			"size": 10031,
+			"size": 10245,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -410,13 +422,13 @@
 		},
 		{
 			"name": "SinglePlanningCalendarGrid.less",
-			"size": 4857,
+			"size": 5825,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "SinglePlanningCalendarMonthGrid.less",
-			"size": 2398,
+			"size": 2726,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -428,7 +440,7 @@
 		},
 		{
 			"name": "Slider.less",
-			"size": 4244,
+			"size": 4323,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -440,7 +452,7 @@
 		},
 		{
 			"name": "SplitButton.less",
-			"size": 6535,
+			"size": 7885,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -482,7 +494,7 @@
 		},
 		{
 			"name": "Table.less",
-			"size": 1857,
+			"size": 1496,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -500,7 +512,7 @@
 		},
 		{
 			"name": "TextArea.less",
-			"size": 927,
+			"size": 1381,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -529,6 +541,12 @@
 			"theme": "sap_horizon_dark"
 		},
 		{
+			"name": "Title.less",
+			"size": 1094,
+			"designtime": true,
+			"theme": "sap_horizon_dark"
+		},
+		{
 			"name": "ToggleButton.less",
 			"size": 3955,
 			"designtime": true,
@@ -542,13 +560,13 @@
 		},
 		{
 			"name": "Tokenizer.less",
-			"size": 1810,
+			"size": 1790,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "Toolbar.less",
-			"size": 1784,
+			"size": 1672,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -602,62 +620,62 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 54589,
+			"size": 55854,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 183013,
+			"size": 208048,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 182641,
+			"size": 207676,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 853072,
+			"size": 872687,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/m/themes/sap_horizon_dark/library-parameters.json",
-			"size": 22886,
+			"size": 23440,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library.css",
-			"size": 853044,
+			"size": 872664,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library.less",
-			"size": 225669,
+			"size": 232427,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library.source.less",
-			"size": 3302,
+			"size": 3390,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 903656,
+			"size": 924506,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 903628,
+			"size": 924483,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "resources.json",
-			"size": 12292
+			"size": 12630
 		}
 	]
 }

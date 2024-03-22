@@ -1,0 +1,4 @@
+:root{--sapUiSacGridCellBorder:1px solid #5e696e;--sapUiSacGridSpreadsheetSelectionBorderStyle:dotted;--sapUiSacGridSpreadsheetSelectionBorderWidth:3px;--_sap_sac_df_function_rgb2152:#ddd}.sapContrast{--sapUiSacGridCellBorder:1px solid #d3d7d9;}
+
+/* Inline theming parameters */
+#sap-ui-theme-sap\.sac\.df{background-image:url('data:text/plain;utf-8,%7B%22default%22%3A%7B%22sapUiSacGridCellBorder%22%3A%221px%20solid%20%235e696e%22%2C%22sapUiSacGridSpreadsheetSelectionBorderStyle%22%3A%22dotted%22%2C%22sapUiSacGridSpreadsheetSelectionBorderWidth%22%3A%223px%22%7D%2C%22scopes%22%3A%7B%22sapContrast%22%3A%7B%22sapUiSacGridCellBorder%22%3A%221px%20solid%20%23d3d7d9%22%7D%7D%7D')}

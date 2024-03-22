@@ -1,0 +1,87 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": ".theming",
+			"size": 64,
+			"theme": "base"
+		},
+		{
+			"name": "Gantt.less",
+			"size": 17358,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "GanttPrinting.less",
+			"size": 1699,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "GanttSyncedControl.less",
+			"size": 2315,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "css_variables.css",
+			"size": 1079,
+			"theme": "base"
+		},
+		{
+			"name": "css_variables.less",
+			"size": 234,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "css_variables.source.less",
+			"size": 138338,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "library-RTL.css",
+			"size": 16999,
+			"theme": "base"
+		},
+		{
+			"name": "library-parameters.json",
+			"module": "sap/gantt/themes/base/library-parameters.json",
+			"size": 398,
+			"theme": "base"
+		},
+		{
+			"name": "library.css",
+			"size": 16986,
+			"theme": "base"
+		},
+		{
+			"name": "library.less",
+			"size": 21993,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "library.source.less",
+			"size": 327,
+			"designtime": true,
+			"theme": "base"
+		},
+		{
+			"name": "library_skeleton-RTL.css",
+			"size": 18379,
+			"theme": "base"
+		},
+		{
+			"name": "library_skeleton.css",
+			"size": 18366,
+			"theme": "base"
+		},
+		{
+			"name": "resources.json",
+			"size": 1406
+		}
+	]
+}

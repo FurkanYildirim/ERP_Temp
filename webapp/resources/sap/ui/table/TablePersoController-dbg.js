@@ -23,6 +23,8 @@ sap.ui.define([
 	/**
 	 * Constructor for a new TablePersoController.
 	 *
+	 * @deprecated since 1.115. Please use the {@link sap.m.p13n.Engine Engine} for personalization instead.
+	 *
 	 * @param {string} [sId] id for the new control, generated automatically if no id is given
 	 * @param {object} [mSettings] initial settings for the new control
 	 *
@@ -31,7 +33,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.ManagedObject
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.21.1
 	 *
 	 * @constructor
@@ -45,6 +47,7 @@ sap.ui.define([
 		},
 
 		metadata: {
+			deprecated: true,
 			properties: {
 
 				/**
@@ -83,7 +86,6 @@ sap.ui.define([
 				 * Controls the visibility of the Reset button of the <code>TablePersoDialog</code>.<br>
 				**/
 				"showResetAll": {type: "boolean", defaultValue: true, since: "1.88"},
-
 
 				/**
 				 * Controls the behavior of the Reset button of the <code>TablePersoDialog</code>.<br>
@@ -178,7 +180,7 @@ sap.ui.define([
 		var oNewService = this.getPersoService();
 
 		// refresh data using new service if there was a new service set and a table was set
-		if (oNewService && oNewService !== oOldService && this._getTable() && (this.getAutoSave() || !oOldService )) {
+		if (oNewService && oNewService !== oOldService && this._getTable() && (this.getAutoSave() || !oOldService)) {
 			this.refresh();
 		}
 
@@ -226,7 +228,7 @@ sap.ui.define([
 			this._manageTableEventHandlers(oNewTable, true);
 
 			// only refresh if there is a service set and autoSave is on or no table was set before
-			if (this.getPersoService() && (this.getAutoSave() || !oOldTable )) {
+			if (this.getPersoService() && (this.getAutoSave() || !oOldTable)) {
 				this.refresh();
 			}
 		} else if (!oNewTable) {
@@ -504,7 +506,6 @@ sap.ui.define([
 			_open();
 		}
 	};
-
 
 	return TablePersoController;
 

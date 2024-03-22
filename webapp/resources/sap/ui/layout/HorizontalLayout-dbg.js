@@ -22,7 +22,7 @@ sap.ui.define(['sap/ui/core/Control', './library', "./HorizontalLayoutRenderer"]
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -57,7 +57,7 @@ sap.ui.define(['sap/ui/core/Control', './library', "./HorizontalLayoutRenderer"]
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} Current accessibility state of the control
+	 * @returns {sap.ui.core.AccessibilityInfo} Current accessibility state of the control
 	 * @protected
 	 */
 	HorizontalLayout.prototype.getAccessibilityInfo = function() {

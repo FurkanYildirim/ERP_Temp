@@ -7,11 +7,11 @@
 sap.ui.define([
 	'sap/ui/core/Renderer',
 	'sap/ui/core/IconPool',
-	'sap/ui/mdc/enum/EditMode'
+	'sap/ui/mdc/enums/FieldEditMode'
 ], function(
 	Renderer,
 	IconPool,
-	EditMode
+	FieldEditMode
 ) {
 	"use strict";
 
@@ -26,11 +26,11 @@ sap.ui.define([
 	});
 
 	FieldBaseRenderer.render = function(oRm, oField) {
-		var aContent = oField._getContent();
+		var aContent = oField.getCurrentContent();
 		var sWidth = oField.getWidth();
 		var aConditions = oField.getConditions();
 		var sEditMode = oField.getEditMode();
-		var bShowEmptyIndicator = oField.getShowEmptyIndicator() && aConditions.length === 0 && sEditMode === EditMode.Display && !oField.getContent() && !oField.getContentDisplay();
+		var bShowEmptyIndicator = oField.getShowEmptyIndicator() && aConditions.length === 0 && sEditMode === FieldEditMode.Display && !oField.getContent() && !oField.getContentDisplay();
 
 		oRm.openStart("div", oField);
 		oRm.class("sapUiMdcFieldBase");

@@ -20,7 +20,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.BaseCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.86
@@ -59,11 +59,10 @@ sap.ui.define([
 		this._aDirtyChanges = this.getModel()._getDirtyChangesFromVariantChanges(this._aControlChanges);
 		this._aDirtyChanges.forEach(function(oChange) {
 			if (oChange.getFileType() === "change") {
-				oChange.assignedToVariant = true;
+				oChange.setSavedToVariant(true);
 			}
 		});
-		this.getModel().oData[this.sVariantManagementReference].modified = false;
-		this.getModel().checkUpdate(true);
+		this.getModel().invalidateMap();
 		return Promise.resolve();
 	};
 
@@ -75,10 +74,10 @@ sap.ui.define([
 	ControlVariantSave.prototype.undo = function() {
 		this._aDirtyChanges.forEach(function(oChange) {
 			if (oChange.getFileType() === "change") {
-				oChange.assignedToVariant = false;
+				oChange.setSavedToVariant(false);
 			}
 		});
-		this.getModel().checkDirtyStateForControlModels([this.sVariantManagementReference]);
+		this.getModel().invalidateMap();
 		return Promise.resolve();
 	};
 

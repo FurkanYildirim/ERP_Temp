@@ -22,13 +22,12 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @alias sap.m.p13n.AbstractContainer
 	 * @author SAP SE
-	 * @version 1.108.14
-	 * @experimental Since 1.96.
+	 * @version 1.115.1
 	 * @since 1.96
 	 *
 	 * @private

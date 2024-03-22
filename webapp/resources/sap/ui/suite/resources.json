@@ -3,11 +3,11 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 1445
+			"size": 1444
 		},
 		{
 			"name": ".theming",
-			"size": 77
+			"size": 76
 		},
 		{
 			"name": "QuickViewUtils-dbg.js",
@@ -54,7 +54,7 @@
 		{
 			"name": "TaskCircle-dbg.js",
 			"module": "sap/ui/suite/TaskCircle.js",
-			"size": 3351,
+			"size": 3350,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Control.js",
@@ -108,7 +108,7 @@
 		{
 			"name": "VerticalProgressIndicator-dbg.js",
 			"module": "sap/ui/suite/VerticalProgressIndicator.js",
-			"size": 4373,
+			"size": 4372,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Control.js",
@@ -160,7 +160,7 @@
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/suite/library.js",
-			"size": 1252,
+			"size": 1249,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Core.js",
@@ -170,7 +170,7 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/suite/library-preload.js",
-			"size": 10043,
+			"size": 10040,
 			"merged": true,
 			"required": [
 				"sap/base/util/each.js",
@@ -208,7 +208,7 @@
 		{
 			"name": "library.js",
 			"module": "sap/ui/suite/library.js",
-			"size": 601,
+			"size": 600,
 			"required": [
 				"sap/ui/core/Core.js",
 				"sap/ui/core/library.js"
@@ -222,11 +222,11 @@
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/suite/manifest.json",
-			"size": 978
+			"size": 976
 		},
 		{
 			"name": "resources.json",
-			"size": 8512
+			"size": 8514
 		},
 		{
 			"name": "themes/base/.theming",
@@ -258,7 +258,7 @@
 		},
 		{
 			"name": "themes/base/css_variables.source.less",
-			"size": 113742,
+			"size": 137227,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -330,13 +330,13 @@
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.less",
-			"size": 99692,
+			"size": 121005,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.source.less",
-			"size": 99392,
+			"size": 120705,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},

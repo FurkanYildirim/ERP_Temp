@@ -10,6 +10,7 @@ sap.ui.define([
 	"sap/ui/Device",
 	"sap/ui/core/Core",
 	"sap/ui/core/Control",
+	"sap/ui/core/Element",
 	"sap/ui/core/InvisibleText",
 	"sap/ui/core/LabelEnablement",
 	"sap/ui/core/delegate/ItemNavigation",
@@ -23,7 +24,7 @@ sap.ui.define([
 	"sap/ui/thirdparty/jquery",
 	"sap/base/Log",
 	"sap/ui/core/InvisibleMessage",
-	"sap/ui/dom/jquery/control", // jQuery Plugin "control"
+	"sap/m/table/Util",
 	"sap/ui/dom/jquery/Selectors", // jQuery custom selectors ":sapTabbable"
 	"sap/ui/dom/jquery/Aria" // jQuery Plugin "addAriaLabelledBy", "removeAriaLabelledBy"
 ],
@@ -32,6 +33,7 @@ function(
 	Device,
 	Core,
 	Control,
+	Element,
 	InvisibleText,
 	LabelEnablement,
 	ItemNavigation,
@@ -44,7 +46,8 @@ function(
 	capitalize,
 	jQuery,
 	Log,
-	InvisibleMessage
+	InvisibleMessage,
+	Util
 ) {
 	"use strict";
 
@@ -87,12 +90,14 @@ function(
 	 *
 	 * See section "{@link topic:295e44b2d0144318bcb7bdd56bfa5189 List, List Item, and Table}"
 	 * in the documentation for an introduction to subclasses of <code>sap.m.ListBase</code> control.
+	 * More information on how to use binding-related functionality, such as {@link topic:ec79a5d5918f4f7f9cbc2150e66778cc Sorting, Grouping, and Filtering},
+	 * is also available in the documentation.
 	 *
 	 * <b>Note:</b> The ListBase including all contained items may be completely re-rendered when the data of a bound model is changed. Due to the limited hardware resources of mobile devices this can lead to longer delays for lists that contain many items. As such the usage of a list is not recommended for these use cases.
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -1018,6 +1023,18 @@ function(
 			this._fireSelectionChangeEvent(aChangedListItems, bFireEvent);
 		}
 
+		var iSelectableItemCount = this.getItems().filter(function(oListItem) {
+			return oListItem.isSelectable();
+		}).length;
+		if (bFireEvent && this.getGrowing() && this.getMultiSelectMode() === "SelectAll" && this.getBinding("items").getLength() > iSelectableItemCount) {
+			var oSelectAllDomRef = this._getSelectAllCheckbox ? this._getSelectAllCheckbox() : undefined;
+			if (oSelectAllDomRef) {
+				Util.showSelectionLimitPopover(iSelectableItemCount, oSelectAllDomRef);
+			} else {
+				throw Error("Unsupported Operation");
+			}
+		}
+
 		return this;
 	};
 
@@ -1295,7 +1312,7 @@ function(
 			this._hideBusyIndicator();
 
 			/* reset focused position */
-			if (this._oItemNavigation) {
+			if (this._oItemNavigation && document.activeElement.id != this.getId("nodata")) {
 				this._oItemNavigation.iFocusedIndex = -1;
 			}
 		}
@@ -2055,13 +2072,7 @@ function(
 			// prepare the announcement for the screen reader
 			var oAccInfo = oItem.getAccessibilityInfo(),
 				oBundle = Core.getLibraryResourceBundle("sap.m"),
-				sDescription = "";
-
-			// when items have the role="listitem", aria-roledescription attribute containing the "type" info is already added to DOM,
-			// hence there is no need to add this information again to the custom announcement
-			if (this.getAriaRole() !== "list") {
-				sDescription += oAccInfo.type + " . ";
-			}
+				sDescription = oAccInfo.type + " . ";
 
 			if (this.isA("sap.m.Table")) {
 				var mPosition = this.getAccessbilityPosition(oItem);
@@ -2153,8 +2164,8 @@ function(
 			// alt/meta + left/right in the browser is used by default for navigating backwards or forwards in the browser history
 			// notify item navigation not to handle alt, meta key modifiers
 			this._oItemNavigation.setDisabledModifiers({
-				sapnext : ["alt", "meta"],
-				sapprevious : ["alt", "meta"]
+				sapnext : ["alt", "meta", "ctrl"],
+				sapprevious : ["alt", "meta", "ctrl"]
 			});
 		}
 
@@ -2169,6 +2180,10 @@ function(
 
 		// clear invalidations
 		this._bItemNavigationInvalidated = false;
+
+		if (document.activeElement == oNavigationRoot) {
+			jQuery(oNavigationRoot).trigger("focus");
+		}
 	};
 
 	/*
@@ -2261,7 +2276,7 @@ function(
 			return;
 		}
 
-		if (oEvent.target.id == this.getId("nodata")) {
+		if (jQuery(this.getDomRef("nodata")).find(":sapTabbable").addBack().get(-1) == oEvent.target) {
 			this.forwardTab(true);
 			oEvent.setMarked();
 		}
@@ -2417,7 +2432,7 @@ function(
 		var $LastFocused = jQuery(aNavigationDomRefs[iLastFocusedIndex]);
 
 		// find related item control to get tabbables
-		var oRelatedControl = $LastFocused.control(0) || {};
+		var oRelatedControl = Element.closestTo($LastFocused[0]) || {};
 		var $Tabbables = oRelatedControl.getTabbables ? oRelatedControl.getTabbables() : $LastFocused.find(":sapTabbable");
 
 		// get the last tabbable item or itself and focus
@@ -2689,7 +2704,7 @@ function(
 		var iItemTop = Math.round(oItemDomRef.getBoundingClientRect().top);
 		if (iTHRectBottom > iItemTop || iInfoTBarContainerRectBottom > iItemTop || iHeaderToolbarRectBottom > iItemTop) {
 			window.requestAnimationFrame(function () {
-				oScrollDelegate.scrollToElement(oItemDomRef, 0, [0, -iTHRectHeight - iInfoTBarContainerRectHeight - iHeaderToolbarRectHeight - iStickyFocusOffset]);
+				oScrollDelegate.scrollToElement(oItemDomRef, 0, [0, -iTHRectHeight - iInfoTBarContainerRectHeight - iHeaderToolbarRectHeight - iStickyFocusOffset], true);
 			});
 		}
 	};
@@ -2708,12 +2723,14 @@ function(
 	 * the list is scrolled to the last available item.
 	 *
 	 * Growing in combination with <code>growingScrollToLoad=true</code> can result in loading of
-	 * new items when scrolling to the bottom of the list.
+	 * new items when scrolling to the bottom of the list.<br>
+	 * <b>Note:</b> This method only works if the control is placed inside a scrollable container (for example, <code>sap.m.Page</code>).
+	 * Calling this method if the <code>ListBase</code> control is placed outside the container, will reject the <code>Promise</code> by throwing an error.
 	 *
 	 * @param {number} iIndex The list item index that must be scrolled into the viewport
-	 * @returns {Promise} A <code>Promise</code> that resolves after the table scrolls to the row
-	 * with the given index
+	 * @returns {Promise} A <code>Promise</code> that resolves after the table scrolls to the row with the given index.
 	 *
+	 * @since 1.76
 	 * @public
 	 */
 	ListBase.prototype.scrollToIndex = function(iIndex) {
@@ -2734,7 +2751,7 @@ function(
 			// adding timeout of 0 ensures the DOM is ready in case of rerendering
 			setTimeout(function() {
 				try {
-					oScrollDelegate.scrollToElement(oItem.getDomRef(), null, [0, this._getStickyAreaHeight() * -1]);
+					oScrollDelegate.scrollToElement(oItem.getDomRef(), null, [0, this._getStickyAreaHeight() * -1], true);
 					resolve();
 				} catch (e) {
 					reject(e);

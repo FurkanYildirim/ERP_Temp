@@ -1,0 +1,100 @@
+{
+  "_version": "1.21.0",
+  "sap.app": {
+    "id": "sap.sac.df",
+    "type": "library",
+    "embeds": [],
+    "applicationVersion": {
+      "version": "1.115.0"
+    },
+    "title": "Dragonfly library for visualizing the analytical multidimensional data",
+    "description": "Dragonfly library for visualizing the analytical multidimensional data",
+    "ach": "LOD-ANA-FLY-DF",
+    "resources": "resources.json",
+    "offline": true,
+    "openSourceComponents": [
+      {
+        "name": "lodash",
+        "packagedWithMySelf": true,
+        "version": "4.17.14"
+      },
+      {
+        "name": "interactjs",
+        "packagedWithMySelf": true,
+        "version": "1.10.5"
+      },
+      {
+        "name": "React",
+        "packagedWithMySelf": true,
+        "version": "v16.13.1"
+      }
+    ]
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "supportedThemes": [
+      "base",
+      "sap_belize",
+      "sap_belize_hcb",
+      "sap_belize_hcw",
+      "sap_belize_plus",
+      "sap_bluecrystal",
+      "sap_fiori_3",
+      "sap_fiori_3_dark",
+      "sap_fiori_3_hcb",
+      "sap_fiori_3_hcw",
+      "sap_hcb",
+      "sap_horizon",
+      "sap_horizon_dark",
+      "sap_horizon_hcb",
+      "sap_horizon_hcw"
+    ]
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.115",
+      "libs": {
+        "sap.ui.core": {
+          "minVersion": "1.115.0"
+        },
+        "sap.ui.layout": {
+          "minVersion": "1.115.0"
+        },
+        "sap.ui.table": {
+          "minVersion": "1.115.0"
+        },
+        "sap.f": {
+          "minVersion": "1.115.0"
+        },
+        "sap.m": {
+          "minVersion": "1.115.0"
+        },
+        "sap.ui.mdc": {
+          "minVersion": "1.115.0"
+        },
+        "sap.ui.fl": {
+          "minVersion": "1.115.0"
+        },
+        "sap.tnt": {
+          "minVersion": "1.115.0"
+        }
+      }
+    },
+    "library": {
+      "i18n": false,
+      "content": {
+        "controls": [
+          "sap.sac.df.DFProgram",
+          "sap.sac.df.FlexAnalysis"
+        ],
+        "elements": [
+          "sap.sac.df.FlexAnalysisPanel"
+        ],
+        "types": [
+          "sap.sac.df.types.SystemType"
+        ],
+        "interfaces": []
+      }
+    }
+  }
+}

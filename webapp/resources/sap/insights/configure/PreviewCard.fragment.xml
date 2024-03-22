@@ -1,0 +1,87 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:dnd="sap.ui.core.dnd"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:w="sap.ui.integration.widgets">
+    <Page id="insightCardPreviewPage" title="{i18n>INT_PREVIEW_POPOVER_BUTTON_TITLE}" titleLevel="H1" class="sapMPageBgStandard" showHeader="true" showSubHeader="true" backgroundDesign="List" enableScrolling="false" showNavButton="{= ${configureView>/bCalledInternally} ? true : false}" navButtonPress=".onNavBack(${configureView>/})">
+        <headerContent>
+            <Button
+                text="{i18n>INT_DIALOG_CardPreview}"
+                press="._callPreview(${configureView>/oConfCard})" visible="{= (!${configureView>/bDesktop} &amp;&amp; !${configureView>/bPreview} &amp;&amp; !${configureView>/bShowCardPreview}) ? true : false}" enabled="true"/>
+            <Button
+                text="{i18n>INT_DIALOG_HidePreview}"
+                press="._callClosePreview(${configureView>/oConfCard})" visible="{= (${configureView>/bShowCardPreview} &amp;&amp; !${configureView>/bDesktop})  ? true : false}" enabled="true"/>
+        </headerContent>
+        <content>
+            <VBox id="previewAddCardVBox" height="100%"  width="100%" direction="Row" justifyContent="SpaceBetween">
+                <FlexBox  id="previewAddFlexBox" height="100%" width="{= ( ${configureView>/bDesktop} &amp;&amp; (${configureView>/oConfCard/sap.card/type} === 'Analytical')) ? '62%' : '100%'}"  direction="Column">
+                    <VBox  direction="Column"  class="sapUiSmallMarginBegin">
+                        <Title id="previewCardInfoTitle" text="{i18n>INT_CARD_TITLEINFO}" level="H4" class="sapUiSmallMarginTop"/>
+                        <Text id="previewCardInfoSubtitle" text="{i18n>INT_CARD_SUBTITLE}" />
+                    </VBox>
+                    <VBox  id="previewFormFlexBox" height="100%" width="100%" visible="{= (${configureView>/bDesktop} ||  (!${configureView>/bDesktop} &amp;&amp; !${configureView>/bShowCardPreview})) ? true : false}" >
+                        <form:SimpleForm id="previewForm" width="100%" layout="ResponsiveGridLayout" editable="true" adjustLabelSpan="true">
+                            <Label id="labelTitle" class="sapUiTinyMarginTop" text="{i18n>INT_Preview_CARDTITLE}"  required="true" labelFor="titleTextInput"/>
+                            <Input id="titleTextInput" ariaLabelledBy="previewCardInfoTitle previewCardInfoSubtitle labelTitle" change=".handleTitleChange" value="{configureView>/oConfCard/sap.card/header/title}" />
+                            <Label id="labelSubTitle" text="{i18n>INT_Preview_SubTitleTitleField_Label}" class="sapUiTinyMarginTop" labelFor="subTitleTextInput"/>
+                            <Input id="subTitleTextInput" change=".handleSubTitleChange" value="{configureView>/oConfCard/sap.card/header/subTitle}"/>
+                        </form:SimpleForm>
+                    </VBox>
+                    <FlexBox id="panelFlex1" height="100%" width="100%" visible="{= (!${configureView>/bDesktop} &amp;&amp; ${configureView>/bShowCardPreview}) ? true : false}" justifyContent="Center">
+                        <ScrollContainer id="previewCardsScrollSD" vertical="true" horizontal="false" height="100%" >
+                            <VBox height="100%" id="previewCardVBox" width="100%" alignItems="Center" backgroundDesign="Solid" justifyContent="SpaceAround" class="sapUiSmallMarginTop sapUiTinyMarginBottom">
+                                <w:Card id="previewCardSD" manifest="{configureView>/oConfCard}" host="transactionalCardHost" width="19rem" height="33rem" />
+                                <HBox id="insightsPreviewCardLayerSD" class="sapMFlexBoxJustifyCenter" height="0" visible="{= ${configureView>/oConfCard/sap.card/type}  === 'Analytical' ? false : true}">
+                                    <HBox id="insightsPCOverflowInnerHBoxSD" class="insightsCardOverflowLayer insightsPreviewCardOverLay insightsColOverLayPositionSD"/>
+                                </HBox>
+                            </VBox>
+                        </ScrollContainer>
+                    </FlexBox>
+                </FlexBox>
+
+                    <!-- when switching from mob back to desktop when using panel with hedertoolbar content height issue occurs hence keeping seperate toolbar -->
+                    <!-- <FlexBox id="previewCardFlexbox" direction="Column" width="38%" height="100%" visible="{= (${configureView>/bDesktop}) ? true : false}" class="sapMPageBgStandard" renderType="Bare">
+                        <Panel id="previewPanelContainer1" expanded="false" height="100%"  backgroundDesign="Transparent">
+
+                            <headerToolbar  >
+                                <Toolbar id="previewToolBar" width="100%" height="2.7rem" style="Clear" design="Auto" class="sapThemeBaseBG">
+                                    <HBox id="previewCardTextHBox"  width="100%" justifyContent="Start" backgroundDesign="Transparent">
+
+                                            <Title id="insightPreviewCardText" text="Card Preview" class="sapUiTinyMarginTop" textAlign="Left" />
+
+                                    </HBox>
+                                </Toolbar>
+                            </headerToolbar>
+                            <content>
+                                <VBox id="idCardsPreviewVBox1"  height="calc(100% - 2.8rem)" alignItems="Center" backgroundDesign="Transparent"  >
+                                    <w:Card id="previewCardLS" manifest="{configureView>/oConfCard}"  width="19rem" height="33rem" />
+                                </VBox>
+                            </content>
+                        </Panel>
+                    </FlexBox> -->
+
+                <FlexBox id="previewCardFlexbox" direction="Column" width="38%" height="100%" visible="{= (${configureView>/bDesktop}) ? true : false}" class="sapMPageBgStandard"  renderType="Bare">
+                    <ScrollContainer id="previewCardsScroll" vertical="true" horizontal="false" height="100%">
+                        <Toolbar id="previewToolBar" width="100%" height="2.7rem" style="Clear" design="Auto" class="sapThemeBaseBG">
+                            <HBox id="previewCardTextHBox"  class="sapUiTinyMarginBegin" width="100%" justifyContent="Start" backgroundDesign="Transparent">
+                                <Title id="insightPreviewCardText" text="{i18n>INT_DIALOG_TITLE_CardPreview}" class="sapUiTinyMarginTop" textAlign="Left" />
+                            </HBox>
+                        </Toolbar>
+
+                        <FlexBox id="panelFlex" height="calc(100% - 2.8rem)" backgroundDesign="Transparent" justifyContent="Center">
+                            <Panel height="100%" id="previewPanelContainer1" expanded="false"  backgroundDesign="Transparent">
+                                <VBox height="100%" id="idCardsPreviewVBox1" alignItems="Center" backgroundDesign="Transparent" justifyContent="SpaceAround" >
+                                    <w:Card id="previewCardLS" manifest="{configureView>/oConfCard}" host="transactionalCardHost" width="19rem" height="33rem" previewMode="{= (${configureView>/visibleColumnCount} &gt; 0  || ${configureView>/oConfCard/sap.card/type} === 'Analytical') ? 'Off' : 'Abstract'}" />
+                                </VBox>
+                            </Panel>
+                        </FlexBox>
+                    </ScrollContainer>
+                </FlexBox>
+
+
+            </VBox>
+        </content>
+    </Page>
+</core:FragmentDefinition>

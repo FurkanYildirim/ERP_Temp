@@ -8,12 +8,12 @@ sap.ui.define([
 	'sap/ui/model/Filter',
 	'sap/ui/model/ValidateException',
 	'sap/base/Log',
-	'sap/base/util/merge',
-	'sap/ui/mdc/enum/FieldDisplay',
+	'sap/ui/mdc/enums/FieldDisplay',
 	'./Operator',
 	'./RangeOperator',
-	'sap/ui/mdc/enum/BaseType',
-	'sap/ui/mdc/enum/ConditionValidated',
+	'sap/ui/mdc/enums/BaseType',
+	'sap/ui/mdc/enums/ConditionValidated',
+	'sap/ui/mdc/enums/OperatorValueType',
 	'sap/ui/mdc/util/loadModules',
 	'sap/ui/core/date/UniversalDate',
 	'sap/ui/core/date/UniversalDateUtils',
@@ -27,12 +27,12 @@ function(
 		Filter,
 		ValidateException,
 		Log,
-		merge,
 		FieldDisplay,
 		Operator,
 		RangeOperator,
 		BaseType,
 		ConditionValidated,
+		OperatorValueType,
 		loadModules,
 		UniversalDate,
 		UniversalDateUtils,
@@ -48,31 +48,50 @@ function(
 			oMessageBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.mdc");
 		});
 
+		/*
+		 * Standard operators for conditions
+		 * @namespace
+		 * @name sap.ui.mdc.condition.operators
+		 * @since 1.73.0
+		 * @public
+		 */
 
 		/**
 		 * Utilities to handle {@link sap.ui.mdc.condition.Operator Operators} and {@link sap.ui.mdc.condition.ConditionObject conditions}.
 		 *
 		 * @namespace
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @since 1.73.0
 		 * @alias sap.ui.mdc.condition.FilterOperatorUtil
 		 *
-		 * @private
-		 * @ui5-restricted sap.fe
-		 * @MDC_PUBLIC_CANDIDATE
-		 * @experimental As of version 1.73
+		 * @public
 		 */
 		var FilterOperatorUtil = {
 
 				_mOperators: {
+					/*
+					 * @class
+					 * "Equal to" operator
+					 *
+					 * Depending on the used <code>DisplayFormat</code> the key, the description or both is used as output of formatting in parsing.
+					 *
+					 * The operator is available for all data types.
+					 *
+					 * If a {@link sap.m.DynamicDateRange DynamicDateRange} control is used for the output the operator is mapped to the <code>DATE</code> option if a date type is used
+					 * and to the <code>DATETIME</code> option if a datetime type is used.
+					 * @name sap.ui.mdc.condition.operators.EQ
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					equal: new Operator({
 						name: "EQ",
 						alias: {Date: "DATE", DateTime: "DATETIME"},
 						filterOperator: ModelOperator.EQ,
 						tokenParse: "^=([^=].*)$",
 						tokenFormat: "{1} ({0})", // all placeholder should use the {x} format - the text could be store in the resourcebundel file.
-						valueTypes: [Operator.ValueType.Self, null],
+						valueTypes: [OperatorValueType.Self, null],
 						displayFormats: {
 							DescriptionValue: "{1} ({0})",
 							ValueDescription: "{0} ({1})",
@@ -108,6 +127,9 @@ function(
 								if (sReplace === null) {
 									sTokenText = null; // some types (like Unit) return null if no value is given, in this case stop formating and return null
 									break;
+								}
+								if (typeof sReplace === "string") {
+									sReplace = sReplace.replace(/\$/g, '$$$'); // as "$$" has a special handling in replace, it will be transformed into "$"
 								}
 								sTokenText = sTokenText.replace(new RegExp("\\$" + i + "|" + i + "\\$" + "|" + "\\{" + i + "\\}", "g"), sReplace);
 							}
@@ -207,13 +229,29 @@ function(
 						},
 						validateInput: true
 					}),
+					/*
+					 * @class
+					 * "Between" operator
+					 *
+					 * There is no validation if the first value is less than the second value as the comparison would be type dependent and cannot performed
+					 * in a generic way.
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 *
+					 * If a {@link sap.m.DynamicDateRange DynamicDateRange} control is used for the output the operator is mapped to the <code>DATERANGE</code> option if a date type is used
+					 * and to the <code>DATETIMERANGE</code> option if a datetime type is used.
+					 * @name sap.ui.mdc.condition.operators.BT
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					between: new Operator({
 						name: "BT",
 						alias: {Date: "DATERANGE", DateTime:"DATETIMERANGE"},
 						filterOperator: ModelOperator.BT,
 						tokenParse: "^([^!].*)\\.\\.\\.(.+)$", // TODO: does this work?? At least also matches crap like ".....". I guess validation of value types needs to get rid of those.
 						tokenFormat: "{0}...{1}",
-						valueTypes: [Operator.ValueType.Self, Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self, OperatorValueType.Self],
 						validate: function(aValues, oType) {
 							// in Between 2 different Values must be defined
 							if (aValues.length === 2) { // if aValues has wrong length this is checked in default logic
@@ -235,132 +273,309 @@ function(
 							Operator.prototype.validate.apply(this, [aValues, oType]);
 						}
 					}),
+					/*
+					 * @class
+					 * "Not Between" operator
+					 *
+					 * There is no validation if the first value is less than the second value as the comparison would be type dependent and cannot performed
+					 * in a generic way.
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NOTBT
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notBetween: new Operator({
 						name: "NOTBT",
 						filterOperator: ModelOperator.NB,
 						tokenParse: "^!(.+)\\.\\.\\.(.+)$",
 						tokenFormat: "!({0}...{1})",
-						valueTypes: [Operator.ValueType.Self, Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self, OperatorValueType.Self],
 						exclude: true,
 						validate: function(aValues, oType) {
 							FilterOperatorUtil._mOperators.between.validate(aValues, oType);
 						}
 					}),
+					/*
+					 * @class
+					 * "Less Than" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LT
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					lessThan: new Operator({
 						name: "LT",
 						filterOperator: ModelOperator.LT,
 						tokenParse: "^<([^=].*)$",
 						tokenFormat: "<{0}",
-						valueTypes: [Operator.ValueType.Self]
+						valueTypes: [OperatorValueType.Self]
 					}),
+					/*
+					 * @class
+					 * "Not Less Than" operator
+					 * @name sap.ui.mdc.condition.operators.NOTLT
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notLessThan: new Operator({
 						name: "NOTLT",
 						filterOperator: ModelOperator.GE,
 						tokenParse: "^!<([^=].*)$",
 						tokenFormat: "!(<{0})",
-						valueTypes: [Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Greater Than" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 * @name sap.ui.mdc.condition.operators.GT
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					greaterThan: new Operator({
 						name: "GT",
 						filterOperator: ModelOperator.GT,
 						tokenParse: "^>([^=].*)$",
 						tokenFormat: ">{0}",
-						valueTypes: [Operator.ValueType.Self]
+						valueTypes: [OperatorValueType.Self]
 					}),
+					/*
+					 * @class
+					 * "Not Greater Than" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NOTGT
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notGreaterThan: new Operator({
 						name: "NOTGT",
 						filterOperator: ModelOperator.LE,
 						tokenParse: "^!>([^=].*)$",
 						tokenFormat: "!(>{0})",
-						valueTypes: [Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Less Then Or Equal To" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 *
+					 * If a {@link sap.m.DynamicDateRange DynamicDateRange} control is used for the output the operator is mapped to the <code>TO</code> option if a date type is used
+					 * and to the <code>TODATETIME</code> option if a datetime type is used.
+					 * @name sap.ui.mdc.condition.operators.LE
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					lessEqual: new Operator({
 						name: "LE",
 						alias: {Date: "TO", DateTime: "TODATETIME"},
 						filterOperator: ModelOperator.LE,
 						tokenParse: "^<=(.+)$",
 						tokenFormat: "<={0}",
-						valueTypes: [Operator.ValueType.Self]
+						valueTypes: [OperatorValueType.Self]
 					}),
+					/*
+					 * @class
+					 * "Not Less Than Or Equal To" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NOTLE
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notLessEqual: new Operator({
 						name: "NOTLE",
 						filterOperator: ModelOperator.GT,
 						tokenParse: "^!<=(.+)$",
 						tokenFormat: "!(<={0})",
-						valueTypes: [Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Greater Than Ot Equal To" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 *
+					 * If a {@link sap.m.DynamicDateRange DynamicDateRange} control is used for the output the operator is mapped to the <code>FROM</code> option if a date type is used
+					 * and to the <code>FROMDATETIME</code> option if a datetime type is used.
+					 * @name sap.ui.mdc.condition.operators.GE
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					greaterEqual: new Operator({
 						name: "GE",
 						alias: {Date: "FROM", DateTime: "FROMDATETIME"},
 						filterOperator: ModelOperator.GE,
 						tokenParse: "^>=(.+)$",
 						tokenFormat: ">={0}",
-						valueTypes: [Operator.ValueType.Self]
+						valueTypes: [OperatorValueType.Self]
 					}),
+					/*
+					 * @class
+					 * "NOT Greater Than Or Equal To" operator
+					 *
+					 * The operator is available for string, numeric, date, time and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NOTGE
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notGreaterEqual: new Operator({
 						name: "NOTGE",
 						filterOperator: ModelOperator.LT,
 						tokenParse: "^!>=(.+)$",
 						tokenFormat: "!(>={0})",
-						valueTypes: [Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Starts With" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.StartsWith
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					startsWith: new Operator({
 						name: "StartsWith",
 						filterOperator: ModelOperator.StartsWith,
 						tokenParse: "^([^!\\*]+.*)\\*$",
 						tokenFormat: "{0}*",
-						valueTypes: [Operator.ValueType.SelfNoParse]
+						valueTypes: [OperatorValueType.SelfNoParse]
 					}),
+					/*
+					 * @class
+					 * "Does Not Start With" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.NotStartsWith
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notStartsWith: new Operator({
 						name: "NotStartsWith",
 						filterOperator: ModelOperator.NotStartsWith,
 						tokenParse: "^!([^\\*].*)\\*$",
 						tokenFormat: "!({0}*)",
-						valueTypes: [Operator.ValueType.SelfNoParse],
+						valueTypes: [OperatorValueType.SelfNoParse],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Ends With" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.EndsWith
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					endsWith: new Operator({
 						name: "EndsWith",
 						filterOperator: ModelOperator.EndsWith,
 						tokenParse: "^\\*(.*[^\\*])$",
 						tokenFormat: "*{0}",
-						valueTypes: [Operator.ValueType.SelfNoParse]
+						valueTypes: [OperatorValueType.SelfNoParse]
 					}),
+					/*
+					 * @class
+					 * "Does Not End With" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.NotEndsWith
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notEndsWith: new Operator({
 						name: "NotEndsWith",
 						filterOperator: ModelOperator.NotEndsWith,
 						tokenParse: "^!\\*(.*[^\\*])$",
 						tokenFormat: "!(*{0})",
-						valueTypes: [Operator.ValueType.SelfNoParse],
+						valueTypes: [OperatorValueType.SelfNoParse],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Contains" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.Contains
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					contains: new Operator({
 						name: "Contains",
 						filterOperator: ModelOperator.Contains,
 						tokenParse: "^\\*(.*)\\*$",
 						tokenFormat: "*{0}*",
-						valueTypes: [Operator.ValueType.SelfNoParse]
+						valueTypes: [OperatorValueType.SelfNoParse]
 					}),
+					/*
+					 * @class
+					 * "Does Not Contain" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.NotContains
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notContains: new Operator({
 						name: "NotContains",
 						filterOperator: ModelOperator.NotContains,
 						tokenParse: "^!\\*(.*)\\*$",
 						tokenFormat: "!(*{0}*)",
-						valueTypes: [Operator.ValueType.SelfNoParse],
+						valueTypes: [OperatorValueType.SelfNoParse],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Not Equal To" operator
+					 *
+					 * The operator is available for all types.
+					 * @name sap.ui.mdc.condition.operators.NE
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notEqual: new Operator({
 						name: "NE",
 						filterOperator: ModelOperator.NE,
 						tokenParse: "^!=(.+)$",
 						tokenFormat: "!(={0})",
-						valueTypes: [Operator.ValueType.Self],
+						valueTypes: [OperatorValueType.Self],
 						exclude: true
 					}),
+					/*
+					 * @class
+					 * "Empty" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.Empty
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					empty: new Operator({
 						name: "Empty",
 						filterOperator: ModelOperator.EQ,
@@ -378,10 +593,6 @@ function(
 									isNullable = false;
 								}
 							}
-							//TODO Type specific handling of empty is missing. Empty is currently only available for type String
-							// if (oType == "date") {
-							// 	return new Filter(sFieldPath, oOperator.filterOperator, null});
-							// } else {
 							if (isNullable) {
 								return new Filter({ filters: [new Filter({path: sFieldPath, operator: ModelOperator.EQ, value1: ""}),
 															new Filter({path: sFieldPath, operator: ModelOperator.EQ, value1: null})],
@@ -389,9 +600,18 @@ function(
 							} else {
 								return new Filter({path: sFieldPath, operator: this.filterOperator, value1: ""});
 							}
-							// }
 						}
 					}),
+					/*
+					 * @class
+					 * "Not Empty" operator
+					 *
+					 * The operator is available for string types.
+					 * @name sap.ui.mdc.condition.operators.NotEmpty
+					 * @extends sap.ui.mdc.condition.Operator
+					 * @since 1.73.0
+					 * @public
+					 */
 					notEmpty: new Operator({
 						name: "NotEmpty",
 						filterOperator: ModelOperator.NE,
@@ -410,10 +630,6 @@ function(
 									isNullable = false;
 								}
 							}
-							//TODO Type specific handling of empty is missing. Empty is currently only available for type String
-							// if (Type == "date") {
-							// 	return new Filter({ path: sFieldPath, operator: oOperator.filterOperator, value1: null });
-							// } else {
 							if (isNullable) {
 								return new Filter({ filters: [new Filter({path: sFieldPath, operator: ModelOperator.NE, value1: ""}),
 															new Filter({path: sFieldPath, operator: ModelOperator.NE, value1: null})],
@@ -421,12 +637,21 @@ function(
 							} else {
 								return new Filter({ path: sFieldPath, operator: this.filterOperator, value1: "" });
 							}
-							// }
 						}
 					}),
+					/*
+					 * @class
+					 * "Yesterday" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.YESTERDAY
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					yesterday: new RangeOperator({
 						name: "YESTERDAY",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.yesterday();
 						},
@@ -434,21 +659,39 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Today" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.TODAY
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					today: new RangeOperator({
 						name: "TODAY",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
-							//TODO how to convert the UniversalDate back into an odata.type.Date value (or the correct type )?
-							// we need the oType instance in this function
 							return UniversalDateUtils.ranges.today();
 						},
 						formatRange: function(aRange, oDataType) {
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Tomorrow" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.TOMORROW
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					tomorrow: new RangeOperator({
 						name: "TOMORROW",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.tomorrow();
 						},
@@ -456,6 +699,16 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Last X Days" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTDAYS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastDays: new RangeOperator({
 						name: "LASTDAYS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -465,9 +718,19 @@ function(
 							return UniversalDateUtils.ranges.lastDays(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "First Date In This Week" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.FIRSTDAYWEEK
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					firstDayWeek: new RangeOperator({
 						name: "FIRSTDAYWEEK",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.firstDayOfWeek();
 						},
@@ -475,9 +738,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Date In This Week" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTDAYWEEK
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					lastDayWeek: new RangeOperator({
 						name: "LASTDAYWEEK",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastDayOfWeek();
 						},
@@ -485,9 +758,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "First Date In This Month" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.FIRSTDAYMONTH
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					firstDayMonth: new RangeOperator({
 						name: "FIRSTDAYMONTH",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.firstDayOfMonth();
 						},
@@ -495,9 +778,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Date In This Month" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTDAYMONTH
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					lastDayMonth: new RangeOperator({
 						name: "LASTDAYMONTH",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastDayOfMonth();
 						},
@@ -505,9 +798,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "First Date In This Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.FIRSTDAYQUARTER
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					firstDayQuarter: new RangeOperator({
 						name: "FIRSTDAYQUARTER",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.firstDayOfQuarter();
 						},
@@ -515,9 +818,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Date In This Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTDAYQUARTER
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					lastDayQuarter: new RangeOperator({
 						name: "LASTDAYQUARTER",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastDayOfQuarter();
 						},
@@ -525,9 +838,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "First Date In This Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.FIRSTDAYYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					firstDayYear: new RangeOperator({
 						name: "FIRSTDAYYEAR",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.firstDayOfYear();
 						},
@@ -535,9 +858,19 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Date In This Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTDAYYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					lastDayYear: new RangeOperator({
 						name: "LASTDAYYEAR",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastDayOfYear();
 						},
@@ -545,6 +878,16 @@ function(
 							return oDataType.formatValue(aRange[0], "string");
 						}
 					}),
+					/*
+					 * @class
+					 * "Today -X/ +Y days" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.TODAYFROMTO
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					todayFromTo: new RangeOperator({
 						name: "TODAYFROMTO",
 						valueTypes: [
@@ -565,6 +908,16 @@ function(
 							return [UniversalDateUtils.resetStartTime(oStart), UniversalDateUtils.resetEndTime(oEnd)];
 						}
 					}),
+					/*
+					 * @class
+					 * "Next X Days" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTDAYS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextDays: new RangeOperator({
 						name: "NEXTDAYS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -574,27 +927,67 @@ function(
 							return UniversalDateUtils.ranges.nextDays(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Week" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTWEEK
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastWeek: new RangeOperator({
 						name: "LASTWEEK",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastWeek();
 						}
 					}),
+					/*
+					 * @class
+					 * "This Week" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.THISWEEK
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					thisWeek: new RangeOperator({
 						name: "THISWEEK",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.currentWeek();
 						}
 					}),
+					/*
+					 * @class
+					 * "Next Week" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTWEEK
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextWeek: new RangeOperator({
 						name: "NEXTWEEK",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.nextWeek();
 						}
 					}),
+					/*
+					 * @class
+					 * "Last X Weeks" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTWEEKS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastWeeks: new RangeOperator({
 						name: "LASTWEEKS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -604,6 +997,16 @@ function(
 							return UniversalDateUtils.ranges.lastWeeks(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Next X Weeks" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTWEEKS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextWeeks: new RangeOperator({
 						name: "NEXTWEEKS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -613,27 +1016,67 @@ function(
 							return UniversalDateUtils.ranges.nextWeeks(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Month" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTMONTH
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastMonth: new RangeOperator({
 						name: "LASTMONTH",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastMonth();
 						}
 					}),
+					/*
+					 * @class
+					 * "This Month" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.THISMONTH
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					thisMonth: new RangeOperator({
 						name: "THISMONTH",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.currentMonth();
 						}
 					}),
+					/*
+					 * @class
+					 * "Next Month" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTMONTH
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextMonth: new RangeOperator({
 						name: "NEXTMONTH",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.nextMonth();
 						}
 					}),
+					/*
+					 * @class
+					 * "Last X Months" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTMONTHS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastMonths: new RangeOperator({
 						name: "LASTMONTHS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -643,6 +1086,16 @@ function(
 							return UniversalDateUtils.ranges.lastMonths(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Next X Months" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTMONTHS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextMonths: new RangeOperator({
 						name: "NEXTMONTHS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -652,27 +1105,67 @@ function(
 							return UniversalDateUtils.ranges.nextMonths(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTQUARTER
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastQuarter: new RangeOperator({
 						name: "LASTQUARTER",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastQuarter();
 						}
 					}),
+					/*
+					 * @class
+					 * "This Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.THISQUARTER
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					thisQuarter: new RangeOperator({
 						name: "THISQUARTER",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.currentQuarter();
 						}
 					}),
+					/*
+					 * @class
+					 * "Next Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTQUARTER
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextQuarter: new RangeOperator({
 						name: "NEXTQUARTER",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.nextQuarter();
 						}
 					}),
+					/*
+					 * @class
+					 * "Last X Quarters" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTQUARTERS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastQuarters: new RangeOperator({
 						name: "LASTQUARTERS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -682,6 +1175,16 @@ function(
 							return UniversalDateUtils.ranges.lastQuarters(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Next X Quarters" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTQUARTERS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextQuarters: new RangeOperator({
 						name: "NEXTQUARTERS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -691,55 +1194,135 @@ function(
 							return UniversalDateUtils.ranges.nextQuarters(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "First Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.QUARTER1
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					quarter1: new RangeOperator({
 						name: "QUARTER1",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.quarter(1);
 						}
 					}),
+					/*
+					 * @class
+					 * "Second Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.QUARTER2
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					quarter2: new RangeOperator({
 						name: "QUARTER2",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.quarter(2);
 						}
 					}),
+					/*
+					 * @class
+					 * "Third Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.QUARTER3
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					quarter3: new RangeOperator({
 						name: "QUARTER3",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.quarter(3);
 						}
 					}),
+					/*
+					 * @class
+					 * "Forth Quarter" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.QUARTER4
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					quarter4: new RangeOperator({
 						name: "QUARTER4",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.quarter(4);
 						}
 					}),
+					/*
+					 * @class
+					 * "Last Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastYear: new RangeOperator({
 						name: "LASTYEAR",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.lastYear();
 						}
 					}),
+					/*
+					 * @class
+					 * "This Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.THISYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.86.0
+					 * @public
+					 */
 					thisYear: new RangeOperator({
 						name: "THISYEAR",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.currentYear();
 						}
 					}),
+					/*
+					 * @class
+					 * "Next Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextYear: new RangeOperator({
 						name: "NEXTYEAR",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.nextYear();
 						}
 					}),
+					/*
+					 * @class
+					 * "Last X Years" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTYEARS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					lastYears: new RangeOperator({
 						name: "LASTYEARS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -749,6 +1332,16 @@ function(
 							return UniversalDateUtils.ranges.lastYears(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Next X Years" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTYEARS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					nextYears: new RangeOperator({
 						name: "NEXTYEARS",
 						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
@@ -758,6 +1351,16 @@ function(
 							return UniversalDateUtils.ranges.nextYears(iDuration);
 						}
 					}),
+					/*
+					 * @class
+					 * "Month" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.SPECIFICMONTH
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.85.0
+					 * @public
+					 */
 					specificMonth: new RangeOperator({
 						name: "SPECIFICMONTH",
 						valueTypes: [{ name: "sap.ui.model.type.Integer", constraints: { minimum: 0, maximum: 11 }}],
@@ -808,14 +1411,14 @@ function(
 						},
 						createControl: function(oType, sPath, iIndex, sId)  {
 							var Field = sap.ui.require("sap/ui/mdc/Field");
-							var sValueHelp = _getMonthFieldHelp.call(this);
+							var sValueHelp = _getMonthValueHelp.call(this);
 							if (Field && sValueHelp) {
 
 								var oField = new Field(sId, {
 									value: { path: sPath, type: oType, mode: 'TwoWay', targetType: 'raw' },
 									display: 'Description',
 									width: "100%",
-									fieldHelp: sValueHelp
+									valueHelp: sValueHelp
 								});
 
 								return oField;
@@ -825,6 +1428,16 @@ function(
 							}
 						}
 					}),
+					/*
+					 * @class
+					 * "Month In Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.SPECIFICMONTHINYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					specificMonthInYear: new RangeOperator({
 						name: "SPECIFICMONTHINYEAR",
 						valueTypes: [{ name: "sap.ui.model.type.Integer", constraints: { minimum: 0, maximum: 11 }},
@@ -889,7 +1502,7 @@ function(
 							}
 
 							if (iIndex == 0) {
-								var sValueHelp = _getMonthFieldHelp.call(this);
+								var sValueHelp = _getMonthValueHelp.call(this);
 
 								if (sValueHelp) {
 
@@ -897,7 +1510,7 @@ function(
 										value: { path: sPath, type: oType, mode: 'TwoWay', targetType: 'raw' },
 										display: 'Description',
 										width: "100%",
-										fieldHelp: sValueHelp
+										valueHelp: sValueHelp
 									});
 								} else {
 									Log.warning("Operator.createControl", "not able to create the control for the operator " + this.name);
@@ -914,20 +1527,117 @@ function(
 							return oField;
 						}
 					}),
+					/*
+					 * @class
+					 * "Year To Date" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.YEARTODATE
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.74.0
+					 * @public
+					 */
 					yearToDate: new RangeOperator({
 						name: "YEARTODATE",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.yearToDate();
 						}
 					}),
+					/*
+					 * @class
+					 * "Date To Year" operator
+					 *
+					 * The operator is available for date and datetime types.
+					 * @name sap.ui.mdc.condition.operators.DATETOYEAR
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.99.0
+					 * @public
+					 */
 					dateToYear: new RangeOperator({
 						name: "DATETOYEAR",
-						valueTypes: [Operator.ValueType.Static],
+						valueTypes: [OperatorValueType.Static],
 						calcRange: function() {
 							return UniversalDateUtils.ranges.dateToYear();
 						}
+					}),
+					/*
+					 * @class
+					 * "Last X Minutes" operator
+					 *
+					 * The operator is available for datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTMINUTES
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.112.0
+					 * @public
+					 */
+					lastMinutes: new RangeOperator({
+						name: "LASTMINUTES",
+						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
+						paramTypes: ["(\\d+)"],
+						additionalInfo: "",
+						calcRange: function(iDuration) {
+							return UniversalDateUtils.ranges.lastMinutes(iDuration);
+						}
+					}),
+					/*
+					 * @class
+					 * "Next X Minutes" operator
+					 *
+					 * The operator is available for datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTMINUTES
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.112.0
+					 * @public
+					 */
+					nextMinutes: new RangeOperator({
+						name: "NEXTMINUTES",
+						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
+						paramTypes: ["(\\d+)"],
+						additionalInfo: "",
+						calcRange: function(iDuration) {
+							return UniversalDateUtils.ranges.nextMinutes(iDuration);
+						}
+					}),
+					/*
+					 * @class
+					 * "Last X Hours" operator
+					 *
+					 * The operator is available for datetime types.
+					 * @name sap.ui.mdc.condition.operators.LASTHOURS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.112.0
+					 * @public
+					 */
+					lastHours: new RangeOperator({
+						name: "LASTHOURS",
+						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
+						paramTypes: ["(\\d+)"],
+						additionalInfo: "",
+						calcRange: function(iDuration) {
+							return UniversalDateUtils.ranges.lastHours(iDuration);
+						}
+					}),
+					/*
+					 * @class
+					 * "Next X Hours" operator
+					 *
+					 * The operator is available for datetime types.
+					 * @name sap.ui.mdc.condition.operators.NEXTHOURS
+					 * @extends sap.ui.mdc.condition.RangeOperator
+					 * @since 1.112.0
+					 * @public
+					 */
+					nextHours: new RangeOperator({
+						name: "NEXTHOURS",
+						valueTypes: [{name: "sap.ui.model.type.Integer", formatOptions: {emptyString: null}, constraints: { minimum: 0 }}],
+						paramTypes: ["(\\d+)"],
+						additionalInfo: "",
+						calcRange: function(iDuration) {
+							return UniversalDateUtils.ranges.nextHours(iDuration);
+						}
 					})
+
 				},
 
 				_mDefaultOpsForType: {}, // defines default operators for types
@@ -937,9 +1647,7 @@ function(
 				 *
 				 * @param {sap.ui.mdc.condition.Operator} oOperator Operator
 				 *
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				addOperator: function(oOperator) {
 
@@ -953,9 +1661,7 @@ function(
 				 * @param {sap.ui.mdc.condition.Operator[]} aOperators Array of operators
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				addOperators: function(aOperators) {
 					if (!Array.isArray(aOperators)) {
@@ -975,9 +1681,7 @@ function(
  				 * <b>Note</b>: <code>aOperators</code> can be the name of an {@link sap.ui.mdc.condition.Operator Operator}, the instance itself, or multiple operators inside an array.
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				removeOperators: function(aOperators) {
 					if (!Array.isArray(aOperators)) {
@@ -995,9 +1699,7 @@ function(
 				 * @param {sap.ui.mdc.condition.Operator|string} vOperator The operator instance or operator name
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				 removeOperator: function(vOperator) {
 					if (typeof vOperator  === "string") {
@@ -1015,16 +1717,14 @@ function(
 				/**
 				 * Adds operators to the list of valid operators for a type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @param {sap.ui.mdc.condition.Operator[]} aOperators Operators
 				 * @param {sap.ui.mdc.condition.Operator|string} vDefaultOperator The default operator instance or default operator name
 				 *
  				 * <b>Note</b>: <code>aOperators</code> can be the name of an {@link sap.ui.mdc.condition.Operator Operator}, the instance itself, or multiple operators inside an array.
  				 * <b>Note</b>: <code>vDefaultOperator</code> must exist as a valid operator for the type.
 				 *
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				setOperatorsForType: function(sType, aOperators, vDefaultOperator) {
 					if (!Array.isArray(aOperators)) {
@@ -1049,15 +1749,13 @@ function(
 				/**
 				 * Sets the default operator for the list of operators for a type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @param {sap.ui.mdc.condition.Operator|string} vDefaultOperator The default operator instance or default operator name
 				 *
  				 * <b>Note</b>: <code>vDefaultOperator</code> must exist as a valid operator for the type.
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				setDefaultOperatorForType: function(sType, vDefaultOperator) {
 					if (!FilterOperatorUtil._mDefaultOpsForType[sType]) {
@@ -1075,13 +1773,11 @@ function(
 				/**
 				 * Adds an operator to the list of valid operators for a type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @param {sap.ui.mdc.condition.Operator|string} vOperator The operator instance or operator name
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				addOperatorForType: function(sType, vOperator) {
 					FilterOperatorUtil.insertOperatorForType(sType, vOperator);
@@ -1090,14 +1786,12 @@ function(
 				/**
 				 * Inserts an operator into the list of valid operators for a type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @param {sap.ui.mdc.condition.Operator|string} vOperator The operator instance or operator name
 				 * @param {int} idx Index of the operator in the list of operators for this type
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				insertOperatorForType: function(sType, vOperator, idx) {
 					if (!FilterOperatorUtil._mDefaultOpsForType[sType]) {
@@ -1114,13 +1808,11 @@ function(
 				/**
 				 * Removes an operator from the list of valid operators for a type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @param {sap.ui.mdc.condition.Operator|string} vOperator The operator instance or operator name
 				 *
 				 * @since: 1.88.0
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				removeOperatorForType: function(sType, vOperator) {
 					var sName;
@@ -1140,12 +1832,10 @@ function(
 				/**
 				 * Returns all available default operators for the given type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @returns {string[]} an array with the supported filter operator names
 				 *
-				 * @private
-				 * @ui5-restricted ap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				getOperatorsForType: function(sType) {
 
@@ -1163,12 +1853,10 @@ function(
 				/**
 				 * Returns the default operator for the given basic type.
 				 *
-				 * @param {sap.ui.mdc.enum.BaseType} sType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sType Basic type
 				 * @returns {sap.ui.mdc.condition.Operator} the default operator for the given type
 				 *
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				getDefaultOperator: function(sType) {
 
@@ -1209,9 +1897,7 @@ function(
 				 * @param {string} sOperator Name of the operator
 				 * @returns {sap.ui.mdc.condition.Operator|undefined} the operator object, or <code>undefined<code> if the operator with the requested name does not exist
 				 *
-				 * @private
-				 * @ui5-restricted sap.fe
-				 * @MDC_PUBLIC_CANDIDATE
+				 * @public
 				 */
 				getOperator: function(sOperator) {
 
@@ -1237,14 +1923,14 @@ function(
 				 * @returns {sap.ui.mdc.condition.Operator} Operator object
 				 *
 				 * @private
-				 * @ui5-restricted sap.ui.mdc.Field, sap.ui.mdc.field.FieldBase, sap.ui.mdc.field.ConditionType, sap.ui.mdc.field.FieldHelpBase
+				 * @ui5-restricted sap.ui.mdc.Field, sap.ui.mdc.field.FieldBase, sap.ui.mdc.field.ConditionType, sap.ui.mdc.valuehelp.base.Content
 				 */
 				getEQOperator: function(aOperators) {
 
 					if (aOperators) {
 						for (var i = 0; i < aOperators.length; i++) {
 							var oOperator = this.getOperator(aOperators[i]);
-							if (oOperator && oOperator.validateInput && !oOperator.exclude && oOperator.valueTypes[0] && oOperator.valueTypes[0] !== Operator.ValueType.Static) {
+							if (oOperator && oOperator.validateInput && !oOperator.exclude && oOperator.valueTypes[0] && oOperator.valueTypes[0] !== OperatorValueType.Static) {
 								return oOperator;
 							}
 						}
@@ -1261,7 +1947,7 @@ function(
 				 * @returns {boolean} true if only EQ is supported
 				 *
 				 * @private
-				 * @ui5-restricted sap.ui.mdc.field.FieldBase, sap.ui.mdc.field.FieldValueHelp, sap.ui.mdc.field.ConditionType
+				 * @ui5-restricted sap.ui.mdc.field.FieldBase, sap.ui.mdc.field.ConditionType
 				 */
 				onlyEQ: function(aOperators) {
 
@@ -1469,10 +2155,11 @@ function(
 				/**
 				 * Returns the operator object for the given <code>DynamicDateOption</code> name.
 				 * @param {string} sOption Name of the operator
-				 * @param {sap.ui.mdc.enum.BaseType} [sBaseType] Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} [sBaseType] Basic type
 				 * @returns {sap.ui.mdc.condition.Operator|undefined} the operator object, or <code>undefined</code> if the operator with the requested name does not exist
 				 *
-				 * @protected
+				 * @private
+				 * @ui5-restricted sap.ui.mdc
 				 * @since: 1.100.0
 				 */
 				 getOperatorForDynamicDateOption: function(sOption, sBaseType) {
@@ -1506,9 +2193,10 @@ function(
 				 *
 				 * @param {sap.ui.mdc.condition.Operator} oOperator Condition to check
 				 * @param {object} oDynamicDateRangeKeys Keys for <code>DynamicDateOption</code>
-				 * @param {sap.ui.mdc.enum.BaseType} sBaseType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sBaseType Basic type
 				 * @returns {string} <code>DynamicDateOption</code>
-				 * @protected
+				 * @private
+				 * @ui5-restricted sap.ui.mdc
 				 * @since: 1.100.0
 				 */
 				 getDynamicDateOptionForOperator: function(oOperator, oDynamicDateRangeKeys, sBaseType) {
@@ -1530,9 +2218,10 @@ function(
 				 * Determines the corresponding custom <code>DynamicDateOption</code> for an <code>Operator</code>
 				 *
 				 * @param {sap.ui.mdc.condition.Operator} oOperator Condition to check
-				 * @param {sap.ui.mdc.enum.BaseType} sBaseType Basic type
+				 * @param {sap.ui.mdc.enums.BaseType} sBaseType Basic type
 				 * @returns {string} <code>DynamicDateOption</code>
-				 * @protected
+				 * @private
+				 * @ui5-restricted sap.ui.mdc
 				 * @since: 1.100.0
 				 */
 				 getCustomDynamicDateOptionForOperator: function(oOperator, sBaseType) {
@@ -1578,7 +2267,6 @@ function(
 				 FilterOperatorUtil._mOperators.lessEqual,
 				 FilterOperatorUtil._mOperators.greaterThan,
 				 FilterOperatorUtil._mOperators.greaterEqual,
-				//  FilterOperatorUtil._mOperators.empty,
 
 				 FilterOperatorUtil._mOperators.notEqual,
 				 FilterOperatorUtil._mOperators.notBetween,
@@ -1586,7 +2274,6 @@ function(
 				 FilterOperatorUtil._mOperators.notLessEqual,
 				 FilterOperatorUtil._mOperators.notGreaterThan,
 				 FilterOperatorUtil._mOperators.notGreaterEqual,
-				//  FilterOperatorUtil._mOperators.notEmpty,
 
 				 FilterOperatorUtil._mOperators.today,
 				 FilterOperatorUtil._mOperators.yesterday,
@@ -1654,6 +2341,11 @@ function(
 				 FilterOperatorUtil._mOperators.notLessEqual,
 				 FilterOperatorUtil._mOperators.notGreaterThan,
 				 FilterOperatorUtil._mOperators.notGreaterEqual,
+
+				 FilterOperatorUtil._mOperators.lastMinutes,
+				 FilterOperatorUtil._mOperators.nextMinutes,
+				 FilterOperatorUtil._mOperators.lastHours,
+				 FilterOperatorUtil._mOperators.nextHours,
 
 				 FilterOperatorUtil._mOperators.today,
 				 FilterOperatorUtil._mOperators.yesterday,
@@ -1819,24 +2511,24 @@ function(
 		}
 
 
-		var bCreatingMonthFieldHelp = false;
+		var bCreatingMonthValueHelp = false;
 
-		function _getMonthFieldHelp() {
+		function _getMonthValueHelp() {
 
 			var sId = "LFHForSpecificMonth";
 
-			if (!bCreatingMonthFieldHelp) {
-				bCreatingMonthFieldHelp = true;
+			if (!bCreatingMonthValueHelp) {
+				bCreatingMonthValueHelp = true;
 
 				loadModules([
 					"sap/ui/mdc/valuehelp/content/FixedList",
-					"sap/ui/mdc/field/ListFieldHelpItem",
+					"sap/ui/mdc/valuehelp/content/FixedListItem",
 					"sap/ui/mdc/ValueHelp",
 					"sap/ui/mdc/valuehelp/Popover",
 					"sap/ui/core/Control"
 				]).then(function (aLoaded) {
 					var FixedList = aLoaded[0];
-					var ListFieldHelpItem = aLoaded[1];
+					var FixedListItem = aLoaded[1];
 					var ValueHelp = aLoaded[2];
 					var Popover = aLoaded[3];
 					var Control = aLoaded[4];
@@ -1857,7 +2549,7 @@ function(
 						return this._aMonthsItems;
 					}.bind(this);
 
-					var oMonthFieldHelp = new ValueHelp({
+					var oMonthValueHelp = new ValueHelp({
 						id: sId,
 						typeahead: new Popover({
 							content: [new FixedList({
@@ -1865,7 +2557,7 @@ function(
 								useFirstMatch: true,
 								items: {
 									path: "$items>/",
-									template: new ListFieldHelpItem({
+									template: new FixedListItem({
 										text: "{$items>text}",
 										key: "{$items>key}"
 									}),
@@ -1880,11 +2572,11 @@ function(
 						var oStaticAreaRef = sap.ui.getCore().getStaticAreaRef();
 						// only a facade of the static UIArea is returned that contains only the public methods
 						var oStaticUIArea = sap.ui.getCore().getUIArea(oStaticAreaRef);
-						var oControl = new Control(sId + "-parent", {dependents: [oMonthFieldHelp]});
+						var oControl = new Control(sId + "-parent", {dependents: [oMonthValueHelp]});
 						oStaticUIArea.addContent(oControl, true); // do not invalidate UIArea
 					} catch (e) {
 						Log.error(e);
-						throw new Error("MonthFieldHelp cannot be assigned because static UIArea cannot be determined.");
+						throw new Error("MonthValueHelp cannot be assigned because static UIArea cannot be determined.");
 					}
 
 				}.bind(this));

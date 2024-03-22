@@ -32,7 +32,7 @@ sap.ui.define([
 		 * @namespace
 		 * @alias sap.ui.support.RuleAnalyzer
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @public
 		 */
 		var RuleAnalyzer = {
@@ -43,7 +43,6 @@ sap.ui.define([
 			 * Allows to choose a particular execution scope - desired part of the UI
 			 * to be checked and a flexible way to specify the list of rules to be used.
 			 *
-			 * @memberof sap.ui.support.RuleAnalyzer
 			 * @public
 			 * @param {object} [oExecutionScope] The execution scope of the analysis (see {@link topic:e15067d976f24b11907f4c262bd749a0 Execution Scope}).
 			 * @param {string} [oExecutionScope.type=global] Possible values are <code>global</code>, <code>subtree</code> or <code>components</code>.
@@ -82,7 +81,6 @@ sap.ui.define([
 
 			/**
 			 * Returns the result of the last analysis performed.
-			 * @memberof sap.ui.support.RuleAnalyzer
 			 * @public
 			 * @returns {sap.ui.support.AnalysisResult} Last analysis history.
 			 */
@@ -93,7 +91,6 @@ sap.ui.define([
 			/**
 			 * Returns the history of all executed analyses.
 			 *
-			 * @memberof sap.ui.support.RuleAnalyzer
 			 * @public
 			 * @returns {sap.ui.support.AnalysisResult[]} Array of history objects in the order of analyses performed. The results of the last analysis are contained in the last element in the array.
 			 */
@@ -104,7 +101,6 @@ sap.ui.define([
 			/**
 			 * Returns the history of all executed analyses into formatted output depending on the passed format.
 			 *
-			 * @memberof sap.ui.support.RuleAnalyzer
 			 * @public
 			 * @param {sap.ui.support.HistoryFormats} [sFormat=sap.ui.support.HistoryFormats.String] The format into which the history object will be converted. Possible values are listed in sap.ui.support.HistoryFormats.
 			 * @returns {*} All analysis history objects in the correct format.
@@ -116,10 +112,9 @@ sap.ui.define([
 			/**
 	 		 * Adds new temporary rule when in silent mode
 			 *
-			 * @memberof sap.ui.support.RuleAnalyzer
 			 * @public
 			 * @since 1.60
-			 * @param {object} oRule Settings for the new rule. For detailed information about its properties see {@link topic:eaeea19a991d46f29e6d8d8827317d0e Rule Property Values}
+			 * @param {sap.ui.support.RuleConfiguration} oRule Settings for the new rule. For detailed information about its properties see {@link topic:eaeea19a991d46f29e6d8d8827317d0e Rule Property Values}
 			 * @returns {string} Rule creation status. Possible values are "success" or description of why adding failed.
 			 */
 			addRule: function (oRule) {

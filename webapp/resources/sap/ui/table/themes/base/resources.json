@@ -14,7 +14,7 @@
 		},
 		{
 			"name": "Cell.less",
-			"size": 9390,
+			"size": 10630,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -38,7 +38,7 @@
 		},
 		{
 			"name": "Row.less",
-			"size": 2242,
+			"size": 2304,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -91,13 +91,13 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 129171,
+			"size": 152656,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 62387,
+			"size": 63082,
 			"theme": "base"
 		},
 		{
@@ -108,12 +108,12 @@
 		},
 		{
 			"name": "library.css",
-			"size": 62407,
+			"size": 63102,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 62524,
+			"size": 63826,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -125,17 +125,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 66375,
+			"size": 67070,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 66397,
+			"size": 67092,
 			"theme": "base"
 		},
 		{
 			"name": "resources.json",
-			"size": 2275
+			"size": 2276
 		}
 	]
 }

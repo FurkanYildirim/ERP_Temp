@@ -92,7 +92,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -544,16 +544,11 @@ sap.ui.define([
 						fileName: {type: "string"},
 
 						/**
-						 * This callback function returns the corresponding header parameter (type sap.m.UploadCollectionParameter) if available.
+						 * A function that returns the corresponding header parameter (type <code>sap.m.UploadCollectionParameter</code>) if available.
+						 * The function accepts one optional parameter of type <code>string</code>, which is the name of the header parameter. If no parameter is provided all header parameters are returned.
 						 */
 						getHeaderParameter: {
-							type: "function",
-							parameters: {
-								/**
-								 * The (optional) name of the header parameter. If no parameter is provided all header parameters are returned.
-								 */
-								headerParameterName: {type: "string"}
-							}
+							type: "function"
 						}
 					}
 				},
@@ -569,28 +564,18 @@ sap.ui.define([
 						fileName: {type: "string"},
 
 						/**
-						 * Adds a header parameter to the file that will be uploaded.
+						 * A function that adds a header parameter to the file that will be uploaded.
+						 * The function accepts one parameter of type <code>sap.m.UploadCollectionParameter</code> which specifies the header parameter that will be added.
 						 */
 						addHeaderParameter: {
-							type: "function",
-							parameters: {
-								/**
-								 * Specifies a header parameter that will be added
-								 */
-								headerParameter: {type: "sap.m.UploadCollectionParameter"}
-							}
+							type: "function"
 						},
 						/**
-						 * Returns the corresponding header parameter (type sap.m.UploadCollectionParameter) if available.
+						 * A function that returns the corresponding header parameter (type <code>sap.m.UploadCollectionParameter</code>) if available.
+						 * The function accepts one optional parameter of type <code>string</code>, which is the name of the header parameter. If no parameter is provided all header parameters are returned.
 						 */
 						getHeaderParameter: {
-							type: "function",
-							parameters: {
-								/**
-								 * The (optional) name of the header parameter. If no parameter is provided all header parameters are returned.
-								 */
-								headerParameterName: {type: "string"}
-							}
+							type: "function"
 						}
 					}
 				},
@@ -2228,6 +2213,7 @@ sap.ui.define([
 			MessageBox.show(sMessageText, {
 				title: this._oRb.getText("UPLOADCOLLECTION_DELETE_TITLE"),
 				actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.OK,
 				onClose: this._onCloseMessageBoxDeleteItem.bind(this),
 				dialogId: "messageBoxDeleteFile",
 				styleClass: sCompact

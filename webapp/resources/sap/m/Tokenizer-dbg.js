@@ -13,6 +13,7 @@ sap.ui.define([
 	'sap/m/ResponsivePopover',
 	'sap/ui/core/Core',
 	'sap/ui/core/Control',
+	'sap/ui/core/Element',
 	'sap/ui/core/delegate/ScrollEnablement',
 	'sap/ui/Device',
 	'sap/ui/core/InvisibleText',
@@ -23,9 +24,6 @@ sap.ui.define([
 	"sap/base/Log",
 	"sap/ui/core/EnabledPropagator",
 	"sap/ui/core/theming/Parameters",
-	"sap/ui/thirdparty/jquery",
-	// jQuery Plugin "control"
-	"sap/ui/dom/jquery/control",
 	// jQuery Plugin "scrollLeftRTL"
 	"sap/ui/dom/jquery/scrollLeftRTL"
 ],
@@ -37,6 +35,7 @@ sap.ui.define([
 		ResponsivePopover,
 		Core,
 		Control,
+		Element,
 		ScrollEnablement,
 		Device,
 		InvisibleText,
@@ -46,9 +45,7 @@ sap.ui.define([
 		KeyCodes,
 		Log,
 		EnabledPropagator,
-		Parameters,
-		jQuery,
-		scrollLeftRTL
+		Parameters
 	) {
 	"use strict";
 
@@ -78,7 +75,7 @@ sap.ui.define([
 	 *
 	 * @extends sap.ui.core.Control
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -257,6 +254,7 @@ sap.ui.define([
 		this.allowTextSelection(false);
 		this._oTokensWidthMap = {};
 		this._oIndicator = null;
+		this._bShouldRenderTabIndex = null;
 		this._oScroller = new ScrollEnablement(this, this.getId() + "-scrollContainer", {
 			horizontal : true,
 			vertical : false,
@@ -280,7 +278,24 @@ sap.ui.define([
 			var oToken = oEvent.getSource();
 			var aSelectedTokens = this.getSelectedTokens();
 
-			// compatibility
+			this._fireCompatibilityEvents(oToken, aSelectedTokens);
+			this.fireEvent("tokenDelete", {
+				tokens: [oToken]
+			});
+
+			oEvent.cancelBubble();
+		}, this);
+	};
+
+	/**
+	 * Fires deprecated events for backwards compatibility
+	 *
+	 * @private
+	 * @param {object} oToken Updated token
+	 * @param {array} aSelectedTokens Array of selected changed tokens
+	 * @deprecated As of version 1.82, replaced by <code>tokenDelete</code> event
+	 */
+	Tokenizer.prototype._fireCompatibilityEvents = function(oToken, aSelectedTokens) {
 			this.fireTokenChange({
 				type: Tokenizer.TokenChangeType.Removed,
 				token: oToken,
@@ -289,18 +304,11 @@ sap.ui.define([
 				removedTokens: aSelectedTokens.length ? aSelectedTokens : [oToken]
 			});
 
-			// compatibility
 			this.fireTokenUpdate({
 				type: Tokenizer.TokenChangeType.Removed,
 				addedTokens: [],
 				removedTokens: aSelectedTokens.length ? aSelectedTokens : [oToken]
 			});
-
-			this.fireEvent("tokenDelete", {
-				tokens: [oToken]
-			});
-
-		}, this);
 	};
 
 	/**
@@ -514,7 +522,7 @@ sap.ui.define([
 	 * Toggles the popover.
 	 *
 	 * @private
-	 * @ui5-restricted for sap.m.MultiInput, sap.m.MultiComboBox
+	 * @ui5-restricted sap.m.MultiInput, sap.m.MultiComboBox
 	 */
 	Tokenizer.prototype._togglePopup = function (oPopover) {
 		var oOpenByDom,
@@ -546,7 +554,9 @@ sap.ui.define([
 		}
 
 		var oListItem = new StandardListItem({
-			selected: true
+			selected: true,
+			wrapping: true,
+			wrapCharLimit: 10000
 		}).data("tokenId", oToken.getId());
 
 		oListItem.setTitle(oToken.getText());
@@ -839,9 +849,9 @@ sap.ui.define([
 		}
 
 		aTokens.forEach(function(oToken, iIndex) {
-			oToken.setProperty("editableParent", this.getEditable() && this.getEnabled(), true);
-			oToken.setProperty("posinset", iIndex + 1, true);
-			oToken.setProperty("setsize", aTokens.length, true);
+			oToken.setProperty("editableParent", this.getEditable() && this.getEnabled());
+			oToken.setProperty("posinset", iIndex + 1);
+			oToken.setProperty("setsize", aTokens.length);
 		}, this);
 
 		this._setTokensAria();
@@ -1059,7 +1069,7 @@ sap.ui.define([
 	Tokenizer.prototype._selectRange = function (bForwardSection) {
 		var oRange = {},
 			oTokens = this._getVisibleTokens(),
-			oFocusedControl = jQuery(document.activeElement).control()[0],
+			oFocusedControl = Element.closestTo(document.activeElement),
 			iTokenIndex = oTokens.indexOf(oFocusedControl);
 
 		if (!oFocusedControl || !oFocusedControl.isA("sap.m.Token")) {
@@ -1239,7 +1249,7 @@ sap.ui.define([
 			return;
 		}
 
-		var oFocusedElement = jQuery(document.activeElement).control()[0];
+		var oFocusedElement = Element.closestTo(document.activeElement);
 
 		// oFocusedElement could be undefined since the focus element might not correspond to an SAPUI5 Control
 		var index = oFocusedElement ? aTokens.indexOf(oFocusedElement) : -1;
@@ -1287,7 +1297,7 @@ sap.ui.define([
 			return;
 		}
 
-		var oFocusedElement = jQuery(document.activeElement).control()[0];
+		var oFocusedElement = Element.closestTo(document.activeElement);
 
 		// oFocusedElement could be undefined since the focus element might not correspond to an SAPUI5 Control
 		var index = oFocusedElement ? aTokens.indexOf(oFocusedElement) : -1;
@@ -1496,6 +1506,26 @@ sap.ui.define([
 	};
 
 	/**
+	 * Method for handling the state for tabindex rendering
+	 *
+	 * @param {boolean} bShouldRenderTabIndex If tabindex should be rendered
+	 * @protected
+	 */
+	Tokenizer.prototype.setShouldRenderTabIndex = function (bShouldRenderTabIndex) {
+		this._bShouldRenderTabIndex = bShouldRenderTabIndex;
+	};
+
+	/**
+	 * Flag indicating if tabindex attribute should be rendered
+	 *
+	 * @returns {boolean} True if tabindex should be rendered and false if not
+	 * @protected
+	 */
+	Tokenizer.prototype.getEffectiveTabIndex = function () {
+		return this._bShouldRenderTabIndex === null ? !!this.getTokens().length : this._bShouldRenderTabIndex;
+	};
+
+	/**
 	 * Handle the focus event on the control.
 	 *
 	 * @param {jQuery.Event} oEvent The occuring event
@@ -1559,6 +1589,7 @@ sap.ui.define([
 		this._oTokensWidthMap = null;
 		this._oIndicator = null;
 		this._aTokenValidators = null;
+		this._bShouldRenderTabIndex = null;
 	};
 
 	/**

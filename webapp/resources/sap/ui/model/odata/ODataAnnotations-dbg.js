@@ -27,7 +27,7 @@ sap.ui.define([
 	 *
 	 * @author SAP SE
 	 * @version
-	 * 1.108.14
+	 * 1.115.1
 	 *
 	 * @public
 	 * @deprecated As of version 1.66, please use {@link sap.ui.model.odata.v2.ODataAnnotations} instead.
@@ -90,14 +90,22 @@ sap.ui.define([
 	///////////////////////////////////////////////// Prototype Members ////////////////////////////////////////////////
 
 	/**
+	 * Returns the raw annotation data
+	 *
+	 * @private
+	 * @returns {object} the annotation data
+	 */
+	ODataAnnotations.prototype.getData = function() {
+		return this.oAnnotations;
+	};
+
+	/**
 	 * returns the raw annotation data
 	 *
 	 * @public
 	 * @returns {object} returns annotations data
 	 */
-	ODataAnnotations.prototype.getAnnotationsData = function() {
-		return this.oAnnotations;
-	};
+	ODataAnnotations.prototype.getAnnotationsData = ODataAnnotations.prototype.getData;
 
 	/**
 	 * Checks whether annotations from at least one source are available

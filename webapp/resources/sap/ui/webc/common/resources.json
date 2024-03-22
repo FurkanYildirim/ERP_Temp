@@ -3,16 +3,16 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 2544
+			"size": 2503
 		},
 		{
 			"name": ".theming",
-			"size": 102
+			"size": 101
 		},
 		{
 			"name": "Configuration-dbg.js",
 			"module": "sap/ui/webc/common/Configuration.js",
-			"size": 319,
+			"size": 471,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/config/Language.js",
@@ -22,7 +22,7 @@
 		{
 			"name": "Configuration.js",
 			"module": "sap/ui/webc/common/Configuration.js",
-			"size": 265,
+			"size": 416,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/config/Language.js",
 				"sap/ui/webc/common/thirdparty/base/config/Theme.js"
@@ -30,13 +30,13 @@
 		},
 		{
 			"name": "Configuration.js.map",
-			"size": 370,
+			"size": 375,
 			"isDebug": true
 		},
 		{
 			"name": "Icons-dbg.js",
 			"module": "sap/ui/webc/common/Icons.js",
-			"size": 274,
+			"size": 426,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/icons-business-suite/AllIcons.js",
@@ -50,7 +50,7 @@
 		{
 			"name": "Icons.js",
 			"module": "sap/ui/webc/common/Icons.js",
-			"size": 288,
+			"size": 439,
 			"required": [
 				"sap/ui/webc/common/thirdparty/icons-business-suite/AllIcons.js",
 				"sap/ui/webc/common/thirdparty/icons-business-suite/Assets.js",
@@ -62,19 +62,18 @@
 		},
 		{
 			"name": "Icons.js.map",
-			"size": 175,
+			"size": 180,
 			"isDebug": true
 		},
 		{
 			"name": "WebComponent-dbg.js",
 			"module": "sap/ui/webc/common/WebComponent.js",
-			"size": 13671,
+			"size": 13662,
 			"isDebug": true,
 			"required": [
 				"sap/base/strings/camelize.js",
 				"sap/base/strings/hyphenate.js",
 				"sap/ui/core/Control.js",
-				"sap/ui/core/Core.js",
 				"sap/ui/core/Element.js",
 				"sap/ui/core/LabelEnablement.js",
 				"sap/ui/core/library.js",
@@ -85,12 +84,11 @@
 		{
 			"name": "WebComponent.js",
 			"module": "sap/ui/webc/common/WebComponent.js",
-			"size": 5457,
+			"size": 5452,
 			"required": [
 				"sap/base/strings/camelize.js",
 				"sap/base/strings/hyphenate.js",
 				"sap/ui/core/Control.js",
-				"sap/ui/core/Core.js",
 				"sap/ui/core/Element.js",
 				"sap/ui/core/LabelEnablement.js",
 				"sap/ui/core/library.js",
@@ -100,13 +98,13 @@
 		},
 		{
 			"name": "WebComponent.js.map",
-			"size": 7596,
+			"size": 7593,
 			"isDebug": true
 		},
 		{
 			"name": "WebComponentMetadata-dbg.js",
 			"module": "sap/ui/webc/common/WebComponentMetadata.js",
-			"size": 8423,
+			"size": 8422,
 			"isDebug": true,
 			"required": [
 				"sap/base/strings/camelize.js",
@@ -158,10 +156,11 @@
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/webc/common/library.js",
-			"size": 1942,
+			"size": 1953,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/DataType.js",
+				"sap/ui/core/Lib.js",
 				"sap/ui/core/library.js",
 				"sap/ui/webc/common/Icons.js",
 				"sap/ui/webc/common/thirdparty/base/AssetRegistry.js",
@@ -175,7 +174,7 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/webc/common/library-preload.js",
-			"size": 1616121,
+			"size": 1616368,
 			"merged": true,
 			"required": [
 				"sap/base/security/encodeXML.js",
@@ -183,10 +182,10 @@
 				"sap/base/strings/hyphenate.js",
 				"sap/ui/base/DataType.js",
 				"sap/ui/core/Control.js",
-				"sap/ui/core/Core.js",
 				"sap/ui/core/Element.js",
 				"sap/ui/core/ElementMetadata.js",
 				"sap/ui/core/LabelEnablement.js",
+				"sap/ui/core/Lib.js",
 				"sap/ui/core/LocaleData.js",
 				"sap/ui/core/date/Buddhist.js",
 				"sap/ui/core/date/Gregorian.js",
@@ -444,15 +443,16 @@
 		},
 		{
 			"name": "library-preload.js.map",
-			"size": 448687,
+			"size": 448714,
 			"isDebug": true
 		},
 		{
 			"name": "library.js",
 			"module": "sap/ui/webc/common/library.js",
-			"size": 1202,
+			"size": 1199,
 			"required": [
 				"sap/ui/base/DataType.js",
+				"sap/ui/core/Lib.js",
 				"sap/ui/core/library.js",
 				"sap/ui/webc/common/Icons.js",
 				"sap/ui/webc/common/thirdparty/base/AssetRegistry.js",
@@ -465,17 +465,17 @@
 		},
 		{
 			"name": "library.js.map",
-			"size": 1115,
+			"size": 1106,
 			"isDebug": true
 		},
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/webc/common/manifest.json",
-			"size": 1115
+			"size": 1040
 		},
 		{
 			"name": "resources.json",
-			"size": 1837333
+			"size": 1836009
 		},
 		{
 			"name": "thirdparty/base/AssetRegistry-dbg.js",
@@ -508,7 +508,7 @@
 		{
 			"name": "thirdparty/base/Boot-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/Boot.js",
-			"size": 2137,
+			"size": 2128,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -542,7 +542,7 @@
 		{
 			"name": "thirdparty/base/CSP-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/CSP.js",
-			"size": 2138,
+			"size": 2127,
 			"isDebug": true
 		},
 		{
@@ -558,7 +558,7 @@
 		{
 			"name": "thirdparty/base/CustomElementsRegistry-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/CustomElementsRegistry.js",
-			"size": 4107,
+			"size": 4086,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Runtimes.js",
@@ -610,7 +610,7 @@
 		{
 			"name": "thirdparty/base/CustomElementsScopeUtils-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/CustomElementsScopeUtils.js",
-			"size": 4223,
+			"size": 4206,
 			"isDebug": true
 		},
 		{
@@ -626,7 +626,7 @@
 		{
 			"name": "thirdparty/base/DOMObserver-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/DOMObserver.js",
-			"size": 1977,
+			"size": 1964,
 			"isDebug": true
 		},
 		{
@@ -642,7 +642,7 @@
 		{
 			"name": "thirdparty/base/Device-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/Device.js",
-			"size": 3779,
+			"size": 3747,
 			"isDebug": true
 		},
 		{
@@ -658,7 +658,7 @@
 		{
 			"name": "thirdparty/base/EventProvider-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/EventProvider.js",
-			"size": 2554,
+			"size": 2535,
 			"isDebug": true
 		},
 		{
@@ -674,7 +674,7 @@
 		{
 			"name": "thirdparty/base/FeaturesRegistry-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
-			"size": 468,
+			"size": 464,
 			"isDebug": true
 		},
 		{
@@ -690,7 +690,7 @@
 		{
 			"name": "thirdparty/base/FontFace-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/FontFace.js",
-			"size": 1477,
+			"size": 1479,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -718,7 +718,7 @@
 		{
 			"name": "thirdparty/base/InitialConfiguration-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/InitialConfiguration.js",
-			"size": 4774,
+			"size": 4753,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -744,7 +744,7 @@
 		{
 			"name": "thirdparty/base/Keys-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/Keys.js",
-			"size": 14979,
+			"size": 14793,
 			"isDebug": true
 		},
 		{
@@ -754,13 +754,13 @@
 		},
 		{
 			"name": "thirdparty/base/Keys.js.map",
-			"size": 11559,
+			"size": 11568,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/base/ManagedStyles-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/ManagedStyles.js",
-			"size": 3492,
+			"size": 3473,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CSP.js",
@@ -786,7 +786,7 @@
 		{
 			"name": "thirdparty/base/MediaRange-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/MediaRange.js",
-			"size": 3721,
+			"size": 3717,
 			"isDebug": true
 		},
 		{
@@ -802,7 +802,7 @@
 		{
 			"name": "thirdparty/base/PropertiesFileFormat-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/PropertiesFileFormat.js",
-			"size": 2773,
+			"size": 2755,
 			"isDebug": true
 		},
 		{
@@ -812,7 +812,7 @@
 		},
 		{
 			"name": "thirdparty/base/PropertiesFileFormat.js.map",
-			"size": 2096,
+			"size": 2097,
 			"isDebug": true
 		},
 		{
@@ -846,7 +846,7 @@
 		{
 			"name": "thirdparty/base/RenderQueue-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/RenderQueue.js",
-			"size": 1936,
+			"size": 1921,
 			"isDebug": true
 		},
 		{
@@ -862,7 +862,7 @@
 		{
 			"name": "thirdparty/base/RenderScheduler-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/RenderScheduler.js",
-			"size": 1624,
+			"size": 1616,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Render.js"
@@ -884,7 +884,7 @@
 		{
 			"name": "thirdparty/base/Runtimes-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/Runtimes.js",
-			"size": 3809,
+			"size": 3815,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/generated/VersionInfo.js",
@@ -924,7 +924,7 @@
 		{
 			"name": "thirdparty/base/StaticAreaItem-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/StaticAreaItem.js",
-			"size": 3507,
+			"size": 3486,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CustomElementsScopeUtils.js",
@@ -956,7 +956,7 @@
 		{
 			"name": "thirdparty/base/SystemCSSVars-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/SystemCSSVars.js",
-			"size": 696,
+			"size": 693,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/ManagedStyles.js",
@@ -1004,7 +1004,7 @@
 		{
 			"name": "thirdparty/base/UI5Element-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/UI5Element.js",
-			"size": 36903,
+			"size": 36871,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Boot.js",
@@ -1066,7 +1066,7 @@
 		{
 			"name": "thirdparty/base/UI5ElementMetadata-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/UI5ElementMetadata.js",
-			"size": 10207,
+			"size": 10230,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CustomElementsScopeUtils.js",
@@ -1096,7 +1096,7 @@
 		{
 			"name": "thirdparty/base/animations/AnimationQueue-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/animations/AnimationQueue.js",
-			"size": 1084,
+			"size": 1073,
 			"isDebug": true
 		},
 		{
@@ -1112,7 +1112,7 @@
 		{
 			"name": "thirdparty/base/animations/animate-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/animations/animate.js",
-			"size": 1801,
+			"size": 1793,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/animations/AnimationQueue.js",
@@ -1152,7 +1152,7 @@
 		{
 			"name": "thirdparty/base/animations/scroll-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/animations/scroll.js",
-			"size": 1089,
+			"size": 1085,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/animations/animate.js",
@@ -1176,7 +1176,7 @@
 		{
 			"name": "thirdparty/base/animations/slideDown-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/animations/slideDown.js",
-			"size": 2902,
+			"size": 2929,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/animations/animate.js",
@@ -1200,7 +1200,7 @@
 		{
 			"name": "thirdparty/base/animations/slideUp-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/animations/slideUp.js",
-			"size": 2690,
+			"size": 2697,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/animations/animate.js",
@@ -1224,7 +1224,7 @@
 		{
 			"name": "thirdparty/base/asset-registries/Icons-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js",
-			"size": 4916,
+			"size": 4891,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/assets-meta/IconCollectionsAlias.js",
@@ -1250,7 +1250,7 @@
 		{
 			"name": "thirdparty/base/asset-registries/Illustrations-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
-			"size": 1245,
+			"size": 1237,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/getSharedResource.js"
@@ -1272,7 +1272,7 @@
 		{
 			"name": "thirdparty/base/asset-registries/LocaleData-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/asset-registries/LocaleData.js",
-			"size": 5566,
+			"size": 5568,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -1300,7 +1300,7 @@
 		{
 			"name": "thirdparty/base/asset-registries/Themes-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
-			"size": 3414,
+			"size": 3376,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/generated/AssetParameters.js"
@@ -1322,7 +1322,7 @@
 		{
 			"name": "thirdparty/base/asset-registries/i18n-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/asset-registries/i18n.js",
-			"size": 5321,
+			"size": 5284,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/config/Language.js",
@@ -1354,7 +1354,7 @@
 		{
 			"name": "thirdparty/base/assets-meta/IconCollectionsAlias-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/assets-meta/IconCollectionsAlias.js",
-			"size": 953,
+			"size": 952,
 			"isDebug": true
 		},
 		{
@@ -1370,7 +1370,7 @@
 		{
 			"name": "thirdparty/base/config/AnimationMode-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/AnimationMode.js",
-			"size": 936,
+			"size": 929,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js",
@@ -1394,7 +1394,7 @@
 		{
 			"name": "thirdparty/base/config/CalendarType-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/CalendarType.js",
-			"size": 801,
+			"size": 797,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js",
@@ -1418,7 +1418,7 @@
 		{
 			"name": "thirdparty/base/config/FormatSettings-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/FormatSettings.js",
-			"size": 529,
+			"size": 528,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js"
@@ -1440,7 +1440,7 @@
 		{
 			"name": "thirdparty/base/config/Icons-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/Icons.js",
-			"size": 1860,
+			"size": 1852,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/config/Theme.js"
@@ -1462,7 +1462,7 @@
 		{
 			"name": "thirdparty/base/config/Language-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/Language.js",
-			"size": 2144,
+			"size": 2134,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js",
@@ -1488,7 +1488,7 @@
 		{
 			"name": "thirdparty/base/config/NoConflict-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/NoConflict.js",
-			"size": 1361,
+			"size": 1357,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js"
@@ -1510,7 +1510,7 @@
 		{
 			"name": "thirdparty/base/config/RTL-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/RTL.js",
-			"size": 1333,
+			"size": 1328,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js",
@@ -1538,7 +1538,7 @@
 		{
 			"name": "thirdparty/base/config/Theme-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/config/Theme.js",
-			"size": 1587,
+			"size": 1579,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/InitialConfiguration.js",
@@ -1580,7 +1580,7 @@
 		{
 			"name": "thirdparty/base/delegate/ItemNavigation-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/delegate/ItemNavigation.js",
-			"size": 15436,
+			"size": 15386,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -1608,7 +1608,7 @@
 		{
 			"name": "thirdparty/base/delegate/ResizeHandler-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/delegate/ResizeHandler.js",
-			"size": 3216,
+			"size": 3207,
 			"isDebug": true
 		},
 		{
@@ -1624,7 +1624,7 @@
 		{
 			"name": "thirdparty/base/delegate/ScrollEnablement-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/delegate/ScrollEnablement.js",
-			"size": 6549,
+			"size": 6539,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Device.js",
@@ -1650,7 +1650,7 @@
 		{
 			"name": "thirdparty/base/features/F6Navigation-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/features/F6Navigation.js",
-			"size": 3845,
+			"size": 3826,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -1676,7 +1676,7 @@
 		{
 			"name": "thirdparty/base/features/OpenUI5Enablement-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/features/OpenUI5Enablement.js",
-			"size": 4163,
+			"size": 4146,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -1704,7 +1704,7 @@
 		{
 			"name": "thirdparty/base/features/OpenUI5Support-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/features/OpenUI5Support.js",
-			"size": 3086,
+			"size": 3054,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -1826,7 +1826,7 @@
 		{
 			"name": "thirdparty/base/getSharedResource-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/getSharedResource.js",
-			"size": 1573,
+			"size": 1565,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/util/getSingletonElementInstance.js"
@@ -1848,7 +1848,7 @@
 		{
 			"name": "thirdparty/base/i18nBundle-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/i18nBundle.js",
-			"size": 2971,
+			"size": 2957,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/i18n.js",
@@ -1872,7 +1872,7 @@
 		{
 			"name": "thirdparty/base/locale/Locale-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/Locale.js",
-			"size": 2548,
+			"size": 2523,
 			"isDebug": true
 		},
 		{
@@ -1888,7 +1888,7 @@
 		{
 			"name": "thirdparty/base/locale/RTLAwareRegistry-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/RTLAwareRegistry.js",
-			"size": 457,
+			"size": 453,
 			"isDebug": true
 		},
 		{
@@ -1904,7 +1904,7 @@
 		{
 			"name": "thirdparty/base/locale/applyDirection-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/applyDirection.js",
-			"size": 771,
+			"size": 769,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Render.js",
@@ -1928,7 +1928,7 @@
 		{
 			"name": "thirdparty/base/locale/directionChange-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/directionChange.js",
-			"size": 1279,
+			"size": 1272,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/EventProvider.js"
@@ -1950,7 +1950,7 @@
 		{
 			"name": "thirdparty/base/locale/getEffectiveDir-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/getEffectiveDir.js",
-			"size": 1151,
+			"size": 1152,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/config/RTL.js"
@@ -1972,7 +1972,7 @@
 		{
 			"name": "thirdparty/base/locale/getLocale-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/getLocale.js",
-			"size": 1425,
+			"size": 1423,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/config/Language.js",
@@ -1998,7 +1998,7 @@
 		{
 			"name": "thirdparty/base/locale/languageChange-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/languageChange.js",
-			"size": 1016,
+			"size": 1008,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/EventProvider.js"
@@ -2020,7 +2020,7 @@
 		{
 			"name": "thirdparty/base/locale/nextFallbackLocale-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/nextFallbackLocale.js",
-			"size": 1101,
+			"size": 1103,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/generated/AssetParameters.js"
@@ -2042,7 +2042,7 @@
 		{
 			"name": "thirdparty/base/locale/normalizeLocale-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/locale/normalizeLocale.js",
-			"size": 2351,
+			"size": 2340,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/generated/AssetParameters.js"
@@ -2064,7 +2064,7 @@
 		{
 			"name": "thirdparty/base/renderer/LitRenderer-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js",
-			"size": 2989,
+			"size": 2978,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -2098,7 +2098,7 @@
 		{
 			"name": "thirdparty/base/renderer/directives/style-map-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/renderer/directives/style-map.js",
-			"size": 2794,
+			"size": 2797,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/directive.js",
@@ -2122,7 +2122,7 @@
 		{
 			"name": "thirdparty/base/renderer/executeTemplate-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/renderer/executeTemplate.js",
-			"size": 1375,
+			"size": 1370,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CustomElementsScopeUtils.js"
@@ -2144,7 +2144,7 @@
 		{
 			"name": "thirdparty/base/theming/CustomStyle-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/CustomStyle.js",
-			"size": 2489,
+			"size": 2476,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/EventProvider.js",
@@ -2170,7 +2170,7 @@
 		{
 			"name": "thirdparty/base/theming/ThemeLoaded-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/ThemeLoaded.js",
-			"size": 978,
+			"size": 970,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/EventProvider.js"
@@ -2192,7 +2192,7 @@
 		{
 			"name": "thirdparty/base/theming/applyTheme-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/applyTheme.js",
-			"size": 3058,
+			"size": 3052,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -2222,7 +2222,7 @@
 		{
 			"name": "thirdparty/base/theming/getConstructableStyle-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/getConstructableStyle.js",
-			"size": 1379,
+			"size": 1374,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/theming/CustomStyle.js",
@@ -2246,7 +2246,7 @@
 		{
 			"name": "thirdparty/base/theming/getEffectiveLinksHrefs-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/getEffectiveLinksHrefs.js",
-			"size": 1022,
+			"size": 1015,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CSP.js",
@@ -2270,7 +2270,7 @@
 		{
 			"name": "thirdparty/base/theming/getEffectiveStyle-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/getEffectiveStyle.js",
-			"size": 1782,
+			"size": 1774,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -2296,7 +2296,7 @@
 		{
 			"name": "thirdparty/base/theming/getStylesString-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/getStylesString.js",
-			"size": 667,
+			"size": 663,
 			"isDebug": true
 		},
 		{
@@ -2312,7 +2312,7 @@
 		{
 			"name": "thirdparty/base/theming/getThemeDesignerTheme-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/getThemeDesignerTheme.js",
-			"size": 2937,
+			"size": 2925,
 			"isDebug": true
 		},
 		{
@@ -2328,7 +2328,7 @@
 		{
 			"name": "thirdparty/base/theming/preloadLinks-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/theming/preloadLinks.js",
-			"size": 1198,
+			"size": 1193,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CSP.js",
@@ -2354,7 +2354,7 @@
 		{
 			"name": "thirdparty/base/thirdparty/_merge-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/thirdparty/_merge.js",
-			"size": 1673,
+			"size": 1643,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/thirdparty/isPlainObject.js"
@@ -2376,7 +2376,7 @@
 		{
 			"name": "thirdparty/base/thirdparty/isPlainObject-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/thirdparty/isPlainObject.js",
-			"size": 826,
+			"size": 820,
 			"isDebug": true
 		},
 		{
@@ -2392,7 +2392,7 @@
 		{
 			"name": "thirdparty/base/thirdparty/merge-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/thirdparty/merge.js",
-			"size": 543,
+			"size": 540,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/thirdparty/_merge.js"
@@ -2430,7 +2430,7 @@
 		{
 			"name": "thirdparty/base/types/CSSColor-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/CSSColor.js",
-			"size": 2583,
+			"size": 2579,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2452,7 +2452,7 @@
 		{
 			"name": "thirdparty/base/types/CSSSize-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/CSSSize.js",
-			"size": 987,
+			"size": 983,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2474,7 +2474,7 @@
 		{
 			"name": "thirdparty/base/types/CalendarType-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/CalendarType.js",
-			"size": 787,
+			"size": 782,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2496,7 +2496,7 @@
 		{
 			"name": "thirdparty/base/types/DataType-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/DataType.js",
-			"size": 929,
+			"size": 921,
 			"isDebug": true
 		},
 		{
@@ -2512,7 +2512,7 @@
 		{
 			"name": "thirdparty/base/types/Float-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/Float.js",
-			"size": 668,
+			"size": 663,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2534,7 +2534,7 @@
 		{
 			"name": "thirdparty/base/types/Integer-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/Integer.js",
-			"size": 618,
+			"size": 613,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2556,7 +2556,7 @@
 		{
 			"name": "thirdparty/base/types/InvisibleMessageMode-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/InvisibleMessageMode.js",
-			"size": 1181,
+			"size": 1175,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2578,7 +2578,7 @@
 		{
 			"name": "thirdparty/base/types/ItemNavigationBehavior-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/ItemNavigationBehavior.js",
-			"size": 592,
+			"size": 590,
 			"isDebug": true
 		},
 		{
@@ -2610,7 +2610,7 @@
 		{
 			"name": "thirdparty/base/types/PopupState-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/PopupState.js",
-			"size": 1074,
+			"size": 1066,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2632,7 +2632,7 @@
 		{
 			"name": "thirdparty/base/types/ValueState-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/types/ValueState.js",
-			"size": 757,
+			"size": 752,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -2654,7 +2654,7 @@
 		{
 			"name": "thirdparty/base/updateShadowRoot-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/updateShadowRoot.js",
-			"size": 1912,
+			"size": 1907,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CSP.js",
@@ -2684,7 +2684,7 @@
 		{
 			"name": "thirdparty/base/util/AriaLabelHelper-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/AriaLabelHelper.js",
-			"size": 1723,
+			"size": 1715,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/util/findNodeOwner.js"
@@ -2706,7 +2706,7 @@
 		{
 			"name": "thirdparty/base/util/Caret-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/Caret.js",
-			"size": 1096,
+			"size": 1090,
 			"isDebug": true
 		},
 		{
@@ -2722,7 +2722,7 @@
 		{
 			"name": "thirdparty/base/util/ColorConversion-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/ColorConversion.js",
-			"size": 8849,
+			"size": 8807,
 			"isDebug": true
 		},
 		{
@@ -2732,13 +2732,13 @@
 		},
 		{
 			"name": "thirdparty/base/util/ColorConversion.js.map",
-			"size": 7061,
+			"size": 7062,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/base/util/FetchHelper-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/FetchHelper.js",
-			"size": 994,
+			"size": 984,
 			"isDebug": true
 		},
 		{
@@ -2754,7 +2754,7 @@
 		{
 			"name": "thirdparty/base/util/FocusableElements-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/FocusableElements.js",
-			"size": 2845,
+			"size": 2828,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/util/isNodeClickable.js",
@@ -2778,7 +2778,7 @@
 		{
 			"name": "thirdparty/base/util/InvisibleMessage-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/InvisibleMessage.js",
-			"size": 2652,
+			"size": 2649,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Boot.js",
@@ -2804,7 +2804,7 @@
 		{
 			"name": "thirdparty/base/util/PopupUtils-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/PopupUtils.js",
-			"size": 3208,
+			"size": 3180,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -2830,7 +2830,7 @@
 		{
 			"name": "thirdparty/base/util/SlotsHelper-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/SlotsHelper.js",
-			"size": 1492,
+			"size": 1487,
 			"isDebug": true
 		},
 		{
@@ -2846,7 +2846,7 @@
 		{
 			"name": "thirdparty/base/util/StringHelper-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/StringHelper.js",
-			"size": 1073,
+			"size": 1066,
 			"isDebug": true
 		},
 		{
@@ -2862,7 +2862,7 @@
 		{
 			"name": "thirdparty/base/util/TabbableElements-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/TabbableElements.js",
-			"size": 1798,
+			"size": 1786,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/util/isNodeTabbable.js"
@@ -2884,7 +2884,7 @@
 		{
 			"name": "thirdparty/base/util/arraysAreEqual-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/arraysAreEqual.js",
-			"size": 481,
+			"size": 477,
 			"isDebug": true
 		},
 		{
@@ -2900,7 +2900,7 @@
 		{
 			"name": "thirdparty/base/util/clamp-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/clamp.js",
-			"size": 536,
+			"size": 534,
 			"isDebug": true
 		},
 		{
@@ -2916,7 +2916,7 @@
 		{
 			"name": "thirdparty/base/util/createLinkInHead-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/createLinkInHead.js",
-			"size": 731,
+			"size": 729,
 			"isDebug": true
 		},
 		{
@@ -2932,7 +2932,7 @@
 		{
 			"name": "thirdparty/base/util/createStyleInHead-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/createStyleInHead.js",
-			"size": 728,
+			"size": 726,
 			"isDebug": true
 		},
 		{
@@ -2948,7 +2948,7 @@
 		{
 			"name": "thirdparty/base/util/debounce-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/debounce.js",
-			"size": 556,
+			"size": 554,
 			"isDebug": true
 		},
 		{
@@ -2964,7 +2964,7 @@
 		{
 			"name": "thirdparty/base/util/detectNavigatorLanguage-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/detectNavigatorLanguage.js",
-			"size": 613,
+			"size": 609,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/generated/AssetParameters.js"
@@ -2986,7 +2986,7 @@
 		{
 			"name": "thirdparty/base/util/escapeRegex-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/escapeRegex.js",
-			"size": 544,
+			"size": 542,
 			"isDebug": true
 		},
 		{
@@ -3002,7 +3002,7 @@
 		{
 			"name": "thirdparty/base/util/findNodeOwner-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/findNodeOwner.js",
-			"size": 1275,
+			"size": 1269,
 			"isDebug": true
 		},
 		{
@@ -3018,7 +3018,7 @@
 		{
 			"name": "thirdparty/base/util/formatMessage-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/formatMessage.js",
-			"size": 813,
+			"size": 794,
 			"isDebug": true
 		},
 		{
@@ -3034,7 +3034,7 @@
 		{
 			"name": "thirdparty/base/util/generateHighlightedMarkup-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/generateHighlightedMarkup.js",
-			"size": 2405,
+			"size": 2409,
 			"isDebug": true,
 			"required": [
 				"sap/base/security/encodeXML.js",
@@ -3058,7 +3058,7 @@
 		{
 			"name": "thirdparty/base/util/getActiveElement-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getActiveElement.js",
-			"size": 478,
+			"size": 474,
 			"isDebug": true
 		},
 		{
@@ -3074,7 +3074,7 @@
 		{
 			"name": "thirdparty/base/util/getClassCopy-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getClassCopy.js",
-			"size": 448,
+			"size": 445,
 			"isDebug": true
 		},
 		{
@@ -3090,7 +3090,7 @@
 		{
 			"name": "thirdparty/base/util/getDesigntimePropertyAsArray-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getDesigntimePropertyAsArray.js",
-			"size": 347,
+			"size": 345,
 			"isDebug": true
 		},
 		{
@@ -3106,7 +3106,7 @@
 		{
 			"name": "thirdparty/base/util/getEffectiveContentDensity-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getEffectiveContentDensity.js",
-			"size": 429,
+			"size": 427,
 			"isDebug": true
 		},
 		{
@@ -3122,7 +3122,7 @@
 		{
 			"name": "thirdparty/base/util/getFileExtension-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getFileExtension.js",
-			"size": 682,
+			"size": 678,
 			"isDebug": true
 		},
 		{
@@ -3138,7 +3138,7 @@
 		{
 			"name": "thirdparty/base/util/getNormalizedTarget-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getNormalizedTarget.js",
-			"size": 641,
+			"size": 637,
 			"isDebug": true
 		},
 		{
@@ -3154,7 +3154,7 @@
 		{
 			"name": "thirdparty/base/util/getSingletonElementInstance-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/getSingletonElementInstance.js",
-			"size": 522,
+			"size": 518,
 			"isDebug": true
 		},
 		{
@@ -3170,7 +3170,7 @@
 		{
 			"name": "thirdparty/base/util/isDefaultSlotProvided-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isDefaultSlotProvided.js",
-			"size": 581,
+			"size": 579,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/util/SlotsHelper.js"
@@ -3192,7 +3192,7 @@
 		{
 			"name": "thirdparty/base/util/isDescendantOf-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isDescendantOf.js",
-			"size": 649,
+			"size": 643,
 			"isDebug": true
 		},
 		{
@@ -3208,7 +3208,7 @@
 		{
 			"name": "thirdparty/base/util/isElementInView-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isElementInView.js",
-			"size": 618,
+			"size": 616,
 			"isDebug": true
 		},
 		{
@@ -3224,7 +3224,7 @@
 		{
 			"name": "thirdparty/base/util/isNodeClickable-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isNodeClickable.js",
-			"size": 671,
+			"size": 666,
 			"isDebug": true
 		},
 		{
@@ -3240,7 +3240,7 @@
 		{
 			"name": "thirdparty/base/util/isNodeHidden-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isNodeHidden.js",
-			"size": 447,
+			"size": 444,
 			"isDebug": true
 		},
 		{
@@ -3256,7 +3256,7 @@
 		{
 			"name": "thirdparty/base/util/isNodeTabbable-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isNodeTabbable.js",
-			"size": 982,
+			"size": 973,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/util/isNodeHidden.js"
@@ -3278,7 +3278,7 @@
 		{
 			"name": "thirdparty/base/util/isValidPropertyName-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/isValidPropertyName.js",
-			"size": 891,
+			"size": 889,
 			"isDebug": true
 		},
 		{
@@ -3294,7 +3294,7 @@
 		{
 			"name": "thirdparty/base/util/setToArray-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/setToArray.js",
-			"size": 471,
+			"size": 469,
 			"isDebug": true
 		},
 		{
@@ -3310,7 +3310,7 @@
 		{
 			"name": "thirdparty/base/util/whenDOMReady-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/base/util/whenDOMReady.js",
-			"size": 478,
+			"size": 476,
 			"isDebug": true
 		},
 		{
@@ -6812,7 +6812,7 @@
 		{
 			"name": "thirdparty/icons-business-suite/json-imports/Icons-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/icons-business-suite/json-imports/Icons.js",
-			"size": 814,
+			"size": 811,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
@@ -7027,50 +7027,6 @@
 		{
 			"name": "thirdparty/icons-business-suite/loading-point.js.map",
 			"size": 676,
-			"isDebug": true
-		},
-		{
-			"name": "thirdparty/icons-business-suite/main-milestone-dbg.js",
-			"module": "sap/ui/webc/common/thirdparty/icons-business-suite/main-milestone.js",
-			"size": 1362,
-			"isDebug": true,
-			"required": [
-				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
-			]
-		},
-		{
-			"name": "thirdparty/icons-business-suite/main-milestone.js",
-			"module": "sap/ui/webc/common/thirdparty/icons-business-suite/main-milestone.js",
-			"size": 1145,
-			"required": [
-				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
-			]
-		},
-		{
-			"name": "thirdparty/icons-business-suite/main-milestone.js.map",
-			"size": 678,
-			"isDebug": true
-		},
-		{
-			"name": "thirdparty/icons-business-suite/main-sequence-dbg.js",
-			"module": "sap/ui/webc/common/thirdparty/icons-business-suite/main-sequence.js",
-			"size": 934,
-			"isDebug": true,
-			"required": [
-				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
-			]
-		},
-		{
-			"name": "thirdparty/icons-business-suite/main-sequence.js",
-			"module": "sap/ui/webc/common/thirdparty/icons-business-suite/main-sequence.js",
-			"size": 716,
-			"required": [
-				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
-			]
-		},
-		{
-			"name": "thirdparty/icons-business-suite/main-sequence.js.map",
-			"size": 675,
 			"isDebug": true
 		},
 		{
@@ -12168,7 +12124,7 @@
 		{
 			"name": "thirdparty/icons-tnt/json-imports/Icons-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/icons-tnt/json-imports/Icons.js",
-			"size": 770,
+			"size": 767,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
@@ -21932,7 +21888,7 @@
 		{
 			"name": "thirdparty/icons/generated/json-imports/i18n-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/icons/generated/json-imports/i18n.js",
-			"size": 9109,
+			"size": 9057,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/i18n.js"
@@ -23540,7 +23496,7 @@
 		{
 			"name": "thirdparty/icons/json-imports/Icons-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/icons/json-imports/Icons.js",
-			"size": 1137,
+			"size": 1132,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Icons.js"
@@ -62362,13 +62318,13 @@
 		{
 			"name": "thirdparty/lit-html/directive-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/directive.js",
-			"size": 875,
+			"size": 882,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/lit-html/directive-helpers-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/directive-helpers.js",
-			"size": 2795,
+			"size": 2815,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/lit-html.js"
@@ -62384,7 +62340,7 @@
 		},
 		{
 			"name": "thirdparty/lit-html/directive-helpers.js.map",
-			"size": 2833,
+			"size": 2832,
 			"isDebug": true
 		},
 		{
@@ -62400,7 +62356,7 @@
 		{
 			"name": "thirdparty/lit-html/directives/class-map-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/directives/class-map.js",
-			"size": 1585,
+			"size": 1575,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/directive.js",
@@ -62424,7 +62380,7 @@
 		{
 			"name": "thirdparty/lit-html/directives/if-defined-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/directives/if-defined.js",
-			"size": 376,
+			"size": 374,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/lit-html.js"
@@ -62446,7 +62402,7 @@
 		{
 			"name": "thirdparty/lit-html/directives/repeat-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/directives/repeat.js",
-			"size": 3104,
+			"size": 3184,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/directive-helpers.js",
@@ -62466,13 +62422,13 @@
 		},
 		{
 			"name": "thirdparty/lit-html/directives/repeat.js.map",
-			"size": 3198,
+			"size": 3199,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/lit-html/directives/unsafe-html-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/directives/unsafe-html.js",
-			"size": 1244,
+			"size": 1240,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/directive.js",
@@ -62496,7 +62452,7 @@
 		{
 			"name": "thirdparty/lit-html/lit-html-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/lit-html.js",
-			"size": 12576,
+			"size": 12453,
 			"isDebug": true
 		},
 		{
@@ -62506,13 +62462,13 @@
 		},
 		{
 			"name": "thirdparty/lit-html/lit-html.js.map",
-			"size": 13129,
+			"size": 13133,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/lit-html/static-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/lit-html/static.js",
-			"size": 1684,
+			"size": 1700,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/lit-html/lit-html.js"
@@ -62556,7 +62512,7 @@
 		{
 			"name": "thirdparty/localization/DateFormat-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/DateFormat.js",
-			"size": 438,
+			"size": 436,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/format/DateFormat.js"
@@ -62578,7 +62534,7 @@
 		{
 			"name": "thirdparty/localization/LocaleData-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/LocaleData.js",
-			"size": 431,
+			"size": 429,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/LocaleData.js"
@@ -62600,7 +62556,7 @@
 		{
 			"name": "thirdparty/localization/dates/CalendarDate-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/dates/CalendarDate.js",
-			"size": 9155,
+			"size": 9131,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/date/UniversalDate.js"
@@ -62622,7 +62578,7 @@
 		{
 			"name": "thirdparty/localization/dates/ExtremeDates-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/dates/ExtremeDates.js",
-			"size": 1461,
+			"size": 1450,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/localization/dates/CalendarDate.js"
@@ -62644,7 +62600,7 @@
 		{
 			"name": "thirdparty/localization/dates/calculateWeekNumber-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/dates/calculateWeekNumber.js",
-			"size": 2804,
+			"size": 2809,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/date/UniversalDate.js"
@@ -62666,7 +62622,7 @@
 		{
 			"name": "thirdparty/localization/dates/getRoundedTimestamp-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/dates/getRoundedTimestamp.js",
-			"size": 678,
+			"size": 675,
 			"isDebug": true
 		},
 		{
@@ -62682,7 +62638,7 @@
 		{
 			"name": "thirdparty/localization/dates/getTodayUTCTimestamp-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/dates/getTodayUTCTimestamp.js",
-			"size": 647,
+			"size": 644,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/localization/dates/CalendarDate.js"
@@ -62704,7 +62660,7 @@
 		{
 			"name": "thirdparty/localization/dates/modifyDateBy-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/dates/modifyDateBy.js",
-			"size": 2056,
+			"size": 2047,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/localization/dates/CalendarDate.js"
@@ -62852,7 +62808,7 @@
 		{
 			"name": "thirdparty/localization/getCachedLocaleDataInstance-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/getCachedLocaleDataInstance.js",
-			"size": 646,
+			"size": 641,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/localization/LocaleData.js"
@@ -62874,7 +62830,7 @@
 		{
 			"name": "thirdparty/localization/locale/getLocaleData-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/localization/locale/getLocaleData.js",
-			"size": 1360,
+			"size": 1355,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/LocaleData.js",
@@ -63162,7 +63118,7 @@
 		{
 			"name": "thirdparty/theming/generated/json-imports/Themes-dbg.js",
 			"module": "sap/ui/webc/common/thirdparty/theming/generated/json-imports/Themes.js",
-			"size": 3407,
+			"size": 3391,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js"

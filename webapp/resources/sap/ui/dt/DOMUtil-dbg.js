@@ -23,7 +23,7 @@ sap.ui.define([
 	 *
 	 * @namespace
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @since 1.30
@@ -32,6 +32,38 @@ sap.ui.define([
 	 */
 
 	var DOMUtil = {};
+
+	/**
+	 * Returns the offset for an element
+	 * Replaces the jQuery method offset
+	 * @param {HTMLElement} oElement - Element
+	 * @returns {PositionObject} the calculated offset containing left and top values
+	 */
+	DOMUtil.getOffset = function(oElement) {
+		var oBox = oElement.getBoundingClientRect();
+		var oDocElement = document.documentElement;
+		return {
+			top: oBox.top + window.scrollY - oDocElement.clientTop,
+			left: oBox.left + window.scrollX - oDocElement.clientLeft
+		};
+	};
+
+	/**
+	 * Returns the parents for an element
+	 * Replaces the jQuery method parents
+	 * @param {HTMLElement} oElement - Element
+	 * @param {string} sSelector - jQuery (CSS-like) selector to search for
+	 * @returns {Array} aParents - Array containing Parents which match selector
+	 */
+	DOMUtil.getParents = function(oElement, sSelector) {
+		var aParents = [];
+		while ((oElement = oElement.parentNode) && oElement !== document) {
+			if (!sSelector || oElement.matches(sSelector)) {
+				aParents.unshift(oElement);
+			}
+		}
+		return aParents;
+	};
 
 	DOMUtil.getSize = function(oDomRef) {
 		var oClientRec = oDomRef.getBoundingClientRect();
@@ -58,10 +90,10 @@ sap.ui.define([
 	 * @returns {PositionObject} the calculated offset containing left and top values
 	 */
 	DOMUtil.getOffsetFromParent = function(oGeometry, oParent) {
-		var $Parent = oParent ? jQuery(oParent) : null;
-		var iScrollTop = $Parent ? $Parent.scrollTop() : null;
+		var iScrollTop = oParent ? oParent.scrollTop : null;
 		var iScrollLeft = oParent ? DOMUtil.getScrollLeft(oParent) : null;
-		var mParentOffset = $Parent ? $Parent.offset() : null;
+
+		var mParentOffset = oParent ? this.getOffset(oParent) : null;
 
 		var mOffset = {
 			left: oGeometry.position.left,
@@ -74,9 +106,9 @@ sap.ui.define([
 		}
 
 		if (Configuration.getRTL()) {
-			var iParentWidth = $Parent ? $Parent.outerWidth() : jQuery(window).outerWidth();
+			var iParentWidth = oParent ? oParent.offsetWidth : window.innerWidth;
 			//TODO: Workaround - remove when bug in Safari (issue 336512063) is solved
-			if (Device.browser.safari && !Device.browser.mobile && DOMUtil.hasVerticalScrollBar($Parent)) {
+			if (Device.browser.safari && !Device.browser.mobile && DOMUtil.hasVerticalScrollBar(oParent)) {
 				mOffset.left -= DOMUtil.getScrollbarWidth();
 			}
 			// Workaround end
@@ -99,7 +131,7 @@ sap.ui.define([
 			!Configuration.getRTL()
 			|| !DOMUtil.hasHorizontalScrollBar(oElement)
 		) {
-			return jQuery(oElement).scrollLeft();
+			return oElement.scrollLeft;
 		}
 
 		var iScrollLeftRTL = jQuery(oElement).scrollLeftRTL();
@@ -119,10 +151,7 @@ sap.ui.define([
 		return zIndex;
 	};
 
-	/**
-	 * @private
-	 */
-	DOMUtil._getElementDimensions = function (oDomRef, sMeasure, aDirection) {
+	DOMUtil._getElementDimensions = function(oDomRef, sMeasure, aDirection) {
 		var oRelevantDomRef = oDomRef[0] || oDomRef;
 		var iOffsetWidth = oRelevantDomRef["offset" + sMeasure];
 		var iValue = 0;
@@ -134,17 +163,11 @@ sap.ui.define([
 		return iOffsetWidth + iValue;
 	};
 
-	/**
-	 * @private
-	 */
-	DOMUtil._getElementWidth = function (oDomRef) {
+	DOMUtil._getElementWidth = function(oDomRef) {
 		return DOMUtil._getElementDimensions(oDomRef, "Width", ["Right", "Left"]);
 	};
 
-	/**
-	 * @private
-	 */
-	DOMUtil._getElementHeight = function (oDomRef) {
+	DOMUtil._getElementHeight = function(oDomRef) {
 		return DOMUtil._getElementDimensions(oDomRef, "Height", ["Top", "Bottom"]);
 	};
 
@@ -154,9 +177,11 @@ sap.ui.define([
 	 * @returns {boolean} <code>true</code> if vertical scrollbar is available on DOM Element.
 	 */
 	DOMUtil.hasVerticalScrollBar = function(oDomRef) {
-		var $DomRef = jQuery(oDomRef);
-		var bOverflowYScroll = $DomRef.css("overflow-y") === "auto" || $DomRef.css("overflow-y") === "scroll";
-		return bOverflowYScroll && $DomRef.get(0).scrollHeight > DOMUtil._getElementHeight(oDomRef);
+		if (oDomRef) {
+			var bOverflowYScroll = window.getComputedStyle(oDomRef)["overflow-y"] === "auto" || window.getComputedStyle(oDomRef)["overflow-y"] === "scroll";
+			return bOverflowYScroll && oDomRef.scrollHeight > DOMUtil._getElementHeight(oDomRef);
+		}
+		return false;
 	};
 
 	/**
@@ -164,10 +189,12 @@ sap.ui.define([
 	 * @param {HTMLElement} oDomRef - DOM Element
 	 * @returns {boolean} <code>true</code> if horizontal scrollbar is available on DOM Element
 	 */
-	DOMUtil.hasHorizontalScrollBar = function (oDomRef) {
-		var $DomRef = jQuery(oDomRef);
-		var bOverflowXScroll = $DomRef.css("overflow-x") === "auto" || $DomRef.css("overflow-x") === "scroll";
-		return bOverflowXScroll && $DomRef.get(0).scrollWidth > DOMUtil._getElementWidth(oDomRef);
+	DOMUtil.hasHorizontalScrollBar = function(oDomRef) {
+		if (oDomRef) {
+			var bOverflowXScroll = window.getComputedStyle(oDomRef)["overflow-x"] === "auto" || window.getComputedStyle(oDomRef)["overflow-x"] === "scroll";
+			return bOverflowXScroll && oDomRef.scrollWidth > DOMUtil._getElementWidth(oDomRef);
+		}
+		return false;
 	};
 
 	/**
@@ -186,24 +213,22 @@ sap.ui.define([
 	DOMUtil.getScrollbarWidth = function() {
 		if (typeof DOMUtil.getScrollbarWidth._cache === 'undefined') {
 			// add outer div
-			var oOuter = jQuery('<div></div>')
-				.css({
-					position: 'absolute',
-					top: '-9999px',
-					left: '-9999px',
-					width: '100px'
-				})
-				.appendTo('body');
+			var oOuter = document.createElement("div");
+			oOuter.style.position = "absolute";
+			oOuter.style.top = "-9999px";
+			oOuter.style.left = "-9999px";
+			oOuter.style.width = "100px";
+			document.body.append(oOuter);
 
-			var iWidthNoScroll = oOuter.width();
-			oOuter.css('overflow', 'scroll');
+			var iWidthNoScroll = oOuter.offsetWidth;
+			oOuter.style.overflow = "scroll";
 
 			// add inner div
-			var oInner = jQuery('<div></div>')
-				.css('width', '100%')
-				.appendTo(oOuter);
+			var oInner = document.createElement("div");
+			oInner.style.width = "100%";
+			oOuter.append(oInner);
 
-			var iWidthWithScroll = oInner.width();
+			var iWidthWithScroll = oInner.offsetWidth;
 
 			// clean up
 			oOuter.remove();
@@ -220,20 +245,18 @@ sap.ui.define([
 	 * @returns {object} Object with overflowX and overflowY
 	 */
 	DOMUtil.getOverflows = function(oDomRef) {
-		var $DomRef = jQuery(oDomRef);
-
 		return {
-			overflowX: $DomRef.css("overflow-x"),
-			overflowY: $DomRef.css("overflow-y")
+			overflowX: window.getComputedStyle(oDomRef)["overflow-x"],
+			overflowY: window.getComputedStyle(oDomRef)["overflow-y"]
 		};
 	};
 
 	DOMUtil.getGeometry = function(oDomRef, bUseWindowOffset) {
 		if (oDomRef) {
-			var oOffset = jQuery(oDomRef).offset();
+			var oOffset = this.getOffset(oDomRef);
 			if (bUseWindowOffset) {
-				oOffset.left = oOffset.left - jQuery(window).scrollLeft();
-				oOffset.top = oOffset.top - jQuery(window).scrollTop();
+				oOffset.left = oOffset.left - window.scrollX;
+				oOffset.top = oOffset.top - window.scrollY;
 			}
 
 			return {
@@ -243,22 +266,21 @@ sap.ui.define([
 				visible: this.isVisible(oDomRef)
 			};
 		}
+		return undefined;
 	};
 
 	DOMUtil.syncScroll = function(oSourceDom, oTargetDom) {
-		var $target = jQuery(oTargetDom);
-		var oTargetScrollTop = $target.scrollTop();
-		var oTargetScrollLeft = $target.scrollLeft();
-
-		var $source = jQuery(oSourceDom);
-		var oSourceScrollTop = $source.scrollTop();
-		var oSourceScrollLeft = $source.scrollLeft();
+		var oTargetScrollTop = oTargetDom.scrollTop;
+		var oTargetScrollLeft = oTargetDom.scrollLeft;
+		var oSourceScrollTop = oSourceDom.scrollTop;
+		var oSourceScrollLeft = oSourceDom.scrollLeft;
 
 		if (oSourceScrollTop !== oTargetScrollTop) {
-			$target.scrollTop(oSourceScrollTop);
+			oTargetDom.scrollTop = oSourceScrollTop;
 		}
+
 		if (oSourceScrollLeft !== oTargetScrollLeft) {
-			$target.scrollLeft(oSourceScrollLeft);
+			oTargetDom.scrollLeft = oSourceScrollLeft;
 		}
 	};
 
@@ -310,7 +332,7 @@ sap.ui.define([
 	 * @param {HTMLElement} oNode - Target node to add the attribute to
 	 * @param {boolean} bValue - Attribute value
 	 */
-	DOMUtil.setDraggable = function (oNode, bValue) {
+	DOMUtil.setDraggable = function(oNode, bValue) {
 		oNode.setAttribute("draggable", bValue);
 	};
 
@@ -319,14 +341,14 @@ sap.ui.define([
 	 * @param {HTMLElement} oNode - Target node to set the draggable attribute on
 	 * @returns {boolean|undefined} undefined when draggable is not set to the node
 	 */
-	DOMUtil.getDraggable = function (oNode) {
+	DOMUtil.getDraggable = function(oNode) {
 		switch (oNode.getAttribute("draggable")) {
 			case "true":
 				return true;
 			case "false":
 				return false;
 			default:
-				return;
+				return undefined;
 		}
 	};
 
@@ -379,8 +401,6 @@ sap.ui.define([
 	};
 
 	DOMUtil.copyComputedStyle = function(oSrc, oDest) {
-		oSrc = jQuery(oSrc).get(0);
-		oDest = jQuery(oDest).get(0);
 		var mStyles = window.getComputedStyle(oSrc);
 
 		if (mStyles.getPropertyValue("display") === "none") {
@@ -395,32 +415,27 @@ sap.ui.define([
 	};
 
 	DOMUtil.copyComputedStyles = function(oSrc, oDest) {
-		oSrc = jQuery(oSrc).get(0);
-		oDest = jQuery(oDest).get(0);
-
 		for (var i = 0; i < oSrc.children.length; i++) {
 			this.copyComputedStyles(oSrc.children[i], oDest.children[i]);
 		}
 
 		// we shouldn't copy classes because they can affect styling
-		jQuery(oDest).removeClass();
+		oDest.removeAttribute("class");
 		// remove all special attributes, which can affect app behaviour
-		jQuery(oDest).attr("id", "");
-		jQuery(oDest).attr("role", "");
-		jQuery(oDest).attr("data-sap-ui", "");
-		jQuery(oDest).attr("for", "");
+		oDest.setAttribute("id", "");
+		oDest.setAttribute("role", "");
+		oDest.setAttribute("data-sap-ui", "");
+		oDest.setAttribute("for", "");
+		oDest.setAttribute("tabindex", -1);
 
-		jQuery(oDest).attr("tabindex", -1);
 		this.copyComputedStyle(oSrc, oDest);
 	};
 
 	DOMUtil.cloneDOMAndStyles = function(oNode, oTarget) {
-		oNode = jQuery(oNode).get(0);
-
 		var oCopy = oNode.cloneNode(true);
 		this.copyComputedStyles(oNode, oCopy);
 
-		jQuery(oTarget).append(oCopy);
+		oTarget.append(oCopy);
 	};
 
 	/**
@@ -429,7 +444,7 @@ sap.ui.define([
 	 * @param {HTMLElement} oTargetNode - Node to look for in a potential parent node
 	 * @returns {boolean} <code>true</code> if a potential parent contains the target node
 	 */
-	DOMUtil.contains = function (sId, oTargetNode) {
+	DOMUtil.contains = function(sId, oTargetNode) {
 		var oNode = document.getElementById(sId);
 		return !!oNode && oNode.contains(oTargetNode);
 	};
@@ -439,47 +454,12 @@ sap.ui.define([
 	 * @param {HTMLElement} oTargetNode - Target node to whom child has to be appended
 	 * @param {HTMLElement} oChildNode - Child node to be appended to specified target
 	 */
-	DOMUtil.appendChild = function (oTargetNode, oChildNode) {
+	DOMUtil.appendChild = function(oTargetNode, oChildNode) {
 		var iScrollTop = oChildNode.scrollTop;
-		var iScrollLeft = jQuery(oChildNode).scrollLeft();
+		var iScrollLeft = oChildNode.scrollLeft;
 		oTargetNode.appendChild(oChildNode);
 		oChildNode.scrollTop = iScrollTop;
-		jQuery(oChildNode).scrollLeft(iScrollLeft);
-	};
-
-	/**
-	 * Set the Focus to the DOM Element without scrolling
-	 * @param {HTMLElement} oTargetNode - Target node to whom focus should be set
-	 */
-	DOMUtil.focusWithoutScrolling = function (oTargetNode) {
-		// Only for Newer Devices
-		if (Device.browser.name !== "ie") {
-			oTargetNode.focus({preventScroll: true});
-			return;
-		}
-
-		var aScrollHierarchy = [];
-		var oParentNode = oTargetNode.parentNode;
-
-		while (oParentNode) {
-			aScrollHierarchy.push([oParentNode, jQuery(oParentNode).scrollLeft(), oParentNode.scrollTop]);
-			oParentNode = oParentNode.parentNode;
-		}
-
-		oTargetNode.focus();
-
-		aScrollHierarchy.forEach(function (oItem) {
-			var oElementNode = oItem[0];
-
-			// Check first to avoid triggering unnecessary `scroll` events
-			if (jQuery(oElementNode).scrollLeft() !== oItem[1]) {
-				jQuery(oElementNode).scrollLeft(oItem[1]);
-			}
-
-			if (oElementNode.scrollTop !== oItem[2]) {
-				oElementNode.scrollTop = oItem[2];
-			}
-		});
+		oChildNode.scrollLeft = iScrollLeft;
 	};
 
 	return DOMUtil;

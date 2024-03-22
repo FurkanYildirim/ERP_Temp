@@ -71,8 +71,8 @@ html.sap-desktop .sapFAvatarGroupMoreButton.sapMBtn:focus > .sapMFocusable:not(.
 @_sap_f_Card_HeaderFocusBorderRadius: inherit;
 @_sap_f_Card_BorderRadius: 1rem;
 @_sap_f_Card_TitleFontSize: @sapMFontHeader6Size;
-@_sap_f_Card_HoverBoxShadow: @sapContent_Shadow2;
-@_sap_f_Card_Badge_Background: @sapHighlightColor;
+@_sap_f_Card_HoverBoxShadow: @sapUiContentShadow2;
+@_sap_f_Card_Badge_Background: @sapUiHighlight;
 
 .sapFGridContainer .sapFGridContainerItemWrapperNoVisualFocus:focus .sapFCard,
 .sapFCard {
@@ -95,19 +95,13 @@ html.sap-desktop .sapFAvatarGroupMoreButton.sapMBtn:focus > .sapMFocusable:not(.
 	}
 }
 
-.sapFCard:not(.sapFCardPreview):not(.sapFCardTransparent):hover {
-	box-shadow: @_sap_f_Card_HoverBoxShadow;
-
-	.sapFCardHeader:hover {
-		background: @sapUiTileHoverBackground;
+.sapFCard.sapFCardSectionInteractive:not(.sapFCardPreview):not(.sapFCardTransparent) {
+	&:hover {
+		box-shadow: @_sap_f_Card_HoverBoxShadow;
 	}
-}
 
-.sapFCard:not(.sapFCardPreview):not(.sapFCardTransparent):active {
-	box-shadow: @_sap_f_Card_BoxShadow;
-
-	.sapFCardHeader:active {
-		background: @sapUiTileActiveBackground;
+	&:active {
+		box-shadow: @_sap_f_Card_BoxShadow;
 	}
 }
 
@@ -120,9 +114,10 @@ html.sap-desktop .sapFAvatarGroupMoreButton.sapMBtn:focus > .sapMFocusable:not(.
 	outline-offset: -0.125rem;
 }
 
-.sapFCard .sapMNC {
-	margin-top: 0.5rem;
+.sapFCard .sapMNC, .sapFCardNumericIndicatorsSide {
+	margin-top: 0.25rem;
 }
+
 /* END "Card.less" */
 
 /* START "DynamicPage.less" */
@@ -210,6 +205,7 @@ html.sap-desktop .sapFAvatarGroupMoreButton.sapMBtn:focus > .sapMFocusable:not(.
 	height: 2rem;
 	bottom: -0.95rem; // needs refactoring in the base file
 
+	// Reflection: styles overwritten
 	.sapMBtnInner {
 		min-width: 1.5rem;
 		width: 1.5rem;
@@ -263,6 +259,7 @@ html[data-sap-ui-browser^="cr"] .sapFDynamicPageHeaderPinButton {
 	.sapFDynamicPageHeaderPinButton {
 		bottom: -0.95rem; // needs refactoring in the base file
 
+		// Reflection: styles overwritten
 		.sapMBtnInner {
 			bottom: 0.25rem;
 		}
@@ -311,6 +308,7 @@ To be used in Comparison pattern scenario. */
 .sapMBtn:hover:not(.sapMBtnDisabled):not(.sapMSBActive)>.sapMBtnHoverable:not(.sapMBtnDisabled):not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnTransparent).sapMBtnDefault .sapUiIcon, .sapMBtn:hover:not(.sapMBtnDisabled):not(.sapMSBActive)>.sapMBtnHoverable:not(.sapMBtnDisabled):not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnTransparent).sapMBtnBack .sapUiIcon, .sapMBtn:hover:not(.sapMBtnDisabled):not(.sapMSBActive)>.sapMBtnHoverable:not(.sapMBtnDisabled):not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnTransparent).sapMBtnGhost .sapUiIcon {
     border-radius: @sapButton_BorderCornerRadius;
 }
+
 /* END "DynamicPage.less" */
 
 /* START "DynamicPageHeader.less" */
@@ -318,6 +316,9 @@ To be used in Comparison pattern scenario. */
 /* CSS for control sap.f/DynamicPageHeader  */
 /* Horizon theme                            */
 /* ======================================== */
+
+// Specific icon for the pin button for the horizon theme
+@_sap_f_DynamicPageHeader_PinButton_Icon: pushpin-on;
 
 .sapFDynamicPageHeader.sapFDynamicPageHeaderSolid,
 .sapFDynamicPageHeader.sapFDynamicPageHeaderTranslucent {
@@ -500,28 +501,54 @@ html.sap-desktop {
 /* =========================================== */
 
 .sapFFCL {
-    &.sapFFCLBackgroundDesignSolid {
-        background: @sapUiShellBackground;
-    }
-    &.sapFFCLBackgroundDesignTranslucent {
-        background: @sapUiGroupContentBackground;
-    }
+	&.sapFFCLBackgroundDesignSolid {
+		background: @sapUiContentForegroundColor;
+	}
+
+	&.sapFFCLBackgroundDesignTranslucent {
+		background: @sapUiGroupContentBackground;
+	}
+
+	&.sapFFCLBackgroundDesignTransparent {
+		background: transparent;
+	}
+
+	& > .sapFFCLColumnMid.sapFFCLColumnActive {
+		border-left: 0.0625rem solid @sapUiGroupContentBorderColor;
+		border-right: 0.0625rem solid @sapUiGroupContentBorderColor;
+	}
+
+	& > .sapFFCLColumnActive.sapFFCLColumnLastActive {
+		border-right: none;
+		border-left: 0.0625rem solid @sapUiGroupContentBorderColor;
+	}
+
+	& > .sapFFCLColumnActive.sapFFCLColumnFirstActive {
+		border-right: 0.0625rem solid @sapUiGroupContentBorderColor;
+		border-left: none;
+	}
+
+	& > .sapFFCLColumnActive.sapFFCLColumnOnlyActive {
+		border-right: none;
+		border-left: none;
+	}
 }
+
 .sapFFCLNavigationButton,
 .sapUiSizeCompact .sapFFCLNavigationButton {
-    .sapMBtnInner {
-        height: 1.625rem;
-    }
+	// Reflection: styles overwritten
+	.sapMBtnInner {
+		height: 1.625rem;
+	}
 
-    &:before {
-        background-image: linear-gradient(to top, @sapUiGroupContentBorderColor, transparent);
-    }
+	&:before {
+		background-image: linear-gradient(to top, @sapUiGroupContentBorderColor, transparent);
+	}
 
-    &:after {
-        background-image: linear-gradient(to bottom, @sapUiGroupContentBorderColor, transparent);
-    }
+	&:after {
+		background-image: linear-gradient(to bottom, @sapUiGroupContentBorderColor, transparent);
+	}
 }
-
 /* END "FlexibleColumnLayout.less" */
 
 /* START "GridList.less" */
@@ -555,33 +582,6 @@ html.sap-desktop {
 @_sap_f_GridListItem_FocusedHighlightBorderRadius: 1rem 2rem;
 
 /* END "GridListItem.less" */
-
-/* START "ListContentItem.less" */
-/* =========================================================== */
-/* CSS for control sap.ui.integration.controls/ListContentItem */
-/* Horizon theme                                                   */
-/* =========================================================== */
-
-@_sap_f_Card_BorderRadius: 1rem;
-
-.sapFCard {
-	&:not(.sapFCardBottomHeader) .sapMLIBFocusable:last-child:focus {
-		border-radius: 0 0 @_sap_f_Card_BorderRadius @_sap_f_Card_BorderRadius;
-	}
-
-	&.sapFCardNoHeader {
-		.sapMLIBFocusable:first-child:focus {
-			border-radius: @_sap_f_Card_BorderRadius @_sap_f_Card_BorderRadius 0 0;
-		}
-	}
-}
-
-.sapFCard.sapUiIntCardWithFooter {
-	.sapMListItems li:last-child:focus {
-		border-radius: 0;
-	}
-}
-/* END "ListContentItem.less" */
 
 /* START "ShellBar.less" */
 /* =============================== */
@@ -732,6 +732,7 @@ html.sap-desktop {
 			max-width: 35rem;
 		}
 
+		// Reflection: styles overwritten
 		.sapMBtn:not(.sapFShellBarSearchCancelButton) {
 			width: 1.75rem;
 			height: 1.75rem;
@@ -837,6 +838,7 @@ html.sap-desktop {
 		}
 
 		// sap.m.Button
+		// Reflection: styles overwritten
 		.sapMBtn:not(.sapFShellBarSearchCancelButton) {
 			height: 2.25rem;
 			line-height: 2.25rem;
@@ -883,10 +885,14 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 			.sapMIBar {
 				height: 3.25rem;
 			}
+
+			// Reflection: styles overwritten
 			// sap.m.MegaMenu
 			.sapFSHMegaMenu {
 				height: 2.75rem;
 			}
+
+			// Reflection: styles overwritten
 			// sap.m.Button
 			.sapMBtn {
 				height: 2.75rem;
@@ -938,6 +944,7 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 			}
 
 			// sap.m.MenuButton
+			// Reflection: styles overwritten
 			.sapMMenuBtn.sapMMenuBtnRegular .sapMBtnInner::after {
 				height: 38px; //ie does not accept rem for height in pseudo elements, but it works with px when you zoom
 				line-height: 2.2rem;
@@ -954,6 +961,7 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 				padding-right: 0.75rem;
 			}
 
+			// Reflection: styles overwritten
 			// sap.m.SearchField
 			.sapFShellBarSearch {
 				max-width: 35rem;
@@ -995,6 +1003,7 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 
 			.sapFShellBarSearchWrap {
 				// sap.m.Button
+				// Reflection: styles overwritten
 				.sapMBtn:not(.sapFShellBarSearchCancelButton) {
 					height: 2.25rem;
 					line-height: 2.25rem;
@@ -1055,6 +1064,7 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 				}
 			}
 			// sap.m.Select
+			// Reflection: styles overwritten
 			.sapMSlt {
 				height: 2.5rem;
 				.sapMSltArrow {
@@ -1152,7 +1162,7 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 		}
 
 		//sap.m.Label
-		.sapMLabel.sapMLabelTBHeader {
+		.sapMTB > .sapMLabel {
 			color: @sapUiShellTextColor;
 		}
 
@@ -1210,6 +1220,7 @@ html.sap-desktop .sapFShellBarSearchWrap .sapMBtn:not(.sapFShellBarSearchCancelB
 		}
 	}
 }
+
 /* END "ShellBar.less" */
 
 /* START "SidePanel.less" */

@@ -17,7 +17,8 @@ sap.ui.define([
 	'sap/ui/Device',
 	'sap/ui/core/Locale',
 	"sap/ui/thirdparty/jquery",
-	"sap/ui/core/Configuration"
+	"sap/ui/core/Configuration",
+	'sap/ui/core/date/UI5Date'
 ],
 	function(
 		coreLibrary,
@@ -32,7 +33,8 @@ sap.ui.define([
 		Device,
 		Locale,
 		jQuery,
-		Configuration
+		Configuration,
+		UI5Date
 	) {
 		"use strict";
 
@@ -50,7 +52,7 @@ sap.ui.define([
 		 * @extends sap.ui.core.Control
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -79,14 +81,14 @@ sap.ui.define([
 					 * The <code>displayFormat</code> comes from the browser language settings if not set explicitly.
 					 *
 					 */
-					displayFormat: {name: "displayFormat", type: "string", group: "Appearance"},
+					displayFormat: {type: "string", group: "Appearance"},
 
 					/**
 					 * Defines the text of the picker label.
 					 *
 					 * It is read by screen readers. It is visible only on phone.
 					 */
-					labelText: {name: "labelText", type: "string"},
+					labelText: {type: "string"},
 
 					/**
 					 * Sets the minutes slider step. If step is less than 1, it will be automatically converted back to 1.
@@ -356,7 +358,7 @@ sap.ui.define([
 				oFormatSlider = this._getFormatSlider(),
 				iHours = null,
 				sAmpm = null,
-				oDateValue = new Date();
+				oDateValue = UI5Date.getInstance();
 
 			if (oHoursSlider) {
 				iHours = parseInt(oHoursSlider.getSelectedValue());
@@ -442,7 +444,7 @@ sap.ui.define([
 				iHours,
 				sAmPm = null;
 
-			oDate = oDate || new Date();
+			oDate = oDate || UI5Date.getInstance();
 
 			// Cross frame check for a date should be performed here otherwise setDateValue would fail in OPA tests
 			// because Date object in the test is different than the Date object in the application (due to the iframe).

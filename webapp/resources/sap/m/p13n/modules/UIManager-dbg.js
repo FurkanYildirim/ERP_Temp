@@ -6,12 +6,11 @@
 
 sap.ui.define([
 	"sap/ui/base/Object",
-	"sap/ui/mdc/util/loadModules",
 	"sap/base/Log"
-], function (BaseObject, loadModules, Log) {
+], function (BaseObject, Log) {
 	"use strict";
 
-	var ERROR_INSTANCING = "UIManager: This class is a singleton and should not be used without an AdaptationProvider. Please use 'sap.m.p13n.Engine.getInstance().uimanager' instead";
+	var ERROR_INSTANCING = "UIManager: This class is a singleton and should not be used without an AdaptationProvider. Please use 'Engine.getInstance().uimanager' instead";
 
 	//Singleton storage
 	var oUIManager;
@@ -28,14 +27,14 @@ sap.ui.define([
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 *
 	 * @since 1.104
 	 * @alias sap.m.p13n.modules.UIManager
 	 */
-	var UIManager = BaseObject.extend("sap.m.p13n.UIManager", {
+	var UIManager = BaseObject.extend("sap.m.p13n.modules.UIManager", {
 		constructor: function(oAdaptationProvider) {
 
 			if (oUIManager) {
@@ -48,16 +47,25 @@ sap.ui.define([
 		}
 	});
 
+	var loadModules = function(aModules) {
+		return new Promise(function(resolve, reject) {
+			sap.ui.require(aModules, resolve, reject);
+		});
+	};
+
 	/**
 	 *
 	 * @param {sap.ui.core.Control} oControl The control instance to be personalized
 	 * @param {string|string[]} vPanelKeys The affected panels that should be added to the <code>sap.m.p13n.Popup</code>
 	 * @param {object} mSettings The settings object for the personalization
 	 * @param {string} [mSettings.title] The title for the <code>sap.m.p13n.Popup</code> control
-	 * @param {object} [mSettings.source] The source contro to be used by the <code>sap.m.p13n.Popup</code> control (only necessary in case the mode is set to <code>ResponsivePopover</code>)
-	 * @param {object} [mSettings.mode] The mode to be used by the <code>sap.m.p13n.Popup</code> control
-	 * @param {object} [mSettings.contentHeight] Height configuration for the related popup container
-	 * @param {object} [mSettings.contentWidth] Width configuration for the related popup container
+	 * @param {sap.ui.core.Control} [mSettings.source] The source contro to be used by the <code>sap.m.p13n.Popup</code> control (only necessary in case the mode is set to <code>ResponsivePopover</code>)
+	 * @param {sap.m.P13nPopupMode} [mSettings.mode] The mode to be used by the <code>sap.m.p13n.Popup</code> control
+	 * @param {sap.ui.core.CSSSize} [mSettings.contentHeight] Height configuration for the related popup container
+	 * @param {sap.ui.core.CSSSize} [mSettings.contentWidth] Width configuration for the related popup container
+	 * @param {boolean} [mSettings.showReset] Determines the visibility of the <code>Reset</code> button
+	 * @param {function} [mSettings.reset] Custom reset handling to opt out the default reset which will trigger a reset for all open tabs.
+	 * @param {function} [mSettings.close] Event handler once the Popup has been closed
 	 *
 	 * @returns {Promise} Promise resolving in the <code>sap.m.p13n.Popup</code> instance.
 	 */
@@ -72,36 +80,52 @@ sap.ui.define([
 
 			return this.create(oControl, vPanelKeys, mSettings)
 			.then(function(aInitializedPanels){
-				return loadModules(["sap/m/p13n/Popup"]).then(function(aModules){
+				return loadModules(["sap/m/p13n/Popup"]).then(function(Popup){
 
 					//if there is no title provided and only one panel created, use it's title as the Popup title
 					var sTitle;
-					if (!mSettings.title && aPanelKeys.length === 1) {
+					if (!mSettings.title && aPanelKeys.length === 1 && aInitializedPanels.length > 0) {
 						sTitle = aInitializedPanels[0].getTitle();
 					} else {
 						sTitle = mSettings.title || oResourceBundle.getText("p13n.VIEW_SETTINGS");
 					}
 
 					//Enrich Popup with AdaptationProvider functionality --> add controller logic (reset and appliance)
-					var Popup = aModules[0];
 					var oP13nContainer = new Popup({
 						mode: mSettings.mode,
 						warningText: mSettings.warningText || oResourceBundle.getText("p13n.RESET_WARNING_TEXT"),
 						title: sTitle,
 						close: function(oEvt){
+
 							var sReason = oEvt.getParameter("reason");
 							if (sReason == "Ok") {
 								that.oAdaptationProvider.handleP13n(oControl, aPanelKeys);
 							}
-							oP13nContainer.removeAllPanels();//TODO
-							that.setActiveP13n(oControl, null);
+							var aPanels = oP13nContainer.getPanels();
 
-							oP13nContainer.destroy();
-						},
-						reset: function(){
-							that.oAdaptationProvider.reset(oControl, aPanelKeys);
+							aPanels.forEach(function(oPanel){
+								if (oPanel.keepAlive instanceof Function && oPanel.keepAlive()){
+									oP13nContainer.removePanel(oPanel);
+								}
+							});
+
+							that.setActiveP13n(oControl, null);
+							oP13nContainer._oPopup.attachAfterClose(function(){
+								if (mSettings.close instanceof Function) {
+									mSettings.close();
+								}
+								oP13nContainer.destroy();
+							});
 						}
 					});
+
+					if (mSettings.showReset !== false) {
+						oP13nContainer.setReset(function(){
+							var fnReset = mSettings.reset instanceof Function ? mSettings.reset : that.oAdaptationProvider.reset.bind(that.oAdaptationProvider);
+							fnReset(oControl, aPanelKeys);
+						});
+					}
+
 
 					aInitializedPanels.forEach(function(oPanel, iIndex){
 						oP13nContainer.addPanel(oPanel, aPanelKeys[iIndex]);
@@ -216,7 +240,7 @@ sap.ui.define([
 	 * @param {sap.m.AdaptationProvider} oAdaptationProvider Object implementing the <code>sap.m.AdaptationProvider</code> interface to provide personalization capabilites.
 	 */
 	UIManager._checkValidInterface = function(oAdaptationProvider) {
-		if (!oAdaptationProvider || !oAdaptationProvider.isA("sap.m.p13n.AdaptationProvider")){
+		if (!oAdaptationProvider || !oAdaptationProvider.isA("sap.m.p13n.modules.AdaptationProvider")){
 			throw Error("The UIManager singleton must not be accessed without an AdaptationProvider interface!");
 		}
 	};

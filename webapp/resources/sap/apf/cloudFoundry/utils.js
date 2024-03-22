@@ -1,0 +1,7 @@
+/*!
+ * SAP APF Analysis Path Framework
+ *
+ * (c) Copyright 2012-2018 SAP SE. All rights reserved
+ */
+sap.ui.define(["sap/apf/core/messageObject","sap/apf/utils/hashtable","sap/apf/utils/parseTextPropertyFile"],function(e,t,r){"use strict";function a(){return["inRequestedLanguage","inAlternateLanguage","inEnglish","inDevelopmentLanguage"]}var n={createErrorMessageObject:function(t,r){var a=new e(t);var n="";if(r){r.forEach(function(e){n=n+e+" "});a.setPrevious(new e({code:"5220",aParameters:[n]}))}return a},buildErrorMessage:function(e,t,r,a,n){var s=n.createMessageObject({code:"5214",aParameters:[e.status,e.statusText]});var o=n.createMessageObject({code:t,aParameters:r});if(a){o.setPrevious(a);a.setPrevious(s)}else{o.setPrevious(s)}return o},mergeReceivedTexts:function(n,s){var o=undefined;var u=new t(s);var i=a();i.forEach(function(t){var a=n[t];if(!a||a==="null"){return}var i=r(a,{instances:{messageHandler:s}});var c;if(i.Messages.length>0){o=o||new e({code:"5416"});c=o;i.Messages.forEach(function(e){c.setPrevious(e);c=e})}i.TextElements.forEach(function(e){if(e.TextElement&&!u.hasItem(e.TextElement)){u.setItem(e.TextElement,e)}})});var c=[];u.getKeys().forEach(function(e){c.push(u.getItem(e))});return{texts:c,messageObject:o}},resolveUri:function e(t,r){if(t&&t.getComponent&&t.getComponent()){return t.getComponent().getManifestObject().resolveUri(r)}return r}};sap.apf.cloudFoundry=sap.apf.cloudFoundry||{};return n});
+//# sourceMappingURL=utils.js.map

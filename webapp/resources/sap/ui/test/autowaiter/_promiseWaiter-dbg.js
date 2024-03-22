@@ -5,16 +5,16 @@
  */
 
 sap.ui.define([
+	"sap/base/util/extend",
 	"sap/ui/test/autowaiter/_utils",
-	"sap/ui/thirdparty/jquery",
 	"sap/ui/test/autowaiter/_timeoutWaiter",
 	"./WaiterBase"
-], function (_utils, jQueryDOM, _timeoutWaiter, WaiterBase) {
+], function (extend, _utils, _timeoutWaiter, WaiterBase) {
 	"use strict";
 
 	var aPromises = [];
 	var OriginalPromise = window.Promise; // save it to avoid 'max call stack exceeded'
-	var aStaticMethods = ["resolve", "reject", "all", "race", "allSettled"];
+	var aStaticMethods = ["resolve", "reject", "all", "any", "race", "allSettled"];
 	var thenMicrotaskPromise;	// defined only during .then() call
 
 	var PromiseWaiter = WaiterBase.extend("sap.ui.test.autowaiter._promiseWaiter", {
@@ -34,12 +34,12 @@ sap.ui.define([
 			return aPendingPromises.length > 0;
 		},
 		_getDefaultConfig: function () {
-			return jQueryDOM.extend({
+			return extend({
 				maxDelay: 1000 // milliseconds; should be at least as big as _timeoutWaiter maxDelay
 			}, WaiterBase.prototype._getDefaultConfig.call(this));
 		},
 		_getValidationInfo: function () {
-			return jQueryDOM.extend({
+			return extend({
 				maxDelay: "numeric"
 			}, WaiterBase.prototype._getValidationInfo.call(this));
 		}
@@ -116,7 +116,7 @@ sap.ui.define([
 		return false;
 	}
 
-	var WrappedPromise = function (fnOriginalExecutor) {
+	var WrappedPromise = function (fnOriginalExecutor, tracking) {
 		var mPendingPromise;
 
 		var fnWrappedExecutor = function (fnOriginalResolve, fnOriginalReject) {
@@ -127,6 +127,9 @@ sap.ui.define([
 				return fnOriginalExecutor(fnOriginalResolve, fnOriginalReject);
 			} else if (sArguments === "'function () { [native code] }'") {
 				oPromiseWaiter._oLogger.trace("Ignoring internal Promise constructor");
+				return fnOriginalExecutor(fnOriginalResolve, fnOriginalReject);
+			} else if (tracking === "PROMISE_WAITER_IGNORE") {
+				oPromiseWaiter._oLogger.trace("Ignoring Promise marked to ignore");
 				return fnOriginalExecutor(fnOriginalResolve, fnOriginalReject);
 			} else {
 				mPendingPromise = _trackPromise(sArguments);

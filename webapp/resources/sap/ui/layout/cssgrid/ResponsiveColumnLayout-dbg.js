@@ -33,7 +33,7 @@ sap.ui.define([
 	 * Grid row's height is dynamically determined by the height of the highest grid element on this row.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @extends sap.ui.layout.cssgrid.GridLayoutBase
 	 *

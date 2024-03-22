@@ -58,8 +58,10 @@ sap.ui.define([
 
 	TableContainer.prototype.insertFilterField = function(oControl, iIndex) {
 		var oFilterBar = oControl._oFilterField.getParent();
-		var sKey = oFilterBar._getPropertyByName(oControl._getFieldPath()).name;
-		this.mFilterItems[sKey] = oControl;
+		var oProperty = oFilterBar._getPropertyByName(oControl._getFieldPath());
+		if (oProperty) {
+			this.mFilterItems[oProperty.name] = oControl;
+		}
 	};
 
 	TableContainer.prototype.setP13nData = function(oAdaptationData) {
@@ -84,6 +86,10 @@ sap.ui.define([
 
 	TableContainer.prototype.exit = function() {
 		this._oTable = null;
+	};
+
+	TableContainer.prototype.getInitialFocusedControl = function() {
+		return this.oLayout.getInitialFocusedControl && this.oLayout.getInitialFocusedControl();
 	};
 
 	return TableContainer;

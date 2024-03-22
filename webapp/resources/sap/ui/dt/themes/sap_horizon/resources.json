@@ -25,19 +25,19 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 117654,
+			"size": 144052,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 117286,
+			"size": 143684,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 6915,
+			"size": 7512,
 			"theme": "sap_horizon"
 		},
 		{
@@ -48,7 +48,7 @@
 		},
 		{
 			"name": "library.css",
-			"size": 6915,
+			"size": 7509,
 			"theme": "sap_horizon"
 		},
 		{
@@ -65,12 +65,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 6702,
+			"size": 7299,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 6702,
+			"size": 7296,
 			"theme": "sap_horizon"
 		},
 		{

@@ -59,7 +59,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -342,15 +342,16 @@ sap.ui.define([
 			this._fPercentValueDiff = this.getPercentValue() - fPercentValue;
 			this.setProperty("percentValue", fPercentValue);
 
-			if (!oProgressIndicatorDomRef) {
-				return this;
-			}
-
 			["sapMPIValueMax", "sapMPIValueMin", "sapMPIValueNormal", "sapMPIValueGreaterHalf"].forEach(function (sClass){
 				that.removeStyleClass(sClass);
 			});
 
 			this.addStyleClass(this._getCSSClassByPercentValue(fPercentValue).join(" "));
+
+			if (!oProgressIndicatorDomRef) {
+				return this;
+			}
+
 			oProgressIndicatorDomRef.setAttribute("aria-valuenow", fPercentValue);
 			oProgressIndicatorDomRef.setAttribute("aria-valuetext", this._getAriaValueText({fPercent: fPercentValue}));
 
@@ -407,11 +408,12 @@ sap.ui.define([
 	};
 
 	/**
-	 * Returns the <code>sap.m.ProgressIndicator</code>  accessibility information.
+	 * Returns the <code>sap.m.ProgressIndicator</code> accessibility information.
 	 *
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 * @protected
-	 * @returns {object} The <code>sap.m.ProgressIndicator</code> accessibility information
+	 * @returns {sap.ui.core.AccessibilityInfo}
+	 * The object contains the accessibility information of <code>sap.m.ProgressIndicator</code>
 	 */
 	ProgressIndicator.prototype.getAccessibilityInfo = function() {
 		var oBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m"),

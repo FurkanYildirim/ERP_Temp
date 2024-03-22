@@ -5,8 +5,8 @@
  */
 sap.ui.define([
 	"sap/ui/base/Object",
-	"sap/ui/mdc/enum/EditMode",
-	"sap/ui/mdc/enum/ContentMode",
+	"sap/ui/mdc/enums/FieldEditMode",
+	"sap/ui/mdc/enums/ContentMode",
 	"sap/ui/mdc/util/loadModules",
 	"sap/ui/mdc/field/content/DefaultContent",
 	"sap/ui/mdc/field/content/SearchContent",
@@ -19,25 +19,35 @@ sap.ui.define([
 	'sap/ui/mdc/field/ConditionType',
 	'sap/ui/mdc/field/ConditionsType',
 	"sap/ui/base/SyncPromise"
-], function(BaseObject, EditMode, ContentMode, loadModules, DefaultContent, SearchContent, DateContent, TimeContent, DateTimeContent, LinkContent, BooleanContent, UnitContent, ConditionType, ConditionsType, SyncPromise) {
+], function(BaseObject, FieldEditMode, ContentMode, loadModules, DefaultContent, SearchContent, DateContent, TimeContent, DateTimeContent, LinkContent, BooleanContent, UnitContent, ConditionType, ConditionsType, SyncPromise) {
 	"use strict";
 
 	/**
+	 * @namespace
+	 * @name sap.ui.mdc.field.content
+	 * @since 1.87.0
+	 * @private
+	 * @experimental As of version 1.87
+	 * @ui5-restricted sap.ui.mdc.field.FieldBase
+	 */
+
+	/**
 	 * Object-based factory that handles the content creation process of the {@link sap.ui.mdc.field.FieldBase}.
+	 * @namespace
 	 * @author SAP SE
 	 * @private
-	 * @ui5-restricted sap.ui.mdc
+	 * @ui5-restricted sap.ui.mdc.field.FieldBase
 	 * @experimental As of version 1.87
 	 * @since 1.87
 	 * @alias sap.ui.mdc.field.content.ContentFactory
 	 * @extends sap.ui.base.Object
-	 * @MDC_PUBLIC_CANDIDATE
 	 */
 	var ContentFactory = BaseObject.extend("sap.ui.mdc.field.content.ContentFactory", {
 		metadata: {
 			library: "sap.ui.mdc"
 		},
 		constructor: function(sId, mSettings) {
+			this.init();
 			this._oField = mSettings ? mSettings.field : null;
 			this._fnHandleTokenUpdate = mSettings ? mSettings.handleTokenUpdate : null;
 			this._fnHandleContentChange = mSettings ? mSettings.handleContentChange : null;
@@ -61,8 +71,10 @@ sap.ui.define([
 	};
 
 	ContentFactory.prototype.init = function() {
-		this._oContentTypeClass;
-		this._sOperator;
+		this._oContentTypeClass = undefined;
+		this._sOperator = undefined;
+		this._bNoFormatting = false;
+		this._bHideOperator = false;
 	};
 
 	ContentFactory.prototype.exit = function() {
@@ -90,13 +102,17 @@ sap.ui.define([
 	/**
 	 * Creates the suitable controls for the given content type and mode and returns the control instances.
 	 * @param {sap.ui.mdc.field.content.DefaultContent} oContentType The content type object
-	 * @param {sap.ui.mdc.enum.ContentMode} sContentMode A given content mode
+	 * @param {sap.ui.mdc.enums.ContentMode} sContentMode A given content mode
 	 * @param {string} sId ID of the {@link sap.ui.mdc.field.FieldBase}
-	 * @returns {sap.ui.core.Control[]} Array containing the created controls
+	 * @returns {Promise<sap.ui.core.Control[]>} Array containing the created controls
+	 * @private
+	 * @ui5-restricted sap.ui.mdc.field.FieldBase
 	 */
 	ContentFactory.prototype.createContent = function(oContentType, sContentMode, sId) {
 		var aControlNames = oContentType.getControlNames(sContentMode, this._sOperator);
 		var oLoadModulesPromise;
+
+		this.setNoFormatting(oContentType.getNoFormatting(sContentMode));
 
 		if (aControlNames.every(function(sControlName) {
 			return !sControlName;
@@ -105,13 +121,23 @@ sap.ui.define([
 			return Promise.resolve([]);
 		}
 
+		if (!this.getDataType()) {
+			// DataType instance not already set, make sure to load module before creating control and corresponding ConditionType (In Field case Instance is set in Binding.)
+			var sDataType = this.getField().getDataType();
+			if (sDataType) {
+				sDataType = this.getField().getTypeMap().getDataTypeClassName(sDataType); // map EDM-Types
+				aControlNames.push(sDataType.replaceAll(".", "/"));
+			}
+		}
+
 		try {
 			oLoadModulesPromise = loadModules(aControlNames)
 				.catch(function(oError) {
-					throw new Error("loadModules promise rejected in sap.ui.mdc.field.content.ContentFactory:createContent function call - could not load controls " + JSON.stringify(aControlNames));
+					throw new Error("loadModules promise rejected in sap.ui.mdc.field.content.ContentFactory:createContent function call - could not load data type " + JSON.stringify(aControlNames));
 				})
 				.then(function(aControls) {
-					if (this.getField() && !this.getField()._bIsBeingDestroyed) {
+					if (this.getField() && !this.getField().isFieldDestroyed()) {
+						this.updateConditionType(); // to make sure to have current FormatOptions if Condition(s)Type already exist
 						return oContentType.create(this, sContentMode, this._sOperator, aControls, sId);
 					} else {
 						return [];
@@ -133,17 +159,19 @@ sap.ui.define([
 	};
 
 	/**
-	 * Determines in which {@link sap.ui.mdc.enum.ContentMode} the given content type is displayed.
+	 * Determines in which {@link sap.ui.mdc.enums.ContentMode} the given content type is displayed.
 	 * @param {sap.ui.mdc.field.content.DefaultContent} oContentType The content type object
-	 * @param {sap.ui.mdc.enum.EditMode} sEditMode The display mode of the {@link sap.ui.mdc.field.FieldBase}
+	 * @param {sap.ui.mdc.enums.FieldEditMode} sEditMode The display mode of the {@link sap.ui.mdc.field.FieldBase}
 	 * @param {int} iMaxConditions Maximum number of conditions of the {@link sap.ui.mdc.field.FieldBase}
 	 * @param {boolean} bMultipleLines Determines if the content type has a multiple line input
 	 * @param {string[]} aOperators Names of the operators if the <code>EditOperator</code> content mode is used
-	 * @returns {sap.ui.mdc.enum.ContentMode} sContentMode A given content mode
+	 * @returns {sap.ui.mdc.enums.ContentMode} sContentMode A given content mode
+	 * @private
+	 * @ui5-restricted sap.ui.mdc.field.FieldBase
 	 */
 	ContentFactory.prototype.getContentMode = function(oContentType, sEditMode, iMaxConditions, bMultipleLines, aOperators) {
 		var sContentMode = ContentMode.Edit;
-		if (sEditMode === EditMode.Display) {
+		if (sEditMode === FieldEditMode.Display) {
 			if (iMaxConditions !== 1) {
 				sContentMode = ContentMode.DisplayMultiValue;
 			} else if (bMultipleLines) {
@@ -158,7 +186,7 @@ sap.ui.define([
 		} else if (aOperators.length === 1 && oContentType.getEditOperator() && oContentType.getEditOperator()[aOperators[0]]) {
 			this._sOperator = aOperators[0];
 			sContentMode = ContentMode.EditOperator;
-		} else if (this.getField().getFieldHelp()) { // if FieldHelp assigned use control supporting help
+		} else if (this.getField()._getValueHelp()) { // if ValueHelp assigned use control supporting help
 			sContentMode = ContentMode.EditForHelp;
 		}
 		return sContentMode;
@@ -166,10 +194,12 @@ sap.ui.define([
 
 	/**
 	 * Determines which content type object to use.
-	 * @param {sap.ui.mdc.enum.BaseType} sBaseType Base type determined by {@link sap.ui.mdc.field.FieldBase}
+	 * @param {sap.ui.mdc.enums.BaseType} sBaseType Base type determined by {@link sap.ui.mdc.field.FieldBase}
 	 * @param {int} iMaxConditions Maximum number of conditions of the {@link sap.ui.mdc.field.FieldBase}
 	 * @param {boolean} bIsTriggerable Checks if the {@link sap.ui.mdc.field.FieldBase} is triggerable or not - needed for link content type
 	 * @returns {sap.ui.mdc.field.content.DefaultContent} oContentType Content type object
+	 * @private
+	 * @ui5-restricted sap.ui.mdc.field.FieldBase
 	 */
 	ContentFactory.prototype.getContentType = function(sBaseType, iMaxConditions, bIsTriggerable) {
 		var oField = this.getField();
@@ -177,13 +207,10 @@ sap.ui.define([
 		if (!oContentType) {
 			if (oField.getFieldInfo() && bIsTriggerable) {
 				oContentType = mContentTypes.Link;
+			} else if (oField.isSearchField()) {
+				oContentType = mContentTypes.Search;
 			} else {
-				var regexp = new RegExp("^\\*(.*)\\*|\\$search$");
-				if (regexp.test(oField.getFieldPath()) && iMaxConditions === 1) {
-					oContentType = mContentTypes.Search;
-				} else {
-					oContentType = mContentTypes.Default;
-				}
+				oContentType = mContentTypes.Default;
 			}
 		}
 		return oContentType;
@@ -197,19 +224,19 @@ sap.ui.define([
 	};
 
 	ContentFactory._getEnabled = function(sEditMode) {
-		return (sEditMode && sEditMode !== EditMode.Disabled);
+		return (sEditMode && sEditMode !== FieldEditMode.Disabled);
 	};
 
 	ContentFactory._getEditable = function(sEditMode) {
-		return (sEditMode === EditMode.Editable || sEditMode === EditMode.EditableReadOnly || sEditMode === EditMode.EditableDisplay);
+		return (sEditMode === FieldEditMode.Editable || sEditMode === FieldEditMode.EditableReadOnly || sEditMode === FieldEditMode.EditableDisplay);
 	};
 
 	ContentFactory._getDisplayOnly = function(sEditMode) {
-		return sEditMode && sEditMode !== EditMode.Editable;
+		return sEditMode && sEditMode !== FieldEditMode.Editable;
 	};
 
 	ContentFactory._getEditableUnit = function(sEditMode) {
-		return sEditMode === EditMode.Editable;
+		return sEditMode === FieldEditMode.Editable;
 	};
 
 	ContentFactory.prototype.getField = function() {
@@ -242,18 +269,6 @@ sap.ui.define([
 
 	ContentFactory.prototype.getHandleContentPress = function() {
 		return this._fnHandleContentPress;
-	};
-
-	/**
-	 * Defines to which property the field value is bound.
-	 * @param {string} sBoundProperty the name of the property.
-	 */
-	ContentFactory.prototype.setBoundProperty = function(sBoundProperty) {
-		this._sBoundProperty = sBoundProperty;
-	};
-
-	ContentFactory.prototype.getBoundProperty = function() {
-		return this._sBoundProperty;
 	};
 
 	ContentFactory.prototype.setAriaLabelledBy = function(oContent) {
@@ -295,7 +310,7 @@ sap.ui.define([
 	}
 
 	ContentFactory.prototype.getConditionType = function(bSkipConditionTypeGeneration) {
-		return _getCondType.call(this, "_oConditionType", ConditionType, this.getField()._getFormatOptions.bind(this.getField()), bSkipConditionTypeGeneration);
+		return _getCondType.call(this, "_oConditionType", ConditionType, this.getField().getFormatOptions.bind(this.getField()), bSkipConditionTypeGeneration);
 	};
 
 	ContentFactory.prototype.setConditionType = function(oConditionType) {
@@ -304,7 +319,7 @@ sap.ui.define([
 
 	ContentFactory.prototype.getConditionsType = function (bSkipConditionsTypeGeneration, CustomConditionsType) {
 		var UsedConditionType = CustomConditionsType || ConditionsType; // CustomConditionsType used for DynamicDateRange
-		return _getCondType.call(this, "_oConditionsType", UsedConditionType, this.getField()._getFormatOptions.bind(this.getField()), bSkipConditionsTypeGeneration);
+		return _getCondType.call(this, "_oConditionsType", UsedConditionType, this.getField().getFormatOptions.bind(this.getField()), bSkipConditionsTypeGeneration);
 	};
 
 	ContentFactory.prototype.setConditionsType = function(oConditionsType) {
@@ -312,7 +327,7 @@ sap.ui.define([
 	};
 
 	ContentFactory.prototype.getUnitConditionsType = function(bSkipConditionsTypeGeneration) {
-		return _getCondType.call(this, "_oUnitConditionsType", ConditionsType, this.getField()._getUnitFormatOptions.bind(this.getField()), bSkipConditionsTypeGeneration);
+		return _getCondType.call(this, "_oUnitConditionsType", ConditionsType, this.getField().getUnitFormatOptions.bind(this.getField()), bSkipConditionsTypeGeneration);
 	};
 
 	ContentFactory.prototype.getContentConditionTypes = function() {
@@ -323,7 +338,7 @@ sap.ui.define([
 		this._oContentConditionTypes = oContentConditionTypes;
 	};
 
-	ContentFactory.prototype._setUsedConditionType = function(oContent, sEditMode) {
+	ContentFactory.prototype._setUsedConditionType = function(oContent, oContentEdit, oContentDisplay, sEditMode) {
 
 		// remove external types
 		if (this._oConditionType && !this._oConditionType._bCreatedByField) {
@@ -342,12 +357,12 @@ sap.ui.define([
 				oConditionType = this._oContentConditionTypes.content.oConditionType;
 				oConditionsType = this._oContentConditionTypes.content.oConditionsType;
 			}
-		} else if (sEditMode === EditMode.Display && this.getField().getContentDisplay()) {
+		} else if (sEditMode === FieldEditMode.Display && oContentDisplay) {
 			if (this._oContentConditionTypes.contentDisplay) {
 				oConditionType = this._oContentConditionTypes.contentDisplay.oConditionType;
 				oConditionsType = this._oContentConditionTypes.contentDisplay.oConditionsType;
 			}
-		} else if (sEditMode !== EditMode.Display && this.getField().getContentEdit()) {
+		} else if (sEditMode !== FieldEditMode.Display && oContentEdit) {
 			if (this._oContentConditionTypes.contentEdit) {
 				oConditionType = this._oContentConditionTypes.contentEdit.oConditionType;
 				oConditionsType = this._oContentConditionTypes.contentEdit.oConditionsType;
@@ -367,7 +382,35 @@ sap.ui.define([
 			this._oConditionsType = oConditionsType;
 		}
 
-		this.updateConditionType();
+		if (oConditionType || oConditionsType) {
+			// as data type module might not be loaded, load it now
+			if (!this.getDataType()) {
+				// DataType instance not already set, make sure to load module before creating control and corresponding ConditionType (In Field case Instance is set in Binding.)
+				var sDataType = this.getField().getDataType();
+				if (sDataType) {
+					sDataType = this.getField().getTypeMap().getDataTypeClassName(sDataType); // map EDM-Types
+					sDataType = sDataType.replaceAll(".", "/");
+					try {
+						loadModules([sDataType])
+							.catch(function(oError) {
+								throw new Error("loadModules promise rejected in sap.ui.mdc.field.content.ContentFactory:_setUsedConditionType function call - could not load controls " + sDataType);
+							})
+							.then(function(aModules) {
+								if (this.getField() && !this.getField().isFieldDestroyed()) {
+									this.updateConditionType();
+								}
+							}.bind(this))
+							.unwrap();
+					} catch (oError) {
+						throw new Error("Error in sap.ui.mdc.field.content.ContentFactory:_setUsedConditionType function call ErrorMessage: '" + oError.message + "'");
+					}
+				}
+			} else {
+				this.updateConditionType();
+			}
+
+		}
+
 	};
 
 	ContentFactory.prototype.getDataType = function() {
@@ -378,11 +421,29 @@ sap.ui.define([
 		this._oDataType = oDataType;
 	};
 
-	ContentFactory.prototype.retrieveDataType = function() {
+	ContentFactory.prototype.checkDataTypeChanged = function(sDataType) {
+		sDataType = this.getField().getTypeMap().getDataTypeClassName(sDataType); // map EDM-Types
+
+		try {
+			// check data-type after we can be sure it's loaded to perform depending actions later
+			return loadModules([sDataType.replaceAll(".", "/")])
+				.catch(function(oError) {
+					throw new Error("loadModules promise rejected in sap.ui.mdc.field.content.ContentFactory:checkDataTypeChanged function call - could not load data type " + sDataType);
+				})
+				.then(function(aModules) {
+					// TODO: also compare FormatOptions and Constraints
+					return !this._oDataType || this._oDataType.getMetadata().getName() !== sDataType;
+				}.bind(this));
+		} catch (oError) {
+			throw new Error("Error in sap.ui.mdc.field.content.ContentFactory:checkDataTypeChanged function call ErrorMessage: '" + oError.message + "'");
+		}
+	};
+
+	ContentFactory.prototype.retrieveDataType = function() { // make sure that data type module is loaded before
 		if (!this._oDataType) {
 			var sDataType = this.getField().getDataType();
 			if (typeof sDataType === "string") {
-				this._oDataType = this.getField().getTypeUtil().getDataTypeInstance(sDataType, this.getField().getDataTypeFormatOptions(), this.getField().getDataTypeConstraints());
+				this._oDataType = this.getField().getTypeMap().getDataTypeInstance(sDataType, this.getField().getDataTypeFormatOptions(), this.getField().getDataTypeConstraints());
 				this._oDataType._bCreatedByField = true;
 			}
 		}
@@ -475,7 +536,7 @@ sap.ui.define([
 		var oConditionType = this._oConditionType;
 		var oConditionsType = this._oConditionsType;
 		if (oConditionType || oConditionsType) {
-			var oFormatOptions = this.getField()._getFormatOptions();
+			var oFormatOptions = this.getField().getFormatOptions();
 			if (oConditionType) {
 				oConditionType.setFormatOptions(oFormatOptions);
 			}
@@ -483,10 +544,17 @@ sap.ui.define([
 				oConditionsType.setFormatOptions(oFormatOptions);
 			}
 			if (this._oUnitConditionsType) {
-				oFormatOptions = this.getField()._getUnitFormatOptions();
+				oFormatOptions = this.getField().getUnitFormatOptions();
 				this._oUnitConditionsType.setFormatOptions(oFormatOptions);
 			}
 		}
+	};
+
+	ContentFactory.prototype.setNoFormatting = function(bNoFormatting) {
+		this._bNoFormatting = bNoFormatting;
+	};
+	ContentFactory.prototype.getNoFormatting = function() {
+		return this._bNoFormatting;
 	};
 
 	return ContentFactory;

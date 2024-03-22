@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 1799
+			"size": 2003
 		},
 		{
 			"name": ".supportrc",
@@ -11,12 +11,12 @@
 		},
 		{
 			"name": ".theming",
-			"size": 82
+			"size": 81
 		},
 		{
 			"name": "CodeEditor-dbg.js",
 			"module": "sap/ui/codeeditor/CodeEditor.js",
-			"size": 16319,
+			"size": 16338,
 			"isDebug": true,
 			"required": [
 				"sap/ui/codeeditor/js/ace/ace.js",
@@ -94,7 +94,7 @@
 		},
 		{
 			"name": "js/ace/ace.js.map",
-			"size": 502600,
+			"size": 502601,
 			"isDebug": true
 		},
 		{
@@ -538,7 +538,7 @@
 		},
 		{
 			"name": "js/ace/ext-emmet.js.map",
-			"size": 35661,
+			"size": 35662,
 			"isDebug": true
 		},
 		{
@@ -916,7 +916,7 @@
 		},
 		{
 			"name": "js/ace/keybinding-vim.js.map",
-			"size": 170698,
+			"size": 170697,
 			"isDebug": true
 		},
 		{
@@ -2248,7 +2248,7 @@
 		},
 		{
 			"name": "js/ace/mode-jsoniq.js.map",
-			"size": 244313,
+			"size": 244312,
 			"isDebug": true
 		},
 		{
@@ -4048,7 +4048,7 @@
 		},
 		{
 			"name": "js/ace/mode-xquery.js.map",
-			"size": 242538,
+			"size": 242537,
 			"isDebug": true
 		},
 		{
@@ -7972,7 +7972,7 @@
 		},
 		{
 			"name": "js/ace/worker-coffee.js.map",
-			"size": 489818,
+			"size": 489810,
 			"isDebug": true
 		},
 		{
@@ -7990,7 +7990,7 @@
 		},
 		{
 			"name": "js/ace/worker-css.js.map",
-			"size": 172658,
+			"size": 172654,
 			"isDebug": true
 		},
 		{
@@ -8026,7 +8026,7 @@
 		},
 		{
 			"name": "js/ace/worker-javascript.js.map",
-			"size": 315572,
+			"size": 315574,
 			"isDebug": true
 		},
 		{
@@ -8116,13 +8116,13 @@
 		},
 		{
 			"name": "js/ace/worker-xquery.js.map",
-			"size": 1821378,
+			"size": 1821310,
 			"isDebug": true
 		},
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/codeeditor/library.js",
-			"size": 820,
+			"size": 818,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Core.js",
@@ -8132,7 +8132,7 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/codeeditor/library-preload.js",
-			"size": 9518,
+			"size": 9534,
 			"merged": true,
 			"required": [
 				"sap/ui/codeeditor/js/ace/ace.js",
@@ -8163,7 +8163,7 @@
 		{
 			"name": "library.js",
 			"module": "sap/ui/codeeditor/library.js",
-			"size": 486,
+			"size": 485,
 			"required": [
 				"sap/ui/core/Core.js",
 				"sap/ui/core/library.js"
@@ -8177,7 +8177,7 @@
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/codeeditor/manifest.json",
-			"size": 1894
+			"size": 1917
 		},
 		{
 			"name": "messagebundle.properties",
@@ -8524,7 +8524,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 188801
+			"size": 188803
 		},
 		{
 			"name": "themes/base/.theming",
@@ -8544,7 +8544,7 @@
 		},
 		{
 			"name": "themes/base/css_variables.source.less",
-			"size": 113742,
+			"size": 137227,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -8598,13 +8598,13 @@
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.less",
-			"size": 99692,
+			"size": 121005,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.source.less",
-			"size": 99392,
+			"size": 120705,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},

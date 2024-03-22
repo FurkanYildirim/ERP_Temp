@@ -12,7 +12,7 @@ sap.ui.define([
 	"sap/ui/fl/Layer",
 	"sap/ui/fl/registry/Settings",
 	"sap/ui/fl/Utils"
-], function (
+], function(
 	_pick,
 	States,
 	Variant,
@@ -32,9 +32,9 @@ sap.ui.define([
 	 * @extends sap.ui.fl.apply._internal.flexObjects.Variant
 	 * @alias sap.ui.fl.apply._internal.flexObjects.CompVariant
 	 * @since 1.103
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
-	 * @ui5-restricted sap.ui.fl sap.ui.comp
+	 * @ui5-restricted sap.ui.fl, sap.ui.comp
 	 */
 	var CompVariant = Variant.extend("sap.ui.fl.apply._internal.flexObjects.CompVariant", /** @lends sap.ui.fl.apply._internal.flexObjects.CompVariant.prototype */ {
 		metadata: {
@@ -59,18 +59,16 @@ sap.ui.define([
 				 * TODO: When the FL Variant is also a FlexObject, try to consolidate RevertData from both
 				 */
 				revertData: {
-					type: "sap.ui.fl.apply._internal.flexObjects.CompVariantRevertData",
+					type: "sap.ui.base.ManagedObject", // "sap.ui.fl.apply._internal.flexObjects.CompVariantRevertData"
 					multiple: true,
-					singularName: "revertData",
-					defaultValue: []
+					singularName: "revertData"
 				},
 				/**
 				 * Changes belonging to the variant
 				 */
 				changes: {
-					type: "sap.ui.fl.Change",
-					multiple: true,
-					defaultValue: []
+					type: "sap.ui.base.ManagedObject", // "sap.ui.fl.apply._internal.flexObjects.FlexObject"
+					multiple: true
 				}
 			}
 		},
@@ -95,7 +93,7 @@ sap.ui.define([
 	 * @returns {object} Mapping information
 	 * @static
 	 */
-	 CompVariant.getMappingInfo = function () {
+	 CompVariant.getMappingInfo = function() {
 		return Object.assign(Variant.getMappingInfo(), {
 			persistencyKey: "selector.persistencyKey",
 			variantId: "variantId"
@@ -107,7 +105,7 @@ sap.ui.define([
 	 * Can be overridden to avoid access of static mapping within base methods.
 	 * @returns {object} Mapping information
 	 */
-	CompVariant.prototype.getMappingInfo = function () {
+	CompVariant.prototype.getMappingInfo = function() {
 		return CompVariant.getMappingInfo();
 	};
 
@@ -182,7 +180,7 @@ sap.ui.define([
 	 * Used by the SmartVariantManagement control.
 	 * @returns {boolean} <code>true</code> if object is a variant
 	 */
-	CompVariant.prototype.isVariant = function () {
+	CompVariant.prototype.isVariant = function() {
 		return true;
 	};
 
@@ -191,7 +189,7 @@ sap.ui.define([
 	 * @param {sap.ui.fl.Layer} [sLayer] - Layer in which the edition may take place
 	 * @returns {boolean} <code>true</code> if the variant can be updated
 	 */
-	CompVariant.prototype.isRenameEnabled = function (sLayer) {
+	CompVariant.prototype.isRenameEnabled = function(sLayer) {
 		return !this.getStandardVariant()
 			&& this.isEditEnabled(sLayer)
 			&& isRenameEnableDueToOriginalLanguage(this.getSupportInformation().originalLanguage);
@@ -202,7 +200,7 @@ sap.ui.define([
 	 * @param {sap.ui.fl.Layer} [sActiveLayer] - Layer in which the edition may take place
 	 * @returns {boolean} <code>true</code> if the variant can be updated
 	 */
-	CompVariant.prototype.isEditEnabled = function (sActiveLayer) {
+	CompVariant.prototype.isEditEnabled = function(sActiveLayer) {
 		var bDeveloperLayer = sActiveLayer && LayerUtils.isDeveloperLayer(sActiveLayer);
 		var bOriginSystem = isOriginSystem(
 			this.getSupportInformation().sourceSystem,
@@ -217,7 +215,7 @@ sap.ui.define([
 	 * @param {sap.ui.fl.Layer} [sLayer] - Layer in which the deletion may take place
 	 * @returns {boolean} <code>true</code> if the variant file can be deleted
 	 */
-	CompVariant.prototype.isDeleteEnabled = function (sLayer) {
+	CompVariant.prototype.isDeleteEnabled = function(sLayer) {
 		var bOriginSystem = isOriginSystem(
 			this.getSupportInformation().sourceSystem,
 			this.getSupportInformation().sourceClient
@@ -234,9 +232,9 @@ sap.ui.define([
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
-	CompVariant.prototype.storeFavorite = function (bFavorite) {
+	CompVariant.prototype.storeFavorite = function(bFavorite) {
 		if (bFavorite !== this.getFavorite()) {
-			this.setState(States.DIRTY);
+			this.setState(States.LifecycleState.DIRTY);
 			this.setFavorite(bFavorite);
 		}
 	};
@@ -256,7 +254,7 @@ sap.ui.define([
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
-	CompVariant.prototype.storeContent = function (oContent) {
+	CompVariant.prototype.storeContent = function(oContent) {
 		// setContent() already sets the dirty state by default
 		this.setContent(oContent);
 	};
@@ -268,9 +266,9 @@ sap.ui.define([
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
-	CompVariant.prototype.storeExecuteOnSelection = function (bExecuteOnSelection) {
+	CompVariant.prototype.storeExecuteOnSelection = function(bExecuteOnSelection) {
 		if (bExecuteOnSelection !== this.getExecuteOnSelection()) {
-			this.setState(States.DIRTY);
+			this.setState(States.LifecycleState.DIRTY);
 			this.setExecuteOnSelection(bExecuteOnSelection);
 		}
 	};
@@ -282,7 +280,7 @@ sap.ui.define([
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
-	CompVariant.prototype.storeName = function (sName) {
+	CompVariant.prototype.storeName = function(sName) {
 		// setName() already sets the dirty state by default
 		this.setName(sName);
 	};
@@ -293,9 +291,15 @@ sap.ui.define([
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
-	CompVariant.prototype.storeContexts = function (mContexts) {
+	CompVariant.prototype.storeContexts = function(mContexts) {
 		this.setContexts(mContexts);
-		this.setState(States.DIRTY);
+		this.setState(States.LifecycleState.DIRTY);
+	};
+
+	CompVariant.prototype.cloneFileContentWithNewId = function() {
+		var mFileContent = Variant.prototype.cloneFileContentWithNewId.apply(this, arguments);
+		mFileContent.variantId = mFileContent.fileName;
+		return mFileContent;
 	};
 
 	return CompVariant;

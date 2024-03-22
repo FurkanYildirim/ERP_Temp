@@ -7,8 +7,15 @@ sap.ui.define([
 	"sap/ui/rta/command/BaseCommand",
 	"sap/ui/rta/library",
 	"sap/ui/core/util/reflection/JsControlTreeModifier",
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI",
 	"sap/ui/fl/Utils"
-], function(BaseCommand, rtaLibrary, JsControlTreeModifier, flUtils) {
+], function(
+	BaseCommand,
+	rtaLibrary,
+	JsControlTreeModifier,
+	ControlVariantApplyAPI,
+	flUtils
+) {
 	"use strict";
 
 	/**
@@ -17,7 +24,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.BaseCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.50
@@ -62,10 +69,9 @@ sap.ui.define([
 	 */
 	ControlVariantSetTitle.prototype.execute = function() {
 		var oVariantManagementControl = this.getElement();
-		var oVariantManagementControlBinding = oVariantManagementControl.getTitle().getBinding("text");
 
 		this.oAppComponent = flUtils.getAppComponentForControl(oVariantManagementControl);
-		this.oModel = this.oAppComponent.getModel(flUtils.VARIANT_MODEL_NAME);
+		this.oModel = this.oAppComponent.getModel(ControlVariantApplyAPI.getVariantModelName());
 		this.sVariantManagementReference = JsControlTreeModifier.getSelector(oVariantManagementControl, this.oAppComponent).id;
 		this.sCurrentVariant = this.oModel.getCurrentVariantReference(this.sVariantManagementReference);
 
@@ -84,7 +90,6 @@ sap.ui.define([
 		return Promise.resolve(this.oModel.addVariantChange(this.sVariantManagementReference, mPropertyBag))
 			.then(function(oChange) {
 				this._oVariantChange = oChange;
-				oVariantManagementControlBinding.checkUpdate(true); /*Force Update as binding key stays same*/
 			}.bind(this));
 	};
 
@@ -94,7 +99,6 @@ sap.ui.define([
 	 * @returns {Promise} Returns resolve after undo
 	 */
 	ControlVariantSetTitle.prototype.undo = function() {
-		var oVariantManagementControlBinding = this.getElement().getTitle().getBinding("text");
 		var mPropertyBag = {
 			variantReference: this.sCurrentVariant,
 			changeType: "setTitle",
@@ -105,7 +109,6 @@ sap.ui.define([
 		return Promise.resolve(this.oModel.deleteVariantChange(this.sVariantManagementReference, mPropertyBag, oChange))
 			.then(function() {
 				this._oVariantChange = null;
-				oVariantManagementControlBinding.checkUpdate(true); /*Force Update as binding key stays same*/
 			}.bind(this));
 	};
 

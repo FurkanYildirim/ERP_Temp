@@ -8,6 +8,7 @@ sap.ui.define([
 	"./ObjectContentRenderer",
 	"sap/ui/integration/library",
 	"sap/m/library",
+	"sap/m/IllustratedMessageType",
 	"sap/m/FlexItemData",
 	"sap/m/HBox",
 	"sap/m/VBox",
@@ -15,25 +16,30 @@ sap.ui.define([
 	"sap/m/Avatar",
 	"sap/m/Link",
 	"sap/m/Label",
-	"sap/m/ObjectStatus",
+	"sap/m/RatingIndicator",
+	"sap/m/Image",
+	"sap/ui/integration/controls/ObjectStatus",
 	"sap/m/ComboBox",
 	"sap/m/TextArea",
+	"sap/m/Input",
+	"sap/m/TimePicker",
 	"sap/base/Log",
 	"sap/base/util/isEmptyObject",
 	"sap/base/util/isPlainObject",
 	"sap/base/util/merge",
-	"sap/base/util/deepExtend",
 	"sap/ui/core/ResizeHandler",
 	"sap/ui/layout/AlignedFlowLayout",
 	"sap/ui/dom/units/Rem",
 	"sap/ui/integration/util/BindingHelper",
 	"sap/ui/integration/util/BindingResolver",
 	"sap/ui/integration/util/Utils",
-	"sap/ui/integration/util/Forms",
+	"sap/ui/integration/util/Form",
+	"sap/ui/integration/util/DateRangeHelper",
 	"sap/f/AvatarGroup",
 	"sap/f/AvatarGroupItem",
 	"sap/f/cards/NumericIndicators",
 	"sap/f/cards/NumericSideIndicator",
+	"sap/f/cards/loading/ObjectPlaceholder",
 	"sap/f/library",
 	"sap/m/OverflowToolbar",
 	"sap/m/OverflowToolbarButton",
@@ -43,6 +49,7 @@ sap.ui.define([
 	ObjectContentRenderer,
 	library,
 	mLibrary,
+	IllustratedMessageType,
 	FlexItemData,
 	HBox,
 	VBox,
@@ -50,25 +57,30 @@ sap.ui.define([
 	Avatar,
 	Link,
 	Label,
+	RatingIndicator,
+	Image,
 	ObjectStatus,
 	ComboBox,
 	TextArea,
+	Input,
+	TimePicker,
 	Log,
 	isEmptyObject,
 	isPlainObject,
 	merge,
-	deepExtend,
 	ResizeHandler,
 	AlignedFlowLayout,
 	Rem,
 	BindingHelper,
 	BindingResolver,
 	Utils,
-	Forms,
+	Form,
+	DateRangeHelper,
 	AvatarGroup,
 	AvatarGroupItem,
 	NumericIndicators,
 	NumericSideIndicator,
+	ObjectPlaceholder,
 	fLibrary,
 	OverflowToolbar,
 	OverflowToolbarButton,
@@ -106,7 +118,7 @@ sap.ui.define([
 	 *
 	 * @extends sap.ui.integration.cards.BaseContent
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @since 1.64
@@ -114,15 +126,16 @@ sap.ui.define([
 	 */
 	var ObjectContent = BaseContent.extend("sap.ui.integration.cards.ObjectContent", {
 		metadata: {
-			library: "sap.ui.integration"
+			library: "sap.ui.integration",
+			aggregations: {
+				_form: { type: "sap.ui.integration.util.Form", multiple: false, visibility: "hidden" }
+			}
 		},
 		renderer: ObjectContentRenderer
 	});
 
-	ObjectContent.prototype.exit = function() {
+	ObjectContent.prototype.exit = function () {
 		BaseContent.prototype.exit.apply(this, arguments);
-
-		delete this._aValidationControls;
 
 		if (this._sResizeListenerId) {
 			ResizeHandler.deregister(this._sResizeListenerId);
@@ -131,46 +144,49 @@ sap.ui.define([
 	};
 
 	/**
+	 * @override
+	 */
+	ObjectContent.prototype.createLoadingPlaceholder = function (oConfiguration) {
+		return new ObjectPlaceholder();
+	};
+
+	/**
 	 * Handler for when data is changed.
 	 */
 	ObjectContent.prototype.onDataChanged = function () {
-		if (!this._hasData()) {
-			this.getParent()._handleError("No items available", true);
+		var oCard = this.getCardInstance();
+
+		if (this._hasData()) {
+			this.hideNoDataMessage();
+		} else {
+			this.showNoDataMessage({
+				illustrationType: IllustratedMessageType.NoData,
+				title: this.getCardInstance().getTranslatedText("CARD_NO_ITEMS_ERROR_CHART")
+			});
 		}
 
-		this._validateInputFields(false);
+		this._getForm().updateModel();
+
+		if (oCard.isReady()) {
+			this.validateControls(false);
+		}
 	};
 
-	ObjectContent.prototype.validateControls = function () {
-		this._validateInputFields(true);
-	};
-
-	ObjectContent.prototype._validationControlChanged = function (oEvent) {
-		Forms.validateControl(oEvent.getSource(), this.getCardInstance(), true);
-	};
-
-	ObjectContent.prototype._validateInputFields = function (bShowValueState) {
-		(this._aValidationControls || []).forEach(function (oControl) {
-			Forms.validateControl(oControl, this.getCardInstance(), bShowValueState);
-		}.bind(this));
-	};
-
-	ObjectContent.prototype._prepareValidationControl = function (oControl, oItem, sChangeFunction, sPath) {
-		var oClonedItem = deepExtend({}, oItem);
-
-		oControl.attachEvent(sChangeFunction, this._validationControlChanged.bind(this));
-		this._aValidationControls.push(oControl);
-
-		// this is needed in order to skip binding for "pattern"
-		if (oClonedItem.validations) {
-			oClonedItem.validations.forEach(function (oValidation, iIndex) {
-				if (oValidation.pattern) {
-					oValidation.pattern = this.getCardInstance().getManifestEntry(sPath + "/validations/" + iIndex)["pattern"];
-				}
-			}.bind(this));
+	ObjectContent.prototype._getForm = function () {
+		var oForm = this.getAggregation("_form");
+		if (!oForm) {
+			oForm = new Form(this.getCardInstance());
+			this.setAggregation("_form", oForm);
 		}
 
-		oControl._oItem = oClonedItem;
+		return oForm;
+	};
+
+	/**
+	 * @inheritdoc
+	 */
+	ObjectContent.prototype.validateControls = function (bShowValueState, bSkipFiringStateChangedEvent) {
+		this._getForm().validate(bShowValueState, bSkipFiringStateChangedEvent);
 	};
 
 	ObjectContent.prototype._hasData = function () {
@@ -190,21 +206,19 @@ sap.ui.define([
 		return !!vResolvedValue;
 	};
 
-	ObjectContent.prototype.setConfiguration = function (oConfiguration) {
-		BaseContent.prototype.setConfiguration.apply(this, arguments);
-		oConfiguration = this.getParsedConfiguration();
+	/**
+	 * @override
+	 */
+	ObjectContent.prototype.applyConfiguration = function () {
+		var oConfiguration = this.getParsedConfiguration();
 
 		if (!oConfiguration) {
-			return this;
+			return;
 		}
-
-		this._aValidationControls = [];
 
 		if (oConfiguration.groups) {
 			this._addGroups(oConfiguration);
 		}
-
-		return this;
 	};
 
 	/**
@@ -226,9 +240,7 @@ sap.ui.define([
 
 				if (oGroup.items) {
 					oGroup.items.forEach(function (oItem) {
-						var sFullPath = sObjectContentPath + oItem.path,
-							oResolvedGroupItem = this._resolveGroupItem(oItem, sFullPath);
-
+						var oResolvedGroupItem = this._resolveGroupItem(oItem, oItem.path, sObjectContentPath);
 						aResolvedGroupItems.push(oResolvedGroupItem);
 					}.bind(this));
 				}
@@ -240,11 +252,29 @@ sap.ui.define([
 		return oConfiguration;
 	};
 
-	ObjectContent.prototype._resolveGroupItem = function (oItem, sFullPath) {
-		var oResolvedGroupItem = {},
-			aResolvedItems = [];
+	ObjectContent.prototype._resolveGroupItem = function (oItem, sItemPath, sObjectContentPath) {
+		var oResolvedGroupItem = merge({}, oItem),
+			aResolvedItems = [],
+			sFullPath = sObjectContentPath + sItemPath,
+			bIsFormInput = ["TextArea", "Input", "ComboBox", "Duration", "DateRange"].includes(oItem.type),
+			bHasItemsToResolve = ["ButtonGroup", "IconGroup"].includes(oItem.type);
 
-		if (oItem.type === "ButtonGroup" || oItem.type === "IconGroup") {
+		if (bIsFormInput) {
+			oResolvedGroupItem = merge(oResolvedGroupItem, this._getForm().resolveControl(oItem));
+		}
+
+		if (oItem.type === "ComboBox") {
+			if (oItem.item) {
+				bHasItemsToResolve = true;
+				sFullPath = sObjectContentPath + oItem.item.path.substring(1);
+				oItem.template = oItem.item.template;
+				delete oResolvedGroupItem.item;
+			} else {
+				bHasItemsToResolve = false;
+			}
+		}
+
+		if (bHasItemsToResolve) {
 			var oTemplate = oItem.template,
 				aData = this.getModel().getProperty(sFullPath);
 
@@ -252,16 +282,14 @@ sap.ui.define([
 				var oResolvedItem = BindingResolver.resolveValue(oTemplate, this, sFullPath + "/" + iIndex + "/");
 				aResolvedItems.push(oResolvedItem);
 			}.bind(this));
-			oResolvedGroupItem = merge({}, oItem);
+
 			oResolvedGroupItem.items = aResolvedItems;
 
 			delete oResolvedGroupItem.path;
 			delete oResolvedGroupItem.template;
-
-			return oResolvedGroupItem;
-		} else {
-			return oItem;
 		}
+
+		return oResolvedGroupItem;
 	};
 
 	ObjectContent.prototype._getRootContainer = function () {
@@ -284,7 +312,6 @@ sap.ui.define([
 			oAFLayout,
 			bNextAFLayout = true,
 			aGroups = oConfiguration.groups || [];
-		this._formElementsIds = new Set();
 
 		aGroups.forEach(function (oGroupConfiguration, i) {
 			var oGroup = this._createGroup(oGroupConfiguration, "/sap.card/content/groups/" + i);
@@ -351,9 +378,12 @@ sap.ui.define([
 
 	ObjectContent.prototype._createGroupItems = function (oItem, sPath) {
 		var vLabel = oItem.label,
+			bShowColon = oItem.showColon,
 			oLabel,
 			vVisible,
 			oControl;
+
+		oItem.showColon = (bShowColon === undefined) ? true : bShowColon;
 
 		if (typeof oItem.visible == "string") {
 			vVisible = !Utils.hasFalsyValueAsString(oItem.visible);
@@ -362,15 +392,12 @@ sap.ui.define([
 		}
 
 		if (vLabel) {
-			// Checks if the label ends with ":" and if not we just add the ":"
-			vLabel = BindingHelper.formattedProperty(vLabel, function (sValue) {
-				return sValue && (sValue[sValue.length - 1] === ":" ? sValue : sValue + ":");
-			});
 
 			oLabel = new Label({
 				text: vLabel,
 				visible: vVisible,
-				wrapping: oItem.labelWrapping
+				wrapping: oItem.labelWrapping,
+				showColon: oItem.showColon
 			}).addStyleClass("sapFCardObjectItemLabel");
 
 			oLabel.addEventDelegate({
@@ -382,7 +409,7 @@ sap.ui.define([
 
 		oControl = this._createItem(oItem, vVisible, oLabel, sPath);
 
-		if (oControl) {
+		if (oControl && !oControl.isA("sap.m.Image")) {
 			oControl.addStyleClass("sapFCardObjectItemValue");
 		}
 
@@ -452,6 +479,21 @@ sap.ui.define([
 				break;
 			case "TextArea":
 				oControl = this._createTextAreaItem(oItem, vVisible, oLabel, sPath);
+				break;
+			case "RatingIndicator":
+				oControl = this._createRatingIndicatorItem(oItem, vVisible);
+				break;
+			case "Image":
+				oControl = this._createImageItem(oItem, vVisible);
+				break;
+			case "Input":
+				oControl = this._createInputItem(oItem, vVisible, oLabel, sPath);
+				break;
+			case "Duration":
+				oControl = this._createDurationItem(oItem, vVisible, oLabel, sPath);
+				break;
+			case "DateRange":
+				oControl = this._createDateRangeItem(oItem, vVisible, oLabel, sPath);
 				break;
 
 			// deprecated types
@@ -551,7 +593,9 @@ sap.ui.define([
 		var oControl = new ObjectStatus({
 			text: oItem.value,
 			visible: BindingHelper.reuse(vVisible),
-			state: oItem.state
+			state: oItem.state,
+			showStateIcon: oItem.showStateIcon,
+			icon: oItem.customStateIcon
 		});
 
 		return oControl;
@@ -699,16 +743,14 @@ sap.ui.define([
 	};
 
 	ObjectContent.prototype._createComboBoxItem = function (oItem, vVisible, oLabel, sPath) {
-		var oCard = this.getCardInstance(),
-			oFormModel = oCard.getModel("form"),
+		var oForm = this._getForm(),
 			oSettings = {
 				visible: BindingHelper.reuse(vVisible),
 				placeholder: oItem.placeholder,
-				required: Forms.getRequiredValidationValue(oItem)
+				required: oForm.getRequiredValidationValue(oItem)
 			},
 			oControl,
-			oItemTemplate,
-			fnUpdateValue;
+			oItemTemplate;
 
 		if (oItem.selectedKey) {
 			oSettings.selectedKey = oItem.selectedKey;
@@ -735,65 +777,135 @@ sap.ui.define([
 			});
 		}
 
-		if (!oItem.id) {
-			Log.error("Each input element must have an ID.", "sap.ui.integration.widgets.Card");
-			return oControl;
-		} else if (this._formElementsIds.has(oItem.id)) {
-			Log.error("Duplicate form element ID - " + "'" + oItem.id + "'" , "sap.ui.integration.widgets.Card");
-		}
-
-		this._formElementsIds.add(oItem.id);
-
-		fnUpdateValue = function () {
-			oFormModel.setProperty("/" + oItem.id, {
-				key: oControl.getSelectedKey(),
-				value: oControl.getValue()
-			});
-		};
-
-		oControl.attachChange(fnUpdateValue);
-		oControl.addEventDelegate({
-			onAfterRendering: fnUpdateValue
-		});
-		this._prepareValidationControl(oControl, oItem, "change", sPath);
+		oForm.addControl("change", oControl, oItem, sPath);
 
 		return oControl;
 	};
 
+
+	/**
+	 * Assigns a value to a form field.
+	 * @param {object} oFormFieldData Object with key and respective value property to set.
+	 * The name of the property can be named based on the type of the ObjectGroupItem as defined in the manifest.
+	 * @private
+	 * @ui5-restricted
+	 */
+	ObjectContent.prototype.setFormFieldValue = function (oFormFieldData) {
+		this._getForm().setControlValue(oFormFieldData);
+	};
+
 	ObjectContent.prototype._createTextAreaItem = function (oItem, vVisible, oLabel, sPath) {
-		var oCard = this.getCardInstance(),
-			oFormModel = oCard.getModel("form"),
+		var oForm = this._getForm(),
 			oControl = new TextArea({
-				required: Forms.getRequiredValidationValue(oItem),
+				required: oForm.getRequiredValidationValue(oItem),
 				value: oItem.value,
 				visible: BindingHelper.reuse(vVisible),
 				rows: oItem.rows,
 				placeholder: oItem.placeholder
-			}),
-			fnUpdateValue;
+			});
 
 		if (oLabel) {
 			oLabel.setLabelFor(oControl);
 		}
 
-		if (!oItem.id) {
-			Log.error("Each input element must have an ID.", "sap.ui.integration.widgets.Card");
-			return oControl;
-		} else if (this._formElementsIds.has(oItem.id)) {
-			Log.error("Duplicate form element ID - " + "'" + oItem.id + "'" , "sap.ui.integration.widgets.Card");
+		oForm.addControl("liveChange", oControl, oItem, sPath);
+
+		return oControl;
+	};
+
+	ObjectContent.prototype._createInputItem = function (oItem, vVisible, oLabel, sPath) {
+		var oForm = this._getForm(),
+			oControl = new Input({
+				required: oForm.getRequiredValidationValue(oItem),
+				value: oItem.value,
+				visible: BindingHelper.reuse(vVisible),
+				placeholder: oItem.placeholder
+			});
+
+		if (oLabel) {
+			oLabel.setLabelFor(oControl);
 		}
 
-		this._formElementsIds.add(oItem.id);
+		oForm.addControl("liveChange", oControl, oItem, sPath);
 
-		fnUpdateValue = function () {
-			oFormModel.setProperty("/" + oItem.id, oControl.getValue());
-		};
+		return oControl;
+	};
 
-		oControl.attachChange(fnUpdateValue);
-		oControl.addEventDelegate({
-			onAfterRendering: fnUpdateValue
+	ObjectContent.prototype._createDurationItem = function (oItem, vVisible, oLabel, sPath) {
+		var oForm = this._getForm(),
+			oControl = new TimePicker({
+				valueFormat: "HH:mm",
+				displayFormat: "HH:mm",
+				support2400: true,
+				required: oForm.getRequiredValidationValue(oItem),
+				value: oItem.value,
+				visible: BindingHelper.reuse(vVisible),
+				placeholder: oItem.placeholder
+			});
+
+		if (oLabel) {
+			oLabel.setLabelFor(oControl);
+		}
+
+		oForm.addControl("change", oControl, oItem, sPath);
+
+		return oControl;
+	};
+
+	ObjectContent.prototype._createRatingIndicatorItem = function (oItem, vVisible) {
+		var oControl = new RatingIndicator({
+			editable: false,
+			displayOnly: true,
+			maxValue: oItem.maxValue,
+			value: oItem.value,
+			visualMode: oItem.visualMode,
+			visible: BindingHelper.reuse(vVisible),
+			iconSize: "1rem"
 		});
-		this._prepareValidationControl(oControl, oItem, "liveChange", sPath);
+
+		return oControl;
+	};
+
+	ObjectContent.prototype._createImageItem = function (oItem, vVisible) {
+		var vSrc = BindingHelper.formattedProperty(oItem.src, function (sValue) {
+			return this._oIconFormatter.formatSrc(sValue);
+		}.bind(this));
+
+		var oControl = new Image({
+			src: vSrc,
+			alt: oItem.alt,
+			tooltip: oItem.tooltip,
+			visible: BindingHelper.reuse(vVisible)
+		}).addStyleClass("sapFCardObjectImage");
+
+		if (oItem.fullWidth) {
+			oControl.addStyleClass("sapFCardObjectImageFullWidth");
+		}
+
+		return oControl;
+	};
+
+	ObjectContent.prototype._createDateRangeItem = function (oItem, vVisible, oLabel, sPath) {
+		var oSettings = {
+			options: ["date"],
+			value: oItem.value
+		};
+		var oForm = this._getForm();
+		var oControl = DateRangeHelper.createInput(oSettings, this.getCardInstance(), true);
+
+		if (BindingHelper.isBindingInfo(vVisible)) {
+			oControl.bindProperty("visible", BindingHelper.reuse(vVisible));
+		} else {
+			oControl.setVisible(vVisible);
+		}
+
+		oControl.setRequired(oForm.getRequiredValidationValue(oItem));
+
+		if (oLabel) {
+			oLabel.setLabelFor(oControl);
+		}
+
+		oForm.addControl("change", oControl, oItem, sPath);
 
 		return oControl;
 	};

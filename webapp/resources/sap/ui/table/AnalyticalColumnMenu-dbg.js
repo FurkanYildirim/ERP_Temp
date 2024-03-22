@@ -20,7 +20,7 @@ sap.ui.define(['./ColumnMenu', "sap/ui/unified/MenuRenderer", './utils/TableUtil
 	 * @extends sap.ui.table.ColumnMenu
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -29,8 +29,8 @@ sap.ui.define(['./ColumnMenu', "sap/ui/unified/MenuRenderer", './utils/TableUtil
 	 * @alias sap.ui.table.AnalyticalColumnMenu
 	 */
 	var AnalyticalColumnMenu = ColumnMenu.extend("sap.ui.table.AnalyticalColumnMenu", /** @lends sap.ui.table.AnalyticalColumnMenu.prototype */ {
-		metadata : {
-			library : "sap.ui.table"
+		metadata: {
+			library: "sap.ui.table"
 		},
 		renderer: MenuRenderer
 	});
@@ -108,7 +108,6 @@ sap.ui.define(['./ColumnMenu', "sap/ui/unified/MenuRenderer", './utils/TableUtil
 			this.addItem(this._oSumItem);
 		}
 	};
-
 
 	AnalyticalColumnMenu.prototype.open = function() {
 		ColumnMenu.prototype.open.apply(this, arguments);

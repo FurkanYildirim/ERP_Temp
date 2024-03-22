@@ -157,7 +157,7 @@ function(
 	 * @extends sap.m.InputBase
 	 * @implements sap.ui.core.IAccessKeySupport
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -322,7 +322,7 @@ function(
 
 				/**
 				 * Specifies whether clear icon is shown.
-				 * Pressing the icon will clear input's value and fire the change and liveChange events.
+				 * Pressing the icon will clear input's value and fire the liveChange event.
 				 * @since 1.94
 				 */
 				showClearIcon: { type: "boolean", defaultValue: false },
@@ -720,14 +720,14 @@ function(
 		if (bShowValueHelpIcon) {
 			// ensure the creation of an icon
 			oIcon = this._getValueHelpIcon();
-			oIcon.setProperty("visible", true, true);
+			oIcon.setVisible(true);
 		} else if (oIcon) {
 			// if the icon should not be shown and has never be initialized - do nothing
-			oIcon.setProperty("visible", false, true);
+			oIcon.setVisible(false);
 		}
 
 		if (!this.getWidth()) {
-			this.setProperty("width", "100%", true);
+			this.setWidth("100%");
 		}
 
 		if (this._hasTabularSuggestions()) {
@@ -792,7 +792,7 @@ function(
 			oSuggestionsPopover = this._getSuggestionsPopover(),
 			oList = oSuggestionsPopover && oSuggestionsPopover.getItemsContainer();
 
-		if (sKey === '') {
+		if (!this._hasTabularSuggestions() && sKey === '') {
 			return;
 		}
 
@@ -809,11 +809,6 @@ function(
 		this.setProperty("selectedKey", '', true);
 		this.setAssociation("selectedRow", null, true);
 		this.setAssociation("selectedItem", null, true);
-
-		this.fireSuggestionItemSelected({
-			selectedItem: null,
-			selectedRow: null
-		});
 	};
 
 	/**
@@ -1080,7 +1075,6 @@ function(
 		}
 
 		if (!(this.isMobileDevice() && this.isA("sap.m.MultiInput") && this._isMultiLineMode)) {
-			this.setSelectionUpdatedFromList(false);
 			this._closeSuggestionPopup();
 		}
 
@@ -1280,7 +1274,7 @@ function(
 	 * Sets a custom filter function for suggestions. The default is to check whether the first item text begins with the typed value. For one and two-value suggestions this callback function will operate on sap.ui.core.Item types, for tabular suggestions the function will operate on sap.m.ColumnListItem types.
 	 *
 	 * @public
-	 * @param {function} fnFilter The filter function is called when displaying suggestion items and has two input parameters: the first one is the string that is currently typed in the input field and the second one is the item that is being filtered. Returning true will add this item to the popup, returning false will not display it.
+	 * @param {function(string=, sap.ui.core.Item=, boolean=):boolean|undefined|function} fnFilter The filter function is called when displaying suggestion items and has two input parameters: the first one is the string that is currently typed in the input field and the second one is the item that is being filtered. Returning true will add this item to the popup, returning false will not display it.
 	 * @returns {this} this pointer for chaining
 	 * @since 1.16.1
 	 */
@@ -1318,7 +1312,7 @@ function(
 	 * Sets a custom result filter function for tabular suggestions to select the text that is passed to the input field. Default is to check whether the first cell with a "text" property begins with the typed value. For one value and two-value suggestions this callback function is not called.
 	 *
 	 * @public
-	 * @param {function} fnFilter The result function is called with one parameter: the sap.m.ColumnListItem that is selected. The function must return a result string that will be displayed as the input field's value.
+	 * @param {function(string=, sap.ui.core.Item=, boolean=):boolean|undefined|function} fnFilter The result function is called with one parameter: the sap.m.ColumnListItem that is selected. The function must return a result string that will be displayed as the input field's value.
 	 * @returns {this} this pointer for chaining
 	 * @since 1.21.1
 	 */
@@ -1416,9 +1410,6 @@ function(
 			// mark the event as already handled
 			oEvent.originalEvent._sapui_handledByControl = true;
 			this._revertPopupSelection();
-			this._setProposedItemText(null);
-			this.setSelectionUpdatedFromList(false);
-			this._closeSuggestionPopup();
 
 			// revert autocompleted value on desktop
 			if (this._getTypedInValue() !== this.getValue()) {
@@ -1738,29 +1729,6 @@ function(
 	};
 
 	/**
-	 * Shows value help suggestions in table.
-	 *
-	 * @public
-	 * @param {boolean} bValue Show suggestions.
-	 * @return {this} this Input instance for chaining.
-	 */
-	Input.prototype.setShowTableSuggestionValueHelp = function (bValue) {
-		var oSuggestionsPopover = this._getSuggestionsPopover();
-		this.setProperty("showTableSuggestionValueHelp", bValue, true);
-
-		if (!oSuggestionsPopover.getPopover()) {
-			return this;
-		}
-
-		if (bValue) {
-			this._addShowMoreButton();
-		} else {
-			this._removeShowMoreButton();
-		}
-		return this;
-	};
-
-	/**
 	 * Event handler for browsers' <code>change</code> event.
 	 *
 	 * @since 1.73
@@ -1796,7 +1764,6 @@ function(
 
 		if (this.getValueLiveUpdate()) {
 			this.setProperty("value", sValue, true);
-			this._onValueUpdated(sValue);
 		}
 
 		this.fireLiveChange({
@@ -1965,6 +1932,10 @@ function(
 		// In that case the second DOM update of the invisible text element
 		// do not occur if it is synchronous. BCP #2070466087
 		setTimeout(function () {
+			if (!this.getSuggestionItems().length && !this._hasTabularSuggestions()) {
+				return this.$("SuggDescr").text("");
+			}
+
 			// add items to list
 			if (iNumItems === 1) {
 				sAriaText = oRb.getText("INPUT_SUGGESTIONS_ONE_HIT");
@@ -2210,6 +2181,8 @@ function(
 			value: "",
 			selectedItem: null
 		};
+		var oListDelegate;
+		var oList = oInput._getSuggestionsPopover() && oInput._getSuggestionsPopover().getItemsContainer();
 
 		// check if typeahead is already performed
 		if ((oInput && oInput.getValue().toLowerCase()) === (this._getProposedItemText() && this._getProposedItemText().toLowerCase())) {
@@ -2233,6 +2206,26 @@ function(
 				}
 				return bHasTabularSuggestions ? oInput._getRowResultFunction()(oItem) : oItem.getText();
 			};
+
+		// If there are no items yet - perform the type-ahead on a later stage.
+		// Attach a listener to the list for when they are available, in case they are being dynamically loaded.
+		if (this.isMobileDevice() && oList && !aItems.length) {
+			oListDelegate = {
+				onBeforeRendering: function() {
+					if (oList.getItems().length) {
+						this._handleTypeAhead(oInput);
+					}
+				},
+				onAfterRendering: function() {
+					if (oList.getItems().length) {
+						oList.removeDelegate(oListDelegate);
+					}
+				}
+			};
+			oList.addDelegate(oListDelegate, this);
+
+			return;
+		}
 
 		var aItemsToSelect = typeAhead(sValue, this, aItems, function (oItem) {
 			return this._formatTypedAheadValue(fnExtractText(oItem));
@@ -2552,7 +2545,7 @@ function(
 	 *
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 * @protected
-	 * @returns {object} Accessibility information.
+	 * @returns {sap.ui.core.AccessibilityInfo} Accessibility information.
 	 */
 	Input.prototype.getAccessibilityInfo = function() {
 		var oInfo = InputBase.prototype.getAccessibilityInfo.apply(this, arguments);
@@ -2757,7 +2750,7 @@ function(
 					return;
 				}
 
-				aListItemsDomRef = oList.$().find('.sapMSLIInfo, .sapMSLITitleOnly');
+				aListItemsDomRef = oList.$().find('.sapMSLIInfo [id$=-infoText], .sapMSLITitleOnly [id$=-titleText]');
 				sInputValue = this._bDoTypeAhead ? this._getTypedInValue() : this.getValue();
 				sInputValue = (sInputValue || "").toLowerCase();
 
@@ -2856,7 +2849,7 @@ function(
 		var oSuggestionPopover = this._getSuggestionsPopover(),
 			oPopupInput = oSuggestionPopover && oSuggestionPopover.getInput();
 
-		this._sProposedItemText = null;
+		this._setProposedItemText(null);
 		this.setSelectionUpdatedFromList(false);
 
 		// revert the typed in value on mobile to prevent change on close
@@ -2998,7 +2991,7 @@ function(
 
 					var oSelectedItem = oList && oList.getSelectedItem();
 
-					if (this._sProposedItemText && oSelectedItem) {
+					if (this._getProposedItemText() && oSelectedItem) {
 						this.setSelectionUpdatedFromList(true);
 					}
 
@@ -3065,10 +3058,28 @@ function(
 					oSuggPopover.resizePopup(this);
 					this._registerPopupResize();
 					this._bAfterOpenFinisihed = false;
-				}, this)
-				.attachAfterOpen(function () {
-					this._bAfterOpenFinisihed = true;
 				}, this);
+
+			oPopover.addEventDelegate({
+				onAfterRendering: function() {
+					var iInputWidth = this.getDomRef().getBoundingClientRect().width;
+					var sPopoverMaxWidth = getComputedStyle(this.getDomRef()).getPropertyValue("--sPopoverMaxWidth");
+
+					if (this.getMaxSuggestionWidth()) {
+						return;
+					}
+
+					if (iInputWidth <= parseInt(sPopoverMaxWidth) && !Device.system.phone) {
+						oSuggPopover.getPopover().getDomRef().style.setProperty("max-width", "40rem");
+					} else {
+						oSuggPopover.getPopover().getDomRef().style.setProperty("max-width", iInputWidth + "px");
+					}
+
+					oSuggPopover.getPopover().getDomRef().style.setProperty("min-width", iInputWidth + "px");
+
+					this._bAfterOpenFinisihed = true;
+				}
+			}, this);
 		}
 
 		// add popup to a hidden aggregation to also propagate the model and bindings to the content of the popover
@@ -3102,11 +3113,10 @@ function(
 	 * Opens the <code>SuggestionsPopover</code> with the available items.
 	 * <b>Note:</b> When <code>valueHelpOnly</code> property is set to true, the <code>SuggestionsPopover</code> will not open.
 	 *
-	 * @param {function} fnFilter Function to filter the items shown in the SuggestionsPopover
+	 * @param {function|undefined} fnFilter Function to filter the items shown in the SuggestionsPopover
 	 * @returns {void}
 	 *
 	 * @since 1.64
-	 * @experimental Since 1.64
 	 * @public
 	 */
 	Input.prototype.showItems = function (fnFilter) {
@@ -3417,19 +3427,6 @@ function(
 	};
 
 	/**
-	 * Required by the {@link sap.m.IToolbarInteractiveControl} interface.
-	 * Determines if the Control is interactive.
-	 *
-	 * @returns {boolean} If it is an interactive Control
-	 *
-	 * @private
-	 * @ui5-restricted sap.m.OverflowToolBar, sap.m.Toolbar
-	 */
-	Input.prototype._getToolbarInteractive = function () {
-		return true;
-	};
-
-	/**
 	 * Setter for the _sProposedItemText property, representing the text extracted from the proposed item/row.
 	 *
 	 * @private
@@ -3450,6 +3447,20 @@ function(
 	Input.prototype._getProposedItemText = function () {
 		return this._sProposedItemText;
 	};
+
+	/**
+	 * Required by the {@link sap.m.IToolbarInteractiveControl} interface.
+	 * Determines if the Control is interactive.
+	 *
+	 * @returns {boolean} If it is an interactive Control
+	 *
+	 * @private
+	 * @ui5-restricted sap.m.OverflowToolBar, sap.m.Toolbar
+	 */
+	Input.prototype._getToolbarInteractive = function () {
+		return true;
+	};
+
 
 	return Input;
 

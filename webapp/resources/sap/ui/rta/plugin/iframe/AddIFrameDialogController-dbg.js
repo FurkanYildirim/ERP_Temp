@@ -7,6 +7,7 @@ sap.ui.define([
 	"sap/base/Log",
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/core/library",
+	"sap/ui/rta/util/validateText",
 	"sap/ui/rta/Utils",
 	"sap/ui/fl/util/IFrame",
 	"sap/ui/model/Filter",
@@ -16,6 +17,7 @@ sap.ui.define([
 	Log,
 	Controller,
 	coreLibrary,
+	validateText,
 	Utils,
 	IFrame,
 	Filter,
@@ -27,10 +29,9 @@ sap.ui.define([
 	// shortcut for sap.ui.core.ValueState
 	var ValueState = coreLibrary.ValueState;
 
-	var _aTextInputFields = ["frameUrl"];
+	var _aTextInputFields = ["frameUrl", "title"];
 	var _aNumericInputFields = ["frameWidth", "frameHeight"];
-	var _aSelectInputFields = ["asNewSection", "frameWidthUnit", "frameHeightUnit"];
-
+	var _aSelectInputFields = ["frameWidthUnit", "frameHeightUnit"];
 
 	function isValidUrl(sUrl) {
 		return IFrame.isValidUrl(encodeURI(sUrl));
@@ -61,21 +62,6 @@ sap.ui.define([
 			oEvent.getSource().setValueState(ValueState.Error);
 			this._oJSONModel.setProperty("/areAllFieldsValid", false);
 			this._setFocusOnInvalidInput();
-		},
-
-		/**
-		 * Event handler for Change of the Size Unit Selections
-		 */
-		onSizeUnitChange: function() {
-			//set the percent info text visible/hidden
-			var oWidthSizeUnit = sap.ui.getCore().byId("sapUiRtaAddIFrameDialog_WidthUnit").getSelectedKey();
-			var oHeightSizeUnit = sap.ui.getCore().byId("sapUiRtaAddIFrameDialog_HeightUnit").getSelectedKey();
-			var oInfoText = sap.ui.getCore().byId("sapUiRtaAddIFrameDialog_PercentText");
-			if (oWidthSizeUnit !== "%" && oHeightSizeUnit !== "%") {
-				oInfoText.addStyleClass("sapUiRtaAddIFrameDialogPercentText-invisible");
-			} else {
-				oInfoText.removeStyleClass("sapUiRtaAddIFrameDialogPercentText-invisible");
-			}
 		},
 
 		/**
@@ -129,11 +115,11 @@ sap.ui.define([
 		},
 
 		/**
-		 * Event handler for search
+		 * Event handler for live change on the parameter search field
 		 * @param {sap.ui.base.Event} oEvent - Event
 		 */
-		onSearch: function(oEvent) {
-			var oFilter = new Filter("label", FilterOperator.Contains, oEvent.getParameter("query"));
+		onLiveChange: function(oEvent) {
+			var oFilter = new Filter("label", FilterOperator.Contains, oEvent.getParameter("newValue"));
 			var oBinding = sap.ui.getCore().byId("sapUiRtaAddIFrameDialog_ParameterTable").getBinding("items");
 			oBinding.filter([oFilter]);
 		},
@@ -203,6 +189,31 @@ sap.ui.define([
 			this._close();
 		},
 
+		onContainerTitleChange: function(oEvent) {
+			var oInput = oEvent.getSource();
+			var sValueState = "None";
+			var bValidationError = false;
+			var sValue = oInput.getValue();
+
+			if (sValue.trim() === "") {
+				sValueState = "Error";
+				oInput.setValueState(sValueState);
+				bValidationError = true;
+				return bValidationError;
+			}
+
+			try {
+				validateText(sValue);
+			} catch (oException) {
+				sValueState = "Error";
+				bValidationError = true;
+			}
+
+			oInput.setValueState(sValueState);
+
+			return bValidationError;
+		},
+
 		/**
 		 * Close AddIFrame Dialog
 		 *
@@ -234,7 +245,12 @@ sap.ui.define([
 
 		_areAllTextFieldsValid: function() {
 			var oJSONModel = this._oJSONModel;
+			var bAsContainer = this._oJSONModel.getProperty("asContainer/value");
 			return _aTextInputFields.reduce(function(bAllValid, sFieldName) {
+				// The title field is only available on add as Section
+				if (sFieldName === "title" && !bAsContainer) {
+					return true;
+				}
 				var sValuePath = "/" + sFieldName + "/value";
 				var sValueState;
 				if (oJSONModel.getProperty(sValuePath).trim() === "") {
@@ -285,7 +301,7 @@ sap.ui.define([
 		 * @param  {string} sSize - Size to import
 		 */
 		_importIFrameSize: function(sFieldName, sSize) {
-			var aResults = sSize.split(/(px|rem|%)/);
+			var aResults = sSize.split(/(px|rem|%|vh)/);
 			if (aResults.length >= 2) {
 				this._oJSONModel.setProperty("/" + sFieldName + "/value", parseFloat(aResults[0]));
 				this._oJSONModel.setProperty("/" + sFieldName + "Unit/value", aResults[1]);

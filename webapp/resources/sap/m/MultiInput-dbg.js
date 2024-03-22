@@ -10,40 +10,40 @@ sap.ui.define([
 	'./Tokenizer',
 	'./Token',
 	'./library',
+	'sap/ui/core/Element',
 	'sap/ui/core/EnabledPropagator',
 	'sap/ui/base/ManagedObject',
 	'sap/ui/base/ManagedObjectMetadata',
 	'sap/ui/base/ManagedObjectObserver',
 	'sap/ui/core/ResizeHandler',
 	'sap/ui/core/IconPool',
+	'sap/ui/Device',
 	'./MultiInputRenderer',
 	"sap/ui/dom/containsOrEquals",
 	"sap/m/inputUtils/completeTextSelected",
 	"sap/ui/events/KeyCodes",
 	'sap/ui/core/InvisibleText',
-	"sap/ui/thirdparty/jquery",
 	// jQuery Plugin "cursorPos"
-	"sap/ui/dom/jquery/cursorPos",
-	// jQuery Plugin "control"
-	"sap/ui/dom/jquery/control"
+	"sap/ui/dom/jquery/cursorPos"
 ],
 function(
 	Input,
 	Tokenizer,
 	Token,
 	library,
+	Element,
 	EnabledPropagator,
 	ManagedObject,
 	ManagedObjectMetadata,
 	ManagedObjectObserver,
 	ResizeHandler,
 	IconPool,
+	Device,
 	MultiInputRenderer,
 	containsOrEquals,
 	completeTextSelected,
 	KeyCodes,
-	InvisibleText,
-	jQuery
+	InvisibleText
 ) {
 		"use strict";
 
@@ -107,7 +107,7 @@ function(
 	* @implements sap.ui.core.ISemanticFormContent
 	*
 	* @author SAP SE
-	* @version 1.108.14
+	* @version 1.115.1
 	*
 	* @constructor
 	* @public
@@ -139,6 +139,15 @@ function(
 				 * @since 1.36
 				 */
 				maxTokens: {type: "int", group: "Behavior"},
+
+				/**
+				 * If this is set to true, suggest event is fired when user types in the input.
+				 * Changing the suggestItems aggregation in suggest event listener will show suggestions within a popup.
+				 * When runs on phone, input will first open a dialog where the input and suggestions are shown.
+				 * When runs on a tablet, the suggestions are shown in a popup next to the input.
+				 * <b>Note:</b> Default value for this property is false for the {@link sap.m.Input}.
+				 */
+				showSuggestion : {type : "boolean", group : "Behavior", defaultValue : true},
 
 				/**
 				 * Changed when tokens are changed. The value for sap.ui.core.ISemanticFormContent interface.
@@ -257,9 +266,18 @@ function(
 
 		/* Backward compatibility */
 		oTokenizer.updateTokens = function () {
+			var oDomRef = that.getDomRef();
+
 			this.destroyTokens();
 			this.updateAggregation("tokens");
+
+			// trigger tokenizer's focus handling only if focus is already applied to the Multi Input
+			if (oDomRef && oDomRef.contains(document.activeElement)) {
+				that.bTokensUpdated = true;
+			}
 		};
+
+		oTokenizer.setShouldRenderTabIndex(false);
 
 		this.setAggregation("tokenizer", oTokenizer);
 
@@ -269,6 +287,21 @@ function(
 
 			/* Prevent closing of n more popover when input is clicked */
 			._getPopup().setExtraContent([oTokenizer, this]);
+
+		oTokenizer.getTokensPopup().addEventDelegate({
+			onAfterRendering: function() {
+				var iInputWidth = this.getDomRef().getBoundingClientRect().width;
+				var sPopoverMaxWidth = getComputedStyle(this.getDomRef()).getPropertyValue("--sPopoverMaxWidth");
+
+				if (iInputWidth <= parseInt(sPopoverMaxWidth) && !Device.system.phone) {
+					oTokenizer.getTokensPopup().getDomRef().style.setProperty("max-width", "40rem");
+				} else {
+					oTokenizer.getTokensPopup().getDomRef().style.setProperty("max-width", iInputWidth + "px");
+				}
+
+				oTokenizer.getTokensPopup().getDomRef().style.setProperty("min-width", iInputWidth + "px");
+			}
+		}, this);
 
 		this.setAggregation("tokenizer", oTokenizer);
 
@@ -336,7 +369,6 @@ function(
 		this._aTokenValidators = [];
 
 		this.setShowValueHelp(true);
-		this.setShowSuggestion(true);
 		this._getSuggestionsPopover().getPopover()
 			.attachBeforeOpen(function () {
 				if (that.isMobileDevice() !== true) {
@@ -394,6 +426,19 @@ function(
 		this._registerResizeHandler();
 
 		Input.prototype.onAfterRendering.apply(this, arguments);
+
+		// if tokens are updated via binding focus the newly bound tokens based on last state
+		if (this.bTokensUpdated && this.bDeletePressed) {
+			var aTokens = oTokenizer.getTokens();
+
+			if (aTokens[this.iFocusedIndexBeforeUpdate]) {
+				aTokens[this.iFocusedIndexBeforeUpdate].focus();
+			} else {
+				this.focus();
+			}
+		}
+
+		this.bTokensUpdated = false;
 	};
 
 	/**
@@ -425,6 +470,11 @@ function(
 		var oFirstRemovedToken = aDeletingTokens[0];
 
 		iIndex = this.getTokens().indexOf(bBackspace ? oFirstRemovedToken : oLastRemovedToken);
+
+		// store these for after rendering
+		// used to focus correct token when aggregation is bound
+		this.iFocusedIndexBeforeUpdate = iIndex;
+		this.bDeletePressed = !bBackspace;
 
 		oTokenizer.focusToken(iIndex, oOptions, function () {
 			this.focus();
@@ -709,7 +759,7 @@ function(
 		}
 
 		// find focused element
-		var oFocusedElement = jQuery(document.activeElement).control()[0];
+		var oFocusedElement = Element.closestTo(document.activeElement);
 
 		if (!oFocusedElement) {
 			// we cannot rule out that the focused element does not correspond to an SAPUI5 control in which case oFocusedElement
@@ -851,7 +901,7 @@ function(
 
 		// if only one piece of text was pasted, we can assume that the user wants to alter it before it is converted into a token
 		// in this case we leave it as plain text input
-		if (this._shouldSkipTokenCreationOnPaste(aSeparatedText)) {
+		if (aSeparatedText.length <= 1) {
 			return;
 		}
 
@@ -1364,7 +1414,7 @@ function(
 	 * In case of added token it will not reset the value.
 	 *
 	 * @protected
-	 * @param {object} oEvent Event object
+	 * @param {jQuery.Event} oEvent Event object
 	 * @param {object} [mParameters] Additional event parameters to be passed in to the change event handler if * the value has changed
 	 * @param {string} sNewValue Passed value on change
 	 * @returns {boolean|undefined} true when change event is fired
@@ -1396,7 +1446,7 @@ function(
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} The accessibility object
+	 * @returns {sap.ui.core.AccessibilityInfo} The accessibility object
 	 * @protected
 	 */
 	MultiInput.prototype.getAccessibilityInfo = function () {
@@ -1499,25 +1549,8 @@ function(
 	 * @private
 	 */
 	MultiInput.prototype._onBeforeOpenTokensPicker = function () {
-		var oTokenizer = this.getAggregation("tokenizer"),
-			oPopover = oTokenizer.getTokensPopup(),
-			oDomRef = this.getDomRef(),
-			bEditable = this.getEditable(),
-			iCurrentWidth, iCalculatedWidth;
-
 		this._setValueVisible(false);
 		this._manageListsVisibility(true);
-
-		if (oDomRef && oPopover) {
-			// Popover's width was calculated once in its onBeforeOpen method and is set in PX
-			iCurrentWidth = parseInt(oPopover.getContentWidth());
-			iCalculatedWidth = isNaN(iCurrentWidth) || oDomRef.offsetWidth > iCurrentWidth ? oDomRef.offsetWidth : iCurrentWidth;
-
-			iCalculatedWidth = ((oTokenizer.getTokens().length === 1) || !bEditable) ? "auto" :
-				(iCalculatedWidth / parseFloat(library.BaseFontSize)) + "rem";
-
-			oPopover.setContentWidth(iCalculatedWidth);
-		}
 	};
 
 	/**
@@ -1939,7 +1972,7 @@ function(
 		if (!this.getMaxTokens() || this.getTokens().length < this.getMaxTokens()) {
 			this._bIsValidating = true;
 			this.addValidateToken({
-				text: sValue,
+				text: ManagedObject.escapeSettingsValue(sValue),
 				token: oToken,
 				suggestionObject: oItem,
 				validationCallback: this._validationCallback.bind(this, iOldLength)
@@ -2004,18 +2037,6 @@ function(
 				fValidateCallback && fValidateCallback(false);
 			}
 		};
-	};
-
-	/**
-	 * Should return true/false if token creation on paste should be skipped
-	 *
-	 * @param aSeparatedText array with pasted text parts
-	 * @returns {boolean}
-	 * @ui5-restricted sap.ui.comp.smartfilterbar.FilterProvider
-	 * @private
-	 */
-	MultiInput.prototype._shouldSkipTokenCreationOnPaste = function (aSeparatedText) {
-		return aSeparatedText.length <= 1;
 	};
 
 	/**

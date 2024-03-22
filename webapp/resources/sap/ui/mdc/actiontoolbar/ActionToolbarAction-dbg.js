@@ -4,11 +4,11 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-    "sap/ui/core/Control",
-    "sap/ui/mdc/actiontoolbar/ActionToolbarActionRenderer",
-    "sap/ui/mdc/enum/ActionToolbarActionAlignment"
+	"sap/ui/core/Control",
+	"sap/ui/mdc/actiontoolbar/ActionToolbarActionRenderer",
+	"sap/ui/mdc/enums/ActionToolbarActionAlignment"
 ], function(Control, ActionToolbarActionRenderer, ActionToolbarActionAlignment) {
-    "use strict";
+	"use strict";
 
 	/**
 	 * Constructor for a new ActionToolbarAction.<br>
@@ -18,50 +18,48 @@ sap.ui.define([
 	 *
 	 * @param {string} [sId] ID for the new control, generated automatically if no ID is given
 	 * @param {object} [mSettings] Initial settings for the new control
-	 * @class The action for an {@link sap.ui.mdc.ActionToolbar ActionToolbar}) control
+	 * @class The action for an {@link sap.ui.mdc.ActionToolbar ActionToolbar} control
 	 * @extends sap.ui.core.Control
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
-	 * @private
 	 * @since 1.58
-	 * @experimental As of version 1.58
-	 * @ui5-restricted sap.ui.mdc
+	 * @public
 	 * @alias sap.ui.mdc.actiontoolbar.ActionToolbarAction
 	 */
-    var ActionToolbarAction = Control.extend("sap.ui.mdc.actiontoolbar.ActionToolbarAction", {
-        metadata: {
-            library: "sap.ui.mdc",
-            designtime: "sap/ui/mdc/designtime/actiontoolbar/ActionToolbarAction.designtime",
-            interfaces : [
+	var ActionToolbarAction = Control.extend("sap.ui.mdc.actiontoolbar.ActionToolbarAction", {
+		metadata: {
+			library: "sap.ui.mdc",
+			designtime: "sap/ui/mdc/designtime/actiontoolbar/ActionToolbarAction.designtime",
+			interfaces : [
 				"sap.m.IOverflowToolbarContent"
 			],
-            properties: {
-                /**
-                 * Layout information
-                 */
-                layoutInformation: {
-                    type: "object",
-                    defaultValue: {
-                        // available aggragation names: "beginning", "between", "end"
-                        aggregationName: "end",
-                        alignment: ActionToolbarActionAlignment.Begin
-                    }
-                }
-            },
-            defaultAggregation: "action",
-            aggregations: {
-                /**
-                 * Action
-                 */
-                action: {
-                    type: "sap.ui.core.Control",
+			properties: {
+				/**
+				 * Layout information
+				 */
+				layoutInformation: {
+					type: "object",
+					defaultValue: {
+						// available aggragation names: "beginning", "between", "end"
+						aggregationName: "end",
+						alignment: ActionToolbarActionAlignment.Begin
+					}
+				}
+			},
+			defaultAggregation: "action",
+			aggregations: {
+				/**
+				 * Action
+				 */
+				action: {
+					type: "sap.ui.core.Control",
 					multiple: false
-                }
-            }
-        },
-        renderer: ActionToolbarActionRenderer
-    });
+				}
+			}
+		},
+		renderer: ActionToolbarActionRenderer
+	});
 
 	ActionToolbarAction.prototype.getDomRef = function() {
 		// return the DomRef of the inner Action, otherwise the Overflow calculation does not work
@@ -74,15 +72,15 @@ sap.ui.define([
 		return oLayoutData ? oLayoutData : this.getAction() && this.getAction().getLayoutData();
 	};
 
-    ActionToolbarAction.prototype.getOverflowToolbarConfig = function() {
-        // use the Action OverflowToolbarConfig if exist
+	ActionToolbarAction.prototype.getOverflowToolbarConfig = function() {
+		// use the Action OverflowToolbarConfig if exist
 		var oConfig = this.getAction() && this.getAction().getOverflowToolbarConfig ? this.getAction().getOverflowToolbarConfig() : { canOverflow: true };
 		oConfig.onBeforeEnterOverflow = this._getOnBeforeEnterOverflow(oConfig);
 		oConfig.onAfterExitOverflow = this._getOnAfterExitOverflow(oConfig);
 		return oConfig;
-    };
+	};
 
-    ActionToolbarAction.prototype._getOnBeforeEnterOverflow = function(oConfig) {
+	ActionToolbarAction.prototype._getOnBeforeEnterOverflow = function(oConfig) {
 		var fnOnBeforeEnterOverflow = oConfig.onBeforeEnterOverflow;
 		return function(oControl) {
 			if (fnOnBeforeEnterOverflow) {
@@ -93,6 +91,7 @@ sap.ui.define([
 			}
 		};
 	};
+
 	ActionToolbarAction.prototype._getOnAfterExitOverflow = function(oConfig) {
 		var fnOnAfterExitOverflow = oConfig.onAfterExitOverflow;
 		return function(oControl) {
@@ -105,14 +104,14 @@ sap.ui.define([
 		};
 	};
 
-    /**
-     *
-     * @returns {string} a text defining the label of this <code>ActionToolbarAction</code> defined by the inner action.
-     */
-    ActionToolbarAction.prototype.getLabel = function() {
-        var oAction = this.getAction();
-        return oAction && oAction.getText ? oAction.getText() : this.getId();
-    };
+	/**
+	 *
+	 * @returns {string} a text defining the label of this <code>ActionToolbarAction</code> defined by the inner action.
+	 */
+	ActionToolbarAction.prototype.getLabel = function() {
+		var oAction = this.getAction();
+		return oAction && oAction.getText ? oAction.getText() : this.getId();
+	};
 
-    return ActionToolbarAction;
+	return ActionToolbarAction;
 });

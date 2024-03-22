@@ -48,9 +48,10 @@ function(
 	}
 
 	/**
-	 * @namespace sap.ui.fl.initial._internal.StorageResultDisassemble
+	 * @name sap.ui.fl.initial._internal.storageResultDisassemble
+	 * @function
 	 * @since 1.70
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.initial._internal.Storage
 	 * Disassembles a response with a variant section into one or more plain responses.
@@ -58,7 +59,6 @@ function(
 	 * @param {object} oResponse Flexibility data response from a <code>sap.ui.connectors.BaseConnector</code> implementation
 	 * @param {object} oResponse.variantSection Variant section of the response (mandatory)
 	 * @returns {object[]} Disassembled result
-	 *
 	 */
 	return function(oResponse) {
 		var aFlexObjects;

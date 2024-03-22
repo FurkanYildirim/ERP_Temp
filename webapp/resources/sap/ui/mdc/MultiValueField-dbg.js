@@ -8,7 +8,7 @@ sap.ui.define([
 	'sap/ui/mdc/field/FieldBase',
 	'sap/ui/mdc/field/FieldBaseRenderer',
 	'sap/ui/mdc/condition/Condition',
-	'sap/ui/mdc/enum/ConditionValidated'
+	'sap/ui/mdc/enums/ConditionValidated'
 ], function(
 		library,
 		FieldBase,
@@ -29,19 +29,24 @@ sap.ui.define([
 	 * A <code>MultiValueField</code> control can be used to bind its items to data of a certain data type. Based on the data type settings, a default
 	 * control is rendered by the <code>MultiValueField</code> control.
 	 *
+	 * <ul>
+	 * <li>In display mode normally a {@link sap.m.Tokenizer Tokenizer} control is rendered.</li>
+	 * <li>If <code>multipleLines</code> is set a {@link sap.m.ExpandableText ExpandableText} control is rendered.</li>
+	 * <li>In edit mode normally a {@link sap.m.MultiInput MultiInput} control is rendered.</li>
+	 * <li>If <code>multipleLines</code> is set a {@link sap.m.TextArea TextArea} control is rendered.</li>
+	 * </ul>
+	 *
 	 * @extends sap.ui.mdc.field.FieldBase
-	 * @implements sap.ui.core.IFormContent
+	 * @implements sap.ui.core.IFormContent, sap.ui.core.ISemanticFormContent, sap.m.IOverflowToolbarContent
 	 *
 	 * @constructor
 	 * @alias sap.ui.mdc.MultiValueField
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.93.0
 	 *
-	 * @private
-	 * @experimental As of version 1.93
-	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
+   	 * @experimental As of version 1.93.0
 	 */
 	var Field = FieldBase.extend("sap.ui.mdc.MultiValueField", /* @lends sap.ui.mdc.MultiValueField.prototype */ {
 		metadata: {
@@ -70,7 +75,8 @@ sap.ui.define([
 				items: {
 					type: "sap.ui.mdc.field.MultiValueFieldItem",
 					multiple: true,
-					singularName : "item"
+					singularName : "item",
+					bindable: "bindable"
 				}
 			},
 			defaultAggregation: "items",
@@ -86,7 +92,7 @@ sap.ui.define([
 						/**
 						 * The new items of the <code>MultiValueField</code> control.
 						 *
-						 * If a <code>FieldHelp</code> element is assigned to the <code>MultiValueField</code> control, the <code>key</code> of the items is used as key for the <code>FieldHelp</code> items.
+						 * If a <code>ValueHelp</code> element is assigned to the <code>MultiValueField</code> control, the <code>key</code> of the items is used as key for the <code>ValueHelp</code> items.
 						 */
 						items: { type: "sap.ui.mdc.field.MultiValueFieldItem[]" },
 
@@ -114,6 +120,8 @@ sap.ui.define([
 	Field.prototype.init = function() {
 
 		FieldBase.prototype.init.apply(this, arguments);
+
+		this.setProperty("_operators", ["EQ"], true);
 
 		this._oObserver.observe(this, {
 			aggregations: ["items"]
@@ -156,9 +164,9 @@ sap.ui.define([
 
 	}
 
-	Field.prototype._handleModelContextChange = function(oEvent) {
+	Field.prototype.handleModelContextChange = function(oEvent) {
 
-		FieldBase.prototype._handleModelContextChange.apply(this, arguments);
+		FieldBase.prototype.handleModelContextChange.apply(this, arguments);
 
 		if (!this._oDataType) {
 			var oBindingInfo = this.getBinding("items");
@@ -170,9 +178,9 @@ sap.ui.define([
 	};
 
 
-	Field.prototype._initDataType = function() {
+	Field.prototype.initDataType = function() {
 
-		FieldBase.prototype._initDataType.apply(this, arguments);
+		FieldBase.prototype.initDataType.apply(this, arguments);
 
 		var oBindingInfo = this.getBindingInfo("items");
 		if (oBindingInfo) {
@@ -188,7 +196,6 @@ sap.ui.define([
 	 * @returns {sap.ui.mdc.MultiValueField} <code>this</code> to allow method chaining.
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, this property is not supported for the <code>MultiValueField</code> control.
 	 * @ui5-not-supported
 	 */
@@ -202,9 +209,9 @@ sap.ui.define([
 
 	};
 
-	Field.prototype._observeChanges = function(oChanges) {
+	Field.prototype.observeChanges = function(oChanges) {
 
-		FieldBase.prototype._observeChanges.apply(this, arguments);
+		FieldBase.prototype.observeChanges.apply(this, arguments);
 
 		if (oChanges.name === "items") {
 			_itemsChanged.call(this, oChanges.child, oChanges.mutation);
@@ -300,31 +307,37 @@ sap.ui.define([
 
 	}
 
-	Field.prototype._fireChange = function(aConditions, bValid, vWrongValue, oPromise) {
+	Field.prototype.fireChangeEvent = function(aConditions, bValid, vWrongValue, oPromise) {
 
 		this.fireChange({ items: this.getItems(), valid: bValid, promise: oPromise });
 
 	};
 
-	Field.prototype._getResultForPromise = function(aConditions) {
+	Field.prototype.getResultForChangePromise = function(aConditions) {
 
 		return this.getItems();
 
 	};
 
-	Field.prototype._getOperators = function() {
+	Field.prototype.getSupportedOperators = function() {
 
-		return ["EQ"];
+		return this.getProperty("_operators", []);
 
 	};
 
-	Field.prototype._checkCreateInternalContent = function() {
+	Field.prototype.checkCreateInternalContent = function() {
 
-		if (!this.bIsDestroyed && this._oContentFactory.getDataType() && !this._isPropertyInitial("editMode")) {
+		if (!this.bIsDestroyed && this._oContentFactory.getDataType() && !this.isFieldPropertyInitial("editMode")) {
 			// If DataType is provided via Binding and EditMode is set the internal control can be created
 			// TODO: no control needed if just template for cloning
-			FieldBase.prototype._checkCreateInternalContent.apply(this, arguments);
+			FieldBase.prototype.checkCreateInternalContent.apply(this, arguments);
 		}
+
+	};
+
+	Field.prototype.isSearchField = function() {
+
+		return false; // MultiValueField cannot be a searchField (as this only supports single-value)
 
 	};
 
@@ -338,7 +351,6 @@ sap.ui.define([
 	 * @returns {sap.ui.mdc.MultiValueField} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, use the <code>items</code> aggregation to bind the control.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.MultiValueField#setConditions
@@ -354,10 +366,42 @@ sap.ui.define([
 	 * @returns {object[]} conditions of the field
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, use the <code>items</code> aggregation to bind the control.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.MultiValueField#getConditions
+	 * @function
+	 */
+
+	/**
+	 * Binds property <code>conditions</code> to model data.
+	 *
+	 * See {@link sap.ui.base.ManagedObject#bindProperty ManagedObject.bindProperty} for a detailed description of the possible properties of oBindingInfo
+	 *
+	 * Do not use the <code>conditions</code> property,
+	 * use the <code>value</code> and <code>additionalValue</code> properties instead.
+	 *
+	 * @param {sap.ui.base.ManagedObject.PropertyBindingInfo} oBindingInfo The binding information
+	 * @returns {this} Reference to <code>this</code> to allow method chaining
+	 * @private
+	 * @ui5-restricted sap.fe
+	 * @deprecated Not supported, use the <code>value</code> property and <code>additionalValue</code> property to bind the control.
+	 * @ui5-not-supported
+	 * @name sap.ui.mdc.MultiValueField#bindConditions
+	 * @function
+	 */
+
+	/**
+	 * Unbinds property <code>conditions</code> from model data.
+	 *
+	 * Do not use the <code>conditions</code> property,
+	 * use the <code>value</code> and <code>additionalValue</code> properties instead.
+	 *
+	 * @returns {this} Reference to <code>this</code> to allow method chaining
+	 * @private
+	 * @ui5-restricted sap.fe
+	 * @deprecated Not supported, use the <code>value</code> property and <code>additionalValue</code> property to bind the control.
+	 * @ui5-not-supported
+	 * @name sap.ui.mdc.MultiValueField#unbindConditions
 	 * @function
 	 */
 
@@ -371,7 +415,6 @@ sap.ui.define([
 	 * @returns {sap.ui.mdc.MultiValueField} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the type in the binding to the <code>items</code> aggregation is used.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.MultiValueField#setDataType
@@ -388,7 +431,6 @@ sap.ui.define([
 	 * @returns {sap.ui.mdc.MultiValueField} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the type in the binding to the <code>items</code> aggregation is used.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.MultiValueField#setDataTypeConstraints
@@ -405,7 +447,6 @@ sap.ui.define([
 	 * @returns {sap.ui.mdc.MultiValueField} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated Not supported, the type in the binding to the <code>items</code> aggregation is used.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.MultiValueField#setDataTypeFormatOptions
@@ -419,7 +460,6 @@ sap.ui.define([
 	 * @returns {sap.ui.mdc.MultiValueField} Reference to <code>this</code> to allow method chaining
 	 * @private
 	 * @ui5-restricted sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
 	 * @deprecated This property is not supported for multi-value fields.
 	 * @ui5-not-supported
 	 * @name sap.ui.mdc.MultiValueField#setMultipleLines

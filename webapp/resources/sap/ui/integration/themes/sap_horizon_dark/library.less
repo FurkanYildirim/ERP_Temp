@@ -18,7 +18,35 @@
 }
 /* END "ActionsStrip.less" */
 
+/* START "ListContent.less" */
+/* ==================================================== */
+/* CSS for control sap.ui.integration.cards/ListContent */
+/* Evening Horizon theme                                */
+/* ==================================================== */
+
+.sapUiIntCard {
+	&.sapFCardNoHeader,
+	&.sapFCardBottomHeader {
+		& > .sapFCardContent > .sapFCardListContent .sapMLIBFocusable:first-child:focus { // first item in the list
+			border-radius: 1rem 1rem 0 0;
+		}
+	}
+
+	&:not(.sapUiIntCardWithFooter):not(.sapFCardBottomHeader):not(.sapFCardTransparent) {
+		& > .sapFCardContent > .sapFCardListContent .sapUiIntLCIRoundedCorners.sapMLIBFocusable:last-child:focus { // last item in the list
+			border-radius: 0 0 1rem 1rem;
+		}
+	}
+}
+
+/* END "ListContent.less" */
+
 /* START "ObjectContent.less" */
+/* ====================================================== */
+/* CSS for control sap.ui.integration.cards/ObjectContent */
+/* Evening Horizon theme                                  */
+/* ====================================================== */
+
 // The sapUiIntCardObjectButtonGroup (Bar) has been overstyled so it will align with its Label
 // The following rule will circumvent the clipping of that Bar, because of overflow: hidden on sapUiAFLayoutItem
 .sapFCardObjectContent .sapUiAFLayout .sapUiAFLayoutItem {
@@ -34,3 +62,32 @@
 
 @_sap_ui_integration_Paginator_IconOutlineOffset: 0;
 /* END "Paginator.less" */
+
+/* START "TableContent.less" */
+/* ===================================================== */
+/* CSS for control sap.ui.integration.cards/TableContent */
+/* Evening Horizon theme                                 */
+/* ===================================================== */
+
+.sapUiIntCard {
+	&.sapFCardNoHeader,
+	&.sapFCardBottomHeader {
+		& > .sapFCardContent > .sapFCardTableContent .sapMListTblHeader.sapMLIBFocusable:focus { // header of the table
+			> .sapMTblFirstVisibleCell::before {
+				border-top-left-radius: 1rem;
+			}
+			> .sapMTblLastVisibleCell::before {
+				border-top-right-radius: 1rem;
+			}
+		}
+	}
+
+	&:not(.sapUiIntCardWithFooter):not(.sapFCardBottomHeader):not(.sapFCardTransparent) {
+		& > .sapFCardContent > .sapFCardTableContent .sapMTableTBody .sapUiIntTCIRoundedCorners.sapMLIBFocusable:last-child:focus { // last row in the table
+			border-radius: 0 0 1rem 1rem;
+		}
+	}
+}
+
+/* END "TableContent.less" */
+

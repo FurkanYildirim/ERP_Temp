@@ -44,7 +44,7 @@
 		},
 		{
 			"name": "Breadcrumbs.less",
-			"size": 615,
+			"size": 1323,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -74,7 +74,7 @@
 		},
 		{
 			"name": "CheckBox.less",
-			"size": 4865,
+			"size": 4468,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -134,7 +134,7 @@
 		},
 		{
 			"name": "FeedInput.less",
-			"size": 294,
+			"size": 833,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -194,7 +194,7 @@
 		},
 		{
 			"name": "InputBase.less",
-			"size": 3338,
+			"size": 3420,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -206,13 +206,13 @@
 		},
 		{
 			"name": "LightBox.less",
-			"size": 958,
+			"size": 877,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "Link.less",
-			"size": 1227,
+			"size": 1222,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -344,13 +344,13 @@
 		},
 		{
 			"name": "Panel.less",
-			"size": 1382,
+			"size": 1451,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "PlanningCalendar.less",
-			"size": 5166,
+			"size": 5289,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -422,7 +422,7 @@
 		},
 		{
 			"name": "Select.less",
-			"size": 4310,
+			"size": 4189,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -434,7 +434,7 @@
 		},
 		{
 			"name": "SelectList.less",
-			"size": 1330,
+			"size": 1247,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -452,7 +452,7 @@
 		},
 		{
 			"name": "SinglePlanningCalendarMonthGrid.less",
-			"size": 2279,
+			"size": 2607,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -464,7 +464,7 @@
 		},
 		{
 			"name": "Slider.less",
-			"size": 5318,
+			"size": 5439,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -518,7 +518,7 @@
 		},
 		{
 			"name": "Table.less",
-			"size": 1443,
+			"size": 1082,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -536,7 +536,7 @@
 		},
 		{
 			"name": "TextArea.less",
-			"size": 282,
+			"size": 1018,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -571,6 +571,12 @@
 			"theme": "sap_horizon_hcb"
 		},
 		{
+			"name": "Title.less",
+			"size": 1082,
+			"designtime": true,
+			"theme": "sap_horizon_hcb"
+		},
+		{
 			"name": "ToggleButton.less",
 			"size": 1565,
 			"designtime": true,
@@ -590,7 +596,7 @@
 		},
 		{
 			"name": "Toolbar.less",
-			"size": 1793,
+			"size": 1671,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -644,62 +650,62 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 51065,
+			"size": 52389,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 177292,
+			"size": 202210,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 176922,
+			"size": 201840,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 807628,
+			"size": 822903,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/m/themes/sap_horizon_hcb/library-parameters.json",
-			"size": 21368,
+			"size": 21945,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.css",
-			"size": 807619,
+			"size": 822902,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.less",
-			"size": 195007,
+			"size": 197675,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.source.less",
-			"size": 3475,
+			"size": 3497,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 864819,
+			"size": 880735,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 864810,
+			"size": 880734,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "resources.json",
-			"size": 13004
+			"size": 13110
 		},
 		{
 			"name": "shared.less",

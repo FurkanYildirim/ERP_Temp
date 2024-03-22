@@ -5,7 +5,7 @@
  */
 sap.ui.define([
 	"sap/ui/mdc/util/loadModules",
-	"sap/ui/mdc/p13n/Engine"
+	"sap/m/p13n/Engine"
 ], function(loadModules, Engine) {
 	"use strict";
 
@@ -38,7 +38,12 @@ sap.ui.define([
 			oControl.iSuppressInvalidate = 1;
 			Engine.getInstance().waitForChanges(oControl).then(function() {
 				oControl.iSuppressInvalidate = 0;
-				oControl.invalidate("InvalidationSuppressedByMDCFlex");
+				oControl.findElements(false, function(oElement) {
+					if (oElement.isA("sap.ui.core.Control")) {
+						oElement.invalidate();
+					}
+				});
+				oControl.invalidate();
 			});
 		}
 	}
@@ -72,8 +77,9 @@ sap.ui.define([
 	 *
 	 * @param {object} mSettings An object defining the changehandler settings
 	 * @param {function} mSettings.apply The changehandler applyChange function
-	 * @param {function} mSettings.revert The changehandler applyChange function
-	 * @param {function} [mSettings.complete] The changehandler applyChange function
+	 * @param {function} mSettings.revert The changehandler revertChange function
+	 * @param {function} [mSettings.complete] The changehandler completeChangeContent function
+	 * @param {function} [mSettings.getCondenserInfo] The changehandler condenser info
 	 *
 	 * @returns {object} A Changehandler object
 	 */
@@ -111,17 +117,20 @@ sap.ui.define([
 				onAfterXMLChangeProcessing: function(oControl, mPropertyBag) {
 					mPropertyBag.modifier.getProperty(oControl, "delegate")
 					.then(function(oDelegate){
-						loadModules(oDelegate.name)
-						.then(function(aModules){
-							var oDelegate = aModules[0];
+						if (oDelegate) {
+							loadModules(oDelegate.name)
+							.then(function(aModules){
+								var oDelegate = aModules[0];
 
-							if (oDelegate.onAfterXMLChangeProcessing instanceof Function) {
-								oDelegate.onAfterXMLChangeProcessing(oControl, mPropertyBag);
-							}
+								if (oDelegate.onAfterXMLChangeProcessing instanceof Function) {
+									oDelegate.onAfterXMLChangeProcessing(oControl, mPropertyBag);
+								}
 
-						});
+							});
+						}
 					});
-				}
+				},
+				getCondenserInfo: mSettings.getCondenserInfo
 			},
 			"layers": {
 				"USER": true

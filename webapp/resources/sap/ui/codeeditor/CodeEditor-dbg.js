@@ -63,7 +63,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -468,7 +468,7 @@ sap.ui.define([
 	 * Defines custom completer - object implementing a getCompletions method.
 	 * The method has two parameters - fnCallback method and context object.
 	 * Context object provides details about oPos and sPrefix as provided by the third-party code editor.
-	 * @param {object} oCustomCompleter Object with getCompletions method
+	 * @param {{getCompletions: function}} oCustomCompleter Object with getCompletions method
 	 * @public
 	 * @since 1.52
 	 */

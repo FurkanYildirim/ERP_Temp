@@ -37,18 +37,18 @@ sap.ui.define([
 		Object.defineProperties(this, {
 			/** @type sap.ui.model.Context */
 			context: {
-				get: function() {return oContext;},
+				get: function() { return oContext; },
 				set: function(_oContext) {
 					oContext = _oContext || null;
 				}
 			},
 			/** @type {Readonly<{GroupHeader: string, Summary: string, Standard: string}>} */
 			Type: {
-				get: function() {return RowType;}
+				get: function() { return RowType; }
 			},
 			/** @type string */
 			type: {
-				get: function() {return sType;},
+				get: function() { return sType; },
 				set: function(_sType) {
 					if (!(_sType in RowType)) {
 						throw Error("Is not a valid type for sap.ui.table.Row: " + _sType);
@@ -58,39 +58,39 @@ sap.ui.define([
 			},
 			/** @type boolean */
 			empty: {
-				get: function() {return this.context == null;}
+				get: function() { return this.context == null; }
 			},
 			/** @type boolean */
 			contentHidden: {
-				get: function() {return this.empty ? true : bContentHidden;},
+				get: function() { return this.empty ? true : bContentHidden; },
 				set: function(_bContentHidden) {
 					bContentHidden = _bContentHidden === true;
 				}
 			},
 			/** @type string */
 			title: {
-				get: function() {return this.empty ? "" : sTitle;},
+				get: function() { return this.empty ? "" : sTitle; },
 				set: function(_sTitle) {
 					sTitle = (typeof _sTitle === "string" ? _sTitle : "");
 				}
 			},
 			/** @type boolean */
 			expandable: {
-				get: function() {return this.empty ? false : bExpandable;},
+				get: function() { return this.empty ? false : bExpandable; },
 				set: function(_bExpandable) {
 					bExpandable = _bExpandable === true;
 				}
 			},
 			/** @type boolean */
 			expanded: {
-				get: function() {return this.expandable ? bExpanded : false;},
+				get: function() { return this.expandable ? bExpanded : false; },
 				set: function(_bExpanded) {
 					bExpanded = _bExpanded === true;
 				}
 			},
 			/** @type number */
 			level: {
-				get: function() {return this.empty ? 0 : iLevel;},
+				get: function() { return this.empty ? 0 : iLevel; },
 				set: function(_iLevel) {
 					iLevel = (typeof _iLevel === "number" ? Math.max(1, _iLevel || 1) : 1);
 				}
@@ -135,31 +135,31 @@ sap.ui.define([
 	 * @class
 	 * The row.
 	 * @extends sap.ui.core.Element
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
 	 * @alias sap.ui.table.Row
 	 */
-	var Row = Element.extend("sap.ui.table.Row", /** @lends sap.ui.table.Row.prototype */ { metadata : {
-		library : "sap.ui.table",
-		defaultAggregation : "cells",
-		aggregations : {
+	var Row = Element.extend("sap.ui.table.Row", /** @lends sap.ui.table.Row.prototype */ {metadata: {
+		library: "sap.ui.table",
+		defaultAggregation: "cells",
+		aggregations: {
 			/**
 			 * The actual cells are a table-internal construct. The controls in this aggregation are the content of the cells.
 			 * This aggregation is managed by the table and must not be manipulated. Only read access is allowed.
 			 */
-			cells : {type : "sap.ui.core.Control", multiple : true, singularName : "cell"},
+			cells: {type: "sap.ui.core.Control", multiple: true, singularName: "cell"},
 
 			/*
 			 * Hidden aggregation for row actions
 			 */
-			_rowAction : {type : "sap.ui.table.RowAction", multiple: false, visibility: "hidden"},
+			_rowAction: {type: "sap.ui.table.RowAction", multiple: false, visibility: "hidden"},
 
 			/*
 			 * Hidden aggregation for the settings.
 			 */
-			_settings : {type : "sap.ui.table.RowSettings", multiple: false, visibility: "hidden"}
+			_settings: {type: "sap.ui.table.RowSettings", multiple: false, visibility: "hidden"}
 		}
 	}});
 
@@ -353,7 +353,7 @@ sap.ui.define([
 	 */
 	Row.prototype._updateSelection = function() {
 		var oTable = this.getTable();
-		var bIsSelected = oTable._getSelectionPlugin().isIndexSelected(this.getIndex());
+		var bIsSelected = oTable._getSelectionPlugin().isSelected(this);
 
 		this._setSelected(bIsSelected);
 		oTable._getAccExtension().updateSelectionStateOfRow(this);

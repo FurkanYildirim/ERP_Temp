@@ -39,7 +39,7 @@ sap.ui.define([
 	 * @alias sap.ui.rta.util.changeVisualization.ChangeIndicatorRegistry
 	 * @author SAP SE
 	 * @since 1.86.0
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 */
 	var ChangeIndicatorRegistry = ManagedObject.extend("sap.ui.rta.util.changeVisualization.ChangeIndicatorRegistry", {
@@ -113,6 +113,7 @@ sap.ui.define([
 	 */
 	ChangeIndicatorRegistry.prototype.getSelectorsWithRegisteredChanges = function () {
 		var oChangeIndicators = {};
+		var sPreviousAffectedElementId;
 
 		function addSelector (sSelectorId, sAffectedElementId, oChangeIndicatorData, bDependent) {
 			if (oChangeIndicators[sSelectorId] === undefined) {
@@ -122,11 +123,13 @@ sap.ui.define([
 				{
 					id: oChangeIndicatorData.change.getId(),
 					dependent: bDependent,
-					affectedElementId: sAffectedElementId,
+					affectedElementId: sAffectedElementId || sPreviousAffectedElementId,
+					displayElementsKey: oChangeIndicatorData.visualizationInfo.displayElementIds.toString(),
 					descriptionPayload: oChangeIndicatorData.visualizationInfo.descriptionPayload || {}
 				},
 				_omit(oChangeIndicatorData, ["visualizationInfo"])
 			));
+			sPreviousAffectedElementId = sAffectedElementId || sPreviousAffectedElementId;
 		}
 
 		values(this._oRegisteredChanges)
@@ -135,14 +138,21 @@ sap.ui.define([
 				.forEach(function (sId, iIndex) {
 					addSelector(sId, oChangeIndicatorData.visualizationInfo.affectedElementIds[iIndex], oChangeIndicatorData, false);
 				});
-
-				oChangeIndicatorData.visualizationInfo.dependentElementIds
-					.forEach(function (sId) {
-						addSelector(sId, sId, oChangeIndicatorData, true);
-					});
 			});
 
 		return oChangeIndicators;
+	};
+
+	ChangeIndicatorRegistry.prototype.getRelevantChangesWithSelector = function () {
+		var oSelectors = this.getSelectorsWithRegisteredChanges();
+		var aRelevantChanges = [];
+		Object.keys(oSelectors).forEach(function(sSelectorId) {
+			var aRelevantChangesForSelector = oSelectors[sSelectorId].filter(function (oChange) {
+				return !oChange.dependent;
+			});
+			aRelevantChanges = aRelevantChanges.concat(aRelevantChangesForSelector);
+		});
+		return aRelevantChanges;
 	};
 
 	/**
@@ -195,11 +205,11 @@ sap.ui.define([
 			}
 
 			if (oChange.getState() === "NEW") {
-				aChangeStates = [ChangeStates.DIRTY, ChangeStates.DRAFT];
-			} else if (aDraftChangesList && aDraftChangesList.includes(oChange.getFileName())) {
+				aChangeStates = ChangeStates.getDraftAndDirtyStates();
+			} else if (aDraftChangesList && aDraftChangesList.includes(oChange.getId())) {
 				aChangeStates = [ChangeStates.DRAFT];
 			} else {
-				aChangeStates = [ChangeStates.ACTIVATED];
+				aChangeStates = [ChangeStates.ALL];
 			}
 
 			this._oRegisteredChanges[oChange.getId()] = {
@@ -230,12 +240,17 @@ sap.ui.define([
 		return getInfoFromChangeHandler(oAppComponent, oChange)
 			.then(function(oInfoFromChangeHandler) {
 				var mVisualizationInfo = oInfoFromChangeHandler || {};
-				var aAffectedElementIds = getSelectorIds(mVisualizationInfo.affectedControls || [oChange.getSelector()]);
+				var aChangeSelectors = oChange.getSelector && oChange.getSelector() && [oChange.getSelector()];
+				var aAffectedElementSelectors = mVisualizationInfo.affectedControls || aChangeSelectors || [];
+				// If there is an original selector (e.g. control is inside a template),
+				// the indicator should be displayed on the host control (change selector)
+				var oChangeOriginalSelector = oChange.getOriginalSelector && oChange.getOriginalSelector();
+				var aDisplayElementSelectors = oChangeOriginalSelector ? aChangeSelectors : aAffectedElementSelectors;
 
 				return {
-					affectedElementIds: aAffectedElementIds,
+					affectedElementIds: getSelectorIds(aAffectedElementSelectors),
 					dependentElementIds: getSelectorIds(mVisualizationInfo.dependentControls) || [],
-					displayElementIds: getSelectorIds(mVisualizationInfo.displayControls) || aAffectedElementIds,
+					displayElementIds: getSelectorIds(mVisualizationInfo.displayControls || getSelectorIds(aDisplayElementSelectors)),
 					updateRequired: mVisualizationInfo.updateRequired,
 					descriptionPayload: mVisualizationInfo.descriptionPayload || {}
 				};
@@ -243,7 +258,11 @@ sap.ui.define([
 	}
 
 	function getInfoFromChangeHandler(oAppComponent, oChange) {
-		var oControl = JsControlTreeModifier.bySelector(oChange.getSelector(), oAppComponent);
+		var oSelector = oChange.getOriginalSelector && oChange.getOriginalSelector();
+		if (!oSelector) {
+			oSelector = oChange.getSelector && oChange.getSelector();
+		}
+		var oControl = JsControlTreeModifier.bySelector(oSelector, oAppComponent);
 		if (oControl) {
 			return ChangesWriteAPI.getChangeHandler({
 				changeType: oChange.getChangeType(),
@@ -252,7 +271,10 @@ sap.ui.define([
 				layer: oChange.getLayer()
 			})
 				.then(function(oChangeHandler) {
-					if (oChangeHandler && typeof oChangeHandler.getChangeVisualizationInfo === "function") {
+					if (
+						oChangeHandler && typeof oChangeHandler.getChangeVisualizationInfo === "function"
+						&& oChange.isSuccessfullyApplied && oChange.isSuccessfullyApplied()
+					) {
 						return oChangeHandler.getChangeVisualizationInfo(oChange, oAppComponent);
 					}
 					return undefined;
@@ -306,6 +328,18 @@ sap.ui.define([
 	ChangeIndicatorRegistry.prototype.removeOutdatedRegisteredChanges = function () {
 		this.getAllRegisteredChanges().forEach(function(oChange) {
 			if (oChange.visualizationInfo && oChange.visualizationInfo.updateRequired) {
+				this.removeRegisteredChange(oChange.change.getId());
+			}
+		}.bind(this));
+	};
+
+	/**
+	 * Removes changes without any displayElementIds from the registry so the change can be re-registered and
+	 * the visualizationInfo is updated => if an element is inside a dialog which hasn't been opened yet
+	 */
+	ChangeIndicatorRegistry.prototype.removeRegisteredChangesWithoutVizInfo = function () {
+		this.getAllRegisteredChanges().forEach(function(oChange) {
+			if (oChange.visualizationInfo && oChange.visualizationInfo.displayElementIds.length === 0) {
 				this.removeRegisteredChange(oChange.change.getId());
 			}
 		}.bind(this));

@@ -29,7 +29,6 @@ sap.ui.define([
 	"sap/m/Toolbar",
 	"sap/m/ToolbarSpacer",
 	"sap/m/Button",
-	"sap/m/ToggleButton",
 	"sap/m/CheckBox",
 	"sap/m/Dialog",
 	"sap/m/Input",
@@ -70,7 +69,6 @@ sap.ui.define([
 	Toolbar,
 	ToolbarSpacer,
 	Button,
-	ToggleButton,
 	CheckBox,
 	Dialog,
 	Input,
@@ -136,6 +134,7 @@ sap.ui.define([
 	var VariantManagement = Control.extend("sap.m.VariantManagement", /** @lends sap.m.VariantManagement.prototype */ {
 		metadata: {
 			interfaces: [
+				"sap.ui.core.IShrinkable",
 				"sap.m.IOverflowToolbarContent",
 				"sap.m.IToolbarInteractiveControl"
 			],
@@ -290,8 +289,31 @@ sap.ui.define([
 				},
 
 				/**
+				 * Defines the style of the title.
+				 * For more information, see {@link sap.m.Title#setTitleStyle}.
+				 *
+				 * @since 1.109
+				 */
+				titleStyle: {
+					type: "sap.ui.core.TitleLevel",
+					group: "Appearance",
+					defaultValue: TitleLevel.Auto
+				},
+
+				/**
+				 * Sets the maximum width of the control.
+				 *
+				 * @since 1.109
+				 */
+				maxWidth: {
+					type: "sap.ui.core.CSSSize",
+					group: "Dimension",
+					defaultValue: "100%"
+				},
+
+				/**
 				 * Defines the behavior, when the same list item is selected
-                 * If set to <code>false</code> the <code>select</code> event will be ommited.
+                 * If set to <code>false</code> the <code>select</code> event will be omitted.
 				 */
 				_selectStategyForSameItem: {
 					type: "boolean",
@@ -449,6 +471,7 @@ sap.ui.define([
 			apiVersion: 2,
 			render: function(oRm, oControl) {
 				oRm.openStart("div", oControl)
+					.style("max-width", oControl.getMaxWidth())
 					.class("sapMVarMngmt")
 					.openEnd();
 
@@ -462,6 +485,7 @@ sap.ui.define([
 	VariantManagement.MAX_NAME_LEN = 100;
 	VariantManagement.COLUMN_FAV_IDX = 0;
 	VariantManagement.COLUMN_NAME_IDX = 1;
+	VariantManagement.COLUMN_DEFAULT_IDX = 3;
 
 	/*
 	 * Constructs and initializes the <code>VariantManagement</code> control.
@@ -570,17 +594,15 @@ sap.ui.define([
 			level: {
 				path: '/level',
 				model: "$mVariants"
+			},
+			titleStyle: {
+				path: '/titleStyle',
+				model: "$mVariants"
 			}
 		});
 
 		this.oVariantText.addStyleClass("sapMVarMngmtClickable");
 		this.oVariantText.addStyleClass("sapMVarMngmtTitle");
-		this.oVariantText.addStyleClass("sapMTitleStyleH4");
-		if (Device.system.phone) {
-			this.oVariantText.addStyleClass("sapMVarMngmtTextPhoneMaxWidth");
-		} else {
-			this.oVariantText.addStyleClass("sapMVarMngmtTextMaxWidth");
-		}
 
 		var oVariantModifiedText = new Text(this.getId() + "-modified", {
 			text: "*",
@@ -602,10 +624,17 @@ sap.ui.define([
 		oVariantModifiedText.addStyleClass("sapMVarMngmtModified");
 		oVariantModifiedText.addStyleClass("sapMVarMngmtClickable");
 
-		this.oVariantPopoverTrigger = new ToggleButton(this.getId() + "-trigger", {
+		this.oVariantPopoverTrigger = new Button(this.getId() + "-trigger", {
 			icon: "sap-icon://slim-arrow-down",
 			type: ButtonType.Transparent,
-			tooltip: this._oRb.getText("VARIANT_MANAGEMENT_TRIGGER_TT")
+			tooltip: this._oRb.getText("VARIANT_MANAGEMENT_TRIGGER_TT"),
+			enabled: {
+				path: "/isDesignMode",
+				model: VariantManagement.INNER_MODEL_NAME,
+				formatter: function(bValue) {
+					return !bValue;
+				}
+			}
 		});
 
 		this.oVariantPopoverTrigger.addAriaLabelledBy(this.oVariantInvisibleText);
@@ -617,6 +646,7 @@ sap.ui.define([
 			]
 		});
 		this.oVariantLayout.addStyleClass("sapMVarMngmtLayout");
+		this.oVariantLayout.addStyleClass("sapMVarMngmtLayoutModifiedHidden");
 
 		oVariantModifiedText.setVisible(false);
 
@@ -633,7 +663,7 @@ sap.ui.define([
 	 * Registers invalidations event which is fired when width of the control is changed.
 	 *
 	 * @protected
-	 * @returns {object} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface.
+	 * @returns {{canOverflow: boolean, invalidationEvents: string[]}} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface
 	 */
 	VariantManagement.prototype.getOverflowToolbarConfig = function() {
 		return {
@@ -662,8 +692,10 @@ sap.ui.define([
 		if (sText) {
 			if (bFlag) {
 				sInvisibleTextKey = "VARIANT_MANAGEMENT_SEL_VARIANT_MOD";
+				this.oVariantLayout.removeStyleClass("sapMVarMngmtLayoutModifiedHidden");
 			} else {
 				sInvisibleTextKey = "VARIANT_MANAGEMENT_SEL_VARIANT";
+				this.oVariantLayout.addStyleClass("sapMVarMngmtLayoutModifiedHidden");
 			}
 
 			this.oVariantInvisibleText.setText(this._oRb.getText(sInvisibleTextKey, [sText]));
@@ -673,7 +705,8 @@ sap.ui.define([
 	VariantManagement.prototype._createInnerModel = function() {
 		var oModel = new JSONModel({
 			showManualVariantKey: false,
-			showCreateTile: false
+			showCreateTile: false,
+			isDesignMode: false
 		});
 		this.setModel(oModel, VariantManagement.INNER_MODEL_NAME);
 	};
@@ -691,6 +724,13 @@ sap.ui.define([
 	};
 	VariantManagement.prototype._setShowManualVariantKey = function(bValue) {
 		this._setInnerModelProperty("/showManualVariantKey", bValue);
+	};
+
+	VariantManagement.prototype.getDesignMode = function() {
+		return this._getInnerModelProperty("/isDesignMode");
+	};
+	VariantManagement.prototype.setDesignMode = function(bValue) {
+		this._setInnerModelProperty("/isDesignMode", bValue);
 	};
 
 	VariantManagement.prototype._setInnerModelProperty = function(sPropertyPath, vValue) {
@@ -826,6 +866,11 @@ sap.ui.define([
 	};
 
 	VariantManagement.prototype.onclick = function(oEvent) {
+
+		if (this.getDesignMode()) {
+			return;
+		}
+
 		if (this.oVariantPopoverTrigger && !this.bPopoverOpen) {
 			this.oVariantPopoverTrigger.focus();
 		}
@@ -1068,10 +1113,8 @@ sap.ui.define([
 			],
 			afterOpen: function() {
 				this.bPopoverOpen = true;
-				this.oVariantPopoverTrigger.setPressed(true);
 			}.bind(this),
 			afterClose: function() {
-				this.oVariantPopoverTrigger.setPressed(false);
 				if (this.bPopoverOpen) {
 					setTimeout(function() {
 						this.bPopoverOpen = false;
@@ -1086,6 +1129,10 @@ sap.ui.define([
 			this.oVariantPopOver.addStyleClass("sapUiSizeCompact");
 		}
 		this.addDependent(this.oVariantPopOver);
+
+		this.oVariantPopOver.isPopupAdaptationAllowed = function() {
+			return false;
+		};
 
 		// this.oVariantList.getBinding("items").filter(this._getFilters());
 	};
@@ -1177,6 +1224,24 @@ sap.ui.define([
 					path: "/supportDefault",
 					model: "$mVariants"
 				},
+				select: function(oEvent) {
+					if (this._sStyleClass) {
+						if (oEvent.getParameter("selected")) {
+							var mContexts = this._getContextInfoChanges();
+							if (this._isRestricted(mContexts)) {
+								this.oDefault.setValueState(ValueState.Error);
+								this.oDefault.setValueStateText(this._oRb.getText("VARIANT_MANAGEMENT_NO_DEFAULT_ON_RESTRICTED_VIEWS"));
+								this.oDefault.focus();
+							} else {
+								this.oDefault.setValueState(ValueState.None);
+								this.oDefault.setValueStateText("");
+							}
+						} else if (this.oDefault.getValueState() != ValueState.None){
+							this.oDefault.setValueState(ValueState.None);
+							this.oDefault.setValueStateText("");
+						}
+					}
+				}.bind(this),
 				width: "100%"
 			});
 
@@ -1325,12 +1390,18 @@ sap.ui.define([
 		return this._oRolesComponentContainer.getComponentInstance().hasErrorsAndShowErrorMessage();
 	};
 
-	VariantManagement.prototype._determineRolesSpecificText = function(mContexts, oTextControl) {
+	VariantManagement.prototype._isRestricted = function(mContexts) {
 		if (!mContexts) {
 			mContexts = { role: []};
 		}
-		if (mContexts && oTextControl) {
-			oTextControl.setText(this._oRb.getText((mContexts.role && mContexts.role.length > 0) ? "VARIANT_MANAGEMENT_VISIBILITY_RESTRICTED" : "VARIANT_MANAGEMENT_VISIBILITY_NON_RESTRICTED"));
+
+		return (mContexts.role && mContexts.role.length > 0);
+	};
+
+	VariantManagement.prototype._determineRolesSpecificText = function(oItem, oTextControl) {
+
+		if (oTextControl) {
+			oTextControl.setText(this._oRb.getText((this._isRestricted(oItem.getContexts())) ? "VARIANT_MANAGEMENT_VISIBILITY_RESTRICTED" : "VARIANT_MANAGEMENT_VISIBILITY_NON_RESTRICTED"));
 		}
 	};
 
@@ -1412,7 +1483,10 @@ sap.ui.define([
 						var oItem = this._getItemByKey(sKey);
 						if (oItem) {
 							oItem.setContexts(mContexts);
-							this._determineRolesSpecificText(mContexts, oTextControl);
+							this._determineRolesSpecificText(oItem, oTextControl);
+
+                            this._checkDefaultEnabled(oItem);
+
 						}
 					} else {
 						return false;
@@ -1484,7 +1558,13 @@ sap.ui.define([
 		this.oInputName.setValueState(ValueState.None);
 		this.oInputName.setValueStateText(null);
 
+		this.oDefault.setEnabled(true);
 		this.oDefault.setSelected(false);
+		if (this.oDefault.getValueState() !== ValueState.None) {
+			this.oDefault.setValueState(ValueState.None);
+			this.oDefault.setValueStateText("");
+		}
+
 		this.oPublic.setSelected(false);
 		this.oExecuteOnSelect.setSelected(false);
 		this.oCreateTile.setSelected(false);
@@ -1492,17 +1572,6 @@ sap.ui.define([
 		if (this.oVariantPopOver) {
 			this.oVariantPopOver.close();
 		}
-
-//		if (this.getManualVariantKey()) {
-//			this.oInputManualKey.setVisible(true);
-//			this.oInputManualKey.setEnabled(true);
-//			this.oInputManualKey.setValueState(ValueState.None);
-//			this.oInputManualKey.setValueStateText(null);
-//			this.oLabelKey.setVisible(true);
-//		} else {
-//			this.oInputManualKey.setVisible(false);
-//			this.oLabelKey.setVisible(false);
-//		}
 
 		if (!bDoNotOpen) {
 			this.oSaveAsDialog.open();
@@ -1529,12 +1598,26 @@ sap.ui.define([
 			sKey = sManualKey;
 		}
 
-		if (this.oSaveAsDialog) {
-			this.oSaveAsDialog.close();
+		var mContexts = this._getContextInfoChanges();
+		var bIsRestricted = this._isRestricted(mContexts);
+		if (bIsRestricted && this.oDefault.getSelected()) {
+			this.oDefault.setValueState(ValueState.Error);
+			this.oDefault.setValueStateText(this._oRb.getText("VARIANT_MANAGEMENT_NO_DEFAULT_ON_RESTRICTED_VIEWS"));
+			this.oDefault.focus();
+			return false;
+		} else if (!bIsRestricted){
+			var bWasInErrorState = this.oDefault.getValueState() !== ValueState.None;
+
+			this.oDefault.setValueState(ValueState.None);
+			this.oDefault.setValueStateText("");
+
+			if (bWasInErrorState){
+				return false; // otherwise the error state is still visible on the UI and the Save completes...
+			}
 		}
 
-		if (this.oDefault.getSelected()) {
-			this.setDefaultKey(this.oDefault.getSelected());
+		if (this.oSaveAsDialog) {
+			this.oSaveAsDialog.close();
 		}
 
 		var oObj = {
@@ -1544,7 +1627,7 @@ sap.ui.define([
 				def: this.oDefault.getSelected(),
 				execute: this.oExecuteOnSelect.getSelected(),
 				"public": this.getSupportPublic() ? this.oPublic.getSelected() : undefined,
-				contexts: this._getContextInfoChanges()
+				contexts: mContexts
 		};
 
 		if (this._getShowCreateTile() && this.oCreateTile) {
@@ -1697,6 +1780,9 @@ sap.ui.define([
 				keyboardMode: ListKeyboardMode.Edit,
 				columns: [
 					new Column({
+						header: new InvisibleText({
+									text: this._oRb.getText("VARIANT_MANAGEMENT_FAVORITE_COLUMN")
+								}),
 						width: "3rem",
 						visible: {
 							path: "/supportFavorites",
@@ -1766,6 +1852,9 @@ sap.ui.define([
 						popinDisplay: PopinDisplay.Block,
 						minScreenWidth: ScreenSize.Tablet
 					}), new Column({
+						header: new InvisibleText({
+									text: this._oRb.getText("VARIANT_MANAGEMENT_ACTION_COLUMN")
+								}),
 						hAlign: TextAlign.Center
 					}), new Column({
 						visible: false
@@ -1862,6 +1951,21 @@ sap.ui.define([
 		}
 	};
 
+	VariantManagement.prototype._checkDefaultEnabled = function(oItem) {
+		var bDefaultEnabled = true;
+		if (this._isRestricted(oItem.getContexts())) {
+			bDefaultEnabled = false;
+			if (oItem.getKey() === this.getDefaultKey()) {
+				this.setDefaultKey(this.getStandardVariantKey());
+			}
+		}
+		var oRow = this._getRowForKey(oItem.getKey());
+		if (oRow) {
+			oRow.getCells()[VariantManagement.COLUMN_DEFAULT_IDX].setEnabled(bDefaultEnabled);
+			this._toggleIconActivityState(oRow.getCells()[0], oItem, false);
+		}
+	};
+
 	VariantManagement.prototype._templateFactoryManagementDialog = function(sId, oContext) {
 		var sTooltip = null;
 		var oDeleteButton;
@@ -1900,11 +2004,6 @@ sap.ui.define([
 
 		var fPress = function(oEvent) {
 			this._handleManageDeletePressed(oEvent.oSource.getBindingContext(sModelName).getObject());
-			var oListItem = oEvent.oSource.getParent();
-			if (oListItem) {
-				oListItem.setVisible(false);
-			}
-
 			this._reCheckVariantNameConstraints();
 		}.bind(this);
 
@@ -1967,9 +2066,9 @@ sap.ui.define([
 		});
 
 		if ((this.getStandardVariantKey() === oItem.getKey()) || (this.getDefaultKey() === oItem.getKey())) {
-			oFavoriteIcon.addStyleClass("sapMVarMngmtFavNonInteractiveColor");
+			this._setIconStyleClass(oFavoriteIcon, "sapMVarMngmtFavNonInteractiveColor");
 		} else {
-			oFavoriteIcon.addStyleClass("sapMVarMngmtFavColor");
+			this._setIconStyleClass(oFavoriteIcon, "sapMVarMngmtFavColor");
 		}
 
 		if (this.getDisplayTextForExecuteOnSelectionForStandardVariant() && (this.getStandardVariantKey() === oItem.getKey())) {
@@ -1986,9 +2085,10 @@ sap.ui.define([
 		}
 
 		// roles
-		if (this._sStyleClass && (oItem.getKey() !== this.getStandardVariantKey())) {
-			var oText = new Text({ wrapping: false });
-			this._determineRolesSpecificText(oItem.getContexts(), oText);
+		var oText;
+		if (this._sStyleClass && this.getSupportContexts() && (oItem.getKey() !== this.getStandardVariantKey())) {
+			oText = new Text({ wrapping: false });
+			this._determineRolesSpecificText(oItem, oText);
 			var oIcon = new Icon({
 				src: "sap-icon://edit",
 				press: fRolesPressed
@@ -1998,14 +2098,35 @@ sap.ui.define([
 			oRolesCell = new HBox(sIdPrefix + "-role-" + nPos, {
 				items: [oText, oIcon]
 			});
+
 		} else {
 			oRolesCell = new Text();
 		}
 
+		var oDefaultRadioButton = new RadioButton(sIdPrefix + "-def-" + nPos, {
+			groupName: this.getId(),
+			select: fSelectRB,
+			selected: {
+				path: "/defaultKey",
+				model: sModelName,
+				formatter: function(sKey) {
+					return oItem.getKey() === sKey;
+				}
+			}
+		});
 
-		return new ColumnListItem({
+		if (oText && this._isRestricted(oItem.getContexts())) {
+			oDefaultRadioButton.setEnabled(false);
+			if (this.getDefaultKey() === oItem.getKey())  {
+				this.setDefaultKey(this.getStandardVariantKey());
+			}
+		}
+
+		var oListItem = new ColumnListItem({
 			cells: [
-				oFavoriteIcon, oNameControl, new Text(sIdPrefix + "-type-" + nPos, {
+				oFavoriteIcon,
+				oNameControl,
+				new Text(sIdPrefix + "-type-" + nPos, {
 					text: {
 						path: "sharing",
 						model: sModelName,
@@ -2014,24 +2135,26 @@ sap.ui.define([
 						}.bind(this)
 					},
 					textAlign: "Center"
-				}), new RadioButton(sIdPrefix + "-def-" + nPos, {
-					groupName: this.getId(),
-					select: fSelectRB,
-					selected: {
-						path: "/defaultKey",
-						model: sModelName,
-						formatter: function(sKey) {
-							return oItem.getKey() === sKey;
-						}
-					}
-				}), oExecuteOnSelectCtrl, oRolesCell, new Text(sIdPrefix + "-author-" + nPos, {
+				}),
+				oDefaultRadioButton,
+				oExecuteOnSelectCtrl,
+				oRolesCell,
+				new Text(sIdPrefix + "-author-" + nPos, {
 					text: '{' + sModelName + ">author}",
 					textAlign: "Begin"
-				}), oDeleteButton, new Text({
+				}),
+				oDeleteButton,
+				new Text({
 					text: '{' + sModelName + ">key}"
 				})
 			]
 		});
+
+		if (this._getDeletedItems() && this._getDeletedItems().indexOf(oItem.getKey()) > -1) {
+			oListItem.setVisible(false);
+		}
+
+		return oListItem;
 	};
 
 
@@ -2071,19 +2194,25 @@ sap.ui.define([
 			return;
 		}
 
-		if (oItem.getKey() === this.getStandardVariantKey()) {
+		if (!oItem || (oItem.getKey() === this.getStandardVariantKey())) {
 			return;
 		}
 
 		if (bToInActive && oIcon.hasStyleClass("sapMVarMngmtFavColor")) {
 			oIcon.removeStyleClass("sapMVarMngmtFavColor");
-			oIcon.addStyleClass("sapMVarMngmtFavNonInteractiveColor");
+			this._setIconStyleClass(oIcon, "sapMVarMngmtFavNonInteractiveColor");
 		} else if (oIcon.hasStyleClass("sapMVarMngmtFavNonInteractiveColor")) {
 			oIcon.removeStyleClass("sapMVarMngmtFavNonInteractiveColor");
-			oIcon.addStyleClass("sapMVarMngmtFavColor");
+			this._setIconStyleClass(oIcon, "sapMVarMngmtFavColor");
 		}
 	};
 
+	VariantManagement.prototype._setIconStyleClass = function(oIcon, sStyleClass) {
+		if (oIcon) {
+			oIcon.addStyleClass(sStyleClass);
+			oIcon.setNoTabStop(sStyleClass === "sapMVarMngmtFavNonInteractiveColor");
+		}
+	};
 
 	VariantManagement.prototype._handleManageTitleChange = function(oInput, oItem) {
 		this._checkVariantNameConstraints(oInput, oItem.getKey());
@@ -2126,45 +2255,45 @@ sap.ui.define([
 			this._bDeleteOccured = true;
 
 			this._getDeletedItems().forEach(function(sKey) {
-				var oItem = this._getItemByKey(sKey);
-				if (oItem) {
-					oItem.setVisible(true);
+				var oListItem = this._getRowForKey(sKey);
+				if (oListItem && !oListItem.getVisible()) {
+					oListItem.setVisible(true);
 				}
 			}.bind(this));
+
+			this._clearDeletedItems();
 		}
 
 		this.getItems().forEach(function(oItem) {
-			if (oItem.getVisible()) {
-				oItem.setTitle(oItem.getOriginalTitle());
-				oItem.setFavorite(oItem.getOriginalFavorite());
-				oItem.setExecuteOnSelect(oItem.getOriginalExecuteOnSelect());
-				oItem.setContexts(oItem.getOriginalContexts());
-			}
+			oItem.setTitle(oItem.getOriginalTitle());
+			oItem.setFavorite(oItem.getOriginalFavorite());
+			oItem.setExecuteOnSelect(oItem.getOriginalExecuteOnSelect());
+			oItem.setContexts(oItem.getOriginalContexts());
 		});
 
 		if (this._sOriginalDefaultKey !== this.getDefaultKey()) {
+			var sPrevDefaultKey = this.getDefaultKey();
 			this.setDefaultKey(this._sOriginalDefaultKey);
+
+			if (sPrevDefaultKey !== this.getStandardVariantKey()) {
+				var oRow = this._getRowForKey(sPrevDefaultKey);
+				if (oRow) {
+					var oIcon = oRow.getCells()[VariantManagement.COLUMN_FAV_IDX];
+					this._toggleIconActivityState(oIcon, this._getItemByKey(sPrevDefaultKey), false);
+				}
+			}
 		}
 
 		this._clearRenamedItems();
-		this._clearDeletedItems();
 
 		if (this._oManagedObjectModel) {
 			this._oManagedObjectModel.checkUpdate();
 		}
 
 		this.fireManageCancel();
-
-		//fireManageCancel may have deleted the ManageViews dialog
-//		if (this.oManagementDialog) {
-//			this.oManagementTable.getBinding("items").filter(this._getVisibleFilter());
-//		}
 	};
 
 	VariantManagement.prototype._handleManageFavoriteChanged = function(oIcon, oItem) {
-		//		if (!this._anyInErrorState(this.oManagementTable)) {
-		//			this.oManagementSave.setEnabled(true);
-		//		}
 		if (this.getStandardVariantKey() === oItem.getKey()) {
 			return;
 		}
@@ -2181,34 +2310,6 @@ sap.ui.define([
 	};
 
 
-
-	VariantManagement.prototype._getRowForKey = function(sKey) {
-		var oRowForKey = null;
-		if (this.oManagementTable) {
-			this.oManagementTable.getItems().some(function(oRow) {
-				var oColumnItem = oRow.getCells()[0].getParent();
-				var oItem = this.getModel("$mVariants").getObject(oColumnItem.getBindingContextPath());
-				if (sKey === oItem.getKey()) {
-					oRowForKey = oRow;
-				}
-
-				return oRowForKey !== null;
-			}.bind(this));
-		}
-
-		return oRowForKey;
-	};
-
-	VariantManagement.prototype._determineIndex = function(sPath) {
-		var nIdx = -1;
-		var nPos = sPath.indexOf('/', 1);
-		if (nPos > 0) {
-			nIdx = parseInt(sPath.substring(nPos + 1));
-		}
-
-		return nIdx;
-	};
-
 	VariantManagement.prototype._handleManageDeletePressed = function(oItem) {
 		var sKey = oItem.getKey();
 
@@ -2217,7 +2318,6 @@ sap.ui.define([
 			return;
 		}
 
-		oItem.setVisible(false);
 		this._addDeletedItem(oItem);
 
 		if (sKey === this.getDefaultKey()) {
@@ -2234,12 +2334,12 @@ sap.ui.define([
 			}
 		}
 
-//		var oModel = this.oManagementTable.getModel("$mVariants");
-//		if (oModel) {
-//			oModel.checkUpdate();
-//		}
+		var oListItem = this._getRowForKey(oItem.getKey());
+		if (oListItem) {
+			oListItem.setVisible(false);
+		}
 
-		this.oManagementTable.getBinding("items").filter(this._getVisibleFilter());
+		//this.oManagementTable.getBinding("items").filter(this._getVisibleFilter());
 
 		this.oManagementCancel.focus();
 	};
@@ -2305,22 +2405,32 @@ sap.ui.define([
 		}
 
 		this.oManagementDialog.close();
+		if (this._getDeletedItems().length > 0) {
+			this._bDeleteOccured = true;
 
-		this._getDeletedItems().some(function(sItemKey) {
-			if (sItemKey === this.getSelectedKey()) {
-				var sKey = this.getStandardVariantKey();
+			this._getDeletedItems().forEach(function(sKey) {
+				var oItem = this._getItemByKey(sKey);
+				if (oItem) {
+					oItem.setVisible(false);
+				}
+			}.bind(this));
 
-				this.setModified(false);
-				this.setSelectedKey(sKey);
+			this._getDeletedItems().some(function(sItemKey) {
+				if (sItemKey === this.getSelectedKey()) {
+					var sKey = this.getStandardVariantKey();
 
-				this.fireSelect({
-					key: sKey
-				});
-				return true;
-			}
+					this.setModified(false);
+					this.setSelectedKey(sKey);
 
-			return false;
-		}.bind(this));
+					this.fireSelect({
+						key: sKey
+					});
+					return true;
+				}
+
+				return false;
+			}.bind(this));
+		}
 
 		if (this._getRenamedItems().indexOf(this.getSelectedKey()) >= 0) {
 			var oBinding = this.oVariantText.getBinding("text");
@@ -2369,7 +2479,6 @@ sap.ui.define([
 			});
 		}
 	};
-
 
 	VariantManagement.prototype._anyInErrorStateManageTable = function(oManagementTable) {
 		var oInput;
@@ -2426,6 +2535,33 @@ sap.ui.define([
 
 	// UTILS
 
+	VariantManagement.prototype._getRowForKey = function(sKey) {
+		var oRowForKey = null;
+		if (this.oManagementTable) {
+			this.oManagementTable.getItems().some(function(oRow) {
+				var oColumnItem = oRow.getCells()[0].getParent();
+				var oItem = this.getModel("$mVariants").getObject(oColumnItem.getBindingContextPath());
+				if (sKey === oItem.getKey()) {
+					oRowForKey = oRow;
+				}
+
+				return oRowForKey !== null;
+			}.bind(this));
+		}
+
+		return oRowForKey;
+	};
+
+	VariantManagement.prototype._determineIndex = function(sPath) {
+		var nIdx = -1;
+		var nPos = sPath.indexOf('/', 1);
+		if (nPos > 0) {
+			nIdx = parseInt(sPath.substring(nPos + 1));
+		}
+
+		return nIdx;
+	};
+
 	VariantManagement.prototype._getFilters = function(oFilter) {
 		var aFilters = [];
 
@@ -2436,7 +2572,7 @@ sap.ui.define([
 		aFilters.push(this._getVisibleFilter());
 
 		if (this.getSupportFavorites()) {
-			aFilters.push(this._getFilterFavorites());
+			aFilters.push(this._getFavoriteFilter());
 		}
 
 		return aFilters;
@@ -2450,7 +2586,7 @@ sap.ui.define([
 		});
 	};
 
-	VariantManagement.prototype._getFilterFavorites = function() {
+	VariantManagement.prototype._getFavoriteFilter = function() {
 		return new Filter({
 			path: "favorite",
 			operator: FilterOperator.EQ,
@@ -2660,7 +2796,6 @@ sap.ui.define([
 		}
 
 		this._oRolesComponentContainer = null;
-
 
 		if (this._oRolesDialog && !this._oRolesDialog._bIsBeingDestroyed) {
 			this._oRolesDialog.destroy();

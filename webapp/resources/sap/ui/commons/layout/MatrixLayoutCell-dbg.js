@@ -23,7 +23,7 @@ sap.ui.define(['sap/ui/commons/library', 'sap/ui/core/CustomStyleClassSupport', 
 	 * @extends sap.ui.core.Element
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -34,7 +34,6 @@ sap.ui.define(['sap/ui/commons/library', 'sap/ui/core/CustomStyleClassSupport', 
 
 		deprecated: true,
 		library : "sap.ui.commons",
-		aggregatingType : "MatrixLayoutRow",
 		properties : {
 
 			/**

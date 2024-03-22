@@ -11,11 +11,15 @@ sap.ui.define([
 	"./WizardStepRenderer",
 	"./Button",
 	"./TitlePropagationSupport",
-	"sap/base/Log"
+	"sap/base/Log",
+	"sap/ui/core/library"
 ],
-	function(library, Control, InvisibleText, WizardStepRenderer, Button, TitlePropagationSupport, Log) {
+	function(library, Control, InvisibleText, WizardStepRenderer, Button, TitlePropagationSupport, Log, coreLibrary) {
 
 	"use strict";
+
+	// shortcut for sap.ui.core.TitleLevel
+	var TitleLevel = coreLibrary.TitleLevel;
 
 	/**
 	 * Constructor for a new WizardStep.
@@ -36,7 +40,7 @@ sap.ui.define([
 	 * <li>If the execution needs to branch after a given step, you should set all possible next steps in the <code>subsequentSteps</code> aggregation.
 	 * @extends sap.ui.core.Control
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -69,7 +73,17 @@ sap.ui.define([
 				 * When a step is optional an "(Optional)" label is displayed under the step's title.
 				 * @since 1.54
 				 */
-				optional: {type: "boolean", group: "Appearance", defaultValue: false}
+				optional: {type: "boolean", group: "Appearance", defaultValue: false},
+				/**
+				 * Defines the semantic level of the step title.
+				 * @private
+				 */
+				_titleLevel: {
+					type: "sap.ui.core.TitleLevel",
+					group: "Appearance",
+					defaultValue: TitleLevel.H3,
+					visibility: "hidden"
+				}
 			},
 			events: {
 				/**
@@ -206,6 +220,24 @@ sap.ui.define([
 
 		return this;
 	};
+
+	/**
+	 * Sets the title property of the WizardStep.
+	 * @param {string} sNewTitle The new WizardStep title.
+	 * @returns {sap.m.WizardStep} this instance for method chaining.
+	 * @public
+	 */
+	WizardStep.prototype.setTitle = function (sNewTitle) {
+		var oWizard = this._getWizardParent();
+
+		this.setProperty("title", sNewTitle);
+		if (oWizard) {
+			oWizard._updateProgressNavigator();
+		}
+
+		return this;
+	};
+
 	/**
 	 * setVisible shouldn't be used on wizard steps.
 	 * If you need to show/hide steps based on some condition - use the branching property instead.
@@ -248,10 +280,7 @@ sap.ui.define([
 	WizardStep.prototype._getWizardParent = function () {
 		var oParent = this.getParent();
 
-		while (!(oParent instanceof sap.m.Wizard)) {
-			if (oParent === null) {
-				return null;
-			}
+		while (oParent && !oParent.isA("sap.m.Wizard")) {
 			oParent = oParent.getParent();
 		}
 

@@ -1,0 +1,2 @@
+"use strict";sap.ui.define(["sap/ui/core/library","sap/ui/core/Core"],function(e,r){var i=r.initLibrary({name:"sap.feedback.ui",dependencies:["sap.ui.core"],interfaces:[],elements:[],noLibraryCSS:true,version:"1.115.0"});return i});
+//# sourceMappingURL=library.js.map

@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "Calendar.less",
-			"size": 25050,
+			"size": 25002,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -62,7 +62,7 @@
 		},
 		{
 			"name": "Menu.less",
-			"size": 11968,
+			"size": 12001,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -103,7 +103,7 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 137445,
+			"size": 160930,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -149,7 +149,7 @@
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 112030,
+			"size": 112017,
 			"theme": "base"
 		},
 		{
@@ -160,12 +160,12 @@
 		},
 		{
 			"name": "library.css",
-			"size": 111941,
+			"size": 111928,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 128244,
+			"size": 128229,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -177,12 +177,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 118862,
+			"size": 118849,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 118773,
+			"size": 118760,
 			"theme": "base"
 		},
 		{

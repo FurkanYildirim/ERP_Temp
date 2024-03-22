@@ -20,7 +20,7 @@
 		},
 		{
 			"name": "DynamicPage.less",
-			"size": 3795,
+			"size": 3867,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
@@ -38,7 +38,7 @@
 		},
 		{
 			"name": "FlexibleColumnLayout.less",
-			"size": 487,
+			"size": 523,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
@@ -50,46 +50,46 @@
 		},
 		{
 			"name": "ShellBar.less",
-			"size": 8403,
+			"size": 8395,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 4845,
+			"size": 4965,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 121270,
+			"size": 145252,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 120898,
+			"size": 144880,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 103958,
+			"size": 108530,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/f/themes/sap_fiori_3_dark/library-parameters.json",
-			"size": 1999,
+			"size": 2055,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library.css",
-			"size": 103960,
+			"size": 108528,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library.less",
-			"size": 17609,
+			"size": 17709,
 			"designtime": true,
 			"theme": "sap_fiori_3_dark"
 		},
@@ -101,12 +101,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 106600,
+			"size": 111684,
 			"theme": "sap_fiori_3_dark"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 106603,
+			"size": 111683,
 			"theme": "sap_fiori_3_dark"
 		},
 		{

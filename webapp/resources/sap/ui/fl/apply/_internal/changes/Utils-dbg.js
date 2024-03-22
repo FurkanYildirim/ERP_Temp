@@ -7,10 +7,12 @@
 sap.ui.define([
 	"sap/ui/fl/apply/_internal/changes/FlexCustomData",
 	"sap/ui/fl/initial/_internal/changeHandlers/ChangeHandlerStorage",
+	"sap/ui/fl/requireAsync",
 	"sap/ui/fl/Utils"
-], function (
+], function(
 	FlexCustomData,
 	ChangeHandlerStorage,
+	requireAsync,
 	FlUtils
 ) {
 	"use strict";
@@ -20,7 +22,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.apply._internal.changes.Utils
 	 * @since 1.70
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.apply._internal, sap.ui.fl.write._internal
 	 */
@@ -38,7 +40,7 @@ sap.ui.define([
 		/**
 		 * Returns the control map containing control, controlType, bTemplateAffected and originalControl
 		 *
-		 * @param {sap.ui.fl.Change} oChange - Change to be evaluated if template is affected
+		 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change to be evaluated if template is affected
 		 * @param {sap.ui.core.Control} oControl - Control that is the target of the passed change
 		 * @param {object} mPropertyBag - Contains additional data that are needed for reading of changes
 		 * @param {sap.ui.core.util.reflection.BaseTreeModifier} mPropertyBag.modifier - Control tree modifier
@@ -69,7 +71,7 @@ sap.ui.define([
 		 * Fetches the change handler for a specific change and control;
 		 * if the change handler is currently being registered the function waits for the registration.
 		 *
-		 * @param {sap.ui.fl.Change} oChange - Change for which the change handler should be fetched
+		 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change for which the change handler should be fetched
 		 * @param {object} mControl - Object with information about the control
 		 * @param {sap.ui.core.Control} mControl.control - Control instance
 		 * @param {string} mControl.controlType - Type of the control
@@ -83,7 +85,7 @@ sap.ui.define([
 			// With this as a standard import the ChangeHandlers would not be able to access API classes due to circular dependencies.
 			// TODO should be removed as soon as the ChangePersistence / FlexController are gone
 			return Promise.all([
-				FlUtils.requireAsync("sap/ui/fl/initial/_internal/changeHandlers/ChangeHandlerRegistration"),
+				requireAsync("sap/ui/fl/initial/_internal/changeHandlers/ChangeHandlerRegistration"),
 				oLibraryNamePromise
 			])
 			.then(function(aPromiseValues) {
@@ -96,18 +98,15 @@ sap.ui.define([
 			});
 		},
 
-		checkIfDependencyIsStillValidSync: function(oAppComponent, oModifier, mChangesMap, sChangeId) {
-			var oChange = FlUtils.getChangeFromChangesMap(mChangesMap.mChanges, sChangeId);
-			var oControl = oModifier.bySelector(oChange.getSelector(), oAppComponent);
-			var bHasChangeApplyFinishedCustomData = FlexCustomData.sync.hasChangeApplyFinishedCustomData(oControl, oChange);
-			return isDependencyStillValid(oChange, bHasChangeApplyFinishedCustomData);
-		},
-
 		checkIfDependencyIsStillValid: function(oAppComponent, oModifier, mChangesMap, sChangeId) {
 			var oChange = FlUtils.getChangeFromChangesMap(mChangesMap.mChanges, sChangeId);
+			// Change could be deleted after a save (condensing) so it is no longer a relevant dependency
+			if (!oChange) {
+				return false;
+			}
 			var oControl = oModifier.bySelector(oChange.getSelector(), oAppComponent);
-			return FlexCustomData.hasChangeApplyFinishedCustomData(oControl, oChange, oModifier)
-				.then(isDependencyStillValid.bind(null, oChange));
+			var bHasChangeApplyFinishedCustomData = FlexCustomData.hasChangeApplyFinishedCustomData(oControl, oChange, oModifier);
+			return isDependencyStillValid(oChange, bHasChangeApplyFinishedCustomData);
 		},
 
 		/**
@@ -117,7 +116,7 @@ sap.ui.define([
 		 * @param {object} mPropertyBag.modifier - Reuse operations handling the changes on the given view type
 		 * @param {object} mPropertyBag.appComponent - Application component for the view
 		 * @param {object} mPropertyBag.viewId - ID of the view
-		 * @param {sap.ui.fl.Change} oChange - Change instance to check
+		 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance to check
 		 * @returns {boolean} <code>true</code> if the change belongs to the given view
 		 */
 		filterChangeByView: function(mPropertyBag, oChange) {

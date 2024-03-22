@@ -34,7 +34,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -188,14 +188,31 @@ sap.ui.define([
 		return this._getOrCreateArea(sAreaId, []);
 	};
 
+	/**
+	 * @typedef {object} sap.ui.commons.BorderLayoutAreaData
+	 * @description The object contains the available parameters for BorderLayout's Area.
+	 *
+	 * @property {sap.ui.core.CSSSize} [size='100px']
+	 * 		Defines the height or the width. Is not used when the area element is in Center.
+	 * @property {boolean} [visible='true']
+	 * 		Invisible controls are not rendered.
+	 * @property {string} [overflowX='auto']
+	 * 		The overflow mode of the area in horizontal direction as CSS value.
+	 * @property {string} [overflowY='auto']
+	 * 		The overflow mode of the area in vertical direction as CSS value.
+	 * @property {string} [contentAlign='left']
+	 * 		The content alignment as CSS value.
+	 *
+	 * @public
+	 * @since 1.110
+	 */
 
 	/**
 	 * Returns a JSON-like object that contains all property values of the requested area.
 	 *
 	 * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} sAreaId
 	 *         Specifies the area whose data will be returned
-	 * @returns {object} The aria data
-	 *
+	 * @returns {sap.ui.commons.BorderLayoutAreaData} The aria data
 	 * @public
 	 */
 	BorderLayout.prototype.getAreaData = function(sAreaId) {
@@ -216,9 +233,9 @@ sap.ui.define([
 	 *
 	 * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} sAreaId
 	 *         Specifies the area whose properties will be set
-	 * @param {object} oData
+	 * @param {sap.ui.commons.BorderLayoutAreaData} oData
 	 *         JSON-like object that contains the values to be set
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 *
 	 * @public
 	 */
@@ -233,7 +250,7 @@ sap.ui.define([
 	 *
 	 * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} sAreaId
 	 *         Specifies the area where controls will be added
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 *
 	 * @public
 	 */
@@ -256,7 +273,7 @@ sap.ui.define([
 	 * @param {int} iIndex
 	 *         Specifies the index where the controls shall be added. For a negative value of iIndex, the content is inserted at
 	 *         position '0'; for a value greater than the current size of the aggregation, the content is inserted at the last position.
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 *
 	 * @public
 	 */
@@ -278,7 +295,7 @@ sap.ui.define([
 	 *         Specifies the area whose content shall be removed
 	 * @param {*} vElement The content to be removed
 	 *         Specifies the control that shall be removed
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 *
 	 * @public
 	 */
@@ -296,7 +313,7 @@ sap.ui.define([
 	 *
 	 * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} sAreaId
 	 *         Specifies the area whose content shall be removed
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 *
 	 * @public
 	 */
@@ -344,7 +361,7 @@ sap.ui.define([
 	 *
 	 * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} sAreaId
 	 *         Specifies the area whose content will be destroyed
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 *
 	 * @public
 	 */

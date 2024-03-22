@@ -86,7 +86,7 @@ function(
 	 * @implements sap.ui.core.IShrinkable, sap.ui.core.IFormContent, sap.ui.core.ITitleContent, sap.ui.core.IAccessKeySupport
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -449,7 +449,7 @@ function(
 	 *
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 * @protected
-	 * @returns {object} The <code>sap.m.Link</code>  accessibility information
+	 * @returns {sap.ui.core.AccessibilityInfo} The <code>sap.m.Link</code>  accessibility information
 	 */
 	Link.prototype.getAccessibilityInfo = function() {
 		var oResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m"),

@@ -86,13 +86,13 @@
 		},
 		{
 			"name": "Button.less",
-			"size": 26650,
+			"size": 27258,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "Carousel.less",
-			"size": 13294,
+			"size": 13225,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -122,7 +122,7 @@
 		},
 		{
 			"name": "ColumnMenu.less",
-			"size": 781,
+			"size": 709,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -182,7 +182,7 @@
 		},
 		{
 			"name": "Dialog.less",
-			"size": 11966,
+			"size": 11017,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -212,7 +212,7 @@
 		},
 		{
 			"name": "FacetFilter.less",
-			"size": 3585,
+			"size": 3407,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -236,13 +236,13 @@
 		},
 		{
 			"name": "FeedInput.less",
-			"size": 3730,
+			"size": 4861,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "FeedListItem.less",
-			"size": 9496,
+			"size": 9498,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -266,7 +266,7 @@
 		},
 		{
 			"name": "GenericTile.less",
-			"size": 45582,
+			"size": 47002,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -284,7 +284,7 @@
 		},
 		{
 			"name": "IconTabBar.less",
-			"size": 38993,
+			"size": 38959,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -296,7 +296,7 @@
 		},
 		{
 			"name": "IllustratedMessage.less",
-			"size": 2579,
+			"size": 2628,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -320,13 +320,13 @@
 		},
 		{
 			"name": "Input.less",
-			"size": 3025,
+			"size": 3062,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "InputBase.less",
-			"size": 16000,
+			"size": 16649,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -338,25 +338,25 @@
 		},
 		{
 			"name": "Label.less",
-			"size": 9401,
+			"size": 10313,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "LightBox.less",
-			"size": 7627,
+			"size": 6397,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "Link.less",
-			"size": 2853,
+			"size": 3151,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "ListBase.less",
-			"size": 6977,
+			"size": 7010,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -374,13 +374,13 @@
 		},
 		{
 			"name": "MenuButton.less",
-			"size": 4362,
+			"size": 4361,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "MenuListItem.less",
-			"size": 2435,
+			"size": 2537,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -410,19 +410,19 @@
 		},
 		{
 			"name": "MessageToast.less",
-			"size": 637,
+			"size": 836,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "MessageView.less",
-			"size": 4529,
+			"size": 4599,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "MultiComboBox.less",
-			"size": 3947,
+			"size": 4027,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -440,25 +440,25 @@
 		},
 		{
 			"name": "NewsContent.less",
-			"size": 2240,
+			"size": 2346,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "NotificationListBase.less",
-			"size": 1149,
+			"size": 875,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "NotificationListGroup.less",
-			"size": 1982,
+			"size": 2276,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "NotificationListItem.less",
-			"size": 2543,
+			"size": 2779,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -470,13 +470,13 @@
 		},
 		{
 			"name": "ObjectAttribute.less",
-			"size": 4482,
+			"size": 4536,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "ObjectHeader.less",
-			"size": 23020,
+			"size": 23534,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -500,13 +500,13 @@
 		},
 		{
 			"name": "ObjectNumber.less",
-			"size": 6457,
+			"size": 6705,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "ObjectStatus.less",
-			"size": 20180,
+			"size": 20407,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -578,7 +578,7 @@
 		},
 		{
 			"name": "Panel.less",
-			"size": 2918,
+			"size": 2967,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -590,13 +590,13 @@
 		},
 		{
 			"name": "PlanningCalendar.less",
-			"size": 9497,
+			"size": 9763,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "PlanningCalendarHeader.less",
-			"size": 584,
+			"size": 969,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -632,7 +632,7 @@
 		},
 		{
 			"name": "RadioButton.less",
-			"size": 4332,
+			"size": 4354,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -668,7 +668,7 @@
 		},
 		{
 			"name": "SearchField.less",
-			"size": 5186,
+			"size": 5289,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -734,25 +734,25 @@
 		},
 		{
 			"name": "SinglePlanningCalendarGrid.less",
-			"size": 19066,
+			"size": 20843,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "SinglePlanningCalendarMonthGrid.less",
-			"size": 4854,
+			"size": 5717,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "SlideTile.less",
-			"size": 4941,
+			"size": 4945,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "Slider.less",
-			"size": 3098,
+			"size": 3094,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -770,7 +770,7 @@
 		},
 		{
 			"name": "SplitButton.less",
-			"size": 1963,
+			"size": 1984,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -782,7 +782,7 @@
 		},
 		{
 			"name": "StandardListItem.less",
-			"size": 6813,
+			"size": 6832,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -812,7 +812,7 @@
 		},
 		{
 			"name": "SuggestionsPopover.less",
-			"size": 3243,
+			"size": 3457,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -830,7 +830,7 @@
 		},
 		{
 			"name": "TabContainer.less",
-			"size": 1063,
+			"size": 1086,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -842,7 +842,7 @@
 		},
 		{
 			"name": "Table.less",
-			"size": 12187,
+			"size": 12258,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -866,7 +866,7 @@
 		},
 		{
 			"name": "TextArea.less",
-			"size": 4213,
+			"size": 5863,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -902,13 +902,13 @@
 		},
 		{
 			"name": "TimePickerClocks.less",
-			"size": 1086,
+			"size": 1112,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "TimePickerInputs.less",
-			"size": 496,
+			"size": 522,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -920,7 +920,7 @@
 		},
 		{
 			"name": "Title.less",
-			"size": 1815,
+			"size": 1803,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -938,13 +938,13 @@
 		},
 		{
 			"name": "Tokenizer.less",
-			"size": 2228,
+			"size": 2637,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "Toolbar.less",
-			"size": 3466,
+			"size": 3538,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -968,7 +968,7 @@
 		},
 		{
 			"name": "UploadCollection.less",
-			"size": 12739,
+			"size": 12737,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -992,7 +992,7 @@
 		},
 		{
 			"name": "VariantManagement.less",
-			"size": 2173,
+			"size": 2340,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -1016,13 +1016,13 @@
 		},
 		{
 			"name": "Wizard.less",
-			"size": 2280,
+			"size": 2347,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "WizardProgressNavigator.less",
-			"size": 7975,
+			"size": 8012,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -1034,7 +1034,7 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 47318,
+			"size": 48391,
 			"theme": "base"
 		},
 		{
@@ -1045,13 +1045,18 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 173717,
+			"size": 198485,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "illustrations/sapIllus-Dialog-AddColumn.svg",
 			"size": 8994,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Dialog-AddDimensions.svg",
+			"size": 10916,
 			"theme": "base"
 		},
 		{
@@ -1110,8 +1115,18 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Dialog-NoColumnsSet.svg",
+			"size": 20021,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Dialog-NoData.svg",
 			"size": 2637,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Dialog-NoDimensionsSet.svg",
+			"size": 14115,
 			"theme": "base"
 		},
 		{
@@ -1290,6 +1305,11 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Dialog-Survey.svg",
+			"size": 14057,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Dialog-Tent.svg",
 			"size": 14038,
 			"theme": "base"
@@ -1315,8 +1335,18 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Dialog-UploadToCloud.svg",
+			"size": 8380,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Dot-AddColumn.svg",
 			"size": 7080,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Dot-AddDimensions.svg",
+			"size": 4162,
 			"theme": "base"
 		},
 		{
@@ -1365,6 +1395,16 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Dot-NoColumnsSet.svg",
+			"size": 2146,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Dot-NoDimensionsSet.svg",
+			"size": 2145,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Dot-NoFilterResults.svg",
 			"size": 2801,
 			"theme": "base"
@@ -1397,6 +1437,11 @@
 		{
 			"name": "illustrations/sapIllus-Dot-ReloadScreen.svg",
 			"size": 4570,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Dot-ResizeColumn.svg",
+			"size": 8354,
 			"theme": "base"
 		},
 		{
@@ -1500,6 +1545,11 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Dot-Survey.svg",
+			"size": 6730,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Dot-Tent.svg",
 			"size": 4160,
 			"theme": "base"
@@ -1510,6 +1560,16 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Dot-UploadCollection.svg",
+			"size": 7916,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Dot-UploadToCloud.svg",
+			"size": 2553,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Patterns.svg",
 			"size": 1400,
 			"theme": "base"
@@ -1517,6 +1577,11 @@
 		{
 			"name": "illustrations/sapIllus-Scene-AddColumn.svg",
 			"size": 14201,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Scene-AddDimensions.svg",
+			"size": 11161,
 			"theme": "base"
 		},
 		{
@@ -1575,8 +1640,18 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Scene-NoColumnsSet.svg",
+			"size": 21762,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Scene-NoData.svg",
 			"size": 7090,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Scene-NoDimensionsSet.svg",
+			"size": 14775,
 			"theme": "base"
 		},
 		{
@@ -1755,6 +1830,11 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Scene-Survey.svg",
+			"size": 14797,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Scene-Tent.svg",
 			"size": 31820,
 			"theme": "base"
@@ -1780,8 +1860,18 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Scene-UploadToCloud.svg",
+			"size": 7895,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Spot-AddColumn.svg",
 			"size": 8932,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Spot-AddDimensions.svg",
+			"size": 10764,
 			"theme": "base"
 		},
 		{
@@ -1840,8 +1930,18 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Spot-NoColumnsSet.svg",
+			"size": 20407,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Spot-NoData.svg",
 			"size": 2354,
+			"theme": "base"
+		},
+		{
+			"name": "illustrations/sapIllus-Spot-NoDimensionsSet.svg",
+			"size": 14468,
 			"theme": "base"
 		},
 		{
@@ -2020,6 +2120,11 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Spot-Survey.svg",
+			"size": 14523,
+			"theme": "base"
+		},
+		{
 			"name": "illustrations/sapIllus-Spot-Tent.svg",
 			"size": 12663,
 			"theme": "base"
@@ -2045,24 +2150,29 @@
 			"theme": "base"
 		},
 		{
+			"name": "illustrations/sapIllus-Spot-UploadToCloud.svg",
+			"size": 8337,
+			"theme": "base"
+		},
+		{
 			"name": "library-RTL.css",
-			"size": 652981,
+			"size": 665612,
 			"theme": "base"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/m/themes/base/library-parameters.json",
-			"size": 19962,
+			"size": 20461,
 			"theme": "base"
 		},
 		{
 			"name": "library.css",
-			"size": 652990,
+			"size": 665623,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 730604,
+			"size": 741401,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -2074,23 +2184,23 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 690065,
+			"size": 703728,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 690074,
+			"size": 703739,
 			"theme": "base"
 		},
 		{
 			"name": "p13n.Container.less",
-			"size": 487,
+			"size": 485,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "p13n.QueryPanel.less",
-			"size": 113,
+			"size": 197,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -2102,7 +2212,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 39632
+			"size": 41940
 		},
 		{
 			"name": "shared.less",

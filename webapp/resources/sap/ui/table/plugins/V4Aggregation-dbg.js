@@ -32,7 +32,7 @@ sap.ui.define([
 	 * @class TODO (don't forget to document fixed row count restrictions because fixed rows are set by this plugin)
 	 * @extends sap.ui.table.plugins.PluginBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @since 1.76
 	 * @experimental
@@ -194,16 +194,16 @@ sap.ui.define([
 	};
 
 	V4Aggregation.prototype.updateRowState = function(oState) {
-		var iLevel = oState.context.getValue("@$ui5.node.level");
-		var bContainsTotals = oState.context.getValue("@$ui5.node.isTotal");
-		var bIsLeaf = oState.context.getValue("@$ui5.node.isExpanded") === undefined;
+		var iLevel = oState.context.getProperty("@$ui5.node.level");
+		var bContainsTotals = oState.context.getProperty("@$ui5.node.isTotal");
+		var bIsLeaf = oState.context.getProperty("@$ui5.node.isExpanded") === undefined;
 		var bIsGrandTotal = iLevel === 0 && bContainsTotals;
 		var bIsGroupHeader = iLevel > 0 && !bIsLeaf;
 		var bIsGroupTotal = !bIsGroupHeader && bContainsTotals;
 
 		oState.level = iLevel;
 		oState.expandable = bIsGroupHeader;
-		oState.expanded = oState.context.getValue("@$ui5.node.isExpanded") === true;
+		oState.expanded = oState.context.getProperty("@$ui5.node.isExpanded") === true;
 
 		if (bIsGrandTotal || bIsGroupTotal) {
 			oState.type = oState.Type.Summary;
@@ -360,11 +360,13 @@ sap.ui.define([
 			this._aGroupLevels = [];
 			if (oAggregateInfo.groupLevels) {
 				oAggregateInfo.groupLevels.forEach(function(sGroupLevelName) {
-					var oProperty = this.findPropertyInfo(sGroupLevelName);
-					this._aGroupLevels.push({
-						property: oProperty,
-						textProperty: this.findPropertyInfo(oProperty.text)
-					});
+					var oGroupedPropertyInfo = this.findPropertyInfo(sGroupLevelName);
+					if (oGroupedPropertyInfo) {
+						this._aGroupLevels.push({
+							property: oGroupedPropertyInfo,
+							textProperty: this.findPropertyInfo(oGroupedPropertyInfo.text)
+						});
+					}
 				}.bind(this));
 			}
 

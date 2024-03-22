@@ -16,6 +16,7 @@ sap.ui.define([
 	"sap/ui/core/util/ResponsivePaddingsEnablement",
 	"sap/ui/core/library",
 	"sap/ui/core/Element",
+	"sap/ui/core/InvisibleText",
 	"./TitlePropagationSupport",
 	"./PageRenderer",
 	"sap/ui/thirdparty/jquery",
@@ -32,6 +33,7 @@ function(
 	ResponsivePaddingsEnablement,
 	coreLibrary,
 	Element,
+	InvisibleText,
 	TitlePropagationSupport,
 	PageRenderer,
 	jQuery,
@@ -91,7 +93,7 @@ function(
 		 * @extends sap.ui.core.Control
 		 * @mixes sap.ui.core.ContextMenuSupport
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @public
 		 * @alias sap.m.Page
@@ -304,7 +306,12 @@ function(
 		};
 
 		Page.prototype.onBeforeRendering = function () {
-			var oHeader = this.getCustomHeader() || this.getAggregation("_internalHeader");
+			var oHeader = this.getCustomHeader() || this.getAggregation("_internalHeader"),
+				oFooter = this.getFooter();
+
+			if (oFooter && !oFooter.getAriaLabelledBy().length) {
+				oFooter.addAriaLabelledBy(this._getFooterToolbarAriaLabelledBy(oFooter.getId()));
+			}
 
 			if (this._oScroller && !this._hasScrolling()) {
 				this._oScroller.destroy();
@@ -325,9 +332,8 @@ function(
 
 			// title alignment
 			if (oHeader && oHeader.setTitleAlignment) {
-				oHeader.setProperty("titleAlignment", this.getTitleAlignment(), true);
+				oHeader.setTitleAlignment(this.getTitleAlignment());
 			}
-
 		};
 
 		Page.prototype.onAfterRendering = function () {
@@ -359,6 +365,14 @@ function(
 			if (this._appIcon) {
 				this._appIcon.destroy();
 				this._appIcon = null;
+			}
+			if (this._oHeaderToolbarInvisibleText) {
+				this._oHeaderToolbarInvisibleText.destroy();
+				this._oHeaderToolbarInvisibleText = null;
+			}
+			if (this._oFooterToolbarInvisibleText) {
+				this._oFooterToolbarInvisibleText.destroy();
+				this._oFooterToolbarInvisibleText = null;
 			}
 		};
 
@@ -435,7 +449,8 @@ function(
 			}
 
 			var $footer = jQuery(this.getDomRef()).find(".sapMPageFooter").last(),
-				useAnimation = Configuration.getAnimation();
+				sAnimationMode = Configuration.getAnimationMode(),
+				bHasAnimations = sAnimationMode !== Configuration.AnimationMode.none && sAnimationMode !== Configuration.AnimationMode.minimal;
 
 			if (!this.getFloatingFooter()) {
 				this.setProperty("showFooter", bShowFooter);
@@ -452,7 +467,7 @@ function(
 				return this;
 			}
 
-			if (useAnimation) {
+			if (bHasAnimations) {
 				setTimeout(function () {
 					$footer.toggleClass("sapUiHidden", !bShowFooter);
 				}, Page.FOOTER_ANIMATION_DURATION);
@@ -526,8 +541,11 @@ function(
 		Page.prototype._getInternalHeader = function () {
 			var oInternalHeader = this.getAggregation("_internalHeader");
 			if (!oInternalHeader) {
-				this.setAggregation("_internalHeader", new Bar(this.getId() + "-intHeader", {
-					titleAlignment: this.getTitleAlignment()
+				var sId = this.getId() + "-intHeader";
+
+				this.setAggregation("_internalHeader", new Bar(sId, {
+					titleAlignment: this.getTitleAlignment(),
+					ariaLabelledBy: this._getHeaderToolbarAriaLabelledBy(sId)
 				}), true); // don"t invalidate - this is only called before/during rendering, where invalidation would lead to double rendering,  or when invalidation anyway happens
 				oInternalHeader = this.getAggregation("_internalHeader");
 
@@ -683,7 +701,7 @@ function(
 
 			this.setAggregation("customHeader", oHeader);
 
-			this.toggleStyleClass("sapFShellBar-CTX", oHeader && oHeader.isA("sap.f.ShellBar"));
+			this.toggleStyleClass("sapFShellBar-CTX", !!oHeader && oHeader.isA("sap.f.ShellBar"));
 
 			/*
 			 * Runs Fiori 2.0 adaptation for the header
@@ -700,6 +718,46 @@ function(
 
 		Page.prototype._getAdaptableContent = function () {
 			return this._getAnyHeader();
+		};
+
+		/**
+		 * Returns an InvisibleText control for the ARIA labelled-by attribute of the header toolbar of the page.
+		 *
+		 * @memberof Page.prototype
+		 * @function
+		 * @name _getHeaderToolbarAriaLabelledBy
+		 * @param {string} sId - The ID of header toolbar aggregation.
+		 * @returns {sap.ui.core.InvisibleText} The InvisibleText control for the header toolbar ARIA labelled-by attribute.
+		 *
+		 */
+		Page.prototype._getHeaderToolbarAriaLabelledBy = function (sId) {
+			if (!this._oHeaderToolbarInvisibleText) {
+				this._oHeaderToolbarInvisibleText = new InvisibleText(sId + "-InvisibleText", {
+					text: sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("ARIA_LABEL_TOOLBAR_HEADER_ACTIONS")
+				}).toStatic();
+			}
+
+			return this._oHeaderToolbarInvisibleText;
+		};
+
+		/**
+		 * Returns an InvisibleText control for the ARIA labelled-by attribute of the footer toolbar of the page.
+		 *
+		 * @memberof Page.prototype
+		 * @function
+		 * @name _getFooterToolbarAriaLabelledBy
+		 * @param {string} sId - The ID of the page.
+		 * @returns {sap.ui.core.InvisibleText} The InvisibleText control for the footer toolbar ARIA labelled-by attribute.
+		 *
+		 */
+		Page.prototype._getFooterToolbarAriaLabelledBy = function (sId) {
+			if (!this._oFooterToolbarInvisibleText) {
+				this._oFooterToolbarInvisibleText = new InvisibleText(sId + "-InvisibleText", {
+					text: sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("ARIA_LABEL_TOOLBAR_FOOTER_ACTIONS")
+				}).toStatic();
+			}
+
+			return this._oFooterToolbarInvisibleText;
 		};
 
 		return Page;

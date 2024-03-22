@@ -5,8 +5,9 @@
  */
 
 sap.ui.define([
-	"sap/ui/core/Core"
-], function (Core) {
+	"sap/ui/core/Core",
+	"sap/base/Log"
+], function (Core, Log) {
 	"use strict";
 
 	/**
@@ -43,7 +44,7 @@ sap.ui.define([
 	 * </ul>
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @alias sap.ui.mdc.mixin.FilterIntegrationMixin
 	 * @namespace
 	 * @since 1.82.0
@@ -57,7 +58,7 @@ sap.ui.define([
 
 	/**
 	 * Set an external IFilter source to connect it with the given control instance.
-	 *
+	 * @public
 	 * @param {sap.ui.mdc.IFilter} vFilter IFilter implementing instance.
 	 * @returns {sap.ui.mdc.Control} The MDC Control instance.
 	 */
@@ -173,9 +174,7 @@ sap.ui.define([
 	/**
 	 * Executes a rebind considering the provided external and inbuilt filtering.
 	 *
-	 * @private
-	 * @ui5-restricted sap.fe
-	 * MDC_PUBLIC_CANDIDATE
+	 * @public
 	 * @since 1.98
 	 */
 	FilterIntegrationMixin.rebind = function() {
@@ -221,11 +220,37 @@ sap.ui.define([
 
 	};
 
+	FilterIntegrationMixin._getLabelsFromFilterConditions = function() {
+		var aLabels = [];
+
+		if (this.getFilterConditions) {
+			var aFilterConditions = this.getFilterConditions();
+			Object.keys(aFilterConditions).forEach(function(oConditionKey){
+
+				if (!aFilterConditions[oConditionKey] || aFilterConditions[oConditionKey].length < 1) {
+					return;
+				}
+
+				var sLabel = this.getPropertyHelper().getProperty(oConditionKey) ? this.getPropertyHelper().getProperty(oConditionKey).label : oConditionKey; //TODO the property for the filter might not exitst when you select a variant
+
+				if (sLabel) {
+					aLabels.push(sLabel);
+				}
+				if (!sLabel || sLabel === oConditionKey) {
+					Log.error("No valid property found for filter with key " + oConditionKey + ". Check your metadata.");
+				}
+			}.bind(this));
+		}
+
+		return aLabels;
+	};
+
 	return function () {
 
         this.setFilter = FilterIntegrationMixin.setFilter;
 		this._validateFilter = FilterIntegrationMixin._validateFilter;
         this.rebind = FilterIntegrationMixin.rebind;
+		this._getLabelsFromFilterConditions = FilterIntegrationMixin._getLabelsFromFilterConditions;
 	};
 
 });

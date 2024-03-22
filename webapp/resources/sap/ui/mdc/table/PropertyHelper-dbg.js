@@ -18,6 +18,33 @@ sap.ui.define([
 	/**
 	 * @typedef {sap.ui.mdc.util.PropertyInfo} sap.ui.mdc.table.PropertyInfo
 	 *
+	 * An object literal describing a data property in the context of an {@link sap.ui.mdc.Table}.
+	 *
+	 * When specifying the <code>PropertyInfo</code> objects in the {@link sap.ui.mdc.Table#getPropertyInfo propertyInfo} property, the
+	 * following attributes need to be specified:
+	 * <ul>
+	 *   <li><code>name</code></li>
+	 *   <li><code>path</code></li>
+	 *   <li><code>dataType</code></li>
+	 *   <li><code>formatOptions</code></li>
+	 *   <li><code>constraints</code></li>
+	 *   <li><code>maxConditions</code></li>
+	 *   <li><code>caseSensitive</code></li>
+	 *   <li><code>visualSettings.widthCalculation</code></li>
+	 *   <li><code>propertyInfos</code></li>
+	 *   <li><code>groupable</code></li>
+	 *   <li><code>key</code></li>
+	 *   <li><code>unit</code></li>
+	 *   <li><code>text</code></li>
+	 * </ul>
+	 *
+	 * If the property is complex, the following attributes need to be specified:
+	 * <ul>
+	 *   <li><code>name</code></li>
+	 *   <li><code>visualSettings.widthCalculation</code></li>
+	 *   <li><code>propertyInfos</code> (all referenced properties must be specified)</li>
+	 * </ul>
+	 *
 	 * @property {boolean} [filterable=true]
 	 *   Defines whether a property is filterable.
 	 * @property {boolean} [sortable=true]
@@ -32,15 +59,19 @@ sap.ui.define([
 	 *   Name of the text property that is related to this property in a 1:1 relation.
 	 * @property {object} [exportSettings]
 	 *   Object that contains information about the export settings, see {@link sap.ui.export.Spreadsheet}.
+	 * @property {object} [clipboardSettings]
+	 *   Object that contains information about the clipboard settings. Setting this value to <code>null</code> disables the copy function.
+	 * @property {string} [clipboardSettings.template]
+	 *   Defines the formatting template that supports indexed placeholders of <code>propertyInfos</code> within curly brackets, for example, "{0} ({1})".
 	 * @property {Object} [visualSettings]
 	 *   This object contains all relevant properties for visual adjustments.
 	 * @property {Object} [visualSettings.widthCalculation]
 	 *   This object contains all properties and their default values for the column width calculation
-	 * @property {integer} [visualSettings.widthCalculation.minWidth=2]
+	 * @property {int} [visualSettings.widthCalculation.minWidth=2]
 	 *   The minimum content width in rem
-	 * @property {integer} [visualSettings.widthCalculation.maxWidth=19]
+	 * @property {int} [visualSettings.widthCalculation.maxWidth=19]
 	 *   The maximum content width in rem
-	 * @property {integer} [visualSettings.widthCalculation.defaultWidth=8]
+	 * @property {int} [visualSettings.widthCalculation.defaultWidth=8]
 	 *   The default column content width when type check fails
 	 * @property {float} [visualSettings.widthCalculation.gap=0]
 	 *   The additional content width in rem
@@ -50,16 +81,13 @@ sap.ui.define([
 	 *   Whether the label should be trucated or not
 	 * @property {boolean} [visualSettings.widthCalculation.verticalArrangement=false]
 	 *   Whether the referenced properties are arranged vertically
-	 * @property {sap.ui.mdc.util.PropertyHelper[]} [visualSettings.widthCalculation.excludeProperties]
+	 * @property {string[]} [visualSettings.widthCalculation.excludeProperties]
 	 *   A list of invisible referenced property names
 	 * @property {string[]} [propertyInfos]
 	 *   The availability of this property makes the <code>PropertyInfo</code> a complex <code>PropertyInfo</code>. Provides a list of related
 	 *   properties (by name). These related properties must not themselves be complex.
 	 *
-	 * @private
-	 * @experimental
-	 * @ui5-restricted sap.fe
-	 * MDC_PUBLIC_CANDIDATE
+	 * @public
 	 */
 
 	/**
@@ -81,7 +109,7 @@ sap.ui.define([
 	 * @extends sap.ui.mdc.util.PropertyHelper
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @experimental
@@ -117,6 +145,20 @@ sap.ui.define([
 				},
 				exportSettings: {
 					type: "object",
+					"default": {
+						value: {},
+						ignoreIfNull: true
+					},
+					forComplexProperty: {
+						allowed: true
+					}
+				},
+				clipboardSettings: {
+					type: {
+						template: {
+							type: "string"
+						}
+					},
 					"default": {
 						value: {},
 						ignoreIfNull: true
@@ -213,6 +255,14 @@ sap.ui.define([
 	PropertyHelper.prototype.prepareProperty = function(oProperty) {
 		PropertyHelperBase.prototype.prepareProperty.apply(this, arguments);
 
+		// The typeConfig is required for internal processes like column width calculation and filter handling.
+		// TODO: The typeConfig can still provided by the user for legacy reasons. Once migration is completed, always create the typeConfig based
+		//  on the provided dataType.
+		if (!oProperty.isComplex() && !oProperty.typeConfig && oProperty.dataType && this.getParent()) {
+			var oTypeUtil = this.getParent().getControlDelegate().getTypeMap();
+			oProperty.typeConfig = oTypeUtil.getTypeConfig(oProperty.dataType, oProperty.formatOptions, oProperty.constraints);
+		}
+
 		Object.defineProperty(oProperty, "getGroupableProperties", {
 			value: function() {
 				return oProperty.getSimpleProperties().filter(function(oProperty) {
@@ -235,6 +285,36 @@ sap.ui.define([
 	};
 
 	/**
+	 * Gets the clipboard settings for a column.
+	 *
+	 * @param {sap.ui.mdc.table.Column} oColumn The column for which to get the clipboard settings
+	 * @returns {sap.m.plugins.CopyProvider.ColumnClipboardSettings|null} Clipboard setting object for the provided column.
+	 * @private
+	 */
+	PropertyHelper.prototype.getColumnClipboardSettings = function(oColumn) {
+		var oProperty = this.getProperty(oColumn.getPropertyKey());
+		if (!oProperty || oProperty.clipboardSettings === null) {
+			return null;
+		}
+
+		var aProperties = oProperty.getSimpleProperties().map(function(oSimpleProperty) {
+			return oSimpleProperty.path;
+		});
+		var aTypes = oProperty.getSimpleProperties().map(function(oSimpleProperty) {
+			return oSimpleProperty.typeConfig && oSimpleProperty.typeConfig.typeInstance;
+		});
+		var sTemplate = oProperty.clipboardSettings.template || Array.from(Array(aProperties.length).keys(), function(iIndex) {
+			return "{" + iIndex + "}";
+		}).join(" ");
+
+		return {
+			properties: aProperties,
+			template: sTemplate,
+			types: aTypes
+		};
+	};
+
+	/**
 	 * Gets the export settings for a column.
 	 *
 	 * @param {sap.ui.mdc.table.Column} oColumn The column for which to get the export settings
@@ -248,7 +328,7 @@ sap.ui.define([
 			return aColumnExportSettings;
 		}
 
-		var oProperty = this.getProperty(oColumn.getDataProperty());
+		var oProperty = this.getProperty(oColumn.getPropertyKey());
 
 		if (!oProperty) {
 			return aColumnExportSettings;
@@ -338,40 +418,49 @@ sap.ui.define([
 	 * Calculates the width of the provided column based on the <code>visualSettings</code> of the relevant <code>PropertyInfo</code>.
 	 *
 	 * @param {sap.ui.mdc.table.Column} oMDCColumn The <code>Column</code> instance for which to set the width
-	 * @returns {sap.ui.core.CSSSize | null} The calculated width, or <code>null</code> if calculation wasn't possible
+	 * @returns Promise<sap.ui.core.CSSSize | null> A promise that resolves with the calculated width, or <code>null</code> if calculation wasn't
+	 * possible
 	 */
 	PropertyHelper.prototype.calculateColumnWidth = function(oMDCColumn) {
-		var sPropertyName = oMDCColumn.getDataProperty();
-		var oProperty = this.getProperty(sPropertyName);
+		var sPropertyName = oMDCColumn.getPropertyKey();
+		var oTable = oMDCColumn.getTable();
 
-		if (!oProperty) {
-			return null;
-		}
+		return oTable._getPropertyByNameAsync(sPropertyName).then(function(oProperty) {
+			if (!oProperty) {
+			  return null;
+			}
 
-		var mPropertyInfoVisualSettings = oProperty.visualSettings;
-		if (mPropertyInfoVisualSettings && mPropertyInfoVisualSettings.widthCalculation === null) {
-			return null;
-		}
+			var mPropertyInfoVisualSettings = oProperty.visualSettings;
+			if (mPropertyInfoVisualSettings && mPropertyInfoVisualSettings.widthCalculation === null) {
+				return null;
+			}
 
-		return this._calcColumnWidth(oProperty, oMDCColumn.getHeader());
+			return this._calcColumnWidth(oProperty, oMDCColumn);
+		}.bind(this));
 	};
 
 	/**
 	 * Calculates the column width based on the provided <code>PropertyInfo</code>.
 	 *
 	 * @param {sap.ui.mdc.table.PropertyInfo} oProperty The property of the <code>Column</code> instance for which to set the width
-	 * @param {string} [sHeader] The header in case of it is different than the PropertyInfo header
+	 * @param {sap.ui.mdc.table.Column} oMDCColumn The <code>Column</code> instance for which the width is calculated
 	 * @return {string} The calculated column width
 	 * @since 1.95
 	 * @private
 	 */
-	 PropertyHelper.prototype._calcColumnWidth = function (oProperty, sHeader) {
+	 PropertyHelper.prototype._calcColumnWidth = function (oProperty, oMDCColumn) {
 		var mWidthCalculation = Object.assign({
 			gap: 0,
 			includeLabel: true,
 			truncateLabel: true,
-			excludeProperties: []
+			excludeProperties: [],
+			required: oMDCColumn.getRequired()
 		}, oProperty.visualSettings && oProperty.visualSettings.widthCalculation);
+
+		var oMDCTable = oMDCColumn.getParent();
+		if (oMDCTable && oMDCTable._isOfType("TreeTable") && oMDCTable.indexOfColumn(oMDCColumn) == 0) {
+			mWidthCalculation.treeColumn = true;
+		}
 
 		var aTypes = [];
 		if (oProperty.isComplex()) {
@@ -392,7 +481,7 @@ sap.ui.define([
 			mWidthCalculation.gap += 2.5;
 		}
 
-		sHeader = (mWidthCalculation.includeLabel) ? sHeader || oProperty.label : "";
+		var sHeader = (mWidthCalculation.includeLabel) ? oMDCColumn.getHeader() || oProperty.label : "";
 		return TableUtil.calcColumnWidth(aTypes, sHeader, mWidthCalculation);
 	};
 

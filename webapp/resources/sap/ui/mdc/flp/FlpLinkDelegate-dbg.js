@@ -27,16 +27,18 @@ sap.ui.define([
 	 * @alias sap.ui.mdc.flp.FlpLinkDelegate
 	 */
 	var FlpLinkDelegate = Object.assign({}, LinkDelegate);
+	FlpLinkDelegate.apiVersion = 2;//CLEANUP_DELEGATE
 
 	/**
 	 * Fetches the relevant {@link sap.ui.mdc.link.LinkItem} for the Link and returns them.
 	 * @public
-	 * @param {Object} oPayload - The Payload of the Link given by the application
+	 * @param {sap.ui.mdc.Link} oLink Instance of the <code>Link</code>
 	 * @param {Object} oBindingContext - The binding context of the Link
 	 * @param {Object} oInfoLog - The InfoLog of the Link
 	 * @returns {Promise} once resolved an array of {@link sap.ui.mdc.link.LinkItem} is returned
 	 */
-	FlpLinkDelegate.fetchLinkItems = function(oPayload, oBindingContext, oInfoLog) {
+	FlpLinkDelegate.fetchLinkItems = function(oLink, oBindingContext, oInfoLog) {
+		var oPayload = oLink.getPayload();
 		var oContextObject = oBindingContext ? oBindingContext.getObject(oBindingContext.getPath()) : undefined;
 		var aItemsToReturn = [];
 		if (oInfoLog) {
@@ -56,7 +58,7 @@ sap.ui.define([
 
 	/**
 	 * Calculates the type of link that should be displayed
-	 * @param {Object} oPayload - The Payload of the Link given by the application
+	 * @param {sap.ui.mdc.Link} oLink Instance of the <code>Link</code>
 	 * @returns {Promise} once resolved an object oLinkType is returned
 	 * @returns {int} oLinkType.type - 0 (Text) | 1 (Direct Link) | 2 (Popup)
 	 * @returns {sap.ui.mdc.link.LinkItem} oLinkType.directLink - instance of {@link sap.ui.mdc.link.LinkItem} which should be used for direct navigation
@@ -64,9 +66,10 @@ sap.ui.define([
 	 * In case oLinkType.type is 1 the Link will get rendered as a Link but it won't have a Popover - it will trigger a direct navigation on press
 	 * In case oLinkType.type is 2 the Link will get rendered as a Link and will open a Popover (default)
 	 */
-	FlpLinkDelegate.fetchLinkType = function(oPayload) {
+	FlpLinkDelegate.fetchLinkType = function(oLink) {
 		var mSemanticObjects = {};
 		var oPromise = null;
+		var oPayload = oLink.getPayload();
 
 		var fnHaveBeenRetrievedAllSemanticObjects = function(aSemanticObjects) {
 			return aSemanticObjects.filter(function(sSemanticObject) {
@@ -187,7 +190,7 @@ sap.ui.define([
 					};
 				}
 
-				// If more then one local property maps to the same target property (clash situation)
+				// If more than one local property maps to the same target property (clash situation)
 				// we take the value of the last property and write an error log
 				if (oResults[sSemanticObject][sAttributeNameMapped]) {
 					SapBaseLog.error("FlpLinkDelegate: The attribute " + sAttributeName + " can not be renamed to the attribute " + sAttributeNameMapped + " due to a clash situation. This can lead to wrong navigation later on.");

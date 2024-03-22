@@ -4,7 +4,17 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
 	*/
 
-sap.ui.define(["sap/ui/fl/changeHandler/MoveControls", "sap/ui/core/Core", "sap/base/util/merge", "sap/ui/thirdparty/jquery"], function(MoveControls, Core, merge, jQuery) {
+sap.ui.define([
+	"sap/base/util/merge",
+	"sap/ui/core/Core",
+	"sap/ui/core/util/reflection/JsControlTreeModifier",
+	"sap/ui/fl/changeHandler/MoveControls"
+], function(
+	merge,
+	Core,
+	JsControlTreeModifier,
+	MoveControls
+) {
 	"use strict";
 
 	/**
@@ -13,11 +23,11 @@ sap.ui.define(["sap/ui/fl/changeHandler/MoveControls", "sap/ui/core/Core", "sap/
 	 * @constructor
 	 * @alias sap.uxap.changeHandler.MoveObjectPageSection
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @experimental Since 1.54
 	 */
 
-	var MoveObjectPageSection = jQuery.extend({}, MoveControls);
+	var MoveObjectPageSection = Object.assign({}, MoveControls);
 
 	MoveObjectPageSection.applyChange = function (oChange, oControl, mPropertyBag) {
 		var bJsControllTree = mPropertyBag.modifier.targets === "jsControlTree";
@@ -77,6 +87,7 @@ sap.ui.define(["sap/ui/fl/changeHandler/MoveControls", "sap/ui/core/Core", "sap/
 	 *
 	 * @param {object} mSpecificChangeInfo - Information needed to create the change
 	 * @param {object} mPropertyBag - Object additional properties like modifier or appComponent
+	 * @returns {Promise} resolves if change could be applied
 	 * @private
 	 */
 	MoveObjectPageSection._mapAnchorsToSections = function (mSpecificChangeInfo, mPropertyBag) {
@@ -121,6 +132,45 @@ sap.ui.define(["sap/ui/fl/changeHandler/MoveControls", "sap/ui/core/Core", "sap/
 						merge(mSpecificChangeInfo.target, oSectionParentInfo);
 					});
 			});
+	};
+
+	/**
+	 * Retrieves the information required for the change visualization.
+	 *
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Object with change data
+	 * @param {sap.ui.core.UIComponent} oAppComponent Component in which the change is applied
+	 * @returns {object} Object with a description payload containing the information required for the change visualization
+	 * @public
+	 */
+	MoveObjectPageSection.getChangeVisualizationInfo = function(oChange, oAppComponent) {
+		var oChangeContent = oChange.getContent();
+		var oRevertData = oChange.getRevertData()[0];
+		var oMovedElementSelector = oChangeContent.movedElements[0].selector;
+		var oMovedElement = JsControlTreeModifier.bySelector(oMovedElementSelector, oAppComponent);
+		var oAnchorBar = oMovedElement.getParent().getAggregation("_anchorBar");
+		var aAffectedControls = [oMovedElementSelector];
+		var aDisplayControls = [oMovedElementSelector];
+
+		oAnchorBar.getAggregation("content").forEach(function(oAnchorBarItem) {
+			oAnchorBarItem.getAggregation("customData").some(function(oCustomData) {
+				if (
+					oCustomData.getKey() === "sectionId" &&
+					oMovedElement.getId() === oCustomData.getProperty("value")
+				) {
+					aDisplayControls.push(oAnchorBarItem.getId());
+				}
+			});
+		});
+
+		return {
+			affectedControls: aAffectedControls,
+			displayControls: aDisplayControls,
+			dependentControls: [oChangeContent.source.selector],
+			descriptionPayload: {
+				sourceContainer: oRevertData.sourceParent,
+				targetContainer: oChangeContent.target.selector
+			}
+		};
 	};
 
 	return MoveObjectPageSection;

@@ -4,11 +4,6 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-/**
- * Creates a RuleSetLoader that handles the loading of the RuleSets in the different libraries as well as stores the
- * data for the loaded RuleSets
- */
-
 sap.ui.define([
 	"sap/base/Log",
 	"sap/base/util/extend",
@@ -60,6 +55,11 @@ sap.ui.define([
 		var sSupportModuleRootPath = sSupportModulePath.replace('/sap/ui/support', '');
 		var sAbsUrl = getAbsoluteUrl(sSupportModuleRootPath);
 
+		/**
+		 * Handles the loading of the RuleSets in the different libraries as well as stores the
+		 * data for the loaded RuleSets.
+		 * @namespace
+		 */
 		var RuleSetLoader = {};
 
 		RuleSetLoader._mRuleSets = {};

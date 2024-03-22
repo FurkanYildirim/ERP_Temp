@@ -44,13 +44,13 @@
 		},
 		{
 			"name": "Button.less",
-			"size": 4010,
+			"size": 4353,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "Carousel.less",
-			"size": 151,
+			"size": 226,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -104,7 +104,7 @@
 		},
 		{
 			"name": "GenericTile.less",
-			"size": 7202,
+			"size": 7095,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -116,19 +116,13 @@
 		},
 		{
 			"name": "IconTabBar.less",
-			"size": 4995,
+			"size": 5242,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "InputBase.less",
 			"size": 1401,
-			"designtime": true,
-			"theme": "sap_belize"
-		},
-		{
-			"name": "LightBox.less",
-			"size": 234,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -147,6 +141,12 @@
 		{
 			"name": "ListItemBase.less",
 			"size": 598,
+			"designtime": true,
+			"theme": "sap_belize"
+		},
+		{
+			"name": "MenuListItem.less",
+			"size": 575,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -242,7 +242,7 @@
 		},
 		{
 			"name": "Panel.less",
-			"size": 1172,
+			"size": 1318,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -356,7 +356,7 @@
 		},
 		{
 			"name": "Slider.less",
-			"size": 1079,
+			"size": 1206,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -368,7 +368,7 @@
 		},
 		{
 			"name": "SplitButton.less",
-			"size": 533,
+			"size": 656,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -405,6 +405,12 @@
 		{
 			"name": "Text.less",
 			"size": 220,
+			"designtime": true,
+			"theme": "sap_belize"
+		},
+		{
+			"name": "TextArea.less",
+			"size": 432,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -452,7 +458,7 @@
 		},
 		{
 			"name": "Toolbar.less",
-			"size": 652,
+			"size": 667,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
@@ -494,62 +500,62 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 68388,
+			"size": 69407,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 186315,
+			"size": 214038,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 185955,
+			"size": 213678,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 1170193,
+			"size": 1189587,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/m/themes/sap_belize/library-parameters.json",
-			"size": 31140,
+			"size": 31628,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library.css",
-			"size": 1170185,
+			"size": 1189583,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library.less",
-			"size": 93988,
+			"size": 95794,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library.source.less",
-			"size": 2782,
+			"size": 2811,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 1237822,
+			"size": 1259468,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 1237814,
+			"size": 1259464,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "resources.json",
-			"size": 9793
+			"size": 9898
 		},
 		{
 			"name": "shared.less",

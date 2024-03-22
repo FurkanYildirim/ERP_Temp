@@ -13,13 +13,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 115763,
+			"size": 139452,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 115385,
+			"size": 139074,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},

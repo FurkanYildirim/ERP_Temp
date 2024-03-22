@@ -30,7 +30,7 @@ sap.ui.define([
 	 * @class The ElementMover enables movement of UI5 elements based on aggregation types, which can be used by drag and
 	 *        drop or cut and paste behavior.
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.34
@@ -209,7 +209,7 @@ sap.ui.define([
 	 * @private
 	 */
 	ElementMover.prototype._iterateOverlayAggregations = function(oOverlay, fnStep, sAdditionalStyleClass, bAsync) {
-		var aAggregationOverlays = oOverlay.getAggregationOverlays();
+		var aAggregationOverlays = oOverlay.getChildren();
 		// if bAsync true the return value of fnStep should return promises
 		var aResultPromises = aAggregationOverlays.map(function(oAggregationOverlay) {
 			return fnStep(oAggregationOverlay, sAdditionalStyleClass);

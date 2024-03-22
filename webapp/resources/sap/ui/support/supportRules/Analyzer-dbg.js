@@ -9,20 +9,23 @@
  * runs tasks added by addTask function. Analysis can be started, stopped, restarted, paused and continued.
  * The analyzer can be used to update the UI with the current progress of a task while it's running.
  */
-sap.ui.define(["sap/base/Log", "sap/ui/support/supportRules/IssueManager","sap/ui/support/supportRules/Constants"],
-	function (Log, IssueManager, Constants) {
+sap.ui.define(["sap/base/Log", "sap/ui/support/supportRules/IssueManager","sap/ui/support/supportRules/Constants", "sap/ui/core/date/UI5Date"],
+	function (Log, IssueManager, Constants, UI5Date) {
 		"use strict";
 
 		/**
-		 * @classdesc
+		 * @class
+		 *
 		 * <h3>Overview</h3>
 		 * Analyzer class that runs tasks. A Task runs a function for every entry in its object array.
 		 * The Analyzer counts the task objects and calculates the percentages.
+		 *
 		 * <h3>Usage</h3>
 		 * With the start, restart, stop and pause methods the analyzer can be controlled.
 		 * While running it asynchronously, it selects objects from the list of each task and completes them.
+		 *
 		 * @private
-		 * @class sap.ui.support.Analyzer
+		 * @alias sap.ui.support.Analyzer
 		 */
 		var Analyzer = function () {
 			this.dStartedAt = null;
@@ -61,15 +64,15 @@ sap.ui.define(["sap/base/Log", "sap/ui/support/supportRules/IssueManager","sap/u
 		 *
 		 * @public
 		 * @param {array} aRules Selected rules for execution
-		 * @param {object} oCoreFacade Metadata, Models, UI areas and Components of the Core object
-		 * @param {object} oExecutionScope selected execution scope from user in UI
+		 * @param {sap.ui.support.CoreFacade} oCoreFacade Metadata, Models, UI areas and Components of the Core object
+		 * @param {sap.ui.support.ExecutionScope} oExecutionScope selected execution scope from user in UI
 		 * @returns {Promise} When all rules are analyzed
 		 */
 		Analyzer.prototype.start = function (aRules, oCoreFacade, oExecutionScope) {
 			var oIssueManagerFacade,
 				that = this;
 
-			this.dStartedAt = new Date();
+			this.dStartedAt = UI5Date.getInstance();
 			this._iTotalRules = aRules.length;
 			this._bRunning = true;
 
@@ -93,7 +96,7 @@ sap.ui.define(["sap/base/Log", "sap/ui/support/supportRules/IssueManager","sap/u
 
 			return Promise.all(this._aRulePromices).then(function () {
 				that.reset();
-				that.dFinishedAt = new Date();
+				that.dFinishedAt = UI5Date.getInstance();
 				that.iElapsedTime = that.dFinishedAt.getTime() - that.dStartedAt.getTime(); // In milliseconds
 			});
 		};
@@ -175,7 +178,7 @@ sap.ui.define(["sap/base/Log", "sap/ui/support/supportRules/IssueManager","sap/u
 				return "";
 			}
 
-			var oDate = new Date(null);
+			var oDate = UI5Date.getInstance(null);
 			oDate.setHours(0, 0, 0, 0);
 			oDate.setMilliseconds(this.iElapsedTime);
 			var aBuffer = [

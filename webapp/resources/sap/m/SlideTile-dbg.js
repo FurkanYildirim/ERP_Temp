@@ -43,7 +43,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.34
 	 *
 	 * @public
@@ -172,9 +172,9 @@ sap.ui.define([
 		this._sWidth = this._sHeight = undefined;
 		this._iCurrentTile = this._iPreviousTile = undefined;
 
-		//sets the extra width of 0.5rem when the grid container has 1rem gap for the TwoByxxxx tiles
+		//Applies new dimensions for the SlideTile if it is inscribed inside a GridContainer
 		if (this.getParent() && this.getParent().isA("sap.f.GridContainer")){
-			this._applyExtraWidth();
+			this._applyNewDim();
 		}
 	};
 
@@ -186,7 +186,6 @@ sap.ui.define([
 
 		var cTiles = this.getTiles().length,
 			sScope = this.getScope();
-		this._removeGTFocus();
 		this._iCurrAnimationTime = 0;
 		this._bAnimationPause = false;
 		// if the last displayed tile exists, then scrolls to this tile. Otherwise displays first tile.
@@ -412,6 +411,10 @@ sap.ui.define([
 	 */
 	SlideTile.prototype._setupResizeClassHandler = function () {
 		var fnCheckMedia = function () {
+			var oParent = this.getParent();
+			if (oParent && oParent.isA("sap.f.GridContainer")) {
+				this._applyNewDim();
+			}
 			if (this.getSizeBehavior() === TileSizeBehavior.Small || window.matchMedia("(max-width: 374px)").matches || this._hasStretchTiles()){
 				this.$().addClass("sapMTileSmallPhone");
 			} else {
@@ -442,7 +445,7 @@ sap.ui.define([
 			oSlideTile.addEventListener('focusout', function(){
 				if (!this.mouseDown) {
 					if (this.bIsPrevStateNormal) {
-						this._startAnimation();
+						this._startAnimation(true);
 					}
 					this._updatePausePlayIcon();
 				}
@@ -483,17 +486,6 @@ sap.ui.define([
 	 */
 	SlideTile.prototype._isFocusInsideST = function () {
 		return this.$()[0] === document.activeElement || this.$().find(document.activeElement).length;
-	};
-
-	/**
-	 * Removes the focus of tiles in SlideTile
-	 *
-	 * @private
-	 */
-	SlideTile.prototype._removeGTFocus = function () {
-		for (var i = 0; i < this.getTiles().length; i++) {
-			this.getTiles()[i].$().removeAttr("tabindex");
-		}
 	};
 
 	/**
@@ -544,10 +536,10 @@ sap.ui.define([
 
 	/**
 	 * Starts the animation
-	 *
+	 * @param {boolean} bIsFocusOut Checks if the focus is moving out
 	 * @private
 	 */
-	SlideTile.prototype._startAnimation = function () {
+	SlideTile.prototype._startAnimation = function (bIsFocusOut) {
 		var iDisplayTime = this.getDisplayTime() - this._iCurrAnimationTime;
 
 		clearTimeout(this._sTimerId);
@@ -556,7 +548,8 @@ sap.ui.define([
 		}.bind(this), iDisplayTime);
 		this._iStartTime = Date.now();
 		this._bAnimationPause = false;
-		if (this.getTiles()[this._iCurrentTile]) {
+		//Restricting the updation of aria text while focusing out because its causing the aria text to read twice
+		if (this.getTiles()[this._iCurrentTile] && !bIsFocusOut) {
 			this._setAriaDescriptor();
 		}
 	};
@@ -696,8 +689,8 @@ sap.ui.define([
 		sScope = this.getScope();
 		aTiles = this.getTiles();
 		iTiles = aTiles.length;
-		sState = (this._bAnimationPause) ? this._oRb.getText("SLIDETILE_PAUSE") : this._oRb.getText("SLIDETILE_NORMAL");
-		sPrefixText = this._oRb.getText("SLIDETILE_INSTANCE_FOCUS",[this._iCurrentTile + 1,iTiles]) + " " + sState;
+		sState = (this._bAnimationPause) ? "SLIDETILE_INSTANCE_FOCUS_PAUSE" : "SLIDETILE_INSTANCE_FOCUS_SCROLL";
+		sPrefixText = this._oRb.getText(sState,[this._iCurrentTile + 1,iTiles]);
 		sText += sPrefixText;
 		oCurrentTile = aTiles[this._iCurrentTile];
 		sText += oCurrentTile._getAriaText(true).replace(/\s/g, " ");// Gets Tile's ARIA text and collapses whitespaces
@@ -835,14 +828,24 @@ sap.ui.define([
 		return false;
 	};
 
-	SlideTile.prototype._applyExtraWidth = function() {
-		var sGap = this.getParent().getActiveLayoutSettings().getGap();
+	/**
+	 * Applies new dimensions for the SlideTile if it is inscribed inside a GridContainer
+	 *
+	 * @private
+	 */
+	SlideTile.prototype._applyNewDim = function() {
+		var oParent = this.getParent();
+		var sGap = oParent.getActiveLayoutSettings().getGap();
 		var bisGap16px = sGap === "16px" || sGap === "1rem";
 		if (bisGap16px){
-			this.addStyleClass("sapMSTWidthForGridContainer");
-		} else if (!bisGap16px && this.hasStyleClass("sapMSTWidthForGridContainer")){
-			this.removeStyleClass("sapMSTWidthForGridContainer");
+			this.addStyleClass("sapMSTGridContainerOneRemGap");
+		} else if (!bisGap16px && this.hasStyleClass("sapMSTGridContainerOneRemGap")){
+			this.removeStyleClass("sapMSTGridContainerOneRemGap");
 		}
+		//Applying the new dimensions to the GenericTile as well
+		this.getTiles().forEach(function(oTile){
+			oTile._applyNewDim(oParent);
+		});
 	};
 
 	/**

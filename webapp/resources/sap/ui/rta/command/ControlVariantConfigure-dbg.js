@@ -7,11 +7,13 @@ sap.ui.define([
 	"sap/ui/rta/command/BaseCommand",
 	"sap/ui/rta/library",
 	"sap/ui/core/util/reflection/JsControlTreeModifier",
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI",
 	"sap/ui/fl/Utils"
 ], function(
 	BaseCommand,
 	rtaLibrary,
 	JsControlTreeModifier,
+	ControlVariantApplyAPI,
 	flUtils
 ) {
 	"use strict";
@@ -22,7 +24,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.BaseCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.52
@@ -67,7 +69,7 @@ sap.ui.define([
 	ControlVariantConfigure.prototype.execute = function() {
 		var oVariantManagementControl = this.getControl();
 		this.oAppComponent = flUtils.getAppComponentForControl(oVariantManagementControl);
-		this.oModel = this.oAppComponent.getModel(flUtils.VARIANT_MODEL_NAME);
+		this.oModel = this.oAppComponent.getModel(ControlVariantApplyAPI.getVariantModelName());
 		this.sVariantManagementReference = JsControlTreeModifier.getSelector(oVariantManagementControl, this.oAppComponent).id;
 
 		this._aPreparedChanges = [];
@@ -77,9 +79,7 @@ sap.ui.define([
 			this._aPreparedChanges.push(this.oModel.addVariantChange(this.sVariantManagementReference, mChangeProperties));
 		}.bind(this));
 
-		return Promise.resolve().then(function() {
-			this.oModel.checkUpdate(true);
-		}.bind(this));
+		return Promise.resolve();
 	};
 
 	/**
@@ -106,10 +106,8 @@ sap.ui.define([
 			this.oModel.deleteVariantChange(this.sVariantManagementReference, mPropertyBag, oChange);
 		}.bind(this));
 
-		return Promise.resolve().then(function() {
-			this.oModel.checkUpdate(true);
-			this._aPreparedChanges = null;
-		}.bind(this));
+		this._aPreparedChanges = null;
+		return Promise.resolve();
 	};
 
 	return ControlVariantConfigure;

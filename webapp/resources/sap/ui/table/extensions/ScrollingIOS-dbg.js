@@ -27,7 +27,7 @@ sap.ui.define([
 	 * @class Extension for sap.ui.table.Table which handles the scrollbar on iOS.
 	 * @extends sap.ui.table.extensions.ExtensionBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @alias sap.ui.table.extensions.ScrollingIOS
@@ -256,7 +256,7 @@ sap.ui.define([
 		oVSbThumb.style.top = iOffset + "px";
 
 		clearTimeout(this._iUpdateDefaultScrollbarPositionTimeoutId);
-		this._iUpdateDefaultScrollbarPositionTimeoutId = setTimeout(function () {
+		this._iUpdateDefaultScrollbarPositionTimeoutId = setTimeout(function() {
 			this.updateDefaultScrollbarPosition(iOffset, iThumbHeight);
 			delete this._iUpdateDefaultScrollbarPositionTimeoutId;
 		}.bind(this), 30);
@@ -267,7 +267,7 @@ sap.ui.define([
 	 *
 	 * @param {jQuery.Event} oEvent The event triggered
 	 */
-	ScrollIOSExtension.prototype.onPointerDown = function (oEvent) {
+	ScrollIOSExtension.prototype.onPointerDown = function(oEvent) {
 		var oTable = this.getTable();
 		var oScrollExtension = oTable._getScrollExtension();
 		var oVSbThumb = this.getVerticalScrollbarThumb();

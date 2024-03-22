@@ -5,10 +5,10 @@
  */
 
 sap.ui.define([
-	"../util/PropertyHelper", "sap/ui/mdc/library"
+	"../util/PropertyHelper", "sap/ui/mdc/enums/ChartItemRoleType"
 ], function(
 	PropertyHelperBase,
-	MDCLib
+	ChartItemRoleType
 ) {
 	"use strict";
 
@@ -26,7 +26,7 @@ sap.ui.define([
 	 * @extends sap.ui.mdc.util.PropertyHelper
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @experimental
@@ -37,7 +37,40 @@ sap.ui.define([
 		constructor: function(aProperties, oParent) {
 			PropertyHelperBase.call(this, aProperties, oParent, {
 				filterable: true,
-				sortable: true
+				sortable: true,
+				propertyInfos: true,
+
+				//Additional attributes
+				groupable: {
+					type: "boolean"
+				},
+				aggregatable: {
+					type: "boolean"
+				},
+				propertyPath: {
+					type: "string"
+				},
+				aggregationMethod : {
+					type: "string"
+				},
+				role : {
+					type: "string"
+				},
+				datapoint : {
+					type: "object"
+				},
+				criticality : {
+					type: "object"
+				},
+				textProperty : {
+					type: "string"
+				},
+				availableRoles : {
+					type: "object"
+				},
+				kind: {
+					type: "string"
+				}
 			});
 		}
 	});
@@ -55,7 +88,7 @@ sap.ui.define([
 			var oFormatOptions = oProperty.formatOptions ? oProperty.formatOptions : null;
 			var oConstraints = oProperty.constraints ? oProperty.constraints : {};
 
-			oProperty.typeConfig = this.getParent().getControlDelegate().getTypeUtil().getTypeConfig(oProperty.dataType, oFormatOptions, oConstraints);
+			oProperty.typeConfig = this.getParent().getTypeMap().getTypeConfig(oProperty.dataType, oFormatOptions, oConstraints);
 		}
 
 		PropertyHelperBase.prototype.prepareProperty.apply(this, arguments);
@@ -68,35 +101,35 @@ sap.ui.define([
 		};
 	};
 
-		/**
-		 * This returns the layout options for a specific type of Item (measure/dimension,groupable/aggregatable)
-		 * It is used by p13n to determine which layout options to show in the p13n panel
-		 * @param {string} sType the type for which the layout options are requested
-		 */
-		PropertyHelper.prototype._getLayoutOptionsForType = function(sType){
+	/**
+	 * This returns the layout options for a specific type of Item (measure/dimension,groupable/aggregatable)
+	 * It is used by p13n to determine which layout options to show in the p13n panel
+	 * @param {string} sType the type for which the layout options are requested
+	 */
+	PropertyHelper.prototype._getLayoutOptionsForType = function(sType){
 		var MDCRb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.mdc");
 		var oAvailableRoles = {
 			groupable: [
 				{
-					key: MDCLib.ChartItemRoleType.category,
+					key: ChartItemRoleType.category,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_CATEGORY')
 				}, {
-					key: MDCLib.ChartItemRoleType.category2,
+					key: ChartItemRoleType.category2,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_CATEGORY2')
 				}, {
-					key: MDCLib.ChartItemRoleType.series,
+					key: ChartItemRoleType.series,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_SERIES')
 				}
 			],
 			aggregatable: [
 				{
-					key: MDCLib.ChartItemRoleType.axis1,
+					key: ChartItemRoleType.axis1,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_AXIS1')
 				}, {
-					key: MDCLib.ChartItemRoleType.axis2,
+					key: ChartItemRoleType.axis2,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_AXIS2')
 				}, {
-					key: MDCLib.ChartItemRoleType.axis3,
+					key: ChartItemRoleType.axis3,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_AXIS3')
 				}
 			]

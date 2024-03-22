@@ -5,24 +5,38 @@
  */
 
 sap.ui.define([
+	"sap/ui/core/Core",
 	"sap/ui/rta/plugin/iframe/AddIFrameDialog",
 	"sap/m/library"
 ], function(
+	Core,
 	AddIFrameDialog
 ) {
 	"use strict";
 
 	function editIFrame (oIFrame/*, mPropertyBag*/) {
 		var oAddIFrameDialog = new AddIFrameDialog();
-		var oSettings = oIFrame.get_settings();
+		var oInitialSettings = oIFrame.get_settings();
+		var mRenameInfo = oIFrame.getRenameInfo();
 		var mDialogSettings;
+		var oContainer;
+
+		// The title of the iFrame container could have changed
+		// so we need to retrieve it before opening the dialog
+		if (mRenameInfo) {
+			oContainer = Core.byId(mRenameInfo.sourceControlId);
+			oInitialSettings.title = oContainer.getProperty(mRenameInfo.propertyName);
+		}
+
 		return AddIFrameDialog.buildUrlBuilderParametersFor(oIFrame)
 			.then(function(mURLParameters) {
 				mDialogSettings = {
 					parameters: mURLParameters,
-					frameUrl: oSettings.url,
-					frameWidth: oSettings.width,
-					frameHeight: oSettings.height,
+					frameUrl: oInitialSettings.url,
+					frameWidth: oInitialSettings.width,
+					frameHeight: oInitialSettings.height,
+					title: oInitialSettings.title,
+					asContainer: !!oInitialSettings.title,
 					updateMode: true
 				};
 				return oAddIFrameDialog.open(mDialogSettings);
@@ -31,29 +45,51 @@ sap.ui.define([
 				if (!mSettings) {
 					return []; // No change
 				}
-				var sWidth;
-				var sHeight;
-				if (mSettings.frameWidth) {
-					sWidth = mSettings.frameWidth + mSettings.frameWidthUnit;
-				} else {
-					sWidth = "100%";
+				var aChanges = [];
+				var bContentChanged = false;
+				var oNewContent = {
+					url: oInitialSettings.url,
+					height: oInitialSettings.height,
+					width: oInitialSettings.width
+				};
+
+				if (mSettings.frameHeight + mSettings.frameHeightUnit !== oInitialSettings.height) {
+					bContentChanged = true;
+					oNewContent.height = mSettings.frameHeight + mSettings.frameHeightUnit;
 				}
-				if (mSettings.frameHeight) {
-					sHeight = mSettings.frameHeight + mSettings.frameHeightUnit;
-				} else {
-					sHeight = "100%";
+				if (mSettings.frameWidth + mSettings.frameWidthUnit !== oInitialSettings.width) {
+					bContentChanged = true;
+					oNewContent.width = mSettings.frameWidth + mSettings.frameWidthUnit;
 				}
-				return [{
-					selectorControl: oIFrame,
-					changeSpecificData: {
-						changeType: "updateIFrame",
-						content: {
-							url: mSettings.frameUrl,
-							width: sWidth,
-							height: sHeight
+				if (mSettings.frameUrl !== oInitialSettings.url) {
+					bContentChanged = true;
+					oNewContent.url = mSettings.frameUrl;
+				}
+
+				if (bContentChanged) {
+					aChanges.push({
+						selectorControl: oIFrame,
+						changeSpecificData: {
+							changeType: "updateIFrame",
+							content: oNewContent
 						}
-					}
-				}];
+					});
+				}
+
+				// If the title changes a rename change must be created
+				if (mSettings.title !== oInitialSettings.title) {
+					var mRenameChange = {
+						selectorControl: Core.byId(mRenameInfo.selectorControlId),
+						changeSpecificData: {
+							changeType: "rename",
+							content: {
+								value: mSettings.title
+							}
+						}
+					};
+					aChanges.push(mRenameChange);
+				}
+				return aChanges;
 			});
 	}
 

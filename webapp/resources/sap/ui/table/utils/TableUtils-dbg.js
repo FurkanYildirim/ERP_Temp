@@ -203,7 +203,7 @@ sap.ui.define([
 	 * Static collection of utility functions related to the sap.ui.table.Table, ...
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @namespace
 	 * @alias sap.ui.table.utils.TableUtils
 	 * @private
@@ -328,24 +328,6 @@ sap.ui.define([
 			return oTable.getSelectionMode() !== SelectionMode.None && TableUtils.hasRowHeader(oTable);
 		},
 
-		/**
-		 * Finds out if all rows are selected in a table.
-		 *
-		 * @param {sap.ui.table.Table} oTable Instance of the table.
-		 * @returns {boolean} Returns <code>true</code> if all rows in the table are selected.
-		 */
-		areAllRowsSelected: function(oTable) {
-			if (!oTable) {
-				return false;
-			}
-
-			var oSelectionPlugin = oTable._getSelectionPlugin();
-			var iSelectableRowCount = oSelectionPlugin.getSelectableCount();
-			var iSelectedRowCount = oSelectionPlugin.getSelectedCount();
-
-			return iSelectableRowCount > 0 && iSelectableRowCount === iSelectedRowCount;
-		},
-
         /**
 		 * Checks whether the "no data text" is shown. Pure API check, the actual DOM is not considered.
 		 * The "no data text" is shown if the table has no visible columns, or if the <code>showNoData</code> property is <code>true</code> and the
@@ -366,16 +348,7 @@ sap.ui.define([
 		 * @returns {boolean} Whether the table has data.
 		 */
 		hasData: function(oTable) {
-			var oBinding = oTable.getBinding();
-			var iTotalRowCount = oTable._getTotalRowCount();
-			var bHasData = iTotalRowCount > 0;
-
-			if (oBinding && oBinding.providesGrandTotal) { // Analytical Binding
-				var bHasTotal = oBinding.providesGrandTotal() && oBinding.hasTotaledMeasures();
-				bHasData = (bHasTotal && iTotalRowCount > 1) || (!bHasTotal && iTotalRowCount > 0);
-			}
-
-			return bHasData;
+			return oTable._getTotalRowCount() > 0;
 		},
 
 		/**
@@ -410,57 +383,19 @@ sap.ui.define([
 		 * Toggles the selection state of the row which contains the given cell DOM element.
 		 *
 		 * @param {sap.ui.table.Table} oTable Instance of the table.
-		 * @param {jQuery | HTMLElement | int} vRowIndicator The data cell in the row, or the data row index of the row,
-		 *                                                   where the selection state should be toggled.
+		 * @param {jQuery | HTMLElement | int | sap.ui.table.Row} vRowIndicator
+		 *     The data cell in the row, the index of the row in the aggregation, or the row instance on which to toggle the selection state.
 		 * @param {boolean} [bSelect] If defined, then instead of toggling the desired state is set.
-		 * @param {Function} [fnDoSelect] If defined, then instead of the default selection code, this custom callback is used.
-		 * @returns {boolean} Returns <code>true</code> if the selection state of the row has been changed.
+		 * @param {function(sap.ui.table.Row)} [fnDoSelect] If defined, then instead of the default selection code, this custom callback is used.
 		 */
 		toggleRowSelection: function(oTable, vRowIndicator, bSelect, fnDoSelect) {
-			if (!oTable ||
-				!oTable.getBinding() ||
-				oTable.getSelectionMode() === SelectionMode.None ||
-				vRowIndicator == null) {
+			var oRow;
 
-				return false;
-			}
-
-			var oSelectionPlugin = oTable._getSelectionPlugin();
-
-			function setSelectionState(iAbsoluteRowIndex) {
-				if (!oSelectionPlugin.isIndexSelectable(iAbsoluteRowIndex)) {
-					return false;
-				}
-
-				oTable._iSourceRowIndex = iAbsoluteRowIndex; // To indicate that the selection was changed by user interaction.
-
-				var bSelectionChanged = false;
-
-				if (fnDoSelect) {
-					bSelectionChanged = fnDoSelect(iAbsoluteRowIndex, bSelect);
-				} else if (oSelectionPlugin.isIndexSelected(iAbsoluteRowIndex)) {
-					if (bSelect !== true) {
-						bSelectionChanged = true;
-						oSelectionPlugin.removeSelectionInterval(iAbsoluteRowIndex, iAbsoluteRowIndex);
-					}
-				} else if (bSelect !== false) {
-					bSelectionChanged = true;
-					oSelectionPlugin.addSelectionInterval(iAbsoluteRowIndex, iAbsoluteRowIndex);
-				}
-
-				delete oTable._iSourceRowIndex;
-				return bSelectionChanged;
-			}
-
-			// Variable vRowIndicator is a row index value.
-			if (typeof vRowIndicator === "number") {
-				if (vRowIndicator < 0 || vRowIndicator >= oTable._getTotalRowCount()) {
-					return false;
-				}
-				return setSelectionState(vRowIndicator);
-
-				// Variable vRowIndicator is a jQuery object or DOM element.
-			} else {
+			if (TableUtils.isA(vRowIndicator, "sap.ui.table.Row")) {
+				oRow = vRowIndicator;
+			} else if (typeof vRowIndicator === "number") {
+				oRow = oTable.getRows()[vRowIndicator];
+			} else { // vRowIndicator is a jQuery object or a DOM element.
 				var $Cell = jQuery(vRowIndicator);
 				var oCellInfo = TableUtils.getCellInfo($Cell[0]);
 				var bIsRowSelectionAllowed = TableUtils.isRowSelectionAllowed(oTable);
@@ -469,13 +404,24 @@ sap.ui.define([
 					&& ((oCellInfo.isOfType(TableUtils.CELLTYPE.DATACELL | TableUtils.CELLTYPE.ROWACTION) && bIsRowSelectionAllowed)
 						|| (oCellInfo.isOfType(TableUtils.CELLTYPE.ROWHEADER) && TableUtils.isRowSelectorSelectionAllowed(oTable)))) {
 
-					var iAbsoluteRowIndex = oTable.getRows()[oCellInfo.rowIndex].getIndex();
-
-					return setSelectionState(iAbsoluteRowIndex);
+					oRow = oTable.getRows()[oCellInfo.rowIndex];
 				}
-
-				return false;
 			}
+
+			if (!oRow || oRow.isEmpty()) {
+				return;
+			}
+
+			oTable._iSourceRowIndex = oRow.getIndex(); // To indicate that the selection was changed by user interaction. TODO: Move to plugin and legacy multi selection
+
+			if (fnDoSelect) {
+				fnDoSelect(oRow);
+			} else {
+				var oSelectionPlugin = oTable._getSelectionPlugin();
+				oSelectionPlugin.setSelected(oRow, typeof bSelect === "boolean" ? bSelect : !oSelectionPlugin.isSelected(oRow));
+			}
+
+			delete oTable._iSourceRowIndex;
 		},
 
 		/**
@@ -559,8 +505,8 @@ sap.ui.define([
 		 * Returns a combined info about the currently focused item (based on the item navigation).
 		 *
 		 * @param {sap.ui.table.Table} oTable Instance of the table.
-		 * @returns {sap.ui.table.utils.TableUtils.FocusedItemInfo | null} Returns the information about the focused item, or <code>null</code>, if the
-		 *                                                           item navigation is not yet initialized.
+		 * @returns {sap.ui.table.utils.TableUtils.FocusedItemInfo | null} Returns the information about the focused item, or <code>null</code>, if
+		 *     the item navigation is not yet initialized.
 		 * @typedef {object} sap.ui.table.utils.TableUtils.FocusedItemInfo
 		 * @property {int} cell Index of focused cell in the ItemNavigation.
 		 * @property {int} columnCount Number of columns in the ItemNavigation.

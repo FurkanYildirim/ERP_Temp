@@ -41,4 +41,10 @@ sap.ui.predefine("sap/ui/webc/fiori/designtime/UploadCollection.designtime", [],
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.predefine("sap/ui/webc/fiori/designtime/UploadCollectionItem.designtime", [],function(){"use strict";return{name:{singular:"UPLOAD_COLLECTION_ITEM_NAME",plural:"UPLOAD_COLLECTION_ITEM_NAME_PLURAL"},actions:{rename:{changeType:"renameUploadCollectionItem",domRef:function(e){return e.getDomRef().shadowRoot.querySelector(".ui5-uci-file-name")}},remove:{changeType:"hideControl"},reveal:{changeType:"unhideControl"}}}});
+/*!
+ * OpenUI5
+ * (c) Copyright 2009-2023 SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.predefine("sap/ui/webc/fiori/designtime/library.designtime", [],function(){"use strict";return{}});
 //# sourceMappingURL=library-preload.designtime.js.map

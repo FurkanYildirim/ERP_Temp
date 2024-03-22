@@ -1626,8 +1626,32 @@ html.sap-phone .sapMRespMenuDialog .sapMPage {
 /* END "Menu.less" */
 
 /* START "MenuListItem.less" */
+/* =================================== */
+/* CSS for control sap.m/MenuListItem  */
+/* Belize High Contrast Black theme    */
+/* =================================== */
+
 .sapMRespMenuDialog .sapMLIB {
   border-bottom: 1px solid;
+}
+
+.sapMMenu .sapUiMnuLst .sapUiMnuItm {
+	.sapUiMnuItmIco + .sapUiMnuItmTxt {
+		margin-left: 3rem;
+	}
+}
+
+.sapMMenu.sapUiMnu.sapUiMnuCozySupport.sapUiSizeCozy .sapUiMnuItmTxt {
+	padding-right: 4rem;
+}
+
+.sapUiSizeCompact {
+	.sapMMenu.sapUiMnu.sapUiMnuCozySupport .sapUiMnuItmTxt {
+		padding-right: 2.75rem;
+	}
+	.sapMMenu .sapUiMnuLst.sapUiMnuNoSbMnu .sapUiMnuItm .sapUiMnuItmTxt {
+		padding-right: 0.75rem;
+	}
 }
 /* END "MenuListItem.less" */
 
@@ -2306,6 +2330,11 @@ html.sap-phone {
 	// border is 2px in this case because
 	// there is 1px border around the whole Panel
 	border-bottom: 1px solid @sapUiGroupTitleBorderColor;
+}
+
+.sapMPanel .sapMPanelWrappingDiv .sapMPanelHdr,
+.sapMPanel .sapMPanelWrappingDivTb .sapMIBar.sapMTB {
+	margin-left: 3rem;
 }
 
 .sapMPanelWrappingDiv .sapUiIcon {
@@ -3282,15 +3311,19 @@ html.sap-desktop .sapMSPCMonthDay.sapMSPCMonthDayToday:focus .sapMSPCMonthNowMar
 	border-radius: 0.125rem;
 }
 
+.sapMSliderTickmarks {
+	top: -0.8125rem;
+}
+
 /* slider handle */
 .sapMSliderHandle {
 	background: transparent;
 	border: 0.125rem solid @sapUiFieldBorderColor;
 	&:focus:before {
-		top: -5px;
-		bottom: -5px;
-		left: -5px;
-		right: -5px;
+		top: -0.3125rem;
+		bottom: -0.3125rem;
+		left: -0.3125rem;
+		right: -0.3125rem;
 	}
 }
 
@@ -3444,6 +3477,10 @@ html.sap-desktop .sapMST:focus:not([tabindex]) {
 	.sapMSB .sapMSBText .sapMBtnInner.sapMBtnIconFirst {
 		padding-left: 0.425rem;
 	}
+}
+
+.sapMTB-Transparent-CTX .sapMSB .sapMSBText:hover .sapMBtnDefault.sapMBtnInner.sapMBtnText {
+	padding-right: 0.6875rem;
 }
 /* END "SplitButton.less" */
 
@@ -3741,9 +3778,17 @@ html.sap-desktop .sapMSwtCont:focus > .sapMSwt {
 
 /* START "TextArea.less" */
 /* ================================= */
-/* CSS for control sap.m/TextArea        */
+/* CSS for control sap.m/TextArea    */
 /* Belize High Contrast Black theme  */
 /* ================================= */
+
+@_sapMTextAreaPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaReadonlyPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaValueStateSuccessPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaValueStateInformationPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaValueStateInformationPadding_Compact: 0.125rem 0.4375rem;
+@_sapMTextAreaValueStateErrorWarningPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaValueStateErrorWarningPadding_Compact: 0.125rem 0.4375rem;
 
 .sapMFocus.sapMTextArea {
 	& .sapMInputBaseContentWrapper {
@@ -4047,7 +4092,7 @@ html.sap-desktop .sapMTokenizer:focus{
 /* Belize High Contrast Black theme  */
 /* ================================= */
 
-html.sap-desktop .sapMTBActive:focus {
+html.sap-desktop .sapMTBActive.sapMTBFocused {
 	outline: 0.125rem dotted @sapUiContentContrastFocusColor;
 	outline-offset: -0.3125rem;
 }

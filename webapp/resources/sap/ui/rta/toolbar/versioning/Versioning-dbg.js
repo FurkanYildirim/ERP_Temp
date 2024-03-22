@@ -36,7 +36,7 @@ sap.ui.define([
 	 * @class
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -124,14 +124,14 @@ sap.ui.define([
 
 		return DateFormat.getInstance({
 			format: "yMMMdjm"
-		}).format(new Date(sTimeStamp));
+		}).format(new Date(sTimeStamp + "Z"));
 	}
 
 	function getGroupHeaderFactory(oGroup) {
 		return new GroupHeaderListItem({
 			title: oGroup.key ? this.oTextResources.getText("TIT_VERSION_HISTORY_PUBLISHED") : this.oTextResources.getText("TIT_VERSION_HISTORY_UNPUBLISHED"),
 			upperCase: false,
-			visible: this.getToolbar().getModel("controls").getProperty("/publishVisible")
+			visible: this.getToolbar().getModel("versions").getProperty("/publishVersionVisible")
 		}).addStyleClass("sapUiRtaVersionHistoryGrouping").addStyleClass("sapUiRtaVersionHistory");
 	}
 
@@ -214,7 +214,7 @@ sap.ui.define([
 		return this._oVersionHistoryDialogPromise.then(function(oVersionsDialog) {
 			if (!oVersionsDialog.isOpen()) {
 				oVersionsDialog.openBy(oVersionButton);
-				if (this.getToolbar().getModel("controls").getProperty("/publishVisible")) {
+				if (this.getToolbar().getModel("versions").getProperty("/publishVersionVisible")) {
 					var oList = this.getToolbar().getControl("versionHistoryDialog--versionList");
 					var oSorter = new Sorter({
 						path: "isPublished",

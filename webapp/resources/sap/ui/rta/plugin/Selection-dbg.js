@@ -30,7 +30,7 @@ function (
 	 * @class The Selection plugin allows you to select or focus overlays with mouse or keyboard and navigate to others.
 	 * @extends sap.ui.rta.plugin.Plugin
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.34
@@ -131,17 +131,6 @@ function (
 		if (bValue === false) {
 			this._deselectOverlays();
 		}
-	};
-
-	/**
-	 * Gets the value of the isActive property.
-	 * When set to <code>true</code>, then additional check for busy plugnis is triggered.
-	 * @return {boolean} bValue - <code>false</code> if inactive or some busy plugins available.
-	 */
-	Selection.prototype.getIsActive = function() {
-		return this.getProperty("isActive")
-			&& this.getDesignTime()
-			&& !this.getDesignTime().getBusyPlugins().length;
 	};
 
 	/**
@@ -271,7 +260,7 @@ function (
 			}
 			return;
 		}
-		var bMultiSelection = oEvent.metaKey || oEvent.ctrlKey;
+		var bMultiSelection = oEvent.metaKey || oEvent.ctrlKey || oEvent.shiftKey;
 		var bContextMenu = oEvent.type === "contextmenu";
 
 		if (oOverlay && oOverlay.getSelectable()) {
@@ -324,7 +313,11 @@ function (
 	 */
 	Selection.prototype._onMouseover = function(oEvent) {
 		var oOverlay = OverlayRegistry.getOverlay(oEvent.currentTarget.id);
-		if (!this.getIsActive()) {
+		// due to some timing issues the mouseover event callback can be triggered during drag&drop
+		if (
+			!this.getIsActive()
+			|| (this.getDesignTime() && this.getDesignTime().getBusyPlugins().length)
+		) {
 			// Propagation should be stopped at the root overlay to prevent the selection of the underlying elements
 			if (oOverlay.isRoot()) {
 				preventEventDefaultAndPropagation(oEvent);

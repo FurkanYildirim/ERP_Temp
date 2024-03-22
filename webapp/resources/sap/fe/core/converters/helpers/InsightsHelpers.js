@@ -1,0 +1,6 @@
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ *      (c) Copyright 2009-2023 SAP SE. All rights reserved
+ */
+sap.ui.define(["../ManifestSettings"],function(t){"use strict";var e={};var i=t.TemplateType;function n(t,e,n,a){var s;let l,o;const r=e.getManifestWrapper().hasMultipleEntitySets();const u=e.getManifestWrapper().hasMultipleVisualizations();const d=e.getManifestWrapper().getViewConfiguration();const f=d!==undefined&&d.paths.length>1?true:false;const p=e.getTemplateType()===i.ListReport;const g=e.getManifestControlConfiguration(n);const v=t==="Analytical"?(g===null||g===void 0?void 0:g.enableAddCardToInsights)??true:(g===null||g===void 0?void 0:(s=g.tableSettings)===null||s===void 0?void 0:s.enableAddCardToInsights)??true;if(t==="Table"){var c;l=a===null||a===void 0?void 0:a.tableManifestConfiguration;o=((c=l)===null||c===void 0?void 0:c.type)==="ResponsiveTable"}return v&&p&&!r&&!f&&(t==="Table"?(o??false)&&!u:true)}e.getInsightsVisibility=n;return e},false);
+//# sourceMappingURL=InsightsHelpers.js.map

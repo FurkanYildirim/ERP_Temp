@@ -23,11 +23,11 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new control
 	 * @class The <code>TokenDisplay</code> control is used to render a field inside a control based on {@link sap.ui.mdc.field.FieldBase FieldBase}.
 	 * @extends sap.m.Token
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @abstract
 	 * @private
-	 * @ui5-restricted sap.ui.mdc.field.TokenDisplay
+	 * @ui5-restricted sap.ui.mdc.field.FieldBase
 	 * @since 1.99.0
 	 * @alias sap.ui.mdc.field.TokenDisplay
 	 */

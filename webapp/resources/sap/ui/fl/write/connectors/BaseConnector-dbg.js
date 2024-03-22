@@ -182,6 +182,18 @@ sap.ui.define([
 		contextBasedAdaptation: {
 			create: function() {
 				return Promise.reject("contextBasedAdaptation.create is not implemented");
+			},
+			reorder: function() {
+				return Promise.reject("contextBasedAdaptation.reorder is not implemented");
+			},
+			load: function() {
+				return Promise.reject("contextBasedAdaptation.load is not implemented");
+			},
+			update: function() {
+				return Promise.reject("contextBasedAdaptation.update is not implemented");
+			},
+			remove: function() {
+				return Promise.reject("contextBasedAdaptation.remove is not implemented");
 			}
 		},
 		versions: {

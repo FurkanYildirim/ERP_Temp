@@ -5,14 +5,12 @@
  */
 
 sap.ui.define([
-	"sap/ui/fl/Utils",
-	"sap/base/Log",
+	"sap/ui/core/util/reflection/JsControlTreeModifier",
 	"sap/ui/fl/changeHandler/AddIFrame",
 	"sap/ui/fl/changeHandler/common/getTargetAggregationIndex",
 	"sap/ui/fl/changeHandler/common/createIFrame"
 ], function (
-	Utils,
-	Log,
+	JsControlTreeModifier,
 	BaseAddIFrame,
 	getTargetAggregationIndex,
 	createIFrame
@@ -25,7 +23,7 @@ sap.ui.define([
 	 * @constructor
 	 * @alias sap.uxap.changeHandler.AddIFrameObjectPageLayout
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.75
 	 * @experimental Since 1.75
 	 */
@@ -53,6 +51,7 @@ sap.ui.define([
 		var oView = mPropertyBag.view;
 		var oComponent = mPropertyBag.appComponent;
 		var oBaseSelector = oContent.selector;
+		// keep default title for legacy changes (without subsequent rename)
 		var sDefaultTitle = sap.ui.getCore().getLibraryResourceBundle("sap.uxap").getText("SECTION_TITLE_FOR_IFRAME");
 
 		var oOPSection;
@@ -77,7 +76,12 @@ sap.ui.define([
 			.then(function () {
 				var oIFrameSelector = Object.create(oBaseSelector);
 				oIFrameSelector.id += "-iframe";
-				return createIFrame(oChange, mPropertyBag, oIFrameSelector);
+				var mRenameInfo = {
+					sourceControlId: oModifier.getId(oOPSubSection),
+					selectorControlId: oModifier.getId(oOPSection),
+					propertyName: "title"
+				};
+				return createIFrame(oChange, mPropertyBag, oIFrameSelector, mRenameInfo);
 			})
 			.then(function(oIFrame) {
 				return oModifier.insertAggregation(oOPSubSection, "blocks", oIFrame, 0, oView);
@@ -102,6 +106,30 @@ sap.ui.define([
 			oCondenserInfo.updateControl.id = oCondenserInfo.affectedControl.id + '-iframe';
 		}
 		return oCondenserInfo;
+	};
+
+	AddIFrameObjectPageLayout.getChangeVisualizationInfo = function(oChange, oAppComponent) {
+		var oSelector = oChange.getContent().selector;
+		var oElement = JsControlTreeModifier.bySelector(oSelector, oAppComponent);
+		var oAnchorBar = oElement.getParent().getAggregation("_anchorBar");
+		var aAffectedControls = [oSelector];
+		var aDisplayControls = [oSelector];
+
+		oAnchorBar.getAggregation("content").forEach(function(oAnchorBarItem) {
+			oAnchorBarItem.getAggregation("customData").some(function(oCustomData) {
+				if (
+					oCustomData.getKey() === "sectionId" &&
+					oElement.getId() === oCustomData.getProperty("value")
+				) {
+					aDisplayControls.push(oAnchorBarItem.getId());
+				}
+			});
+		});
+
+		return {
+			affectedControls: aAffectedControls,
+			displayControls: aDisplayControls
+		};
 	};
 
 	return AddIFrameObjectPageLayout;

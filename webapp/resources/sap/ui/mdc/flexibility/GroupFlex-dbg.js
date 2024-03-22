@@ -4,29 +4,12 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/mdc/p13n/Engine",
-	"sap/ui/mdc/flexibility/Util"
-], function(Engine, Util) {
+	"sap/m/p13n/Engine",
+	"sap/ui/mdc/flexibility/Util",
+	"sap/ui/fl/changeHandler/Base",
+	"sap/ui/fl/changeHandler/condenser/Classification"
+], function(Engine, Util, FLChangeHandlerBase, CondenserClassification) {
 	"use strict";
-
-	var fRebindControl = function (oControl) {
-		var bExecuteRebindForTable = oControl && oControl.isA && oControl.isA("sap.ui.mdc.Table") && oControl.isTableBound();
-		var bExecuteRebindForChart = oControl && oControl.isA && oControl.isA("sap.ui.mdc.Chart");
-		if (bExecuteRebindForTable || bExecuteRebindForChart) {
-			if (!oControl._bWaitForBindChanges) {
-				oControl._bWaitForBindChanges = true;
-				Engine.getInstance().waitForChanges(oControl).then(function () {
-					if (bExecuteRebindForTable) {
-						oControl.rebind();
-					} else if (bExecuteRebindForChart) {
-						oControl.rebind();
-					}
-					delete oControl._bWaitForBindChanges;
-				});
-
-			}
-		}
-	};
 
 	var fFinalizeGroupChange = function (oChange, oControl, oGroupContent, bIsRevert) {
 		if (bIsRevert) {
@@ -36,8 +19,6 @@ sap.ui.define([
 			// Set revert data on the change
 			oChange.setRevertData(oGroupContent);
 		}
-		// Rebind Table if needed
-		fRebindControl(oControl);
 	};
 
 	var fAddGroup = function (oChange, oControl, mPropertyBag, sChangeReason) {
@@ -90,7 +71,12 @@ sap.ui.define([
 					});
 					var iIndex = aValue.indexOf(aFoundValue[0]);
 
-					aValue.splice(iIndex, 1);
+					if (iIndex > -1) {
+						aValue.splice(iIndex, 1);
+					} else {
+						// In case the specified change is already existing (e.g. nothing to be removed) we need to ignore the change gracefully and mark it as not applicable
+						return FLChangeHandlerBase.markAsNotApplicable("The specified change is already existing - change appliance ignored", true);
+					}
 
 					oGroupConditions = {
 						groupLevels: aValue
@@ -140,19 +126,75 @@ sap.ui.define([
 	};
 
 	var Group = {};
-	Group.removeGroup = Util.createChangeHandler({
-		apply: fRemoveGroup,
-		revert: fAddGroup
-	});
-
 	Group.addGroup = Util.createChangeHandler({
 		apply: fAddGroup,
-		revert: fRemoveGroup
+		revert: fRemoveGroup,
+		getCondenserInfo: function(oChange, mPropertyBag) {
+			return {
+				affectedControl: {id: oChange.getContent().name},
+				affectedControlIdProperty: "name",
+				targetContainer: oChange.getSelector(),
+				targetAggregation: "groupLevels",
+				customAggregation: mPropertyBag.modifier.bySelector(oChange.getSelector(), mPropertyBag.appComponent).getGroupConditions().groupLevels,
+				classification: CondenserClassification.Create,
+				setTargetIndex: function(oChange, iNewTargetIndex) {
+					oChange.getContent().index = iNewTargetIndex;
+				},
+				getTargetIndex: function(oChange) {
+					return oChange.getContent().index;
+				}
+			};
+		}
+	});
+
+	Group.removeGroup = Util.createChangeHandler({
+		apply: fRemoveGroup,
+		revert: fAddGroup,
+		getCondenserInfo: function(oChange, mPropertyBag) {
+			return {
+				affectedControl: {id: oChange.getContent().name},
+				affectedControlIdProperty: "name",
+				targetContainer: oChange.getSelector(),
+				targetAggregation: "groupLevels",
+				customAggregation: mPropertyBag.modifier.bySelector(oChange.getSelector(), mPropertyBag.appComponent).getGroupConditions().groupLevels,
+				classification: CondenserClassification.Destroy,
+				sourceIndex: oChange.getRevertData().index,
+				setIndexInRevertData: function(oChange, iIndex) {
+					var oRevertData = oChange.getRevertData();
+					oRevertData.index = iIndex;
+					oChange.setRevertData(oRevertData);
+				}
+			};
+		}
 	});
 
 	Group.moveGroup = Util.createChangeHandler({
 		apply: fMoveGroup,
-		revert: fMoveGroup
+		revert: fMoveGroup,
+		getCondenserInfo: function(oChange, mPropertyBag) {
+			return {
+				affectedControl: {id: oChange.getContent().name},
+				affectedControlIdProperty: "name",
+				targetContainer: oChange.getSelector(),
+				targetAggregation: "groupLevels",
+				classification: CondenserClassification.Move,
+				sourceIndex: oChange.getRevertData().index,
+				customAggregation: mPropertyBag.modifier.bySelector(oChange.getSelector(), mPropertyBag.appComponent).getGroupConditions().groupLevels,
+				sourceContainer: oChange.getSelector(),
+				sourceAggregation: "groupLevels",
+				setTargetIndex: function(oChange, iNewTargetIndex) {
+					oChange.getContent().index = iNewTargetIndex;
+				},
+				getTargetIndex: function(oChange) {
+					return oChange.getContent().index;
+				},
+				setIndexInRevertData: function(oChange, iIndex) {
+					var oRevertData = oChange.getRevertData();
+					oRevertData.index = iIndex;
+					oChange.setRevertData(oRevertData);
+				}
+			};
+		}
 	});
 
 	return Group;

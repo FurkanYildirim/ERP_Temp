@@ -12,7 +12,7 @@ sap.ui.define(['./ItemBaseFlex'], function(ItemBaseFlex) {
 	 *
 	 * @alias sap.ui.mdc.flexibility.FilterBar
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 
 	var oFilterItemFlex = Object.assign({}, ItemBaseFlex);
@@ -23,7 +23,7 @@ sap.ui.define(['./ItemBaseFlex'], function(ItemBaseFlex) {
 			var sFieldPath;
 
 			if (oModifier.targets === "jsControlTree") {
-				sFieldPath = oFilter.getFieldPath();
+				sFieldPath = oFilter.getPropertyKey();
 			} else {
 
 				//TODO: needs to be reworked. Expected a name like property on FilterItem

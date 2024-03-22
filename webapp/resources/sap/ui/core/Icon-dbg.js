@@ -13,6 +13,7 @@ sap.ui.define([
 	'./InvisibleText',
 	'./library',
 	"./IconRenderer",
+	"./Lib",
 	"sap/ui/events/KeyCodes",
 	"sap/base/Log",
 	"sap/base/util/each"
@@ -25,6 +26,7 @@ sap.ui.define([
 		InvisibleText,
 		library,
 		IconRenderer,
+		Library,
 		KeyCodes,
 		Log,
 		each
@@ -73,7 +75,7 @@ sap.ui.define([
 	 * @implements sap.ui.core.IFormContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
 	 * @since 1.11.1
@@ -319,9 +321,7 @@ sap.ui.define([
 	 * @private
 	 */
 	Icon.prototype.onkeydown = function(oEvent) {
-
 		if (oEvent.which === KeyCodes.SPACE || oEvent.which === KeyCodes.ENTER) {
-
 			// note: prevent document scrolling
 			oEvent.preventDefault();
 
@@ -348,13 +348,19 @@ sap.ui.define([
 	 * @private
 	 */
 	Icon.prototype.onkeyup = function(oEvent) {
-
 		if (oEvent.which === KeyCodes.SPACE || oEvent.which === KeyCodes.ENTER) {
-
 			this.$().removeClass("sapUiIconActive");
 			this._restoreColors();
-			this.firePress({/* no parameters */});
 		}
+	};
+
+	Icon.prototype.onsapenter = Icon.prototype.onsapspace = function(oEvent) {
+		if (this.hasListeners("press")) {
+			// mark the event for components that needs to know if the event was handled
+			oEvent.setMarked();
+		}
+
+		this.firePress({/* no parameters */});
 	};
 
 	/* =========================================================== */
@@ -582,7 +588,7 @@ sap.ui.define([
 
 		return {
 			role: bHasPressListeners ? "button" : "img",
-			type: sap.ui.getCore().getLibraryResourceBundle("sap.ui.core").getText(bHasPressListeners ? "ACC_CTR_TYPE_BUTTON" : "ACC_CTR_TYPE_IMAGE"),
+			type: Library.get("sap.ui.core").getResourceBundle().getText(bHasPressListeners ? "ACC_CTR_TYPE_BUTTON" : "ACC_CTR_TYPE_IMAGE"),
 			description: this.getAlt() || this.getTooltip_AsString() || (oIconInfo ? oIconInfo.text || oIconInfo.name : ""),
 			focusable: bHasPressListeners
 		};

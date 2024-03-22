@@ -1,0 +1,96 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "Component-dbg.js",
+			"module": "sap/ushell/components/shell/PostLoadingHeaderEnhancement/Component.js",
+			"size": 11041,
+			"isDebug": true,
+			"required": [
+				"sap/ui/Device.js",
+				"sap/ui/core/Component.js",
+				"sap/ui/core/Configuration.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/CustomData.js",
+				"sap/ui/core/IconPool.js",
+				"sap/ushell/Config.js",
+				"sap/ushell/EventHub.js",
+				"sap/ushell/library.js",
+				"sap/ushell/resources.js",
+				"sap/ushell/ui/shell/ShellHeadItem.js"
+			],
+			"condRequired": [
+				"sap/m/StandardListItem.js",
+				"sap/ushell/ui/footerbar/ContactSupportButton.js",
+				"sap/ushell/ui/shell/NavigationMiniTile.js",
+				"sap/ushell/ui/shell/ShellNavigationMenu.js"
+			]
+		},
+		{
+			"name": "Component-preload.js",
+			"module": "sap/ushell/components/shell/PostLoadingHeaderEnhancement/Component-preload.js",
+			"size": 4557,
+			"merged": true,
+			"required": [
+				"sap/ui/Device.js",
+				"sap/ui/core/Component.js",
+				"sap/ui/core/Configuration.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/CustomData.js",
+				"sap/ui/core/IconPool.js",
+				"sap/ushell/Config.js",
+				"sap/ushell/EventHub.js",
+				"sap/ushell/library.js",
+				"sap/ushell/resources.js",
+				"sap/ushell/ui/shell/ShellHeadItem.js"
+			],
+			"condRequired": [
+				"sap/m/StandardListItem.js",
+				"sap/ushell/ui/footerbar/ContactSupportButton.js",
+				"sap/ushell/ui/shell/NavigationMiniTile.js",
+				"sap/ushell/ui/shell/ShellNavigationMenu.js"
+			],
+			"included": [
+				"sap/ushell/components/shell/PostLoadingHeaderEnhancement/Component.js"
+			]
+		},
+		{
+			"name": "Component-preload.js.map",
+			"size": 5846,
+			"isDebug": true
+		},
+		{
+			"name": "Component.js",
+			"module": "sap/ushell/components/shell/PostLoadingHeaderEnhancement/Component.js",
+			"size": 4340,
+			"required": [
+				"sap/ui/Device.js",
+				"sap/ui/core/Component.js",
+				"sap/ui/core/Configuration.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/CustomData.js",
+				"sap/ui/core/IconPool.js",
+				"sap/ushell/Config.js",
+				"sap/ushell/EventHub.js",
+				"sap/ushell/library.js",
+				"sap/ushell/resources.js",
+				"sap/ushell/ui/shell/ShellHeadItem.js"
+			],
+			"condRequired": [
+				"sap/m/StandardListItem.js",
+				"sap/ushell/ui/footerbar/ContactSupportButton.js",
+				"sap/ushell/ui/shell/NavigationMiniTile.js",
+				"sap/ushell/ui/shell/ShellNavigationMenu.js"
+			]
+		},
+		{
+			"name": "Component.js.map",
+			"size": 5541,
+			"isDebug": true
+		},
+		{
+			"name": "resources.json",
+			"size": 2570
+		}
+	]
+}

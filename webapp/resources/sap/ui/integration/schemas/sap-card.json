@@ -43,7 +43,14 @@
         "1.30.0",
         "1.31.0",
         "1.32.0",
-        "1.33.0"
+        "1.33.0",
+        "1.34.0",
+        "1.35.0",
+        "1.36.0",
+        "1.37.0",
+        "1.38.0",
+        "1.39.0",
+        "1.40.0"
       ]
     },
     "designtime": {
@@ -58,6 +65,18 @@
         "enableMarkdown": {
           "description": "Markdown enablement for Adaptive Content",
           "type": "boolean"
+        },
+        "modelSizeLimit": {
+          "description": "[Experimental] Represents the maximum number of entries that are used for list bindings.",
+          "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "$ref": "#/definitions/simpleBinding"
+              }
+          ],
+          "default": 1000
         },
         "parameters": {
           "description": "Map of parameters",
@@ -413,7 +432,7 @@
         },
         "title": {
           "description": "Represents a title of the header; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "titleMaxLines": {
           "description": "[Experimental] Limit the number of lines for the title.",
@@ -429,7 +448,7 @@
         },
         "subTitle": {
           "description": "Represents a subtitle to the title; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "subTitleMaxLines": {
           "description": "[Experimental] Limit the number of lines for the sub title.",
@@ -492,7 +511,7 @@
         },
         "title": {
           "description": "Represents a title of the header; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "titleMaxLines": {
           "description": "[Experimental] Limit the number of lines for the title.",
@@ -508,7 +527,7 @@
         },
         "subTitle": {
           "description": "Represents a subtitle to the title; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "subTitleMaxLines": {
           "description": "[Experimental] Limit the number of lines for the sub title.",
@@ -639,6 +658,18 @@
               "$ref": "#/definitions/simpleBinding"
             }
           ]
+        },
+        "visible": {
+          "description": "Visibility of the main indicator",
+          "oneOf": [
+            {
+              "type": "boolean",
+              "default": true
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },
@@ -671,6 +702,18 @@
               "$ref": "#/definitions/simpleBinding"
             }
           ]
+        },
+        "visible": {
+          "description": "Visibility of the side indicator",
+          "oneOf": [
+            {
+              "type": "boolean",
+              "default": true
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },
@@ -697,6 +740,17 @@
         },
         "maxItems": {
           "description": "Represents number of items",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "minItems": {
+          "description": "Represents the minimum expected number of items",
           "oneOf": [
             {
               "type": "number"
@@ -744,7 +798,7 @@
         },
         "highlight": {
           "type": "string",
-          "description": "The highlight of the item",
+          "description": "The highlight state of the item",
           "oneOf": [
             {
               "$ref": "#/definitions/state"
@@ -753,6 +807,10 @@
               "$ref": "#/definitions/simpleBinding"
             }
           ]
+        },
+        "highlightText": {
+          "type": "string",
+          "description": "Defines the semantics of the 'highlight' property. It is used for accessibility purposes."
         },
         "icon": {
           "$ref": "#/definitions/icon"
@@ -818,6 +876,21 @@
                     }
                 ]
             },
+            "showStateIcon": {
+              "description": "Defines if a default state icon is shown",
+              "oneOf": [
+                {
+                 "type": "boolean"
+                },
+                {
+                 "$ref": "#/definitions/simpleBinding"
+                }
+              ]
+            },
+            "customStateIcon":{
+              "description": "The custom state icon",
+              "type": "string"
+            },
             "visible": {
               "description": "Visibility of the item",
               "oneOf": [
@@ -828,6 +901,10 @@
                   "$ref": "#/definitions/simpleBinding"
                 }
               ]
+            },
+            "title": {
+              "description": "Title of the data point. This is just a placeholder to store the title, title will not be rendered on the screen. This is needed to prevent the loss of columnn names while transforming table card to list card.",
+              "type": "string"
             }
         }
     },
@@ -1206,6 +1283,17 @@
               "$ref": "#/definitions/simpleBinding"
             }
           ]
+        },
+        "minItems": {
+          "description": "Represents the minimum expected number of items",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },
@@ -1303,7 +1391,7 @@
       "properties": {
         "title": {
           "description": "Represents a title of the object group; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "titleMaxLines": {
             "description": "[Experimental] Limits the number of lines for wrapping the group title.",
@@ -1363,9 +1451,40 @@
           "description": "Defines the label of the item",
           "type": "string"
         },
+        "showColon": {
+          "description": "Defines whether the colon next to the label is shown",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
         "value": {
           "description": "Represents the text, which is associated with the label",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "option": {
+                  "description": "The date range option",
+                  "type": "string"
+                },
+                "values": {
+                  "type": "array"
+                }
+              }
+            }
+          ]
         },
         "tooltip": {
           "description": "Defines the tooltip of the link",
@@ -1383,10 +1502,15 @@
                 "IconGroup",
                 "ComboBox",
                 "TextArea",
+                "Input",
+                "Duration",
+                "DateRange",
+                "RatingIndicator",
                 "phone",
                 "email",
                 "link",
-                "text"
+                "text",
+                "Image"
               ],
               "default": "Default"
             },
@@ -1496,6 +1620,21 @@
           "description": "The state color of the item",
           "$ref": "#/definitions/state"
         },
+        "showStateIcon": {
+          "description": "Defines if a default state icon is shown",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "customStateIcon": {
+          "description": "The custom state icon",
+          "type": "string"
+         },
         "id": {
           "description": "ID for input fields",
           "type": "string"
@@ -1536,6 +1675,53 @@
           "items": {
             "$ref": "#/definitions/ContentType.Object.Item.Validation"
           }
+        },
+        "maxValue": {
+          "description": "The number of displayed symbols for RatingIndicator",
+          "oneOf": [
+            {
+              "type": "number",
+              "default": 5
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "visualMode": {
+          "description": "Defines how float values are visualized for RatingIndicator: Full (values are rounded to the nearest integer value (e.g. 1.7 -> 2)) or  Half (values are rounded to the nearest half value (e.g. 1.7 -> 1.5))",
+          "oneOf": [
+            {
+              "enum": [
+                "Full",
+                "Half"
+              ],
+              "default": "Half"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "src" : {
+          "type": "string",
+          "description": "Represents image source URL"
+        },
+        "alt" :{
+          "type": "string",
+          "description": "The alternative text that is displayed in case the image is not available, or cannot be displayed."
+        },
+        "fullWidth" : {
+          "description": "Defines if the image will take the full width of the group, including the paddings. If set to false there will be padding. For best result use together with 'alignment': 'Stretched' for the group",
+          "oneOf": [
+            {
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },
@@ -1763,11 +1949,38 @@
               "items": {
                 "$ref": "#/definitions/action"
               }
+            },
+            "highlight": {
+              "type": "string",
+              "description": "The highlight state of the row",
+              "oneOf": [
+                {
+                   "$ref": "#/definitions/state"
+                },
+                {
+                   "$ref": "#/definitions/simpleBinding"
+                }
+              ]
+            },
+            "highlightText": {
+              "type": "string",
+              "description": "Defines the semantics of the 'highlight' property. It is used for accessibility purposes."
             }
           }
         },
         "maxItems": {
           "description": "Represents number of items",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "minItems": {
+          "description": "Represents the minimum expected number of items",
           "oneOf": [
             {
               "type": "number"
@@ -1789,7 +2002,7 @@
       "properties": {
         "title": {
           "description": "Represents a title of the column; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "width": {
           "description": "Defines the width of the column",
@@ -1808,6 +2021,10 @@
         },
         "value": {
           "description": "Represents the text value of the column",
+          "type": "string"
+        },
+        "additionalText": {
+          "description": "Represents the additional text for the identifier column.",
           "type": "string"
         },
         "icon": {
@@ -1865,7 +2082,22 @@
           "items": {
             "$ref": "#/definitions/action"
           }
-        }
+        },
+        "showStateIcon": {
+          "description": "Defines if a default state icon is shown",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "customStateIcon": {
+          "description": "The custom state icon",
+          "type": "string"
+         }
       }
     },
     "ContentType.Calendar": {
@@ -2414,12 +2646,32 @@
           ]
         },
         "extension": {
-          "description": "[Experimental] Provides a way to request data via extension",
           "$ref": "#/definitions/extension"
         },
         "name": {
           "description": "[Experimental] Gives a name to the data section. A model with the same name will be assigned to the card",
           "type": "string"
+        },
+        "mockData": {
+          "description": "[Experimental] Mock data attributes",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "request": {
+              "$ref": "#/definitions/request"
+            },
+            "json": {
+              "description": "The data to be used directly. Without making requests",
+              "type": [
+                "object",
+                "array"
+              ],
+              "additionalProperties": true
+            },
+            "extension": {
+              "$ref": "#/definitions/extension"
+            }
+          }
         }
       }
     },
@@ -2487,6 +2739,18 @@
           "oneOf": [
             {
               "type": "number"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
+        },
+        "timeout": {
+          "description": "A timeout (in milliseconds) for the request. A value of 0 means there will be no timeout.",
+          "oneOf": [
+            {
+              "type": "number",
+              "default": 15000
             },
             {
               "$ref": "#/definitions/simpleBinding"
@@ -2604,7 +2868,7 @@
       "properties": {
         "label": {
           "description": "Represents a label of the field; to make this property language dependent (recommended), use a key in double curly brackets '{{key}}'",
-          "type": "string"
+          "$ref": "#/definitions/i18n_key_string"
         },
         "value": {
           "type": "string",
@@ -2612,9 +2876,11 @@
         }
       }
     },
-    "i18n_key": {
-      "type": "string",
-      "pattern": "^\\{\\{[\\w][\\w\\.\\-]*\\}\\}$"
+    "i18n_key_string": {
+      "anyOf": [
+        { "type": "string", "pattern": "^\\{\\{[\\w][\\w\\.\\-]*\\}\\}$" },
+        { "type": "string" }
+      ]
     },
     "simpleBinding": {
       "type": "string",
@@ -2846,6 +3112,17 @@
               "pattern": "^[a-zA-Z0-9_\\.\\-/|@#]*$"
             }
           }
+        },
+        "visible": {
+          "description": "Determines whether the filter is visible",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },
@@ -2911,8 +3188,11 @@
               "yesterday",
               "tomorrow",
               "dateRange",
+              "dateTimeRange",
               "from",
               "to",
+              "fromDateTime",
+              "toDateTime",
               "yearToDate",
               "lastDays",
               "lastWeeks",
@@ -2941,9 +3221,21 @@
               "quarter4",
               "thisYear",
               "lastYear",
-              "nextYear"
+              "nextYear",
+              "dateTime"
             ]
           }
+        },
+        "visible": {
+          "description": "Determines whether the filter is visible",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },
@@ -2977,6 +3269,17 @@
         "placeholder": {
           "description": "The placeholder of the filter",
           "type": "string"
+        },
+        "visible": {
+          "description": "Determines whether the filter is visible",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/simpleBinding"
+            }
+          ]
         }
       }
     },

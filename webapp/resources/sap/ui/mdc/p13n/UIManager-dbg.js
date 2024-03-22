@@ -33,7 +33,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @ui5-restricted sap.ui.mdc
@@ -278,6 +278,7 @@ sap.ui.define([
 						}
 					});
 					oContainer.close();
+					oContainer.destroy();
 					oDialogClose.resolve();
 				}.bind(this));
 			}
@@ -470,7 +471,7 @@ sap.ui.define([
 	 * @param {sap.ui.mdc.AdaptationProvider} oAdaptationProvider
 	 */
 	 UIManager._checkValidInterface = function(oAdaptationProvider) {
-		if (!oAdaptationProvider || !oAdaptationProvider.isA("sap.ui.mdc.p13n.AdaptationProvider")){
+		if (!oAdaptationProvider || !(oAdaptationProvider.isA("sap.ui.mdc.p13n.AdaptationProvider") || oAdaptationProvider.isA("sap.m.p13n.modules.AdaptationProvider")) ){
 			throw Error("The UIManager singleton must not be accessed without an AdaptationProvider interface!");
 		}
 	};
@@ -480,7 +481,6 @@ sap.ui.define([
 	 *
 	 * @private
 	 * @ui5-restricted sap.ui.mdc
-	 *
 	 */
 	UIManager.getInstance = function(oAdaptationProvider) {
 		if (!oUIManager) {

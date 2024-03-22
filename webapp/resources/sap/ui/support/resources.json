@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 1091
+			"size": 1090
 		},
 		{
 			"name": ".supportrc",
@@ -11,42 +11,40 @@
 		},
 		{
 			"name": ".theming",
-			"size": 98
+			"size": 97
 		},
 		{
 			"name": "Bootstrap-dbg.js",
 			"module": "sap/ui/support/Bootstrap.js",
-			"size": 1227,
+			"size": 1190,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js"
 			],
 			"condRequired": [
-				"sap/ui/support/jQuery.sap.support.js",
 				"sap/ui/support/supportRules/Main.js"
 			]
 		},
 		{
 			"name": "Bootstrap.js",
 			"module": "sap/ui/support/Bootstrap.js",
-			"size": 668,
+			"size": 632,
 			"required": [
 				"sap/base/Log.js"
 			],
 			"condRequired": [
-				"sap/ui/support/jQuery.sap.support.js",
 				"sap/ui/support/supportRules/Main.js"
 			]
 		},
 		{
 			"name": "Bootstrap.js.map",
-			"size": 792,
+			"size": 785,
 			"isDebug": true
 		},
 		{
 			"name": "RuleAnalyzer-dbg.js",
 			"module": "sap/ui/support/RuleAnalyzer.js",
-			"size": 5370,
+			"size": 5175,
 			"isDebug": true,
 			"required": [
 				"sap/ui/support/Bootstrap.js",
@@ -72,7 +70,7 @@
 		{
 			"name": "jQuery.sap.support.js",
 			"module": "sap/ui/support/jQuery.sap.support.js",
-			"size": 5173,
+			"size": 4966,
 			"support": true,
 			"required": [
 				"sap/ui/support/supportRules/Main.js",
@@ -83,7 +81,7 @@
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/support/library.js",
-			"size": 4630,
+			"size": 5114,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/library.js"
@@ -92,7 +90,7 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/support/library-preload.js",
-			"size": 188983,
+			"size": 191143,
 			"merged": true,
 			"required": [
 				"sap/base/Log.js",
@@ -164,6 +162,7 @@
 				"sap/ui/core/Item.js",
 				"sap/ui/core/ListItem.js",
 				"sap/ui/core/UIArea.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/core/library.js",
 				"sap/ui/core/mvc/Controller.js",
 				"sap/ui/core/mvc/XMLView.js",
@@ -173,8 +172,12 @@
 				"sap/ui/layout/FixFlex.js",
 				"sap/ui/layout/HorizontalLayout.js",
 				"sap/ui/layout/Splitter.js",
-				"sap/ui/layout/SplitterLayoutData.js",
 				"sap/ui/layout/VerticalLayout.js",
+				"sap/ui/layout/form/ColumnElementData.js",
+				"sap/ui/layout/form/ColumnLayout.js",
+				"sap/ui/layout/form/Form.js",
+				"sap/ui/layout/form/FormContainer.js",
+				"sap/ui/layout/form/FormElement.js",
 				"sap/ui/layout/form/SimpleForm.js",
 				"sap/ui/model/SelectionModel.js",
 				"sap/ui/model/json/JSONModel.js",
@@ -183,9 +186,6 @@
 				"sap/ui/thirdparty/jquery.js",
 				"sap/ui/thirdparty/jszip.js",
 				"sap/ui/unified/FileUploader.js"
-			],
-			"condRequired": [
-				"sap/ui/support/jQuery.sap.support.js"
 			],
 			"dynRequired": true,
 			"included": [
@@ -248,13 +248,13 @@
 		},
 		{
 			"name": "library-preload.js.map",
-			"size": 187372,
+			"size": 187989,
 			"isDebug": true
 		},
 		{
 			"name": "library-preload.support.js",
 			"module": "sap/ui/support/library-preload.support.js",
-			"size": 5322,
+			"size": 5115,
 			"merged": true,
 			"support": true,
 			"required": [
@@ -268,38 +268,39 @@
 		},
 		{
 			"name": "library-preload.support.js.map",
-			"size": 815,
+			"size": 785,
 			"isDebug": true
 		},
 		{
 			"name": "library.js",
 			"module": "sap/ui/support/library.js",
-			"size": 1893,
+			"size": 1892,
 			"required": [
 				"sap/ui/core/library.js"
 			]
 		},
 		{
 			"name": "library.js.map",
-			"size": 1738,
+			"size": 1739,
 			"isDebug": true
 		},
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/support/manifest.json",
-			"size": 802
+			"size": 800
 		},
 		{
 			"name": "resources.json",
-			"size": 50472
+			"size": 51252
 		},
 		{
 			"name": "supportRules/Analyzer-dbg.js",
 			"module": "sap/ui/support/supportRules/Analyzer.js",
-			"size": 6087,
+			"size": 6210,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/supportRules/Constants.js",
 				"sap/ui/support/supportRules/IssueManager.js"
 			]
@@ -307,22 +308,23 @@
 		{
 			"name": "supportRules/Analyzer.js",
 			"module": "sap/ui/support/supportRules/Analyzer.js",
-			"size": 2239,
+			"size": 2287,
 			"required": [
 				"sap/base/Log.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/supportRules/Constants.js",
 				"sap/ui/support/supportRules/IssueManager.js"
 			]
 		},
 		{
 			"name": "supportRules/Analyzer.js.map",
-			"size": 3019,
+			"size": 3054,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/CommunicationBus-dbg.js",
 			"module": "sap/ui/support/supportRules/CommunicationBus.js",
-			"size": 999,
+			"size": 956,
 			"isDebug": true,
 			"required": [
 				"sap/ui/support/supportRules/WCBConfig.js",
@@ -346,7 +348,7 @@
 		{
 			"name": "supportRules/Constants-dbg.js",
 			"module": "sap/ui/support/supportRules/Constants.js",
-			"size": 3804,
+			"size": 3715,
 			"isDebug": true
 		},
 		{
@@ -356,13 +358,13 @@
 		},
 		{
 			"name": "supportRules/Constants.js.map",
-			"size": 1260,
+			"size": 1262,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/CoreFacade-dbg.js",
 			"module": "sap/ui/support/supportRules/CoreFacade.js",
-			"size": 1664,
+			"size": 1518,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Component.js",
@@ -380,13 +382,13 @@
 		},
 		{
 			"name": "supportRules/CoreFacade.js.map",
-			"size": 544,
+			"size": 546,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/ExecutionScope-dbg.js",
 			"module": "sap/ui/support/supportRules/ExecutionScope.js",
-			"size": 9865,
+			"size": 9382,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -408,15 +410,16 @@
 		},
 		{
 			"name": "supportRules/ExecutionScope.js.map",
-			"size": 5063,
+			"size": 5065,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/History-dbg.js",
 			"module": "sap/ui/support/supportRules/History.js",
-			"size": 7176,
+			"size": 7104,
 			"isDebug": true,
 			"required": [
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/library.js",
 				"sap/ui/support/supportRules/IssueManager.js",
 				"sap/ui/support/supportRules/RuleSetLoader.js",
@@ -427,8 +430,9 @@
 		{
 			"name": "supportRules/History.js",
 			"module": "sap/ui/support/supportRules/History.js",
-			"size": 2651,
+			"size": 2713,
 			"required": [
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/library.js",
 				"sap/ui/support/supportRules/IssueManager.js",
 				"sap/ui/support/supportRules/RuleSetLoader.js",
@@ -438,13 +442,13 @@
 		},
 		{
 			"name": "supportRules/History.js.map",
-			"size": 3977,
+			"size": 4063,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/IssueManager-dbg.js",
 			"module": "sap/ui/support/supportRules/IssueManager.js",
-			"size": 14863,
+			"size": 13859,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/deepExtend.js",
@@ -472,12 +476,14 @@
 		{
 			"name": "supportRules/Main-dbg.js",
 			"module": "sap/ui/support/supportRules/Main.js",
-			"size": 23210,
+			"size": 23452,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
+				"sap/ui/VersionInfo.js",
 				"sap/ui/base/ManagedObject.js",
 				"sap/ui/core/Component.js",
+				"sap/ui/core/Core.js",
 				"sap/ui/core/Element.js",
 				"sap/ui/support/library.js",
 				"sap/ui/support/supportRules/Analyzer.js",
@@ -501,11 +507,13 @@
 		{
 			"name": "supportRules/Main.js",
 			"module": "sap/ui/support/supportRules/Main.js",
-			"size": 10624,
+			"size": 10901,
 			"required": [
 				"sap/base/Log.js",
+				"sap/ui/VersionInfo.js",
 				"sap/ui/base/ManagedObject.js",
 				"sap/ui/core/Component.js",
+				"sap/ui/core/Core.js",
 				"sap/ui/core/Element.js",
 				"sap/ui/support/library.js",
 				"sap/ui/support/supportRules/Analyzer.js",
@@ -528,7 +536,7 @@
 		},
 		{
 			"name": "supportRules/Main.js.map",
-			"size": 14629,
+			"size": 14955,
 			"isDebug": true
 		},
 		{
@@ -556,7 +564,7 @@
 		{
 			"name": "supportRules/RuleSet-dbg.js",
 			"module": "sap/ui/support/supportRules/RuleSet.js",
-			"size": 10063,
+			"size": 9156,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -586,7 +594,7 @@
 		{
 			"name": "supportRules/RuleSetLoader-dbg.js",
 			"module": "sap/ui/support/supportRules/RuleSetLoader.js",
-			"size": 16652,
+			"size": 16647,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -634,7 +642,7 @@
 		{
 			"name": "supportRules/Storage-dbg.js",
 			"module": "sap/ui/support/supportRules/Storage.js",
-			"size": 10685,
+			"size": 9337,
 			"isDebug": true,
 			"required": [
 				"sap/ui/support/supportRules/Constants.js",
@@ -652,13 +660,13 @@
 		},
 		{
 			"name": "supportRules/Storage.js.map",
-			"size": 4192,
+			"size": 4194,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/WCBChannels-dbg.js",
 			"module": "sap/ui/support/supportRules/WCBChannels.js",
-			"size": 5262,
+			"size": 5825,
 			"isDebug": true
 		},
 		{
@@ -698,7 +706,7 @@
 		{
 			"name": "supportRules/WindowCommunicationBus-dbg.js",
 			"module": "sap/ui/support/supportRules/WindowCommunicationBus.js",
-			"size": 7066,
+			"size": 6503,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -718,7 +726,7 @@
 		},
 		{
 			"name": "supportRules/WindowCommunicationBus.js.map",
-			"size": 2706,
+			"size": 2705,
 			"isDebug": true
 		},
 		{
@@ -768,11 +776,12 @@
 		{
 			"name": "supportRules/report/DataCollector-dbg.js",
 			"module": "sap/ui/support/supportRules/report/DataCollector.js",
-			"size": 4981,
+			"size": 5010,
 			"isDebug": true,
 			"required": [
 				"sap/base/security/encodeXML.js",
 				"sap/base/util/LoaderExtensions.js",
+				"sap/ui/VersionInfo.js",
 				"sap/ui/core/Component.js",
 				"sap/ui/core/Configuration.js",
 				"sap/ui/core/Core.js",
@@ -784,10 +793,11 @@
 		{
 			"name": "supportRules/report/DataCollector.js",
 			"module": "sap/ui/support/supportRules/report/DataCollector.js",
-			"size": 2851,
+			"size": 2855,
 			"required": [
 				"sap/base/security/encodeXML.js",
 				"sap/base/util/LoaderExtensions.js",
+				"sap/ui/VersionInfo.js",
 				"sap/ui/core/Component.js",
 				"sap/ui/core/Configuration.js",
 				"sap/ui/core/Core.js",
@@ -798,7 +808,7 @@
 		},
 		{
 			"name": "supportRules/report/DataCollector.js.map",
-			"size": 3652,
+			"size": 3659,
 			"isDebug": true
 		},
 		{
@@ -828,13 +838,14 @@
 		{
 			"name": "supportRules/report/ReportProvider-dbg.js",
 			"module": "sap/ui/support/supportRules/report/ReportProvider.js",
-			"size": 15034,
+			"size": 15082,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
 				"sap/base/security/encodeXML.js",
 				"sap/base/util/isEmptyObject.js",
 				"sap/base/util/isPlainObject.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/supportRules/report/Archiver.js",
 				"sap/ui/support/supportRules/report/IssueRenderer.js",
 				"sap/ui/thirdparty/jquery.js"
@@ -843,12 +854,13 @@
 		{
 			"name": "supportRules/report/ReportProvider.js",
 			"module": "sap/ui/support/supportRules/report/ReportProvider.js",
-			"size": 8082,
+			"size": 8118,
 			"required": [
 				"sap/base/Log.js",
 				"sap/base/security/encodeXML.js",
 				"sap/base/util/isEmptyObject.js",
 				"sap/base/util/isPlainObject.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/supportRules/report/Archiver.js",
 				"sap/ui/support/supportRules/report/IssueRenderer.js",
 				"sap/ui/thirdparty/jquery.js"
@@ -856,7 +868,7 @@
 		},
 		{
 			"name": "supportRules/report/ReportProvider.js.map",
-			"size": 9472,
+			"size": 9508,
 			"isDebug": true
 		},
 		{
@@ -920,11 +932,12 @@
 		{
 			"name": "supportRules/ui/IFrameController-dbg.js",
 			"module": "sap/ui/support/supportRules/ui/IFrameController.js",
-			"size": 5386,
+			"size": 5435,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
 				"sap/ui/base/ManagedObject.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/supportRules/CommunicationBus.js",
 				"sap/ui/support/supportRules/Constants.js",
 				"sap/ui/support/supportRules/WCBChannels.js",
@@ -934,10 +947,11 @@
 		{
 			"name": "supportRules/ui/IFrameController.js",
 			"module": "sap/ui/support/supportRules/ui/IFrameController.js",
-			"size": 3207,
+			"size": 3243,
 			"required": [
 				"sap/base/Log.js",
 				"sap/ui/base/ManagedObject.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/support/supportRules/CommunicationBus.js",
 				"sap/ui/support/supportRules/Constants.js",
 				"sap/ui/support/supportRules/WCBChannels.js",
@@ -946,7 +960,7 @@
 		},
 		{
 			"name": "supportRules/ui/IFrameController.js.map",
-			"size": 3787,
+			"size": 3817,
 			"isDebug": true
 		},
 		{
@@ -1058,7 +1072,7 @@
 		{
 			"name": "supportRules/ui/controllers/Issues-dbg.controller.js",
 			"module": "sap/ui/support/supportRules/ui/controllers/Issues.controller.js",
-			"size": 10004,
+			"size": 9945,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/deepExtend.js",
@@ -1066,7 +1080,6 @@
 				"sap/ui/model/json/JSONModel.js",
 				"sap/ui/support/supportRules/CommunicationBus.js",
 				"sap/ui/support/supportRules/Constants.js",
-				"sap/ui/support/supportRules/IssueManager.js",
 				"sap/ui/support/supportRules/WCBChannels.js",
 				"sap/ui/support/supportRules/ui/controllers/BaseController.js",
 				"sap/ui/support/supportRules/ui/external/ElementTree.js",
@@ -1077,14 +1090,13 @@
 		{
 			"name": "supportRules/ui/controllers/Issues.controller.js",
 			"module": "sap/ui/support/supportRules/ui/controllers/Issues.controller.js",
-			"size": 6558,
+			"size": 6513,
 			"required": [
 				"sap/base/util/deepExtend.js",
 				"sap/m/OverflowToolbarAssociativePopoverControls.js",
 				"sap/ui/model/json/JSONModel.js",
 				"sap/ui/support/supportRules/CommunicationBus.js",
 				"sap/ui/support/supportRules/Constants.js",
-				"sap/ui/support/supportRules/IssueManager.js",
 				"sap/ui/support/supportRules/WCBChannels.js",
 				"sap/ui/support/supportRules/ui/controllers/BaseController.js",
 				"sap/ui/support/supportRules/ui/external/ElementTree.js",
@@ -1094,13 +1106,13 @@
 		},
 		{
 			"name": "supportRules/ui/controllers/Issues.controller.js.map",
-			"size": 7449,
+			"size": 7421,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/ui/controllers/Main-dbg.controller.js",
 			"module": "sap/ui/support/supportRules/ui/controllers/Main.controller.js",
-			"size": 9632,
+			"size": 9713,
 			"isDebug": true,
 			"required": [
 				"sap/m/library.js",
@@ -1122,7 +1134,7 @@
 		{
 			"name": "supportRules/ui/controllers/Main.controller.js",
 			"module": "sap/ui/support/supportRules/ui/controllers/Main.controller.js",
-			"size": 6501,
+			"size": 6535,
 			"required": [
 				"sap/m/library.js",
 				"sap/ui/VersionInfo.js",
@@ -1142,13 +1154,13 @@
 		},
 		{
 			"name": "supportRules/ui/controllers/Main.controller.js.map",
-			"size": 7253,
+			"size": 7311,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/ui/controllers/PresetsController-dbg.js",
 			"module": "sap/ui/support/supportRules/ui/controllers/PresetsController.js",
-			"size": 21059,
+			"size": 21119,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/deepExtend.js",
@@ -1156,6 +1168,7 @@
 				"sap/m/MessageBox.js",
 				"sap/m/MessageToast.js",
 				"sap/ui/core/Fragment.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/core/library.js",
 				"sap/ui/support/supportRules/ui/controllers/BaseController.js",
 				"sap/ui/support/supportRules/ui/models/Documentation.js",
@@ -1167,13 +1180,14 @@
 		{
 			"name": "supportRules/ui/controllers/PresetsController.js",
 			"module": "sap/ui/support/supportRules/ui/controllers/PresetsController.js",
-			"size": 10036,
+			"size": 10077,
 			"required": [
 				"sap/base/util/deepExtend.js",
 				"sap/m/GroupHeaderListItem.js",
 				"sap/m/MessageBox.js",
 				"sap/m/MessageToast.js",
 				"sap/ui/core/Fragment.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/core/library.js",
 				"sap/ui/support/supportRules/ui/controllers/BaseController.js",
 				"sap/ui/support/supportRules/ui/models/Documentation.js",
@@ -1184,7 +1198,7 @@
 		},
 		{
 			"name": "supportRules/ui/controllers/PresetsController.js.map",
-			"size": 11480,
+			"size": 11514,
 			"isDebug": true
 		},
 		{
@@ -1342,10 +1356,11 @@
 		{
 			"name": "supportRules/ui/models/PresetsUtils-dbg.js",
 			"module": "sap/ui/support/supportRules/ui/models/PresetsUtils.js",
-			"size": 5807,
+			"size": 5856,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/extend.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/core/util/File.js",
 				"sap/ui/support/library.js",
 				"sap/ui/support/supportRules/Constants.js",
@@ -1357,9 +1372,10 @@
 		{
 			"name": "supportRules/ui/models/PresetsUtils.js",
 			"module": "sap/ui/support/supportRules/ui/models/PresetsUtils.js",
-			"size": 2531,
+			"size": 2565,
 			"required": [
 				"sap/base/util/extend.js",
+				"sap/ui/core/date/UI5Date.js",
 				"sap/ui/core/util/File.js",
 				"sap/ui/support/library.js",
 				"sap/ui/support/supportRules/Constants.js",
@@ -1370,7 +1386,7 @@
 		},
 		{
 			"name": "supportRules/ui/models/PresetsUtils.js.map",
-			"size": 3452,
+			"size": 3484,
 			"isDebug": true
 		},
 		{
@@ -1504,14 +1520,13 @@
 		{
 			"name": "supportRules/ui/views/Issues.view.xml",
 			"module": "sap/ui/support/supportRules/ui/views/Issues.view.xml",
-			"size": 7382,
+			"size": 7904,
 			"required": [
 				"sap/m/Bar.js",
 				"sap/m/Button.js",
 				"sap/m/FlexBox.js",
 				"sap/m/FlexItemData.js",
 				"sap/m/FormattedText.js",
-				"sap/m/HBox.js",
 				"sap/m/Label.js",
 				"sap/m/Link.js",
 				"sap/m/Menu.js",
@@ -1530,7 +1545,11 @@
 				"sap/ui/core/ListItem.js",
 				"sap/ui/layout/Splitter.js",
 				"sap/ui/layout/VerticalLayout.js",
-				"sap/ui/layout/form/SimpleForm.js",
+				"sap/ui/layout/form/ColumnElementData.js",
+				"sap/ui/layout/form/ColumnLayout.js",
+				"sap/ui/layout/form/Form.js",
+				"sap/ui/layout/form/FormContainer.js",
+				"sap/ui/layout/form/FormElement.js",
 				"sap/ui/support/supportRules/ui/controllers/Issues.controller.js"
 			]
 		},
@@ -1609,38 +1628,37 @@
 		{
 			"name": "supportRules/ui/views/RuleDetails.fragment.xml",
 			"module": "sap/ui/support/supportRules/ui/views/RuleDetails.fragment.xml",
-			"size": 3355,
+			"size": 4163,
 			"required": [
 				"sap/m/Bar.js",
 				"sap/m/FlexItemData.js",
 				"sap/m/HBox.js",
 				"sap/m/IconTabFilter.js",
 				"sap/m/IconTabHeader.js",
-				"sap/m/Label.js",
 				"sap/m/Link.js",
 				"sap/m/Page.js",
 				"sap/m/Panel.js",
 				"sap/m/Text.js",
 				"sap/m/Title.js",
 				"sap/ui/codeeditor/CodeEditor.js",
-				"sap/ui/layout/SplitterLayoutData.js",
-				"sap/ui/layout/VerticalLayout.js",
-				"sap/ui/layout/form/SimpleForm.js"
+				"sap/ui/layout/form/ColumnElementData.js",
+				"sap/ui/layout/form/ColumnLayout.js",
+				"sap/ui/layout/form/Form.js",
+				"sap/ui/layout/form/FormContainer.js",
+				"sap/ui/layout/form/FormElement.js"
 			]
 		},
 		{
 			"name": "supportRules/ui/views/RuleUpdate.fragment.xml",
 			"module": "sap/ui/support/supportRules/ui/views/RuleUpdate.fragment.xml",
-			"size": 8781,
+			"size": 10366,
 			"required": [
 				"sap/m/Bar.js",
 				"sap/m/Button.js",
 				"sap/m/FlexItemData.js",
-				"sap/m/HBox.js",
 				"sap/m/IconTabFilter.js",
 				"sap/m/IconTabHeader.js",
 				"sap/m/Input.js",
-				"sap/m/Label.js",
 				"sap/m/Link.js",
 				"sap/m/MultiComboBox.js",
 				"sap/m/Page.js",
@@ -1652,9 +1670,11 @@
 				"sap/ui/core/CustomData.js",
 				"sap/ui/core/Icon.js",
 				"sap/ui/core/Item.js",
-				"sap/ui/layout/HorizontalLayout.js",
-				"sap/ui/layout/VerticalLayout.js",
-				"sap/ui/layout/form/SimpleForm.js"
+				"sap/ui/layout/form/ColumnElementData.js",
+				"sap/ui/layout/form/ColumnLayout.js",
+				"sap/ui/layout/form/Form.js",
+				"sap/ui/layout/form/FormContainer.js",
+				"sap/ui/layout/form/FormElement.js"
 			]
 		},
 		{
@@ -1692,13 +1712,13 @@
 		{
 			"name": "supportRules/util/RuleValidator-dbg.js",
 			"module": "sap/ui/support/supportRules/util/RuleValidator.js",
-			"size": 3176,
+			"size": 3099,
 			"isDebug": true
 		},
 		{
 			"name": "supportRules/util/RuleValidator.js",
 			"module": "sap/ui/support/supportRules/util/RuleValidator.js",
-			"size": 807
+			"size": 810
 		},
 		{
 			"name": "supportRules/util/RuleValidator.js.map",

@@ -19,9 +19,8 @@ sap.ui.define([
 	 * Only available during build time {@link sap.ui.fl.apply._internal.changes.descriptor.RegistrationBuild}.
 	 *
 	 * @namespace sap.ui.fl.apply._internal.changes.descriptor.ui5.AddComponentUsages
-	 * @experimental
 	 * @since 1.86
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.apply._internal
 	 */
@@ -29,8 +28,8 @@ sap.ui.define([
 
 		/**
 		 * Method to apply the <code>appdescr_ui5_addComponentUsages</code> change to the manifest.
-		 * @param {object} oManifest Original manifest
-		 * @param {object} oChange Change with type <code>appdescr_ui5_addComponentUsages</code>
+		 * @param {object} oManifest - Original manifest
+		 * @param {sap.ui.fl.apply._internal.flexObjects.AppDescriptorChange} oChange - Change with type <code>appdescr_ui5_addComponentUsages</code>
 		 * @returns {object} Updated manifest with <code>sap.ui5/componentUsages</code> entity
 		 *
 		 * @private

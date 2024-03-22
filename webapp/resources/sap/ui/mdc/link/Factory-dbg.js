@@ -11,7 +11,7 @@ sap.ui.define([], function() {
 	 * @namespace Factory to access services outside of sap.ui.mdc library like for example <code>ushell</code> services.
 	 * @name sap.ui.mdc.link.Factory
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @since 1.54.0
 	 */

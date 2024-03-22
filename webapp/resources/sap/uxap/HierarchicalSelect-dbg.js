@@ -9,10 +9,8 @@ sap.ui.define([
 	"sap/m/Select",
 	"sap/ui/Device",
 	"sap/ui/thirdparty/jquery",
-	"./library",
-	"./HierarchicalSelectRenderer",
-	"sap/ui/thirdparty/jqueryui/jquery-ui-position"
-], function(Select, Device, jQuery, library, HierarchicalSelectRenderer /*jqueryUiPosition,*/) {
+	"./HierarchicalSelectRenderer"
+], function(Select, Device, jQuery, HierarchicalSelectRenderer) {
 	"use strict";
 
 	/**
@@ -99,7 +97,7 @@ sap.ui.define([
 	 * Keyboard handling requirement to have the same behavior on [ENTER] key
 	 * as on [SPACE] key (namely, to toggle the open state the select dropdown)
 	 */
-	HierarchicalSelect.prototype.onsapenter = Select.prototype.onsapspace;
+	HierarchicalSelect.prototype.onsapenter = Select.prototype.ontap;
 
 	/**
 	 * Keyboard handling of [UP], [PAGE-UP], [PAGE-DOWN], [HOME], [END] keys

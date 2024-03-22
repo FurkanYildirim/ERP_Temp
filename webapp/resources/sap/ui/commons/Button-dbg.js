@@ -35,7 +35,7 @@ sap.ui.define([
 	 * @implements sap.ui.commons.ToolbarItem, sap.ui.core.IFormContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -341,7 +341,7 @@ sap.ui.define([
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} Current accessibility state of the control.
+	 * @returns {sap.ui.core.AccessibilityInfo} Current accessibility state of the control.
 	 * @protected
 	 */
 	Button.prototype.getAccessibilityInfo = function() {

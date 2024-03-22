@@ -6,10 +6,12 @@
 
 sap.ui.define([
 	"sap/ui/fl/registry/Settings",
-	"sap/ui/fl/Layer"
+	"sap/ui/fl/Layer",
+	"sap/ui/fl/Utils"
 ], function(
 	Settings,
-	Layer
+	Layer,
+	Utils
 ) {
 	"use strict";
 
@@ -30,13 +32,13 @@ sap.ui.define([
 		 * @returns {Promise<boolean>} Promise resolving with a flag if publishing is available
 		 *
 		 * @private
-	 	 * @ui5-restricted
+		 * @ui5-restricted
 		 */
 		isPublishAvailable: function () {
 			return Settings.getInstance().then(function (oSettings) {
 				return (
-					!oSettings.isProductiveSystem()
-					&& oSettings.isSystemWithTransports()
+					oSettings.isPublishAvailable() ||
+					(!oSettings.isProductiveSystem() && oSettings.isSystemWithTransports())
 				);
 			});
 		},
@@ -50,23 +52,31 @@ sap.ui.define([
 		 * @description App variant functionality is only supported in S/4HANA Cloud Platform & S/4HANA on Premise.
 		 * App variant functionality should be available if the following conditions are met:
 		 * When the current layer is 'CUSTOMER'.
-		 * When it is not a standalone app running on Neo Cloud.
+		 * When it is not a standalone app.
 		 * When the backend supports this feature.
 		 * @private
-	 	 * @ui5-restricted
+		 * @ui5-restricted
 		 */
 		isSaveAsAvailable: function (sLayer) {
-			return Settings.getInstance().then(function (oSettings) {
-				if (
+			return Promise.all([
+				Settings.getInstance(),
+				Utils.getUShellService("CrossApplicationNavigation")
+			])
+			.then(function (aPromises) {
+				var oSettings = aPromises[0];
+				var oCrossAppNav = aPromises[1];
+				return (
 					oSettings.isAppVariantSaveAsEnabled()
 					&& sLayer === Layer.CUSTOMER
-					&& sap.ushell_abap /* gravity todo*/ // Not a standalone app
-				) {
-					return true;
-				}
+					&& oCrossAppNav !== undefined // Not a standalone app
+				);
+			})
+			.catch(function () {
+				//either Settings or CrossApplicationNavigation service from Unified Shell failed -> disable save as app variant
 				return false;
 			});
 		},
+
 
 		/**
 		 * Determine if the context-based adaptation feature is available in the connected backend
@@ -75,7 +85,7 @@ sap.ui.define([
 		 * @returns {Promise<boolean>} Promise resolving with a flag if the context-based adaptaion is available
 		 *
 		 * @private
-	 	 * @ui5-restricted
+		 * @ui5-restricted
 		 */
 		isContextBasedAdaptationAvailable: function(sLayer) {
 			return Settings.getInstance().then(function (oSettings) {

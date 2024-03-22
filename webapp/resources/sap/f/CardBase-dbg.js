@@ -37,7 +37,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -243,14 +243,29 @@ sap.ui.define([
 	 * @private
 	 */
 	CardBase.prototype._getAriaLabelledIds = function () {
-		var oHeader = this.getCardHeader(),
-			sAriaLabelledBy = "";
+		var oHeader = this.getCardHeader();
 
-		if (oHeader && oHeader._getTitle && oHeader._getTitle()) {
-			sAriaLabelledBy = oHeader._getTitle().getId();
+		if (oHeader) {
+			if (this._isInsideGridContainer()) {
+				return oHeader._getAriaLabelledBy();
+			}
+
+			if (oHeader._getTitle && oHeader._getTitle()) {
+				return oHeader._getTitle().getId();
+			}
 		}
 
-		return sAriaLabelledBy;
+		return this._ariaText.getId();
+	};
+
+	/**
+	 * Returns if the control is inside a sap.f.GridContainer
+	 *
+	 * @private
+	 */
+	CardBase.prototype._isInsideGridContainer = function() {
+		var oParent = this.getParent();
+		return oParent && oParent.isA("sap.f.GridContainer");
 	};
 
 	/**

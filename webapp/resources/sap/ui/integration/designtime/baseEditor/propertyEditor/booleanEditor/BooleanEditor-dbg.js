@@ -22,7 +22,7 @@ sap.ui.define([
 	 * @alias sap.ui.integration.designtime.baseEditor.propertyEditor.booleanEditor.BooleanEditor
 	 * @author SAP SE
 	 * @since 1.72
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @experimental 1.72

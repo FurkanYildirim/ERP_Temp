@@ -6,7 +6,7 @@
 
 sap.ui.define([
 		'sap/ui/mdc/util/TypeUtil',
-		'sap/ui/mdc/enum/BaseType',
+		'sap/ui/mdc/enums/BaseType',
 		'sap/base/util/ObjectPath'
 	], function(BaseTypeUtil, BaseType, ObjectPath) {
 	"use strict";
@@ -20,8 +20,9 @@ sap.ui.define([
 	 * @private
 	 * @experimental As of version 1.79
 	 * @since 1.79.0
+	 * @deprecated (since 1.115.0) - please see {@link sap.ui.mdc.BaseDelegate.getTypeMap}
 	 * @alias sap.ui.mdc.odata.TypeUtil
-	 * @deprecated This module should not be used and will be removed in future versions!
+	 * @ui5-restricted sap.ui.mdc
 	 */
 	var TypeUtil = Object.assign({}, BaseTypeUtil, {
 
@@ -125,8 +126,8 @@ sap.ui.define([
 
 		internalizeValue: function (vValue, vType, oFormatOptions, oConstraints) {
 			var oTypeInstance = this._normalizeType(vType, oFormatOptions, oConstraints);
-			if (this.getBaseType(oTypeInstance) === BaseType.Numeric) {
-				if (typeof sValue !== "string" && (oTypeInstance.getMetadata().getName() === "sap.ui.model.odata.type.Int64" || oTypeInstance.getMetadata().getName() === "sap.ui.model.odata.type.Decimal")) {
+			if (this.getBaseTypeForType(oTypeInstance) === BaseType.Numeric) {
+				if (typeof vValue !== "string" && (oTypeInstance.getMetadata().getName() === "sap.ui.model.odata.type.Int64" || oTypeInstance.getMetadata().getName() === "sap.ui.model.odata.type.Decimal")) {
 					// INT64 and Decimal using string as internal value -> if for some reason a number comes in convert it to string
 					return vValue.toString(); // don't use type as this could have locale dependent parsing
 				}
@@ -136,13 +137,53 @@ sap.ui.define([
 
 		externalizeValue: function (vValue, vType, oFormatOptions, oConstraints) {
 			var oTypeInstance = this._normalizeType(vType, oFormatOptions, oConstraints);
-			if (this.getBaseType(oTypeInstance) === BaseType.Numeric) {
+			if (this.getBaseTypeForType(oTypeInstance) === BaseType.Numeric) {
 				if (typeof vValue !== "string" && (oTypeInstance.getMetadata().getName() === "sap.ui.model.odata.type.Int64" || oTypeInstance.getMetadata().getName() === "sap.ui.model.odata.type.Decimal")) {
 					// INT64 and Decimal parsed always to string, if for some reason a number comes in -> convert to string, but don't use type at this might have locale dependent formatting
 					return vValue.toString();
 				}
 			}
 			return BaseTypeUtil.externalizeValue.call(this, vValue, vType, oFormatOptions, oConstraints);
+		},
+
+		/*
+		* For sap.ui.model.odata.type.Currency and sap.ui.model.odata.type.Unit the
+		* CompositeBinding has 3 parts, Number, Currency/Unit and unit map.
+		* On the first call of formatValue the unit map is analyzed and stored inside the
+		* Type. Later, on parsing it is used. Without initializing the unit map parsing is
+		* not working.
+		*
+		* In the sap.ui.mdc.Field the Type is created via Binding. So when the value of the Field
+		* gets the unit map for the first time we need to initialize the type via formatValue.
+		* (As no condition is created if there is no number or unit formatValue might not be called before
+		* first user input.)
+		*
+		* We return the given unit map in the TypeInitialization object to allow to initialize the "cloned"
+		* Unit/Currency-Type (internally used by the two Input controls for number and unit) with the unit map.
+		*/
+		initializeTypeFromValue: function(oType, vValue) {
+
+			if (oType && this.getBaseType(oType.getMetadata().getName()) === BaseType.Unit && Array.isArray(vValue) && vValue.length > 2) {
+				if (vValue[2] !== undefined) {
+					var oTypeInitialization = {mCustomUnits: vValue[2]};
+					this.initializeInternalType(oType, oTypeInitialization);
+					return oTypeInitialization;
+				}
+			} else {
+				return {}; // to mark initialization as finished as not needed for normal types
+			}
+
+			return null; // not all needed information are given right now.
+
+		},
+
+		initializeInternalType: function(oType, oTypeInitialization) {
+
+			if (oTypeInitialization && oTypeInitialization.mCustomUnits !== undefined) {
+				// if already initialized initialize new type too.
+				oType.formatValue([null, null, oTypeInitialization.mCustomUnits], "string");
+			}
+
 		}
 	});
 

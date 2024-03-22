@@ -13,7 +13,6 @@ sap.ui.define([
 	"sap/base/util/merge",
 	"sap/ui/util/XMLHelper",
 	"sap/ui/core/mvc/EventHandlerResolver",
-	"sap/base/util/includes",
 	"sap/base/util/ObjectPath",
 	"sap/base/util/isPlainObject",
 	"sap/ui/core/Fragment"
@@ -24,7 +23,6 @@ sap.ui.define([
 	merge,
 	XMLHelper,
 	EventHandlerResolver,
-	includes,
 	ObjectPath,
 	isPlainObject,
 	Fragment
@@ -213,6 +211,21 @@ sap.ui.define([
 		createAndAddCustomData: function(oControl, sCustomDataKey, sValue) {
 			oControl.setAttributeNS(CUSTOM_DATA_NS, "custom.data.via.modifier:" + sCustomDataKey, XmlTreeModifier._escapeCurlyBracketsInString(sValue));
 			return Promise.resolve();
+		},
+
+		/**
+		 * @inheritDoc
+		 */
+		getCustomDataInfo: function(oControl, sCustomDataKey) {
+			var oCustomData = oControl.attributes["custom.data.via.modifier:" + sCustomDataKey];
+			if (oCustomData) {
+				return {
+					customData: oCustomData,
+					customDataValue: oCustomData.value
+				};
+			} else {
+				return {};
+			}
 		},
 
 		/**
@@ -835,7 +848,7 @@ sap.ui.define([
 
 					sEventHandler += "(" + aParams.join(",") + ")";
 
-					if (!includes(aEventHandlers, sEventHandler)) {
+					if (!aEventHandlers.includes(sEventHandler)) {
 						aEventHandlers.push(sEventHandler);
 					}
 

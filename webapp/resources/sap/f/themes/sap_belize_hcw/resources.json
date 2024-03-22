@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "Card.less",
-			"size": 649,
+			"size": 656,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -50,40 +50,40 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 4668,
+			"size": 4788,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 118904,
+			"size": 142527,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 118536,
+			"size": 142159,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 92630,
+			"size": 97232,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/f/themes/sap_belize_hcw/library-parameters.json",
-			"size": 1904,
+			"size": 1960,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library.css",
-			"size": 92630,
+			"size": 97228,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library.less",
-			"size": 8496,
+			"size": 8503,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -95,17 +95,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 96297,
+			"size": 101447,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 96298,
+			"size": 101444,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "resources.json",
-			"size": 1987
+			"size": 1989
 		}
 	]
 }

@@ -321,6 +321,11 @@ html.sap-desktop .sapMFooter-CTX .sapMBtnInner.sapMBtnReject {
 		padding-right: 0.4375rem;
 	}
 }
+
+.sapMTB-Info-CTX .sapMBtn:hover > .sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed) bdi,
+.sapMTB-Info-CTX .sapMBtn:hover:not(.sapMBtnDisabled) > .sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnEmphasized) .sapUiIcon {
+	color: @sapUiContentContrastIconColor;
+}
 /* END "Button.less" */
 
 /* START "Carousel.less" */
@@ -328,6 +333,8 @@ html.sap-desktop .sapMFooter-CTX .sapMBtnInner.sapMBtnReject {
 /* CSS for control sap.m/Carousel  */
 /* Belize theme                    */
 /* =============================== */
+
+@_sap_m_Carousel_BackgroundColorTranslucent: @sapUiGlobalBackgroundColor;
 /* END "Carousel.less" */
 
 /* START "CheckBox.less" */
@@ -633,13 +640,6 @@ html.sap-desktop .sapMGenericTag {
 	}
 }
 
-html.sap-desktop .sapMGTActionButtonPress.sapMGT:focus
-{
-		.sapMGTFocusDiv{
-			border: none;
-		}
-}
-
 html.sap-desktop .sapMGTActionButtonPress.sapMGT:active
 {
 	.sapMGTFocusDiv{
@@ -792,7 +792,7 @@ html.sap-desktop .sapMGTActionButtonPress.sapMGT:focus-visible
 /************************************************************/
 
 .sapMGTLineMode .sapMGTHdrTxt {
-	color: @sapUiShellTextColor;
+	color: @sapLinkColor;
 	font-size: @sapMFontMediumSize;
 	text-shadow: @sapUiShadowText;
 }
@@ -963,6 +963,10 @@ html.sap-desktop .sapMGT.sapMGTBackgroundImage:active .sapMGTFocusDiv {
 @_sap_m_IconTabBar_HeaderMinHeight: 3rem;
 
 /* Header Container */
+
+.sapMITH {
+	z-index: 1;
+}
 
 .sapMITH:not(.sapMITBTextOnly) .sapMITBHead {
 	padding-top: 1rem;
@@ -1159,6 +1163,15 @@ html.sap-desktop {
 		}
 	}
 
+	.sapMITHStartOverflow,
+	.sapMITHEndOverflow {
+		.sapMITBItem:not(.sapUiDnDDragging):focus:active {
+			&::after {
+				border: @sapUiContentFocusWidth @sapUiContentFocusStyle @sapUiContentContrastFocusColor;
+			}
+		}
+	}
+
 	.sapMITH.sapUiSizeCompact {
 
 		.sapMITBItem.sapMITBVertical:focus.sapMITBAll {
@@ -1272,16 +1285,6 @@ html.sap-desktop {
 }
 /* END "ComboBoxBase.less" */
 
-/* START "LightBox.less" */
-/* =============================== */
-/* CSS for control sap.m/LightBox  */
-/* Belize theme                    */
-/* =============================== */
-
-@_sap_m_LightBox_ErrorIconColor: fade(@sapUiContentNonInteractiveIconColor, 50);
-
-/* END "LightBox.less" */
-
 /* START "Link.less" */
 /* =========================== */
 /* CSS for control sap.m/Link  */
@@ -1352,6 +1355,32 @@ html.sap-desktop {
 	border-color: transparent;
 }
 /* END "ListItemBase.less" */
+
+/* START "MenuListItem.less" */
+/* =================================== */
+/* CSS for control sap.m/MenuListItem  */
+/* Belize theme                        */
+/* =================================== */
+
+.sapMMenu .sapUiMnuLst .sapUiMnuItm {
+	.sapUiMnuItmIco + .sapUiMnuItmTxt {
+		margin-left: 3rem;
+	}
+}
+
+.sapMMenu.sapUiMnu.sapUiMnuCozySupport.sapUiSizeCozy .sapUiMnuItmTxt {
+	padding-right: 4rem;
+}
+
+.sapUiSizeCompact {
+	.sapMMenu.sapUiMnu.sapUiMnuCozySupport .sapUiMnuItmTxt {
+		padding-right: 2.75rem;
+	}
+	.sapMMenu .sapUiMnuLst.sapUiMnuNoSbMnu .sapUiMnuItm .sapUiMnuItmTxt {
+		padding-right: 0.75rem;
+	}
+}
+/* END "MenuListItem.less" */
 
 /* START "MessageStrip.less" */
 /* =================================== */
@@ -1749,12 +1778,17 @@ html.sap-phone {
 }
 
 /* if Panel is not expandable, we do wish header to come with own border */
-.sapMPanel > .sapMPanelHdr,
+.sapMPanel .sapMPanelHeadingDiv > .sapMPanelHdr,
 /* notice: sapMPanelWrappingDiv is available if Panel is expandable */
 .sapMPanelWrappingDiv,
 /* do not want border if expanded and if only header text */
 .sapMPanelWrappingDivTb {
 	border-bottom: 1px solid @sapUiGroupTitleBorderColor;
+}
+
+.sapMPanel .sapMPanelWrappingDiv .sapMPanelHdr,
+.sapMPanel .sapMPanelWrappingDivTb .sapMIBar.sapMTB {
+	margin-left: 3rem;
 }
 
 .sapMPanelContent:not(.sapMPanelBGTransparent) {
@@ -2634,6 +2668,9 @@ html .sapMSinglePC .sapMSinglePCAppointmentWrap .sapUiCalendarApp.sapUiCalendarA
 .sapMSliderInner {
 	background: @_sap_m_Slider_Background;
 }
+.sapMSliderTickmarks {
+	top: -0.8125em;
+}
 
 .sapMSliderInner,
 .sapMSliderProgress {
@@ -2662,6 +2699,13 @@ html .sapMSinglePC .sapMSinglePCAppointmentWrap .sapUiCalendarApp.sapUiCalendarA
 /* disabled */
 .sapMSliderDisabled {
 	opacity: 0.5;
+}
+
+.sapUiSizeCompact {
+	.sapMSliderTickmarks {
+		height: 1rem;
+		top: -0.4375rem;
+	}
 }
 /* END "Slider.less" */
 
@@ -2774,6 +2818,10 @@ html.sap-desktop .sapMST .sapMGT:active .sapMGTFocusDiv:after {
 	.sapMSB .sapMSBText .sapMBtnInner.sapMBtnIconFirst {
 		padding-left: 0.425rem;
 	}
+}
+
+.sapMTB-Transparent-CTX .sapMSB .sapMSBText:hover .sapMBtnDefault.sapMBtnInner.sapMBtnText {
+	padding-right: 0.6875rem;
 }
 /* END "SplitButton.less" */
 
@@ -2972,6 +3020,19 @@ html.sap-desktop .sapMSwtCont:focus > .sapMSwt {
 
 @_sap_m_Text_TextShadowInTransparentToolbar: 0 1px 0 @sapUiContentContrastShadowColor;
 /* END "Text.less" */
+
+/* START "TextArea.less" */
+/* =============================== */
+/* CSS for control sap.m/TextArea  */
+/* Belize theme                    */
+/* =============================== */
+
+@_sapMTextAreaPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaReadonlyPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaValueStateSuccessPadding: 0.5625rem 0.6875rem;
+@_sapMTextAreaValueStateInformationPadding: 0.5rem 0.625rem;
+@_sapMTextAreaValueStateErrorWarningPadding: 0.5rem 0.625rem;
+/* END "TextArea.less" */
 
 /* START "TileContent.less" */
 /* ================================== */
@@ -3197,7 +3258,7 @@ html.sap-desktop .sapMToken.sapMTokenSelected:focus {
 /* Belize theme                   */
 /* ============================== */
 
-html.sap-desktop .sapMTBActive:focus {
+html.sap-desktop .sapMTBActive.sapMTBFocused {
 	outline: 1px dotted @sapUiContentFocusColor;
 	outline-offset: -0.1875rem;
 }
@@ -3220,7 +3281,7 @@ html.sap-desktop .sapMTBActive:focus {
 	padding-right: 0.25rem;
 }
 
-html.sap-desktop .sapMTB-Info-CTX.sapMTBActive:focus {
+html.sap-desktop .sapMTB-Info-CTX.sapMTBActive.sapMTBFocused{
 	outline-color: @sapUiContentContrastFocusColor;
 }
 /* END "Toolbar.less" */

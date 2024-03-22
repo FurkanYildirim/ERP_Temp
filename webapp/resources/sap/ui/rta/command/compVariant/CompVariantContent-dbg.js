@@ -20,7 +20,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.BaseCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.102
@@ -81,7 +81,6 @@ sap.ui.define([
 	};
 
 	CompVariantContent.prototype.execute = function() {
-		this.setIsModifiedBefore(this.getElement().getModified());
 		this.getElement().setModified(true);
 		var oNewVariantContent = setVariantContent.call(this, this.getNewContent());
 		callFlAPIFunction.call(this, "updateVariantContent", this.getVariantId(), {content: oNewVariantContent});

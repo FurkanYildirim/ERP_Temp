@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "AdaptFiltersPanel.less",
-			"size": 628,
+			"size": 550,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -20,13 +20,13 @@
 		},
 		{
 			"name": "Chart.less",
-			"size": 889,
+			"size": 910,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "FieldBase.less",
-			"size": 3775,
+			"size": 3789,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -56,7 +56,7 @@
 		},
 		{
 			"name": "PersonalizationDialog.less",
-			"size": 1050,
+			"size": 938,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -92,7 +92,7 @@
 		},
 		{
 			"name": "ValueHelpDialog.less",
-			"size": 4498,
+			"size": 4699,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -104,7 +104,7 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 2031,
+			"size": 1813,
 			"theme": "base"
 		},
 		{
@@ -115,29 +115,29 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 116271,
+			"size": 139362,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 15660,
+			"size": 15540,
 			"theme": "base"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/mdc/themes/base/library-parameters.json",
-			"size": 837,
+			"size": 738,
 			"theme": "base"
 		},
 		{
 			"name": "library.css",
-			"size": 15657,
+			"size": 15539,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 25305,
+			"size": 25351,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -149,17 +149,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 16166,
+			"size": 16156,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 16163,
+			"size": 16155,
 			"theme": "base"
 		},
 		{
 			"name": "resources.json",
-			"size": 2689
+			"size": 2688
 		}
 	]
 }

@@ -39,7 +39,7 @@ sap.ui.define([
 	 * @extends sap.f.cards.BaseHeader
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -91,6 +91,12 @@ sap.ui.define([
 				number: { "type": "string", group : "Data" },
 
 				/**
+				 * Whether the main numeric indicator is visible or not
+				 * @since 1.109
+				 */
+				numberVisible: { "type": "boolean", defaultValue : true},
+
+				/**
 				 * Defines the unit of measurement (scaling prefix) for the main indicator.
 				 * Financial characters can be used for currencies and counters. The International System of Units (SI) prefixes can be used.
 				 * If the unit contains more than three characters, only the first three characters are displayed.
@@ -124,6 +130,7 @@ sap.ui.define([
 				 * The alignment of the side indicators.
 				 */
 				sideIndicatorsAlignment: { "type": "sap.f.cards.NumericHeaderSideIndicatorsAlignment", group: "Appearance", defaultValue : "Begin" }
+
 			},
 			aggregations: {
 
@@ -214,7 +221,8 @@ sap.ui.define([
 			.setScale(this.getScale())
 			.setTrend(this.getTrend())
 			.setState(this.getState())
-			.setSideIndicatorsAlignment(this.getSideIndicatorsAlignment());
+			.setSideIndicatorsAlignment(this.getSideIndicatorsAlignment())
+			.setNumberVisible(this.getNumberVisible());
 	};
 
 
@@ -225,7 +233,7 @@ sap.ui.define([
 	 * those controls.
 	 *
 	 * @param {sap.ui.core.Control} oElement - The Control that gets rendered by the RenderManager
-	 * @param {object} mAriaProps - The mapping of "aria-" prefixed attributes
+	 * @param {{role: string, level: string}} mAriaProps - The mapping of "aria-" prefixed attributes
 	 * @protected
 	 */
 	NumericHeader.prototype.enhanceAccessibilityState = function (oElement, mAriaProps) {

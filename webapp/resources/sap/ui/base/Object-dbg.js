@@ -26,7 +26,7 @@ sap.ui.define(['./Metadata', "sap/base/Log"],
 	 * @class Base class for all SAPUI5 Objects.
 	 * @abstract
 	 * @author Malte Wedel
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 * @alias sap.ui.base.Object
 	 * @throws {Error} When an instance of the class or its subclasses is created without the <code>new</code> operator.
@@ -92,21 +92,30 @@ sap.ui.define(['./Metadata', "sap/base/Log"],
 	 */
 
 	/**
+	 * The structure of the "metadata" object which is passed when inheriting from sap.ui.base.Object using its static "extend" method.
+	 * See {@link sap.ui.base.Object.extend} for details on its usage.
+	 *
+	 * @typedef {object} sap.ui.base.Object.MetadataOptions
+	 *
+	 * @property {string[]} [interfaces] set of names of implemented interfaces (defaults to no interfaces)
+	 * @property {boolean} [abstract=false] flag that marks the class as abstract (purely informational, defaults to false)
+	 * @property {boolean} [final=false] flag that marks the class as final (defaults to false)
+	 * @property {boolean} [deprecated=false] flag that marks the class as deprecated (defaults to false). May lead to an additional warning
+	 *     log message at runtime when the object is still used. For the documentation, also add a <code>@deprecated</code> tag in the JSDoc,
+	 *     describing since when it is deprecated and what any alternatives are.
+	 *
+	 * @public
+	 */
+
+	/**
 	 * Creates a subclass of class sap.ui.base.Object with name <code>sClassName</code>
 	 * and enriches it with the information contained in <code>oClassInfo</code>.
 	 *
 	 * <code>oClassInfo</code> might contain three kinds of information:
 	 * <ul>
-	 * <li><code>metadata:</code> an (optional) object literal with metadata about the class.
-	 * The information in the object literal will be wrapped by an instance of {@link sap.ui.base.Metadata Metadata}
-	 * and might contain the following information
-	 * <ul>
-	 * <li><code>interfaces:</code> {string[]} (optional) set of names of implemented interfaces (defaults to no interfaces)</li>
-	 * <li><code>publicMethods:</code> {string[]} (optional) list of methods that should be part of the public
-	 * facade of the class</li>
-	 * <li><code>abstract:</code> {boolean} (optional) flag that marks the class as abstract (purely informational, defaults to false)</li>
-	 * <li><code>final:</code> {boolean} (optional) flag that marks the class as final (defaults to false)</li>
-	 * </ul>
+	 * <li><code>metadata:</code> an (optional) object literal with metadata about the class like implemented interfaces,
+	 * see {@link sap.ui.base.Object.MetadataOptions MetadataOptions} for details.
+	 * The information in the object literal will be wrapped by an instance of {@link sap.ui.base.Metadata Metadata}.
 	 * Subclasses of sap.ui.base.Object can enrich the set of supported metadata (e.g. see {@link sap.ui.core.Element.extend}).
 	 * </li>
 	 *
@@ -225,7 +234,7 @@ sap.ui.define(['./Metadata', "sap/base/Log"],
 	 *
 	 * Please see the API documentation of {@link sap.ui.base.Object#isA} for more details.
 	 *
-	 * @param {object} oObject Object which will be checked whether it is an instance of the given type
+	 * @param {any} oObject Object which will be checked whether it is an instance of the given type
 	 * @param {string|string[]} vTypeName Type or types to check for
 	 * @returns {boolean} Whether the given object is an instance of the given type or of any of the given types
 	 * @public

@@ -104,7 +104,7 @@ sap.ui.define([
 		 * To prevent this, apps using the <code>ColorPalette</code> should also load the <code>sap.ui.unified</code> library in advance.
 		 *
 		 * @extends sap.ui.core.Control
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -909,7 +909,7 @@ sap.ui.define([
 						}
 						oEventParams[ItemNavigationHomeEnd.BorderReachedDirection] = sDirection;
 					}
-					ItemNavigation.prototype.fireEvent.apply(this, arguments);
+					return ItemNavigation.prototype.fireEvent.apply(this, arguments);
 				};
 			}
 		});

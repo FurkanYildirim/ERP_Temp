@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-sap.ui.define(['sap/ui/mdc/odata/TypeUtil', 'sap/ui/mdc/enum/BaseType',	'sap/base/util/merge'], function(ODataTypeUtil, BaseType, merge) {
+sap.ui.define(['sap/ui/mdc/odata/TypeUtil', 'sap/ui/mdc/enums/BaseType',	'sap/base/util/merge'], function(ODataTypeUtil, BaseType, merge) {
 	"use strict";
 
 	/**
@@ -16,8 +16,9 @@ sap.ui.define(['sap/ui/mdc/odata/TypeUtil', 'sap/ui/mdc/enum/BaseType',	'sap/bas
 	 * @private
 	 * @experimental As of version 1.79
 	 * @since 1.79.0
+	 * @deprecated (since 1.115.0) - please see {@link sap.ui.mdc.BaseDelegate.getTypeMap}
 	 * @alias sap.ui.mdc.odata.v4.TypeUtil
-	 * @deprecated This module should not be used and will be removed in future versions!
+	 * @ui5-restricted sap.ui.mdc
 	 */
 	var ODataV4TypeUtil = Object.assign({}, ODataTypeUtil);
 
@@ -72,6 +73,14 @@ sap.ui.define(['sap/ui/mdc/odata/TypeUtil', 'sap/ui/mdc/enum/BaseType',	'sap/bas
 
 		var TypeClass = this.getDataTypeClass(sDataType);
 		return new TypeClass(oFormatOptions, oConstraints);
+	};
+
+	ODataV4TypeUtil._adjustUnitFormatOptions = function (oFormatOptions, bShowNumber, bShowMeasure) {
+		ODataTypeUtil._adjustUnitFormatOptions.call(this, oFormatOptions, bShowNumber, bShowMeasure);
+
+		if (oFormatOptions.hasOwnProperty("unitOptional")) { // as per default set if both, showNumber and showMeasure set
+			delete oFormatOptions.unitOptional; // let the type determine the right default
+		}
 	};
 
 	return ODataV4TypeUtil;

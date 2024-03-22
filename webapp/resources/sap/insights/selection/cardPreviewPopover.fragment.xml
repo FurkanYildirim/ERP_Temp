@@ -1,0 +1,13 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+    xmlns:w="sap.ui.integration.widgets">
+	<Popover id="idCardPreviewPopover" class="sapContrastPlus previewPopoverBackground" title="{i18n>preview}" placement="VerticalPreferredBottom" initialFocus="idCardPreviewPopover" showHeader="true">
+        <VBox id="idPreviewCardsVBox" alignItems="Center" justifyContent="Center" class="sapUiSmallMargin">
+            <w:Card id="previewCards" host="ManageCardHost" manifest="{view>/previewDescriptor}" width="17rem" height="23.5rem" />
+            <HBox id="insightsPreviewPopoverOverflowLayer" class="sapMFlexBoxJustifyCenter" height="0" visible="{= ${view>descriptorContent/sap.card/type}  === 'Analytical' ? false : true}">
+                <HBox id="insightsPreviewPopoverOverflowInnerHBox" class="insightsCardOverflowLayer insightsCardOverflowTop insightsPreviewOverLaySize"/>
+            </HBox>
+        </VBox>
+	</Popover>
+</core:FragmentDefinition>

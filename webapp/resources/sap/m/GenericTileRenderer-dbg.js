@@ -263,12 +263,15 @@ sap.ui.define(["sap/m/library", "sap/base/security/encodeCSS", "sap/ui/core/Conf
 						oRm.openEnd();
 					}
 					oRm.openStart("div");
+
 					if (frameType === frameTypes.OneByOne) {
 						oRm.class("sapMGTOneByOneIcon");
 					} else {
 						oRm.class("sapMGTTwoByHalfIcon");
-						if (!this._isThemeHighContrast()) {
-							oRm.style("background-color", sBGColor);
+						if (oControl._sTileBadge) {
+							oRm.class("sapMGTIconBadge");
+						} else if (!this._isThemeHighContrast()) {
+								oRm.style("background-color", sBGColor);
 						} else {
 							oRm.class("HighContrastTile");
 							oRm.style("border-color", sBGColor);
@@ -276,10 +279,19 @@ sap.ui.define(["sap/m/library", "sap/base/security/encodeCSS", "sap/ui/core/Conf
 						}
 					}
 					oRm.openEnd();
-					if (oControl.getTileIcon()) {
-						var sAggregation = oControl._generateIconAggregation(oControl.getTileIcon());
+					if (oControl.getTileIcon() || oControl._sTileBadge) {
+						var sAggregation = oControl._generateIconAggregation(oControl._sTileBadge ? "sap-icon://folder-full" : oControl.getTileIcon());
 						if (sAggregation) {
-							oRm.renderControl(oControl.getAggregation(sAggregation));
+							var oIcon = oControl.getAggregation(sAggregation);
+							if (oControl._sTileBadge) {
+								oIcon.setColor(sBGColor);
+							}
+							oRm.renderControl(oIcon);
+						}
+						if (oControl._sTileBadge) {
+							oRm.openStart("div", oControl.getId() + "-tileBadge").class("sapMGTileBadge").openEnd();
+							oRm.text(oControl._sTileBadge);
+							oRm.close("div");
 						}
 					}
 					oRm.close("div");
@@ -351,6 +363,9 @@ sap.ui.define(["sap/m/library", "sap/base/security/encodeCSS", "sap/ui/core/Conf
 			if ( !oControl._isIconMode() ) { //Restrict creation of Footer for IconMode
 				oRm.openStart("div", oControl.getId() + "-content");
 				oRm.class("sapMGTContent");
+				if (frameType === frameTypes.TwoByOne) {
+					oRm.class("TwoByOne");
+				}
 				if (oControl.getSystemInfo() || oControl.getAppShortcut()) {
 					if (aTileContent.length === 0){
 						oRm.class("appInfoWithoutTileCnt");
@@ -497,7 +512,7 @@ sap.ui.define(["sap/m/library", "sap/base/security/encodeCSS", "sap/ui/core/Conf
 				oRm.openStart("div", oControl.getId() + "-failed-icon");
 				oRm.class("sapMGenericTileFtrFldIcn");
 				oRm.openEnd();
-				oRm.renderControl(oControl._oWarningIcon);
+				oRm.renderControl(oControl._oErrorIcon);
 				oRm.close("div");
 
 				if (!oControl._isInActionScope() && !oControl._bShowActionsView) {

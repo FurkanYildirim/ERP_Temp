@@ -9,7 +9,7 @@ sap.ui.define([
 ], function (library, BaseObject) {
 	"use strict";
 
-	//Shortcut to sap.ui.integration.library.CarDataMode
+	// Shortcut to sap.ui.integration.library.CardDataMode
 	var CardDataMode = library.CardDataMode;
 
 	/**
@@ -22,7 +22,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -31,9 +31,9 @@ sap.ui.define([
 		constructor: function (oCard) {
 			BaseObject.call(this);
 			this._oCard = oCard;
+			this._oObservedDomRef = null;
 		}
 	});
-
 
 	/**
 	 * Destroys cardObserver
@@ -43,9 +43,9 @@ sap.ui.define([
 		BaseObject.prototype.destroy.apply(this, arguments);
 		this._oCard = null;
 
-		if (this.oObserver) {
-			this.oObserver.disconnect();
-			this.oObserver = null;
+		if (this._oObserver) {
+			this._oObserver.disconnect();
+			this._oObserver = null;
 		}
 	};
 
@@ -53,9 +53,9 @@ sap.ui.define([
 	 * Creates cardObserver.
 	 *
 	 */
-	CardObserver.prototype.createObserver = function () {
-		if (!this.oObserver) {
-			this.oObserver = new window.IntersectionObserver(function (oEntries) {
+	CardObserver.prototype._createObserver = function () {
+		if (!this._oObserver) {
+			this._oObserver = new window.IntersectionObserver(function (oEntries) {
 				oEntries.forEach(function (oEntry) {
 					if (oEntry.isIntersecting) {
 						this.loadManifest();
@@ -68,13 +68,43 @@ sap.ui.define([
 	};
 
 	/**
+	 * Starts observing the target card.
+	 * @param {Object} oDomRef The domRef of the card to be observed.
+	 */
+	CardObserver.prototype.observe = function (oDomRef) {
+		if (!this._oObserver) {
+			this._createObserver();
+		}
+
+		if (oDomRef !== this._oObservedDomRef) {
+			if (this._oObservedDomRef) {
+				this._oObserver.unobserve(this._oObservedDomRef);
+			}
+
+			this._oObserver.observe(oDomRef);
+			this._oObservedDomRef = oDomRef;
+		}
+	};
+
+	/**
+	 * Stops observing the target card.
+ 	 * @param {Object} oDomRef The domRef of the card to be unobserved.
+	 */
+	CardObserver.prototype.unobserve = function (oDomRef) {
+		if (this._oObserver && this._oObservedDomRef === oDomRef) {
+			this._oObserver.unobserve(oDomRef);
+			this._oObservedDomRef = null;
+		}
+	};
+
+	/**
 	 * Loads card manifest.
 	 *
 	 */
 	CardObserver.prototype.loadManifest = function () {
 		var oCardDomRef = this._oCard.getDomRef();
 		this._oCard.setDataMode(CardDataMode.Active);
-		this.oObserver.unobserve(oCardDomRef);
+		this.unobserve(oCardDomRef);
 	};
 
 	return CardObserver;

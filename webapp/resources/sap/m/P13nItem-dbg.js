@@ -17,7 +17,7 @@ sap.ui.define([
 	 * @param {object} [mSettings] initial settings for the new control
 	 * @class Base type for <code>items</code> aggregation in <code>P13nPanel</code> control.
 	 * @extends sap.ui.core.Element
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @public
 	 * @since 1.26.0
@@ -66,12 +66,13 @@ sap.ui.define([
 
 				/**
 				 * data type instance of the column. Can be used instead of the type, precision, scale and formatSettings properties
+				 *
+				 * @since 1.56
 				 */
 				typeInstance: {
 					type: "object",
 					group: "Misc",
-					defaultValue: null,
-					since: "1.56"
+					defaultValue: null
 				},
 
 				/**
@@ -95,12 +96,13 @@ sap.ui.define([
 				 * 		style: "medium" //"short" or "long"
 				 * }
 				 * </code></pre>
+				 *
+				 * @since 1.52
 				 */
 				formatSettings: {
 					type: "object",
 					group: "Misc",
-					defaultValue: null,
-					since: "1.52"
+					defaultValue: null
 				},
 
 				/**

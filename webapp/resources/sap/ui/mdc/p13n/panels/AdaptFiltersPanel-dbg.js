@@ -129,7 +129,7 @@ sap.ui.define([
      * selected view.
      *
      * @param {function} fnItemFactory The factory function that is being called with the unique key.
-     *
+     * @returns {this}
      */
     AdaptFiltersPanel.prototype.setItemFactory = function(fnItemFactory) {
         this.setProperty("itemFactory", fnItemFactory);
@@ -279,6 +279,7 @@ sap.ui.define([
         if (!oP13nModel) {
             this.setP13nModel(new JSONModel(oP13nData));
         } else {
+            oP13nModel.setData(oP13nData);
             this.getView(this.LIST_KEY).getContent().setP13nData(oP13nModel.getProperty("/items"));
             this.getView(this.GROUP_KEY).getContent().setP13nData(oP13nModel.getProperty("/itemsGrouped"));
         }
@@ -367,6 +368,10 @@ sap.ui.define([
             this._oSearchField.setPlaceholder(this._getResourceText("p13nDialog.ADAPT_FILTER_SEARCH"));
 		}
 		return this._oSearchField;
+    };
+
+    AdaptFiltersPanel.prototype.getInitialFocusedControl = function() {
+		return this._getSearchField();
     };
 
     AdaptFiltersPanel.prototype._onGroupModeChange = function(oEvt) {

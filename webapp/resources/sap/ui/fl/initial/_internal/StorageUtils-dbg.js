@@ -27,7 +27,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.initial._internal.StorageUtils
 	 * @since 1.74
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.initial._internal.Storage, sap.ui.fl.write._internal.Storage,
 	 * 	sap.ui.fl.initial._internal.connectors.ObjectStorageConnector, sap.ui.fl.initial._internal.connectors.ObjectPathConnector
@@ -192,6 +192,7 @@ sap.ui.define([
 
 			aResponses = aResponses.filter(function (oResponse) {
 				return oResponse.changes.length > 0
+					|| oResponse.appDescriptorChanges.length > 0
 					|| oResponse.variants.length > 0
 					|| oResponse.variantChanges.length > 0
 					|| oResponse.variantManagementChanges.length > 0
@@ -246,6 +247,8 @@ sap.ui.define([
 				} else if (oFlexObject.fileType === "change") {
 					if (oFlexObject.variantReference) {
 						mGroupedFlexObjects[sLayer].variantDependentControlChanges.push(oFlexObject);
+					} else if (oFlexObject.appDescriptorChange) {
+						mGroupedFlexObjects[sLayer].appDescriptorChanges.push(oFlexObject);
 					} else {
 						switch (oFlexObject.changeType) {
 							case "addFavorite":
@@ -309,19 +312,6 @@ sap.ui.define([
 				}
 				return !isEmptyObject(oResponse[sKey]);
 			});
-		},
-
-		/** Adds current language information into request parameters
-		 *
-		 *
-		 * @param {object} mParameters - Parameters of the request
-		 * @ui5-restricted sap.ui.fl.apply._internal, sap.ui.fl.write._internal
-		 */
-		addLanguageInfo: function (mParameters) {
-			if (!mParameters) {
-				mParameters = {};
-			}
-			mParameters["sap-language"] = Configuration.getLanguage();
 		}
 	};
 });

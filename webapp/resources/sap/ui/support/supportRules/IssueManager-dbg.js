@@ -4,10 +4,6 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-/**
- * The IssueManager interface stores, groups and converts issues from the Core Object to a usable model by the Support Assistant.
- * Issues can be added only through the IssueManager using <code>addIssue</code> method.
- */
 sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support/library", "sap/ui/support/supportRules/Constants"],
 	function (deepExtend, BaseObject, library, constants) {
 		"use strict";
@@ -56,24 +52,17 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 		/**
 		 * @class
 		 * The IssueManager is used to store and export issues to the Support Assistant.
-		 * <h3>Overview</h3>
-		 * The IssueManager is used to store and export issues found by the Support Assistant.
+		 *
 		 * <h3>Usage</h3>
 		 * The IssueManager can be used as a static class and add issues using the <code>addIssue</code> method of both the IssueManager or the IssueManagerFacade.
-		 * @public
-		 * @name sap.ui.support.IssueManager
-		 * @alias IssueManager
-		 *
-		 * @lends IssueManager
+		 * @private
+		 * @alias sap.ui.support.IssueManager
 		 */
 		var IssueManager = {
-
 
 			/**
 			 * Adds an issue to the list of issues found.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.addIssue
 			 * @param {object} oIssue The issue to be added in the IssueManager
 			 */
 			addIssue: function (oIssue) {
@@ -82,8 +71,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Cycles through issues stored in the IssueManager and executes the given callback function.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.walkIssues
 			 * @param {function} fnCallback Callback function to be used in the same fashion as Array.prototype.forEach
 			 */
 			walkIssues: function (fnCallback) {
@@ -93,8 +80,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Clears all issues in the IssueManager.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.clearIssues
 			 * @returns {void}
 			 */
 			clearIssues: function () {
@@ -107,8 +92,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Converts the issues inside the IssueManager.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.getIssuesModel
 			 * @returns {object[]} viewModel Issues in ViewModel format
 			 */
 			getIssuesModel: function () {
@@ -124,8 +107,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Gets rules and issues, and converts each rule to a ruleViewModel - parameters should be converted as specified beforehand.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.getRulesViewModel
 			 * @param {object} rules All the rules from _mRulesets
 			 * @param {array} selectedRulesIDs The rule ID's of the selected rules.
 			 * @param {array} issues The issues to map to the rulesViewModel
@@ -200,8 +181,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Gets rules and converts them into treeTable format.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.getTreeTableViewModel
 			 * @param {object} oRules Deserialized rules found within the current state
 			 * @returns {object} TreeTableModel Rules in treeTable usable format
 			 * The rules are in a TreeTable format.
@@ -247,8 +226,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Gets issues in TreeTable format.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.getIssuesViewModel
 			 * @param {object} issuesModel All the issues after they have been grouped with <code>groupIssues</code>
 			 * @returns {object} All the issues in TreeTable usable model
 			 */
@@ -334,7 +311,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			 * Builds a string containing the formatted name e.g. (1 H, 0 M, 0 L ).
 			 * @private
 			 * @param {object} oValues
-			 * @name sap.ui.support.IssueManager._getFormattedName
 			 * @returns {string} String containing the formatted name.
 			 */
 			_getFormattedName: function(oValues) {
@@ -364,7 +340,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			 * Sorts number of severity issues e.g. 1 High, 0 Medium, 0 Low.
 			 * @private
 			 * @param {array} aIssues
-			 * @name sap.ui.support.IssueManager._sortSeverityIssuesByPriority
 			 * @returns {object} Object containing the number of issues sorted by severity.
 			 */
 			_sortSeverityIssuesByPriority: function(aIssues) {
@@ -391,8 +366,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Converts issues to view model format.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.convertToViewModel
 			 * @param {array} oIssues The issues to convert
 			 * @returns {array} viewModel Issues in ViewModel format
 			 */
@@ -407,8 +380,6 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Groups all issues by library and rule ID.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.groupIssues
 			 * @param {array} oIssues The issues to group. Must be in a ViewModel format
 			 * @returns {array} groupedIssues Grouped issues by library and rule id
 			 */
@@ -436,10 +407,8 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 			/**
 			 * Creates an instance of the IssueManagerFacade.
 			 * @public
-			 * @method
-			 * @name sap.ui.support.IssueManager.createIssueManagerFacade
 			 * @param {object} oRule Given rule
-			 * @returns {object} New IssueManagerFacade
+			 * @returns {sap.ui.support.IssueManagerFacade} New IssueManagerFacade
 			 */
 			createIssueManagerFacade: function (oRule) {
 				return new IssueManagerFacade(oRule);
@@ -447,26 +416,27 @@ sap.ui.define(["sap/base/util/deepExtend", "sap/ui/base/Object", "sap/ui/support
 		};
 
 		/**
-		 * Creates an IssueManagerFacade.
-		 * @constructor
-		 * @private
-		 * @method
-		 * @namespace
+		 * @class
+		 * The IssueManagerFacade allows rule developers to add new issues.
+		 *
+		 * <h3>Usage</h3>
+		 * The IssueManagerFacade is passed as first argument to all rule check functions.
+		 *
 		 * @name sap.ui.support.IssueManagerFacade
 		 * @param {object} oRule Rule for the IssueManagerFacade
-		 * @returns {void}
+		 * @hideconstructor
+		 * @public
 		 */
 		var IssueManagerFacade = function (oRule) {
 			this.oRule = oRule;
 		};
 
 		/**
-		 * Adds issue to the IssueManager via the IssueManagerFacade.
+		 * Adds issue
+		 * @alias sap.ui.support.IssueManagerFacade#addIssue
 		 * @public
-		 * @method
-		 * @memberof IssueManagerFacade
-		 * @param {object} oIssue Issue object to be added in the IssueManager
-		 * @returns {void}
+		 * @param {{severity: sap.ui.support.Severity, details: string, context: {id: string}}} oIssue Issue object to be added
+		 * @throws {Error} Will throw an error if some of the issue properties are invalid
 		 */
 		IssueManagerFacade.prototype.addIssue = function (oIssue) {
 			oIssue.rule = this.oRule;

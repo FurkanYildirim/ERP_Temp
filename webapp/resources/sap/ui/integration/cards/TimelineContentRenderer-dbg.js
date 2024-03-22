@@ -20,18 +20,22 @@ sap.ui.define(["./BaseContentRenderer"], function (BaseContentRenderer) {
 	 * @override
 	 */
 	TimelineContentRenderer.getMinHeight = function (oConfiguration, oContent, oCard) {
-		var iMaxItems = oCard.getContentPageSize(oConfiguration);
+		if (oContent._fMinHeight) {
+			return oContent._fMinHeight + "px";
+		}
 
-		if (!iMaxItems) {
+		var iMinItems = oCard.getContentMinItems(oConfiguration);
+
+		if (iMinItems == null) {
 			return this.DEFAULT_MIN_HEIGHT;
 		}
 
 		var iItemHeight = this.getItemMinHeight(oConfiguration, oContent);
 
-		return (iMaxItems * iItemHeight) + "rem";
+		return (iMinItems * iItemHeight) + "rem";
 	};
 
-	TimelineContentRenderer.getItemMinHeight = function (oConfiguration, oControl) {
+	TimelineContentRenderer.getItemMinHeight = function (oConfiguration, oContent) {
 		if (!oConfiguration || !oConfiguration.item) {
 			return 0;
 		}

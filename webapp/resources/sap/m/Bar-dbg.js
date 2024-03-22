@@ -57,7 +57,7 @@ sap.ui.define([
 	 * @implements sap.m.IBar
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -242,29 +242,30 @@ sap.ui.define([
 		this._$RightBar = this.$("BarRight");
 		this._$MidBarPlaceHolder = this.$("BarPH");
 
-		this._updatePosition(bContentLeft, bContentMiddle, bContentRight);
 
 		this._sResizeListenerId = ResizeHandler.register(this.getDomRef(), jQuery.proxy(this._handleResize, this));
-		if (this.getEnableFlexBox()) {
-			return;
+
+		if (!this.getEnableFlexBox()) {
+			if (bContentLeft) {
+				this._sResizeListenerIdLeft = ResizeHandler.register(this._$LeftBar[0], jQuery.proxy(this._handleResize, this));
+			} else {
+				this._$LeftBar.addClass("sapMBarEmpty");
+			}
+
+			if (bContentMiddle) {
+				this._sResizeListenerIdMid = ResizeHandler.register(this._$MidBarPlaceHolder[0], jQuery.proxy(this._handleResize, this));
+			} else {
+				this._$MidBarPlaceHolder.addClass("sapMBarEmpty");
+			}
+			if (bContentRight) {
+				this._sResizeListenerIdRight = ResizeHandler.register(this._$RightBar[0], jQuery.proxy(this._handleResize, this));
+			} else {
+				this._$RightBar.addClass("sapMBarEmpty");
+			}
 		}
 
-		if (bContentLeft) {
-			this._sResizeListenerIdLeft = ResizeHandler.register(this._$LeftBar[0], jQuery.proxy(this._handleResize, this));
-		} else {
-			this._$LeftBar.addClass("sapMBarEmpty");
-		}
+		this._updatePosition(bContentLeft, bContentMiddle, bContentRight);
 
-		if (bContentMiddle) {
-			this._sResizeListenerIdMid = ResizeHandler.register(this._$MidBarPlaceHolder[0], jQuery.proxy(this._handleResize, this));
-		} else {
-			this._$MidBarPlaceHolder.addClass("sapMBarEmpty");
-		}
-		if (bContentRight) {
-			this._sResizeListenerIdRight = ResizeHandler.register(this._$RightBar[0], jQuery.proxy(this._handleResize, this));
-		} else {
-			this._$RightBar.addClass("sapMBarEmpty");
-		}
 	};
 
 	/**
@@ -478,7 +479,7 @@ sap.ui.define([
 	/**
 	 * Gets the available Bar contexts from the BarInPageEnabler and adds the additional contexts from BarInAnyContentEnabler.
 	 *
-	 * @returns {Object} with all available contexts
+	 * @returns {sap.m.BarContexts} with all available contexts
 	 */
 	BarInAnyContentEnabler.prototype.getContext = function() {
 		var oParentContexts = BarInPageEnabler.prototype.getContext.call();
@@ -493,7 +494,7 @@ sap.ui.define([
 	/**
 	 * Gets the available Bar contexts.
 	 *
-	 * @returns {Object} with all available contexts
+	 * @returns {sap.m.BarContexts} with all available contexts
 	 * @protected
 	 * @function
 	 */

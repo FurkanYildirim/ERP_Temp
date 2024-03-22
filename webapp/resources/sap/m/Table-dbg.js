@@ -65,7 +65,7 @@ sap.ui.define([
 	 * @extends sap.m.ListBase
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -445,11 +445,13 @@ sap.ui.define([
 	Table.prototype.onAfterRendering = function() {
 		ListBase.prototype.onAfterRendering.call(this);
 		this.updateSelectAllCheckbox();
-		this._renderOverlay();
+
+		if (!this.isPropertyInitial("showOverlay")) {
+			this._handleOverlay();
+		}
 
 		if (this._bFirePopinChanged) {
 			this._firePopinChangedEvent();
-			this._bFirePopinChanged = false;
 		} else {
 			var aPopins = this._getPopins();
 			if (this._aPopins && this.getVisibleItems().length) {
@@ -487,15 +489,31 @@ sap.ui.define([
 		return this;
 	};
 
-	Table.prototype._renderOverlay = function() {
-		var $this = this.$(),
-			$overlay = $this.find(".sapMTableOverlay"),
-			bShowOverlay = this.getShowOverlay();
-		if (bShowOverlay && $overlay.length === 0) {
-			$overlay = jQuery("<div>").addClass("sapUiOverlay sapMTableOverlay").css("z-index", "1");
-			$this.append($overlay);
-		} else if (!bShowOverlay) {
-			$overlay.remove();
+	Table.prototype._handleOverlay = function() {
+		var $Overlay = this.$("overlay");
+		if (this.getShowOverlay()) {
+			var oDomRef = this.getDomRef();
+			if (!$Overlay[0]) {
+				$Overlay = jQuery("<div></div>", {
+					"id": this.getId() + "-overlay",
+					"class": "sapUiOverlay sapMTableOverlay",
+					"role": "region",
+					"tabindex": "0",
+					"aria-labelledby": [
+						TableRenderer.getAriaLabelledBy(this),
+						TableRenderer.getAriaAnnouncement("TABLE_INVALID")
+					].join(" ").trimLeft()
+				}).appendTo(oDomRef);
+			}
+			if (oDomRef.contains(document.activeElement)) {
+				this._bIgnoreFocusIn = true;
+				$Overlay.trigger("focus");
+			}
+		} else {
+			if (document.activeElement == $Overlay[0]) {
+				this.focus();
+			}
+			$Overlay.remove();
 		}
 	};
 
@@ -521,8 +539,11 @@ sap.ui.define([
 	};
 
 	Table.prototype.setShowOverlay = function(bShow) {
-		this.setProperty("showOverlay", bShow, true);
-		this._renderOverlay();
+		var bSuppressInvalidate = (this.getDomRef() != null);
+		this.setProperty("showOverlay", bShow, bSuppressInvalidate);
+		if (bSuppressInvalidate) {
+			this._handleOverlay();
+		}
 		return this;
 	};
 
@@ -563,6 +584,7 @@ sap.ui.define([
 	Table.prototype.selectAll = function () {
 		ListBase.prototype.selectAll.apply(this, arguments);
 		this.updateSelectAllCheckbox();
+
 		return this;
 	};
 
@@ -763,7 +785,7 @@ sap.ui.define([
 			var clean = this._getMediaContainerWidth() || window.innerWidth;
 			this._mutex = true;
 			this._bFirePopinChanged = true;
-			this.rerender();
+			this.invalidate();
 
 			// do not re-render if resize event comes so frequently
 			setTimeout(function() {
@@ -771,7 +793,7 @@ sap.ui.define([
 				if (this._dirty != clean) {
 					this._dirty = 0;
 					this._bFirePopinChanged = true;
-					this.rerender();
+					this.invalidate();
 				}
 				this._mutex = false;
 			}.bind(this), 200);
@@ -796,7 +818,7 @@ sap.ui.define([
 		// find first visible column
 		var $headRow = this.$("tblHeader"),
 			bHeaderVisible = !$headRow.hasClass("sapMListTblHeaderNone"),
-			aVisibleColumns = $headRow.find(".sapMListTblCell:visible"),
+			aVisibleColumns = $headRow.find(".sapMListTblCell:not([aria-hidden=true]"),
 			$firstVisibleCol = aVisibleColumns.eq(0);
 
 		// check if only one column is visible
@@ -816,8 +838,9 @@ sap.ui.define([
 
 		// update the visible column count and colspan
 		// highlight, navigation and navigated indicator columns are getting rendered always
-		this._colCount = aVisibleColumns.length + 3 + !!ListBaseRenderer.ModeOrder[this.getMode()];
-		this.$("tblBody").find(".sapMGHLICell").attr("colspan", this.getColSpan());
+		var iDummyColumnLength = $headRow.find(".sapMListTblDummyCell").length;
+		this._colCount = aVisibleColumns.length + 3 + !!ListBaseRenderer.ModeOrder[this.getMode()] + iDummyColumnLength;
+		this.$("tblBody").find(".sapMGHLICell").attr("colspan", this.getColSpan() - iDummyColumnLength);
 		this.$("nodata-text").attr("colspan", this.getColCount());
 
 		if (this.hasPopin()) {
@@ -836,24 +859,25 @@ sap.ui.define([
 
 	// updates the type column visibility and sets the aria flag
 	Table.prototype._setTypeColumnVisibility = function(bVisible) {
-		jQuery(this.getTableDomRef()).toggleClass("sapMListTblHasNav", bVisible);
+		this._bItemsBeingBound || jQuery(this.getTableDomRef()).toggleClass("sapMListTblHasNav", bVisible);
 	};
 
 	Table.prototype.onkeydown = function(oEvent) {
-		// handles the F2 and F7 key on the table header row and column header,
-		// switch focus between the table header row and column header and if F2 is pressed the also switching the keyboardMode
-		var bFocusToggled = false;
+
 
 		if (oEvent.which === KeyCodes.F2 || oEvent.which === KeyCodes.F7) {
-			var $TblHeader = this.$("tblHeader"),
+			// handles the F2 and F7 key on the table header row and column header,
+			// switch focus between the table header row and column header and if F2 is pressed the also switching the keyboardMode
+			var bFocusToggled = false,
+				$TblHeader = this.$("tblHeader"),
 				$Tabbables = $TblHeader.find(":sapTabbable");
 
 			if (oEvent.target.classList.contains("sapMColumnHeader")) {
-				this._iLastFocusPosOfColumnHeader = $Tabbables.length && $Tabbables.index(oEvent.target);
+				this._iLastFocusPosOfItem = $Tabbables.length && $Tabbables.index(oEvent.target);
 				$TblHeader.trigger("focus");
 				bFocusToggled = true;
 			} else if (oEvent.target === $TblHeader[0]) {
-				var iFocusPos = this._iLastFocusPosOfColumnHeader || 0;
+				var iFocusPos = this._iLastFocusPosOfItem || 0;
 				iFocusPos = $Tabbables[iFocusPos] ? iFocusPos : -1;
 				$Tabbables.eq(iFocusPos).trigger("focus");
 				bFocusToggled = true;
@@ -918,7 +942,8 @@ sap.ui.define([
 		if (!this._selectAllCheckBox) {
 			this._selectAllCheckBox = new CheckBox({
 				id: this.getId("sa"),
-				activeHandling: false
+				activeHandling: false,
+				tooltip: Core.getLibraryResourceBundle("sap.m").getText("TABLE_SELECT_ALL_TOOLTIP")
 			}).addStyleClass("sapMLIBSelectM").setParent(this, null, true).attachSelect(function () {
 				if (this._selectAllCheckBox.getSelected()) {
 					this.selectAll(true);
@@ -945,7 +970,10 @@ sap.ui.define([
 		if (this.getMode() !== "MultiSelect") {
 			return;
 		}
-		if (this._selectAllCheckBox && this.getMultiSelectMode() == "Default") {
+
+		Util.hideSelectionLimitPopover();
+
+		if (this._selectAllCheckBox && this.getMultiSelectMode() != "ClearAll") {
 			var aItems = this.getItems(),
 				iSelectedItemCount = this.getSelectedItems().length,
 				iSelectableItemCount = aItems.filter(function(oItem) {
@@ -1103,7 +1131,7 @@ sap.ui.define([
 			var sMultiSelectMode = this.getMultiSelectMode();
 
 			// toggle select all header checkbox and fire its event
-			if (this._selectAllCheckBox && sMultiSelectMode == "Default") {
+			if (this._selectAllCheckBox && sMultiSelectMode != "ClearAll") {
 				this._selectAllCheckBox.setSelected(!this._selectAllCheckBox.getSelected()).fireSelect();
 				oEvent.setMarked();
 			} else if (this._clearAllButton && sMultiSelectMode == "ClearAll" && !this._clearAllButton.hasStyleClass("sapMTableDisableClearAll")) {
@@ -1120,7 +1148,7 @@ sap.ui.define([
 		}
 
 		var $Row = jQuery();
-		if (oEvent.target.id == this.getId("nodata")) {
+		if (jQuery(oEvent.target).closest(this.getDomRef("nodata"))[0]) {
 			$Row = this.$("nodata");
 		} else if (this.isHeaderRowEvent(oEvent)) {
 			$Row = this.$("tblHeader");
@@ -1137,6 +1165,12 @@ sap.ui.define([
 
 	// Handle shift-tab key
 	Table.prototype.onsaptabprevious = function(oEvent) {
+		if (oEvent.target.id === this.getId("overlay")) {
+			this._bIgnoreFocusIn = true;
+			this.$().attr("tabindex", "-1").trigger("focus").removeAttr("tabindex");
+			return;
+		}
+
 		if (oEvent.isMarked() || this.getKeyboardMode() == ListKeyboardMode.Edit) {
 			return;
 		}
@@ -1155,8 +1189,8 @@ sap.ui.define([
 	/**
 	 * Sets the focus on the stored focus DOM reference.
 	 *
-	 * If {@param oFocusInfo.targetInfo} is of type {@type sap.ui.core.message.Message},
-	 * the focus will be set as accurately as possible according to the information provided by {@type sap.ui.core.message.Message}.
+	 * If <code>oFocusInfo.targetInfo</code> is of type {@link sap.ui.core.message.Message},
+	 * the focus will be set as accurately as possible according to the information provided by {@link sap.ui.core.message.Message}.
 	 *
 	 * @param {object} [oFocusInfo={}] Options for setting the focus
 	 * @param {boolean} [oFocusInfo.preventScroll=false] @since 1.60 If set to <code>true</code>, the focused
@@ -1203,6 +1237,9 @@ sap.ui.define([
 			this._setFirstLastVisibleCells(oTarget);
 		} else if (oTarget.id == this.getId("nodata")) {
 			this._setFirstLastVisibleCells(oTarget);
+		} else if (!this._bIgnoreFocusIn && this.getShowOverlay()) {
+			this._bIgnoreFocusIn = true;
+			this.$("overlay").trigger("focus");
 		}
 
 		ListBase.prototype.onfocusin.call(this, oEvent);
@@ -1269,11 +1306,6 @@ sap.ui.define([
 	 * @private
 	 */
 	Table.prototype._configureAutoPopin = function() {
-		// prevent recalculation when rerendering is caused when column is moved to the popin-area
-		if (this._mutex) {
-			return;
-		}
-
 		var aVisibleColumns = this.getColumns(true).filter(function(oColumn) {
 			return oColumn.getVisible();
 		});
@@ -1403,6 +1435,8 @@ sap.ui.define([
 	};
 
 	Table.prototype._firePopinChangedEvent = function() {
+		this._bFirePopinChanged = false;
+		this._iVisibleItemsLength = this.getVisibleItems().length;
 		this.fireEvent("popinChanged", {
 			hasPopin: this.hasPopin(),
 			visibleInPopin: this._getVisiblePopin(),
@@ -1415,12 +1449,9 @@ sap.ui.define([
 
 		// fire popinChanged when visible items length become 0 from greater than 0 as a result of binding changes
 		// fire popinChanged when visible items length become greater than 0 from 0 as a result of binding changes
-		var iVisibleItemsLength = this.getVisibleItems().length;
-		if (!this._iVisibleItemsLength && iVisibleItemsLength > 0) {
-			this._iVisibleItemsLength = iVisibleItemsLength;
-			this._firePopinChangedEvent();
-		} else if (this._iVisibleItemsLength > 0 && !iVisibleItemsLength) {
-			this._iVisibleItemsLength = iVisibleItemsLength;
+		var bHasVisibleItems = Boolean(this.getVisibleItems().length);
+		var bHadVisibleItems = Boolean(this._iVisibleItemsLength);
+		if (bHasVisibleItems ^ bHadVisibleItems) {
 			this._firePopinChangedEvent();
 		}
 	};

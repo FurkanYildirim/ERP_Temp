@@ -9,13 +9,17 @@ sap.ui.define([
 	"sap/ui/fl/write/_internal/Versions",
 	"sap/ui/fl/Utils",
 	"sap/ui/fl/write/api/Version",
-	"sap/ui/fl/apply/_internal/flexState/ManifestUtils"
+	"sap/ui/fl/write/api/FeaturesAPI",
+	"sap/ui/fl/apply/_internal/flexState/ManifestUtils",
+	"sap/ui/fl/write/api/ContextBasedAdaptationsAPI"
 ], function(
 	FlexState,
 	Versions,
 	Utils,
 	Version,
-	ManifestUtils
+	FeaturesAPI,
+	ManifestUtils,
+	ContextBasedAdaptationsAPI
 ) {
 	"use strict";
 
@@ -41,9 +45,29 @@ sap.ui.define([
 
 		return Versions.getVersionsModel({
 			nonNormalizedReference: sReference,
-			reference: Utils.normalizeReference(sReference),
+			reference: sReference,
 			layer: mPropertyBag.layer
 		});
+	}
+
+	function incorporateAdaptationIdInSwitch(mPropertyBag) {
+		var sReference = getFlexReferenceForControl(mPropertyBag.control);
+		var bHasAdaptationsModel = ContextBasedAdaptationsAPI.hasAdaptationsModel({
+			layer: mPropertyBag.layer,
+			reference: sReference
+		});
+
+		// version switch
+		if (!mPropertyBag.adaptationId && bHasAdaptationsModel) {
+			return ContextBasedAdaptationsAPI.refreshAdaptationModel(mPropertyBag);
+		// adaptation switch
+		} else if (mPropertyBag.adaptationId && bHasAdaptationsModel) {
+			var oAdaptationsModel = ContextBasedAdaptationsAPI.getAdaptationsModel(mPropertyBag);
+			oAdaptationsModel.switchDisplayedAdaptation(mPropertyBag.adaptationId);
+			return Promise.resolve(mPropertyBag.adaptationId);
+		}
+		// adaptations disabled
+		return Promise.resolve();
 	}
 
 	/**
@@ -78,9 +102,13 @@ sap.ui.define([
 		var oAppComponent = Utils.getAppComponentForControl(mPropertyBag.control);
 
 		return Versions.initialize({
-			reference: Utils.normalizeReference(getFlexReferenceForControl(oAppComponent)),
+			reference: getFlexReferenceForControl(oAppComponent),
 			layer: mPropertyBag.layer
 		});
+	};
+
+	VersionsAPI.clearInstances = function () {
+		Versions.clearInstances();
 	};
 
 	/**
@@ -130,6 +158,7 @@ sap.ui.define([
 	 * @param {object} mPropertyBag - Property bag
 	 * @param {sap.ui.core.Control} mPropertyBag.control - Control for which the request is done
 	 * @param {string} mPropertyBag.layer - Layer for which the versions should be retrieved
+	 * @param {string} [mPropertyBag.adaptationId] - Adaptation to be loaded
 	 *
 	 * @returns {Promise} Resolves as soon as the clearance and the requesting is triggered.
 	 */
@@ -147,6 +176,7 @@ sap.ui.define([
 	 * @param {string} mPropertyBag.layer - Layer for which the versions should be retrieved
 	 * @param {string} [mPropertyBag.version] - Version to be loaded
 	 * @param {boolean} [mPropertyBag.allContexts] - Includes also restricted contexts
+	 * @param {string} [mPropertyBag.adaptationId] - Adaptation to be loaded
 	 *
 	 * @returns {Promise} Resolves as soon as the clearance and the requesting is triggered.
 	 */
@@ -157,20 +187,37 @@ sap.ui.define([
 		if (!mPropertyBag.layer) {
 			return Promise.reject("No layer was provided");
 		}
-		if (mPropertyBag.version === undefined) {
-			var oModel = getVersionsModel(mPropertyBag);
-			if (oModel) {
+		var oModel = getVersionsModel(mPropertyBag);
+		if (oModel) {
+			if (mPropertyBag.version === undefined) {
 				mPropertyBag.version = oModel.getProperty("/activeVersion");
+			}
+			oModel.setProperty("/displayedVersion", mPropertyBag.version);
+			oModel.setProperty("/persistedVersion", mPropertyBag.version);
+			if (mPropertyBag.version !== Version.Number.Draft && FeaturesAPI.isPublishAvailable()) {
+				var aVersions = oModel.getProperty("/versions");
+				if (aVersions.length) {
+					var oVersion = aVersions.find(function(oVersion) {
+						return oVersion.version === mPropertyBag.version;
+					});
+					if (oVersion) {
+						oModel.setProperty("/publishVersionEnabled", !oVersion.isPublished);
+					}
+				}
 			}
 		}
 
-		var oAppComponent = Utils.getAppComponentForControl(mPropertyBag.control);
-		var sReference = getFlexReferenceForControl(oAppComponent);
-		return FlexState.clearAndInitialize({
-			componentId: oAppComponent.getId(),
-			reference: sReference,
-			version: mPropertyBag.version,
-			allContexts: mPropertyBag.allContexts
+		return incorporateAdaptationIdInSwitch(mPropertyBag)
+		.then(function(sDisplayedAdaptationId) {
+			var oAppComponent = Utils.getAppComponentForControl(mPropertyBag.control);
+			var sReference = getFlexReferenceForControl(oAppComponent);
+			return FlexState.clearAndInitialize({
+				componentId: oAppComponent.getId(),
+				reference: sReference,
+				version: mPropertyBag.version,
+				allContexts: mPropertyBag.allContexts,
+				adaptationId: sDisplayedAdaptationId
+			});
 		});
 	};
 
@@ -205,7 +252,7 @@ sap.ui.define([
 
 		return Versions.activate({
 			nonNormalizedReference: sReference,
-			reference: Utils.normalizeReference(sReference),
+			reference: sReference,
 			layer: mPropertyBag.layer,
 			title: mPropertyBag.title,
 			appComponent: Utils.getAppComponentForControl(mPropertyBag.control),
@@ -237,10 +284,28 @@ sap.ui.define([
 
 		return Versions.discardDraft({
 			nonNormalizedReference: sReference,
-			reference: Utils.normalizeReference(sReference),
+			reference: sReference,
 			layer: mPropertyBag.layer
-		}).then(function(oDiscardInfo) {
+		})
+		.then(function(oDiscardInfo) {
 			if (oDiscardInfo.backendChangesDiscarded) {
+				var bHasAdaptationsModel = ContextBasedAdaptationsAPI.hasAdaptationsModel({
+					layer: mPropertyBag.layer,
+					reference: sReference
+				});
+				if (bHasAdaptationsModel) {
+					return ContextBasedAdaptationsAPI.refreshAdaptationModel(mPropertyBag)
+					.then(function(sDisplayedAdaptationId) {
+						//invalidate flexState to trigger getFlexData for the current active version after discard
+						return FlexState.clearAndInitialize({
+							componentId: oAppComponent.getId(),
+							reference: sReference,
+							adaptationId: sDisplayedAdaptationId
+						}).then(function () {
+							return oDiscardInfo;
+						});
+					});
+				}
 				//invalidate flexState to trigger getFlexData for the current active version after discard
 				return FlexState.clearAndInitialize({
 					componentId: oAppComponent.getId(),

@@ -21,18 +21,32 @@
 @_sap_tnt_NavigationList_IconFontSize: 1rem;
 @_sap_tnt_NavigationList_ExpandIconColor: @sapUiContentIconColor;
 @_sap_tnt_NavigationList_ItemHeight: 3rem;
+@_sap_tnt_NavigationList_ItemBorderRadius: 0;
+@_sap_tnt_NavigationList_ItemBottomMargin: 0;
+@_sap_tnt_NavigationList_ItemBottomMarginCompact: 0;
 @_sap_tnt_NavigationList_NoIconsGroupPadding: 1rem;
 @_sap_tnt_NavigationList_NoIconsNestedItemPadding: 1rem;
-@_sap_tnt_NavigationList_ItemFocusBorder: @sapUiContentFocusWidth @sapUiContentFocusStyle @sapUiContentFocusColor;
+@_sap_tnt_NavigationList_ItemFocusBorderOffset: 1px;
 @_sap_tnt_NavigationList_SelectedItemBorderColor: @sapUiListSelectionBorderColor;
+@_sap_tnt_NavigationList_SelectedItemBorder: 1px solid @_sap_tnt_NavigationList_SelectedItemBorderColor;
+@_sap_tnt_NavigationList_Collapsed_SelectedItemBorder: 1px solid @_sap_tnt_NavigationList_SelectedItemBorderColor;
 @_sap_tnt_NavigationList_Collapsed_SelectedGroupBorderColor: @_sap_tnt_NavigationList_SelectedItemBorderColor;
 @_sap_tnt_NavigationList_Collapsed_GroupBorderColor: @sapUiListBorderColor;
+@_sap_tnt_NavigationList_GroupIconWidth: @_sap_tnt_NavigationList_CollapsedWidth;
+@_sap_tnt_NavigationList_GroupBorder: 1px solid @sapUiListBorderColor;
 @_sap_tnt_NavigationList_GroupBottomBorderColor: @sapUiListBorderColor;
+@_sap_tnt_NavigationList_GroupTextWeight: unset;
+@_sap_tnt_NavigationList_GroupBottomMarginInPopup: 0;
+@_sap_tnt_NavigationList_Padding: 0;
+@_sap_tnt_NavigationList_PaddingCompact: 0;
+@_sap_tnt_NavigationList_PopupPadding: 0;
+@_sap_tnt_NavigationList_SelectionIndicatorDisplay: none;
 
 .sapTntNavLI {
 	margin: 0;
-	padding: 0;
+	padding: @_sap_tnt_NavigationList_Padding;
 	list-style: none;
+	box-sizing: border-box;
 }
 
 .sapTntNavLI ul {
@@ -44,10 +58,10 @@
 .sapTntNavLIItem {
 	width : 100%;
 	height: @_sap_tnt_NavigationList_ItemHeight;
-
 	box-sizing: border-box;
 	cursor: pointer;
 	background-color: @sapUiListBackground;
+	border-radius: @_sap_tnt_NavigationList_ItemBorderRadius;
 
 	span {
 		cursor: pointer;
@@ -91,6 +105,14 @@
 	min-width: 0;
 }
 
+.sapTntNavLIPopup {
+	padding: @_sap_tnt_NavigationList_PopupPadding;
+
+	.sapTntNavLIItem.sapTntNavLIGroup {
+		margin-bottom: @_sap_tnt_NavigationList_GroupBottomMarginInPopup;
+	}
+}
+
 .sapTntNavLIPopup .sapTntNavLIGroupItem .sapMText {
 	padding: 0 1rem;
 }
@@ -131,7 +153,7 @@
 
 .sapTntNavLI .sapTntNavLIExpandIcon {
 	min-width: 2rem;
-	padding: 0.75rem 0;
+	// padding: 0.75rem 0;
 	font-size: 0.875rem;
 
 	pointer-events: all;
@@ -156,7 +178,11 @@
 }
 
 .sapTntNavLIGroup {
-	border-bottom: 1px solid @sapUiListBorderColor;
+	border-bottom: @_sap_tnt_NavigationList_GroupBorder;
+
+	.sapTntNavLIText {
+		font-weight: @_sap_tnt_NavigationList_GroupTextWeight;
+	}
 }
 
 .sapTntNavLI:not(.sapTntNavLIPopup) .sapTntNavLIGroup[aria-expanded="true"] {
@@ -185,11 +211,38 @@
 }
 
 
+.sapTntNavLISelectionIndicator {
+	display: @_sap_tnt_NavigationList_SelectionIndicatorDisplay;
+	opacity: 0;
+	font-size: 0.5rem;
+	color: @sapUiListSelectionBorderColor;
+}
+
 .sapTntNavLIItemSelected.sapTntNavLIItem,
 .sapTntNavLIItemSelected .sapTntNavLIGroup,
 .sapTntNavLIItemSelected.sapTntNavLIGroupItem,
 .sapTntNavLIItemSelected.sapTntNavLIGroupItem.sapTntNavLIItem {
 	background-color: @sapUiListSelectionBackgroundColor;
+
+	.sapTntNavLISelectionIndicator {
+		opacity: 1;
+	}
+}
+
+.sapTntNavLIGroup.sapTntNavLIItemWithExpander {
+	.sapTntNavLISelectionIndicator {
+		margin: 0 0 0 0.5rem;
+	}
+}
+
+.sapTntNavLIGroup:not(.sapTntNavLIItemWithExpander) {
+	.sapTntNavLISelectionIndicator {
+		margin: 0 0.5rem;
+	}
+}
+
+.sapTntNavLIGroupItem .sapTntNavLISelectionIndicator {
+	margin: 0 0.5rem;
 }
 
 .sapTntNavLIItemSelected .sapTntNavLIItem:hover,
@@ -198,16 +251,37 @@
 	background-color: @sapUiListSelectionHoverBackground;
 }
 
-.sapTntNavLI:not(.sapTntNavLIPopup) .sapTntNavLIGroupItem.sapTntNavLIItem:last-child {
-	border-bottom: 1px solid @sapUiListBorderColor;
+.sapTntNavLI:not(.sapTntNavLIPopup) {
+	.sapTntNavLIGroupItem.sapTntNavLIItem:last-child {
+		border-bottom: @_sap_tnt_NavigationList_GroupBorder;
 
-	&.sapTntNavLIItemSelected {
-		border-color: @sapUiListSelectionBorderColor;
+		&.sapTntNavLIItemSelected {
+			border-color: @sapUiListSelectionBorderColor;
+		}
+	}
+
+	li:not(:last-of-type) .sapTntNavLIItem {
+		margin-bottom: @_sap_tnt_NavigationList_ItemBottomMargin;
 	}
 }
 
-.sapTntNavLIItemSelected:not(.sapTntNavLIItemDisabled) {
-	border-bottom: 1px solid @_sap_tnt_NavigationList_SelectedItemBorderColor;
+.sapTntNavLI:not(.sapTntNavLICollapsed) .sapTntNavLIItemSelected:not(.sapTntNavLIItemDisabled) {
+	border-bottom: @_sap_tnt_NavigationList_SelectedItemBorder;
+}
+
+.sapTntNavLICollapsed .sapTntNavLIItemSelected:not(.sapTntNavLIItemDisabled) {
+	overflow: hidden;
+	border-bottom: none;
+
+	// create the selection indicator with pseudo element, in order to avoid it having border-radius
+	&::after {
+		content: "";
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		border-bottom: @_sap_tnt_NavigationList_Collapsed_SelectedItemBorder;
+	}
 }
 
 .sapTntNavLICollapsed,
@@ -224,26 +298,27 @@
 
 .sapTntNavLI li:focus .sapTntNavLIItem::before,
 .sapTntNavLIItem:focus::before {
-	border: @_sap_tnt_NavigationList_ItemFocusBorder;
+	border: @sapUiContentFocusWidth @sapUiContentFocusStyle @sapUiContentFocusColor;
 	position: absolute;
 	content: " ";
-	top: 1px;
-	right: 1px;
-	bottom: 1px;
-	left: 1px;
+	top: @_sap_tnt_NavigationList_ItemFocusBorderOffset;
+	right: @_sap_tnt_NavigationList_ItemFocusBorderOffset;
+	bottom: @_sap_tnt_NavigationList_ItemFocusBorderOffset;
+	left: @_sap_tnt_NavigationList_ItemFocusBorderOffset;
 	z-index: 2;
 	pointer-events: none;
+	border-radius: @_sap_tnt_NavigationList_ItemBorderRadius;
 }
 
 // NavigationList with icons
 .sapTntNavLI:not(.sapTntNavLINoIcons) {
 
 	span.sapTntNavLIGroupIcon {
-		width: @_sap_tnt_NavigationList_CollapsedWidth;
+		width: @_sap_tnt_NavigationList_GroupIconWidth;
 	}
 
 	.sapTntNavLIGroupItem .sapMText {
-		padding-left: @_sap_tnt_NavigationList_CollapsedWidth;
+		padding-left: @_sap_tnt_NavigationList_GroupIconWidth;
 	}
 }
 
@@ -262,6 +337,10 @@
 
 /* Compact size */
 .sapUiSizeCompact {
+
+	.sapTntNavLI {
+		padding: @_sap_tnt_NavigationList_PaddingCompact;
+	}
 
 	.sapTntNavLIItem {
 		height: 2rem;
@@ -292,7 +371,13 @@
 	.sapTntNavLI:not(.sapTntNavLINoIcons) {
 
 		span.sapTntNavLIGroupIcon {
-			width: @_sap_tnt_NavigationList_CollapsedWidth;
+			width: @_sap_tnt_NavigationList_GroupIconWidth;
+		}
+	}
+
+	.sapTntNavLI:not(.sapTntNavLIPopup) {
+		li:not(:last-of-type) .sapTntNavLIItem {
+			margin-bottom: @_sap_tnt_NavigationList_ItemBottomMarginCompact;
 		}
 	}
 }
@@ -304,7 +389,10 @@
 /* CSS for control sap.tnt/ToolHeader  */
 /* Base theme                          */
 /* =================================== */
+
 @_sap_tnt_ToolHeader_Height: 3rem;
+@_sap_tnt_ToolHeader_BorderRadius: 0;
+@_sap_tnt_ToolHeader_BoxShadow: none;
 @_sap_tnt_ToolHeader_AvatarBackground: lighten(saturate(spin(@sapUiAccent6, 348), 36), 28);
 @_sap_tnt_ToolHeader_AvatarColor: @sapUiBaseText;
 @_sap_tnt_ToolHeader_BorderColor: contrast(@sapShellColor, @sapUiContentFocusColor, @sapUiContentContrastFocusColor, @sapContent_ContrastTextThreshold);
@@ -321,6 +409,8 @@
 
 .sapTntToolHeader.sapMTB {
 	height: @_sap_tnt_ToolHeader_Height;
+	border-radius: @_sap_tnt_ToolHeader_BorderRadius;
+	box-shadow: @_sap_tnt_ToolHeader_BoxShadow;
 }
 
 // ==========================================================================
@@ -328,11 +418,14 @@
 // ==========================================================================
 
 .sapMIBar.sapTntToolHeader .sapMBarChild.sapMITH {
-	height: @_sap_tnt_ToolHeader_IconTabHeader_Height;
-	box-shadow: none;
-	padding: @_sap_tnt_ToolHeader_Padding;
 	flex: 1;
 	min-width: 0; // fixes Chrome flex issue
+}
+
+.sapMIBar.sapTntToolHeader:not(.sapUshellShellToolHeader) .sapMBarChild.sapMITH {
+	box-shadow: none;
+	height: @_sap_tnt_ToolHeader_IconTabHeader_Height;
+	padding: @_sap_tnt_ToolHeader_Padding;
 
 	.sapMITBHead {
 		padding-top: 0;
@@ -355,7 +448,7 @@
 	}
 }
 
-.sapTntToolHeader .sapMITH .sapMITBContentArrow {
+.sapTntToolHeader:not(.sapUshellShellToolHeader) .sapMITH .sapMITBContentArrow {
 	margin: @_sap_tnt_ToolHeader_ArrowMargin;
 }
 
@@ -368,6 +461,16 @@
 		content: '\e287';
 	}
 }
+
+/* ------------------------------------------------ */
+/* Shell overrides                        */
+/* ------------------------------------------------ */
+
+.sapTntToolHeader.sapUshellShellToolHeader {
+	background-color: @sapUiShellNavigationBackground;
+	height: 2.75rem;
+	box-shadow: @sapUiShellShadow;
+}
 /* END "ToolHeader.less" */
 
 /* START "SideNavigation.less" */
@@ -378,9 +481,15 @@
 
 @_sap_tnt_SideNavigation_Width: 15rem;
 @_sap_tnt_SideNavigation_CollapsedWidth: 3rem;
+@_sap_tnt_SideNavigation_NavigationSeparatorMargin: 0.25rem 0.875rem 0.25rem 0.875rem;
+@_sap_tnt_SideNavigation_NavigationSeparatorMarginCollapsed: 0.25rem 0.5rem 0.25rem 0.5rem;
 @_sap_tnt_SideNavigation_NavigationSeparatorBackgroundColor: @sapUiGroupContentBorderColor;
+@_sap_tnt_SideNavigation_NavigationSeparatorRadius: unset;
 @_sap_tnt_SideNavigation_NavigationSeparatorHeight: 1px;
 @_sap_tnt_SideNavigation_TriangleColor: @sapUiContentIconColor;
+@_sap_tnt_SideNavigation_BorderRadius: 0;
+@_sap_tnt_SideNavigation_PhoneBorderRadius: 0;
+@_sap_tnt_SideNavigation_BoxShadow: none;
 
 .sapTntSideNavigation {
   display: flex;
@@ -390,10 +499,16 @@
   overflow: hidden;
   background: @sapUiListBackground;
   border-right: 1px solid @sapUiGroupContentBorderColor;
+	box-shadow: @_sap_tnt_SideNavigation_BoxShadow;
+	border-radius: @_sap_tnt_SideNavigation_BorderRadius;
+	width: @_sap_tnt_SideNavigation_Width;
 }
 
-.sapTntSideNavigation {
-  width: @_sap_tnt_SideNavigation_Width;
+html.sap-phone,
+html.sap-tablet:not(html.sap-combi) {
+	.sapTntSideNavigation {
+		border-radius: @_sap_tnt_SideNavigation_PhoneBorderRadius;
+	}
 }
 
 .sapTntSideNavigation.sapTntSideNavigationNotExpandedWidth {
@@ -406,12 +521,7 @@
 		display: none;
 	}
 	.sapTntSideNavigationSeparator {
-		margin: 0.25rem 0.5rem 0.25rem 0.5rem;
-	}
-
-	.sapTntSideNavigationFlexible {
-		padding-right: @_sap_tnt_SideNavigation_CollapsedWidth;
-		width: 6rem;
+		margin: @_sap_tnt_SideNavigation_NavigationSeparatorMarginCollapsed;
 	}
 
 	.sapTnTNavLINotExpandedTriangle:not(.sapTntNavLIItemDisabled):after {
@@ -439,10 +549,11 @@
 }
 
 .sapTntSideNavigationSeparator {
-	margin: 0.25rem 0.875rem 0.25rem 0.875rem;
+	margin: @_sap_tnt_SideNavigation_NavigationSeparatorMargin;
 	height: @_sap_tnt_SideNavigation_NavigationSeparatorHeight;
 	min-height: @_sap_tnt_SideNavigation_NavigationSeparatorHeight;
 	background-color: @_sap_tnt_SideNavigation_NavigationSeparatorBackgroundColor;
+	border-radius: @_sap_tnt_SideNavigation_NavigationSeparatorRadius;
 }
 
 .sapTntSideNavigationFixed {
@@ -498,20 +609,20 @@
 
 .sapUiSizeCompact {
 
-  .sapTntSideNavigationNotExpanded {
+	.sapTntSideNavigationNotExpanded {
 
-    .sapTntSideNavigationSeparator {
-     	margin: 0.25rem 0.5rem 0.25rem 0.5rem;
-    }
-  }
+		.sapTntSideNavigationSeparator {
+			margin: @_sap_tnt_SideNavigation_NavigationSeparatorMarginCollapsed;
+		}
+	}
 
-  .sapTntSideNavigationSeparator {
-	margin: 0.25rem 0.5rem 0.25rem 0.5rem;
-  }
+	.sapTntSideNavigationSeparator {
+		margin: @_sap_tnt_SideNavigation_NavigationSeparatorMarginCollapsed;
+	}
 
-  .sapTntSideNavigationScrollIcon {
-    padding: 0.5rem 0;
-  }
+	.sapTntSideNavigationScrollIcon {
+		padding: 0.5rem 0;
+	}
 }
 /* END "SideNavigation.less" */
 
@@ -524,12 +635,24 @@
 /* ==========================================================================
    Variables
    ========================================================================== */
-
-@_sap_tnt_ToolPage_AsideWidth : 15rem;
-@_sap_tnt_ToolPage_AsideWidthOnTablet : 3rem;
-@_sap_tnt_ToolPage_HeaderHeight : 3rem;
 @_sap_tnt_ToolPage_AnimationDuration : 0.3s;
-@_sap_tnt_ToolPage_HeaderShadow: none;
+@_sap_tnt_ToolPage_Paddings: 0;
+@_sap_tnt_ToolPage_PaddingsTablet: 0;
+@_sap_tnt_ToolPage_PaddingsPhone: 0;
+@_sap_tnt_ToolPage_Background: darken(@sapBackgroundColor, 4);
+@_sap_tnt_ToolPage_AsideMargins: 0;
+@_sap_tnt_ToolPage_AsideMarginsPhone: 0;
+@_sap_tnt_ToolPage_ContentMargins: 0;
+@_sap_tnt_ToolPage_ContentMarginsPhone: 0;
+@_sap_tnt_ToolPage_ContentShadow: none;
+@_sap_tnt_ToolPage_ContentBackgroundStandard: none;
+@_sap_tnt_ToolPage_ContentBackgroundSolid: none;
+@_sap_tnt_ToolPage_ContentBackgroundTransparent: none;
+@_sap_tnt_ToolPage_ContentBackgroundList: none;
+@_sap_tnt_ToolPage_ContentBorderRadius: 0;
+@_sap_tnt_ToolPage_ContentBorderRadiusTabletPhone: 0;
+@_sap_tnt_ToolPage_AsideCollapsedPhoneTransform: -100%;
+@_sap_tnt_ToolPage_AsideCollapsedPhoneTransformRtl: 100%;
 
 /* ==========================================================================
    Root element
@@ -546,29 +669,16 @@
 
   box-sizing: border-box;
   overflow: hidden;
+  padding: @_sap_tnt_ToolPage_Paddings;
+  background: @_sap_tnt_ToolPage_Background;
 }
 
 /* ==========================================================================
    Header
    ========================================================================== */
-.sapTntToolPageHeader {
-  height: @_sap_tnt_ToolPage_HeaderHeight;
-}
 
 .sapTntToolPageHeaderWrapper {
-  box-shadow: @_sap_tnt_ToolPage_HeaderShadow;
   z-index: 2; // bring header above content wrapper to draw drop shadow over the content
-}
-
-/* ==========================================================================
-   Subheader
-   ========================================================================== */
-.sapTntToolPage header + header .sapTntToolPageHeader {
-  height: auto;
-
-  .sapTntToolHeader {
-    height: auto;
-  }
 }
 
 /* ==========================================================================
@@ -576,7 +686,7 @@
    ========================================================================== */
 .sapTntToolPageContentWrapper {
   display: flex;
-  flex-grow: 1;
+  flex: 1;
   min-height: 0; // fixes flex chrome issue
   position: relative;
 }
@@ -589,6 +699,7 @@
   flex-direction: column;
 
   will-change: transform;
+  margin: @_sap_tnt_ToolPage_AsideMargins;
 }
 
 .sapTntToolPageAsideContent {
@@ -598,64 +709,44 @@
   height: 100%;
 }
 
-html:not([data-sap-ui-animation='off']) .sapTntToolPageMain {
-  transition: padding-left @_sap_tnt_ToolPage_AnimationDuration, transform @_sap_tnt_ToolPage_AnimationDuration;
-}
-
 html:not([data-sap-ui-animation='off']) .sapTntToolPageAside {
   transition: transform @_sap_tnt_ToolPage_AnimationDuration;
 }
 
-.sap-desktop,
-.sap-tablet {
-  .sapTntToolPageAside {
-    width: @_sap_tnt_ToolPage_AsideWidth;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    top: 0;
-    z-index: 1;
-  }
-
-  .sapTntToolPageAside + .sapTntToolPageMain {
-    padding-left: @_sap_tnt_ToolPage_AsideWidth;
-  }
-}
-
-.sap-desktop,
-.sap-tablet {
-  .sapTntToolPageAsideCollapsed {
-    & > .sapTntToolPageAside {
-      width: @_sap_tnt_ToolPage_AsideWidthOnTablet;
-    }
-
-    & > .sapTntToolPageAside + .sapTntToolPageMain {
-      padding-left: @_sap_tnt_ToolPage_AsideWidthOnTablet;
-    }
-  }
-}
-
-.sap-phone {
-  .sapTntToolPageAside {
-    width: @_sap_tnt_ToolPage_AsideWidth;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    top: 0;
-    z-index: 1;
+html.sap-tablet:not(html.sap-combi) {
+  .sapTntToolPage {
+    padding: @_sap_tnt_ToolPage_PaddingsTablet;
   }
 
   .sapTntToolPageMain {
-    transform: translateX(@_sap_tnt_ToolPage_AsideWidth);
+    border-radius: @_sap_tnt_ToolPage_ContentBorderRadiusTabletPhone;
+  }
+}
+
+html.sap-phone {
+  .sapTntToolPage {
+    padding: @_sap_tnt_ToolPage_PaddingsPhone;
+  }
+
+  .sapTntToolPageAside {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    z-index: 1;
+
+    margin: @_sap_tnt_ToolPage_AsideMarginsPhone;
   }
 
   .sapTntToolPageAsideCollapsed {
     .sapTntToolPageAside {
-      transform: translateX(-@_sap_tnt_ToolPage_AsideWidth);
+      transform: translateX(@_sap_tnt_ToolPage_AsideCollapsedPhoneTransform);
     }
-    .sapTntToolPageMain {
-      transform: translateX(0);
-    }
+  }
+
+  .sapTntToolPageMain {
+    border-radius: @_sap_tnt_ToolPage_ContentBorderRadiusTabletPhone;
+    margin: @_sap_tnt_ToolPage_ContentMarginsPhone;
   }
 }
 
@@ -667,8 +758,26 @@ html:not([data-sap-ui-animation='off']) .sapTntToolPageAside {
   flex-direction: column;
   flex: 1;
   min-width: 0; // fixes flex chrome issue
+  overflow: hidden;
 
   will-change: transform;
+  margin: @_sap_tnt_ToolPage_ContentMargins;
+  box-shadow: @_sap_tnt_ToolPage_ContentShadow;
+  border-radius: @_sap_tnt_ToolPage_ContentBorderRadius;
+  background: @_sap_tnt_ToolPage_ContentBackgroundStandard;
+}
+
+.sapTntToolPageMain.sapTntToolPageMainBackground-Solid {
+  background: @_sap_tnt_ToolPage_ContentBackgroundSolid;
+}
+
+.sapTntToolPageMain.sapTntToolPageMainBackground-Transparent {
+  background: @_sap_tnt_ToolPage_ContentBackgroundTransparent;
+  box-shadow: none;
+}
+
+.sapTntToolPageMain.sapTntToolPageMainBackground-List {
+  background: @_sap_tnt_ToolPage_ContentBackgroundList;
 }
 
 .sapTntToolPageMainContent {
@@ -688,16 +797,9 @@ html:not([data-sap-ui-animation='off']) .sapTntToolPageAside {
 
 html[dir=rtl] {
   &.sap-phone {
-    .sapTntToolPageMain {
-      transform: translateX(-@_sap_tnt_ToolPage_AsideWidth);
-    }
-
     .sapTntToolPageAsideCollapsed {
       .sapTntToolPageAside {
-        transform: translateX(@_sap_tnt_ToolPage_AsideWidth);
-      }
-      .sapTntToolPageMain {
-        transform: translateX(0);
+        transform: translateX(@_sap_tnt_ToolPage_AsideCollapsedPhoneTransformRtl);
       }
     }
   }

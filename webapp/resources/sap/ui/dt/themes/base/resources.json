@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "ContextMenu.less",
-			"size": 2049,
+			"size": 2382,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -31,13 +31,13 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 114928,
+			"size": 138413,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 5040,
+			"size": 5637,
 			"theme": "base"
 		},
 		{
@@ -48,12 +48,12 @@
 		},
 		{
 			"name": "library.css",
-			"size": 5038,
+			"size": 5632,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 6481,
+			"size": 6814,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -65,12 +65,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 4675,
+			"size": 5272,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 4673,
+			"size": 5267,
 			"theme": "base"
 		},
 		{

@@ -6,10 +6,12 @@
 sap.ui.define([
 	"sap/ui/integration/library",
 	"sap/base/Log",
-	"sap/ui/base/ManagedObject"
+	"sap/ui/base/ManagedObject",
+	"sap/base/util/fetch"
 ], function (library,
 			 Log,
-			 ManagedObject) {
+			 ManagedObject,
+			 fetch) {
 	"use strict";
 
 	/**
@@ -24,7 +26,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.ManagedObject
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -48,7 +50,7 @@ sap.ui.define([
 				},
 
 				/**
-				 * The formatters, which can be used in the manifest.
+				 * The formatters that can be used in the manifest.
 				 * @experimental since 1.79
 				 */
 				formatters: {
@@ -59,6 +61,10 @@ sap.ui.define([
 
 				/**
 				 * Fired when an action is triggered in the card.
+				 *
+				 * When an action is triggered in the card it can be handled on several places by "action" event handlers. In consecutive order those places are: <code>Extension</code>, <code>Card</code>, <code>Host</code>.
+				 * Each of them can prevent the next one to handle the action by calling <code>oEvent.preventDefault()</code>.
+				 *
 				 * @experimental since 1.75
 				 * Disclaimer: this event is in a beta state - incompatible API changes may be done before its official public release. Use at your own discretion.
 				 */
@@ -122,26 +128,50 @@ sap.ui.define([
 		if (this._oCard) {
 			this._oCard._refreshActionsMenu();
 		}
+
+		return this;
 	};
 
 	/**
-	 * See generated JSDoc
+	 * Sets current value of property {@link #setFormatters formatters}.
+	 *
+	 * The formatters that can be used in the manifest.
+	 * When called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.
+	 *
+	 * @method
+	 * @param {Object<string, function>} [aFormatters] New value of property <code>formatters</code>
+	 * @returns {this} Reference to <code>this</code> in order to allow method chaining
+	 * @public
+	 * @name sap.ui.integration.Extension#setFormatters
 	 */
 	Extension.prototype.setFormatters = function (aFormatters) {
 		this.setProperty("formatters", aFormatters);
 
 		if (!this._oCard) {
-			return;
+			return this;
 		}
 
 		if (!this._oCard._bApplyManifest ||
 			this._oCard.getAggregation("_extension") !== this) {
 			Log.error("Extension formatters must be set before the initialization of the card. Do this inside Extension#init().");
 		}
+
+		return this;
 	};
 
 	/**
-	 * Called when the card is ready.
+	 * Gets current value of property {@link #getFormatters formatters}.
+	 *
+	 * The formatters that can be used in the manifest.
+	 *
+	 * @method
+	 * @returns {Object<string, function>|undefined} Value of property <code>formatters</code>
+	 * @public
+	 * @name sap.ui.integration.Extension#getFormatters
+	 */
+
+	/**
+	 * Called after the card is initialized.
 	 * @public
 	 */
 	Extension.prototype.onCardReady = function () { };
@@ -164,6 +194,28 @@ sap.ui.define([
 	 */
 	Extension.prototype.getCard = function () {
 		return this._oCardInterface;
+	};
+
+	/**
+	 * Starts the process of fetching a resource from the network, returning a promise that is fulfilled once the response is available.
+	 * Use this method to override the default behavior when fetching network resources.
+	 * Mimics the browser native Fetch API.
+	 * @public
+	 * @experimental Since 1.113. The API might change.
+	 * @param {string} sResource This defines the resource that you wish to fetch.
+	 * @param {object} mOptions An object containing any custom settings that you want to apply to the request.
+	 * @param {object} mRequestSettings The map of request settings defined in the card manifest. Use this only for reading, they can not be modified.
+	 * @returns {Promise<Response>} A <code>Promise</code> that resolves to a <code>Response</code> object.
+	 */
+	Extension.prototype.fetch = function (sResource, mOptions, mRequestSettings) {
+		var oCard = this._oCard,
+			oHost = this._oCard.getHostInstance();
+
+		if (oHost) {
+			return oHost.fetch(sResource, mOptions, mRequestSettings, oCard);
+		} else {
+			return fetch(sResource, mOptions);
+		}
 	};
 
 	/**

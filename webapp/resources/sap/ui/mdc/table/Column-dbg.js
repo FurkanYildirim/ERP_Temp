@@ -13,7 +13,8 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/base/ManagedObjectModel",
 	"sap/ui/core/Control",
-	"sap/ui/core/Core"
+	"sap/ui/core/Core",
+	"sap/ui/mdc/enums/TableType"
 ], function(
 	GridTableType,
 	ResponsiveTableType,
@@ -23,7 +24,8 @@ sap.ui.define([
 	JSONModel,
 	ManagedObjectModel,
 	Control,
-	Core
+	Core,
+	TableType
 ) {
 	"use strict";
 
@@ -35,10 +37,7 @@ sap.ui.define([
 	 * @class The column for the metadata-driven table with the template, which is shown if the rows have data.
 	 * @extends sap.ui.core.Control
 	 * @author SAP SE
-	 * @private
-	 * @experimental
-	 * @ui5-restricted sap.fe
-	 * MDC_PUBLIC_CANDIDATE
+	 * @public
 	 * @since 1.58
 	 * @alias sap.ui.mdc.table.Column
 	 */
@@ -48,7 +47,9 @@ sap.ui.define([
 			defaultAggregation: "template",
 			properties: {
 				/**
-				 * Width of the column.
+				 * Defines the width of the column.
+				 *
+				 * @since 1.80
 				 */
 				width: {
 					type: "sap.ui.core.CSSSize",
@@ -56,7 +57,9 @@ sap.ui.define([
 					defaultValue: null
 				},
 				/**
-				 * Minimum width of the column.
+				 * Defines the minimum width of the column.
+				 *
+				 * @since 1.80
 				 */
 				minWidth: {
 					type: "float",
@@ -64,14 +67,17 @@ sap.ui.define([
 					defaultValue: 8
 				},
 				/**
-				 * The column header text.
+				 * Defines the column header text.
+				 *
+				 * @since 1.80
 				 */
 				header: {
 					type: "string"
 				},
 				/**
 				 * Defines whether the column header is visible.
-				 * @since 1.78
+				 *
+				 * @since 1.80
 				 */
 				headerVisible: {
 					type: "boolean",
@@ -79,33 +85,54 @@ sap.ui.define([
 					defaultValue: true
 				},
 				/**
-				 * Horizontal alignment of the content.
+				 * Defines the horizontal alignment of the column content.
+				 *
+				 * @since 1.80
 				 */
 				hAlign: {
 					type: "sap.ui.core.HorizontalAlign",
 					defaultValue: "Begin"
 				},
 				/**
-				 * Importance of the column. It is used to show or hide the column based on the <code>Table</code> configuration.
+				 * Defines the column importance.
+				 *
+				 * The column importance is taken into consideration for calculating the <code>minScreenWidth</code>
+				 * property and for setting the <code>demandPopin</code> property of the column.
+				 * See {@link sap.m.Table#getAutoPopinMode} for more details, which is automatically set to <code>true</code>.
+				 *
+				 * @deprecated as of version 1.110, replaced with {@link sap.ui.mdc.table.ResponsiveColumnSettings#importance} <br/>
+				 * This property will be ignored whenever the {@link sap.ui.mdc.table.ResponsiveColumnSettings} are applied to the column.
 				 */
 				importance: {
 					type: "sap.ui.core.Priority",
 					group: "Behavior",
 					defaultValue: "None"
 				},
-				/*
-				 * Only used during creation of table for initial/1st rendering, 0 based index
-				 */
-				// TODO: Delete!
-				initialIndex: {
-					type: "int",
-					defaultValue: -1
-				},
 				/**
-				 * The data property related to the column.
+				 * Defines data property related to the column.
+				 * @deprecated Since 1.115. Please use <code>propertyKey</code> instead.
+				 * @since 1.84
 				 */
 				dataProperty: {
 					type: "string"
+				},
+				/**
+				 * Defines data property related to the column.
+				 *
+				 * @since 1.115
+				 */
+				propertyKey: {
+					type: "string"
+				},
+				/**
+				 * Indicates whether the content of the column is required.
+				 * <b>Note:</b> The table only takes care of announcing the state of the column header as defined by the <code>required</code> property.
+				 * The application needs to take care of the screen reader announcement of the state of the table cells,
+				 * for example, by setting the <code>required</code> property to <code>true</code> for <code>sap.m.Input</code>.
+				 */
+				required: {
+					type: "boolean",
+					defaultValue: false
 				}
 			},
 			aggregations: {
@@ -118,10 +145,26 @@ sap.ui.define([
 				},
 				/**
 				 * <code>CreationRow</code> template.
+				 *
 				 * <b>Note:</b> Once the binding supports creating transient records, this aggregation will be removed.
+				 *
+				 * @experimental Do not use
+				 * @ui5-restricted sap.fe
 				 */
 				creationTemplate: {
 					type: "sap.ui.core.Control",
+					multiple: false
+				},
+				/**
+				 * Defines type-specific column settings based on the used {@link sap.ui.mdc.table.TableTypeBase}.
+				 *
+				 * <b>Note:</b> Once <code>sap.ui.mdc.table.ColumnSettings</code> are defined,
+				 * all properties provided by the <code>ColumnSettings</code> are automatically assigned to the column.
+				 *
+				 * @since 1.110
+				 */
+				extendedSettings: {
+					type: "sap.ui.mdc.table.ColumnSettings",
 					multiple: false
 				}
 			}
@@ -180,17 +223,64 @@ sap.ui.define([
 			}
 		};
 
+		var oTooltipBindingInfo = {
+			parts: [
+				{path: "$this>/tooltip"},
+				{path: "$this>/header"},
+				{path: "$this>/headerVisible"},
+				{path: "$sap.ui.mdc.Table>/useColumnLabelsAsTooltips"}
+			],
+			formatter: function(sTooltip, sHeader, bHeaderVisible, bUseColumnLabelsAsTooltips) {
+				if (sTooltip || !bUseColumnLabelsAsTooltips) {
+					return sTooltip;
+				}
+				return bHeaderVisible ? sHeader : "";
+			}
+		};
+
 		this._readP13nValues(); // XConfig might not have been available on init - depends on the order settings are applied in Table#applySettings.
 
-		if (oTable._bMobileTable) {
+		if (oTable._isOfType(TableType.ResponsiveTable)) {
 			oColumn = ResponsiveTableType.createColumn(this.getId() + "-innerColumn", {
 				width: oWidthBindingInfo,
 				autoPopinWidth: "{$this>/minWidth}",
 				hAlign: "{$this>/hAlign}",
-				header: this._getColumnHeaderLabel(),
-				importance: "{$this>/importance}",
-				popinDisplay: "Inline",
-				tooltip: "{$this>/tooltip}"
+				header: this._getColumnHeaderLabel(oTooltipBindingInfo),
+				importance: {
+					parts: [
+						{path: "$this>/importance"},
+						{path: "$this>/extendedSettings/importance"},
+						{path: "$this>/extendedSettings/@className"}
+					],
+					formatter: function(sLegacyImportance, sImportance, sClassName) {
+						if (sImportance && sClassName === "sap.ui.mdc.table.ResponsiveColumnSettings") {
+							return sImportance;
+						} else {
+							return sLegacyImportance;
+						}
+					}
+				},
+				popinDisplay: "{= ${$this>/headerVisible} ? 'Inline' : 'WithoutHeader' }",
+				mergeDuplicates: {
+					parts: [
+						{path: "$this>/extendedSettings/mergeFunction"},
+						{path: "$this>/extendedSettings/@className"}
+					],
+					formatter: function(sMergeFunction, sClassName) {
+						return sMergeFunction && sClassName === "sap.ui.mdc.table.ResponsiveColumnSettings";
+					}
+				},
+				mergeFunctionName: {
+					parts: [
+						{path: "$this>/extendedSettings/mergeFunction"},
+						{path: "$this>/extendedSettings/@className"}
+					],
+					formatter: function(sMergeFunction, sClassName) {
+						if (sClassName === "sap.ui.mdc.table.ResponsiveColumnSettings") {
+							return sMergeFunction;
+						}
+					}
+				}
 			});
 		} else {
 			oColumn = GridTableType.createColumn(this.getId() + "-innerColumn", {
@@ -205,7 +295,7 @@ sap.ui.define([
 				label: this._getColumnHeaderLabel(),
 				resizable: "{$columnSettings>/resizable}",
 				autoResizable: "{$columnSettings>/resizable}",
-				tooltip: "{$this>/tooltip}",
+				tooltip: oTooltipBindingInfo,
 				template: this.getTemplateClone()
 			});
 			oColumn.setCreationTemplate(this.getCreationTemplateClone());
@@ -213,6 +303,7 @@ sap.ui.define([
 
 		oColumn.setModel(this._oManagedObjectModel, "$this");
 		oColumn.setModel(this._oSettingsModel, "$columnSettings");
+		oColumn.setHeaderMenu(oTable.getId() + "-columnHeaderMenu");
 
 		return oColumn;
 	};
@@ -249,10 +340,12 @@ sap.ui.define([
 	 * Creates and returns the column header control.
 	 * If <code>headerVisible=false</code> then <code>width=0px</code> is applied to the <code>sap.m.Label</code> control for accessibility purposes.
 	 *
+	 * @param {object} oTooltipBindingInfo The binding info to be usd for the tooltip of the created column header control.
+	 *
 	 * @returns {object} The column header control
 	 * @private
 	 */
-	Column.prototype._getColumnHeaderLabel = function() {
+	Column.prototype._getColumnHeaderLabel = function(oTooltipBindingInfo) {
 		var oTable = this.getTable();
 
 		if (oTable && (!this._oColumnHeaderLabel || this._oColumnHeaderLabel.isDestroyed())) {
@@ -262,17 +355,18 @@ sap.ui.define([
 					width: "{= ${$this>/headerVisible} ? null : '0px' }",
 					text: "{$this>/header}",
 					textAlign: "{$this>/hAlign}",
-					tooltip: oTable._bMobileTable ? "{$this>/tooltip}" : "",
+					tooltip: oTooltipBindingInfo ? oTooltipBindingInfo : "",
 					wrapping: {
 						parts: [
 							{path: "$this>/headerVisible"},
 							{path: "$columnSettings>/resizable"}
 						],
 						formatter: function(bHeaderVisible, bResizable) {
-							return oTable._bMobileTable && bHeaderVisible && !bResizable;
+							return oTable._isOfType(TableType.ResponsiveTable) && bHeaderVisible && !bResizable;
 						}
 					},
-					wrappingType: oTable._bMobileTable ? "Hyphenated" : null
+					wrappingType: oTable._isOfType(TableType.ResponsiveTable) ? "Hyphenated" : null,
+					required: "{$this>/required}"
 				})
 			});
 		}
@@ -287,7 +381,7 @@ sap.ui.define([
 		if (oTable && oTemplate && (!this._oTemplateClone || this._oTemplateClone.isDestroyed())) {
 			this._oTemplateClone = oTemplate.clone();
 
-			if (!oTable._bMobileTable) {
+			if (!oTable._isOfType(TableType.ResponsiveTable)) {
 				if (this._oTemplateClone.setWrapping) {
 					this._oTemplateClone.setWrapping(false);
 				}
@@ -308,7 +402,7 @@ sap.ui.define([
 		if (oTable && oCreationTemplate && (!this._oCreationTemplateClone || this._oCreationTemplateClone.isDestroyed())) {
 			this._oCreationTemplateClone = oCreationTemplate.clone();
 
-			if (!oTable._bMobileTable) {
+			if (!oTable._isOfType(TableType.ResponsiveTable)) {
 				if (this._oCreationTemplateClone.setWrapping) {
 					this._oCreationTemplateClone.setWrapping(false);
 				}
@@ -331,6 +425,12 @@ sap.ui.define([
 		}
 
 		return this;
+	};
+
+	//Temporary fallback for compatibility until the dataProperty can be removed
+	Column.prototype.getPropertyKey = function() {
+		var sPropertyKey = this.getProperty("propertyKey");
+		return sPropertyKey || this.getDataProperty();
 	};
 
 	/**
@@ -421,16 +521,18 @@ sap.ui.define([
 		var oPropertyHelper = oTable.getPropertyHelper();
 
 		if (oPropertyHelper) {
-			this._oSettingsModel.setProperty("/calculatedWidth", oPropertyHelper.calculateColumnWidth(this));
+			oPropertyHelper.calculateColumnWidth(this).then(function(sWidth) {
+				this._oSettingsModel.setProperty("/calculatedWidth", sWidth);
+			}.bind(this));
 		} else {
-			oTable.awaitPropertyHelper().then(this._calculateColumnWidth.bind(this));
+			oTable._fullyInitialized().then(this._calculateColumnWidth.bind(this));
 		}
 	};
 
 	Column.prototype._readP13nValues = function() {
 		var oTable = this.getTable();
 		var vXConfig = oTable.getCurrentState().xConfig;
-		var sPropertyKey = this.getDataProperty();
+		var sPropertyKey = this.getPropertyKey();
 
 		if (vXConfig instanceof Promise) {
 			vXConfig.then(this._readP13nValues.bind(this));
@@ -438,10 +540,10 @@ sap.ui.define([
 		}
 
 		var sWidth = vXConfig &&
-					 vXConfig.aggregations &&
-					 vXConfig.aggregations.columns &&
-					 vXConfig.aggregations.columns[sPropertyKey] &&
-					 vXConfig.aggregations.columns[sPropertyKey].width;
+			vXConfig.aggregations &&
+			vXConfig.aggregations.columns &&
+			vXConfig.aggregations.columns[sPropertyKey] &&
+			vXConfig.aggregations.columns[sPropertyKey].width;
 
 		this._oSettingsModel.setProperty("/p13nWidth", sWidth);
 	};

@@ -157,7 +157,7 @@ sap.ui.define([
 		 * @hideconstructor
 		 * @public
 		 * @since 1.37.0
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 */
 		ODataMetaModel = MetaModel.extend("sap.ui.model.odata.v4.ODataMetaModel", {
 				constructor : constructor
@@ -211,7 +211,7 @@ sap.ui.define([
 	 *   A namespace, for example "foo.bar.", of a schema.
 	 * @param {function} fnLog
 	 *   The log function
-	 * @returns {object|SyncPromise|undefined}
+	 * @returns {object|sap.ui.base.SyncPromise|undefined}
 	 *   The schema, or a promise which is resolved without details or rejected with an error, or
 	 *   <code>undefined</code>.
 	 * @throws {Error}
@@ -706,6 +706,7 @@ sap.ui.define([
 		this.sDefaultBindingMode = BindingMode.OneTime;
 		this.mETags = {};
 		this.sLanguage = sLanguage;
+		// no need to use UI5Date.getInstance as only the timestamp is relevant
 		this.oLastModified = new Date(0);
 		this.oMetadataPromise = null;
 		this.oModel = oModel;
@@ -2351,8 +2352,7 @@ sap.ui.define([
 				metadataUrlParams : this.sLanguage && {"sap-language" : this.sLanguage},
 				operationMode : OperationMode.Server,
 				serviceUrl : sUrl,
-				sharedRequests : true,
-				synchronizationMode : "None"
+				sharedRequests : true
 			});
 			mSharedModelByUrl.set(sCacheKey, oSharedModel);
 		}
@@ -2373,7 +2373,8 @@ sap.ui.define([
 	};
 
 	/**
-	 * @deprecated As of 1.37.0, use {@link #getObject}.
+	 * Use {@link #getObject}.
+	 *
 	 * @function
 	 * @public
 	 * @see sap.ui.model.Model#getProperty
@@ -3017,8 +3018,7 @@ sap.ui.define([
 	 * @see #getUI5Type
 	 * @since 1.37.0
 	 */
-	ODataMetaModel.prototype.requestUI5Type
-		= _Helper.createRequestMethod("fetchUI5Type");
+	ODataMetaModel.prototype.requestUI5Type = _Helper.createRequestMethod("fetchUI5Type");
 
 	/**
 	 * Request unit customizing based on the code list reference given in the entity container's
@@ -3480,8 +3480,10 @@ sap.ui.define([
 		}
 
 		// handle & remove Date, ETag and Last-Modified headers
+		// no need to use UI5Date.getInstance as only the timestamp is relevant
 		oLastModified = mScope.$LastModified ? new Date(mScope.$LastModified) : null;
 		this.mETags[sUrl] = mScope.$ETag ? mScope.$ETag : oLastModified;
+		// no need to use UI5Date.getInstance as only the timestamp is relevant
 		oDate = mScope.$Date ? new Date(mScope.$Date) : new Date();
 		oLastModified = oLastModified || oDate; // @see #getLastModified
 		if (this.oLastModified < oLastModified) {

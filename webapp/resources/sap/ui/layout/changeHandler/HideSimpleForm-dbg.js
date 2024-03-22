@@ -17,7 +17,7 @@ sap.ui.define([
 	 * Change handler for hiding of a control.
 	 * @alias sap.ui.fl.changeHandler.HideControl
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @experimental Since 1.27.0
 	 */
 	var HideForm = { };
@@ -60,7 +60,7 @@ sap.ui.define([
 
 
 		// in case of custom fields the application needs to be on JS.
-		// In the other case the visuality of the hidden control will be overriden by the custom field binding afterwards
+		// In the other case the visibility of the hidden control will be overwritten by the custom field binding afterwards
 		if (_isXmlModifier(mPropertyBag)) {
 			return Promise.reject(Error("Change cannot be applied in XML. Retrying in JS."));
 		}

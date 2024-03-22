@@ -4,10 +4,10 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	'sap/ui/model/SelectionModel',
-	'./SelectionPlugin',
+	"sap/ui/model/SelectionModel",
+	"./SelectionPlugin",
 	"../utils/TableUtils",
-	'../library'
+	"../library"
 ], function(
 	SelectionModel,
 	SelectionPlugin,
@@ -23,7 +23,7 @@ sap.ui.define([
 	 *
 	 * @class Implements the selection methods for a Table
 	 * @extends sap.ui.table.plugins.SelectionPlugin
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @alias sap.ui.table.plugins.SelectionModelSelection
@@ -31,6 +31,9 @@ sap.ui.define([
 	var SelectionModelSelection = SelectionPlugin.extend("sap.ui.table.plugins.SelectionModelSelection", {
 		metadata: {
 			library: "sap.ui.table",
+			properties: {
+				selectionMode: {type: "sap.ui.table.SelectionMode", group: "Behavior", defaultValue: SelectionMode.MultiToggle}
+			},
 			events: {
 				/**
 				 * This event is fired when the selection is changed.
@@ -57,7 +60,7 @@ sap.ui.define([
 	 */
 	SelectionModelSelection.prototype.init = function() {
 		SelectionPlugin.prototype.init.apply(this, arguments);
-		this.oSelectionModel = new SelectionModel(this._getSelectionMode);
+		this.oSelectionModel = new SelectionModel(getSelectionModelSelectionMode(this.getSelectionMode()));
 	};
 
 	/**
@@ -93,6 +96,28 @@ sap.ui.define([
 		TableUtils.Hook.deregister(oTable, TableUtils.Hook.Keys.Table.TotalRowCountChanged, onTotalRowCountChanged, this);
 	};
 
+	SelectionModelSelection.prototype.setSelected = function(oRow, bSelected, mConfig) {
+		if (!this.isIndexSelectable(oRow.getIndex())) {
+			return;
+		}
+
+		if (mConfig && mConfig.range) {
+			var iLastSelectedIndex = this.getSelectedIndex();
+
+			if (iLastSelectedIndex >= 0) {
+				this.addSelectionInterval(iLastSelectedIndex, oRow.getIndex());
+			}
+		} else if (bSelected) {
+			this.addSelectionInterval(oRow.getIndex(), oRow.getIndex());
+		} else {
+			this.removeSelectionInterval(oRow.getIndex(), oRow.getIndex());
+		}
+	};
+
+	SelectionModelSelection.prototype.isSelected = function(oRow) {
+		return this.isIndexSelected(oRow.getIndex());
+	};
+
 	/**
 	 * @inheritDoc
 	 */
@@ -100,10 +125,27 @@ sap.ui.define([
 		return {
 			headerSelector: {
 				type: "toggle",
-				visible: TableUtils.hasSelectAll(this.getTable())
+				visible: TableUtils.hasSelectAll(this.getTable()),
+				selected: this.getSelectableCount() > 0 && this.getSelectableCount() === this.getSelectedCount()
 			}
 		};
 	};
+
+	function toggleSelectAll(oPlugin) {
+		var oTable = oPlugin.getTable();
+
+		// in order to fire the rowSelectionChanged event, the SourceRowIndex mus be set to -1
+		// to indicate that the selection was changed by user interaction
+		if (oPlugin.getSelectableCount() > oPlugin.getSelectedCount()) {
+			oTable._iSourceRowIndex = 0;
+			oPlugin.selectAll();
+		} else {
+			oTable._iSourceRowIndex = -1;
+			oPlugin.clearSelection();
+		}
+
+		oTable._iSourceRowIndex = undefined;
+	}
 
 	/**
 	 * This hook is called by the table when the header selector is pressed.
@@ -112,7 +154,7 @@ sap.ui.define([
 	 */
 	SelectionModelSelection.prototype.onHeaderSelectorPress = function() {
 		if (this.getRenderConfig().headerSelector.visible) {
-			this.getTable()._toggleSelectAll();
+			toggleSelectAll(this);
 		}
 	};
 
@@ -124,7 +166,7 @@ sap.ui.define([
 	 */
 	SelectionModelSelection.prototype.onKeyboardShortcut = function(sType) {
 		if (sType === "toggle") {
-			this.getTable()._toggleSelectAll();
+			toggleSelectAll(this);
 		} else if (sType === "clear") {
 			this.clearSelection();
 		}
@@ -135,7 +177,7 @@ sap.ui.define([
 	 * @inheritDoc
 	 */
 	SelectionModelSelection.prototype.addSelectionInterval = function(iIndexFrom, iIndexTo) {
-		if (!this.oSelectionModel || this._getSelectionMode() === SelectionMode.None) {
+		if (!this.oSelectionModel || this.getSelectionMode() === SelectionMode.None) {
 			return;
 		}
 		this.oSelectionModel.addSelectionInterval(iIndexFrom, iIndexTo);
@@ -221,7 +263,7 @@ sap.ui.define([
 	 * @inheritDoc
 	 */
 	SelectionModelSelection.prototype.selectAll = function() {
-		if (!this.oSelectionModel || this._getSelectionMode() === SelectionMode.None) {
+		if (!this.oSelectionModel || this.getSelectionMode() !== SelectionMode.MultiToggle) {
 			return;
 		}
 		this.oSelectionModel.selectAll(this._getHighestSelectableIndex());
@@ -232,7 +274,7 @@ sap.ui.define([
 	 * @inheritDoc
 	 */
 	SelectionModelSelection.prototype.setSelectedIndex = function(iIndex) {
-		if (this._getSelectionMode() === SelectionMode.None) {
+		if (this.getSelectionMode() === SelectionMode.None) {
 			return;
 		}
 		if (iIndex === -1) {
@@ -248,7 +290,7 @@ sap.ui.define([
 	 * @inheritDoc
 	 */
 	SelectionModelSelection.prototype.setSelectionInterval = function(iIndexFrom, iIndexTo) {
-		if (!this.oSelectionModel || this._getSelectionMode() === SelectionMode.None) {
+		if (!this.oSelectionModel || this.getSelectionMode() === SelectionMode.None) {
 			return;
 		}
 		this.oSelectionModel.setSelectionInterval(iIndexFrom, iIndexTo);
@@ -262,21 +304,24 @@ sap.ui.define([
 	 * @public
 	 */
 	SelectionModelSelection.prototype.setSelectionMode = function(sSelectionMode) {
-		var sOldSelectionMode = this._getSelectionMode();
+		var sOldSelectionMode = this.getSelectionMode();
 
-		SelectionPlugin.prototype._setSelectionMode.apply(this, arguments);
+		this.setProperty("selectionMode", sSelectionMode);
 
-		if (this._getSelectionMode() !== sOldSelectionMode) {
+		if (this.getSelectionMode() !== sOldSelectionMode) {
 			this.clearSelection();
 		}
 
 		if (this.oSelectionModel) {
-			var iSelectionMode = (sSelectionMode === SelectionMode.MultiToggle ? SelectionModel.MULTI_SELECTION : SelectionModel.SINGLE_SELECTION);
-			this.oSelectionModel.setSelectionMode(iSelectionMode);
+			this.oSelectionModel.setSelectionMode(getSelectionModelSelectionMode(this.getSelectionMode()));
 		}
 
 		return this;
 	};
+
+	function getSelectionModelSelectionMode(sSelectionMode) {
+		return sSelectionMode === SelectionMode.MultiToggle ? SelectionModel.MULTI_SELECTION : SelectionModel.SINGLE_SELECTION;
+	}
 
 	/**
 	 * Returns the highest index that can be selected. Returns -1 if there is nothing to select.
@@ -302,19 +347,22 @@ sap.ui.define([
 	 */
 	SelectionModelSelection.prototype.onTableUnbindRows = function() {
 		SelectionPlugin.prototype.onTableUnbindRows.apply(this, arguments);
-		this._suspend();
+		this._bSuppressSelectionChangeEvent = true;
 		this.clearSelection();
-		this._resume();
+		delete this._bSuppressSelectionChangeEvent;
 	};
 
 	function onSelectionChange(oEvent) {
 		var aRowIndices = oEvent.getParameter("rowIndices");
 		var bSelectAll = oEvent.getParameter("selectAll");
 
-		this.fireSelectionChange({
-			rowIndices: aRowIndices,
-			selectAll: bSelectAll
-		});
+		if (!this._bSuppressSelectionChangeEvent) {
+			this.fireSelectionChange({
+				rowIndices: aRowIndices,
+				selectAll: bSelectAll,
+				_internalTrigger: this._bInternalTrigger
+			});
+		}
 	}
 
 	function attachToBinding(oPlugin, oBinding) {
@@ -343,7 +391,9 @@ sap.ui.define([
 		// If rows are added or removed, the index-based selection of the SelectionModel is invalid and needs to be cleared.
 		// Changes from 0 are ignored for compatibility, so it is possible to select something before the initial rows update is done.
 		if (this._iTotalRowCount > 0 && this._iTotalRowCount !== iTotalRowCount) {
+			this._bInternalTrigger = true;
 			this.clearSelection();
+			delete this._bInternalTrigger;
 		}
 
 		this._iTotalRowCount = iTotalRowCount;

@@ -12,7 +12,7 @@ sap.ui.define([], function () {
 	 *
 	 * @namespace sap.ui.fl.initial._internal.connectors.Utils
 	 * @since 1.70
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.initial._internal, sap.ui.fl.write._internal
 	 */
@@ -48,7 +48,7 @@ sap.ui.define([], function () {
 						var oFlexObject = mPropertyBag.storage._itemsStoredAsObjects ? vStorageEntry : JSON.parse(vStorageEntry);
 						var bSameReference = true;
 						if (mPropertyBag.reference) {
-							bSameReference = oFlexObject.reference === mPropertyBag.reference || oFlexObject.reference + ".Component" === mPropertyBag.reference;
+							bSameReference = this.isSameReference(oFlexObject, mPropertyBag.reference);
 						}
 
 						var bSameLayer = true;
@@ -64,10 +64,10 @@ sap.ui.define([], function () {
 							changeDefinition: oFlexObject,
 							key: sKey
 						});
-					});
+					}.bind(this));
 
 					return Promise.all(aPromises);
-				});
+				}.bind(this));
 		},
 
 		/**
@@ -105,7 +105,20 @@ sap.ui.define([], function () {
 		 */
 		createFlexObjectKey: function(oFlexObject) {
 			return this.createFlexKey(oFlexObject.fileName);
-		}
+		},
 
+		/**
+		 * Check whether reference of a flex object is same with an input reference or not.
+		 * The reference with ".Component" suffix is considered as an equivalent reference.
+		 *
+		 * @param {object} oFlexObject - The definition of the flex Object
+		 * @param {string} sReference - The input reference
+		 * @returns {boolean} <code>true</code> when flex object reference is equivalent with the input reference
+		 * @ui5-restricted sap.ui.fl.FakeLrepConnector
+		 */
+		isSameReference: function(oFlexObject, sReference) {
+			var sEquivalentReference = sReference.endsWith(".Component") ? sReference.replace(/\.Component$/, "") : sReference + ".Component";
+			return oFlexObject.reference === sReference || oFlexObject.reference === sEquivalentReference;
+		}
 	};
 });

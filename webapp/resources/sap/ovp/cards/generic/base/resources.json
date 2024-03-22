@@ -1,0 +1,255 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "Component-dbg.js",
+			"module": "sap/ovp/cards/generic/base/Component.js",
+			"size": 30163,
+			"isDebug": true,
+			"required": [
+				"sap/base/util/merge.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ui/Device.js",
+				"sap/ui/base/Object.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/UIComponent.js",
+				"sap/ui/core/mvc/ViewType.js",
+				"sap/ui/core/mvc/XMLView.js",
+				"sap/ui/model/json/JSONModel.js",
+				"sap/ui/model/resource/ResourceModel.js"
+			]
+		},
+		{
+			"name": "Component.js",
+			"module": "sap/ovp/cards/generic/base/Component.js",
+			"size": 9935,
+			"required": [
+				"sap/base/util/merge.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ui/Device.js",
+				"sap/ui/base/Object.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/UIComponent.js",
+				"sap/ui/core/mvc/ViewType.js",
+				"sap/ui/core/mvc/XMLView.js",
+				"sap/ui/model/json/JSONModel.js",
+				"sap/ui/model/resource/ResourceModel.js"
+			]
+		},
+		{
+			"name": "Component.js.map",
+			"size": 13875,
+			"isDebug": true
+		},
+		{
+			"name": "linklist/BaseLinklist-dbg.controller.js",
+			"module": "sap/ovp/cards/generic/base/linklist/BaseLinklist.controller.js",
+			"size": 49933,
+			"isDebug": true,
+			"required": [
+				"sap/m/Image.js",
+				"sap/m/List.js",
+				"sap/m/MessageToast.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/app/resources.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ovp/cards/NavigationHelper.js",
+				"sap/ovp/cards/OVPCardAsAPIUtils.js",
+				"sap/ovp/cards/generic/Card.controller.js",
+				"sap/ui/core/ResizeHandler.js",
+				"sap/ui/thirdparty/jquery.js",
+				"sap/ui/util/openWindow.js"
+			]
+		},
+		{
+			"name": "linklist/BaseLinklist.controller.js",
+			"module": "sap/ovp/cards/generic/base/linklist/BaseLinklist.controller.js",
+			"size": 17461,
+			"required": [
+				"sap/m/Image.js",
+				"sap/m/List.js",
+				"sap/m/MessageToast.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/app/resources.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ovp/cards/NavigationHelper.js",
+				"sap/ovp/cards/OVPCardAsAPIUtils.js",
+				"sap/ovp/cards/generic/Card.controller.js",
+				"sap/ui/core/ResizeHandler.js",
+				"sap/ui/thirdparty/jquery.js",
+				"sap/ui/util/openWindow.js"
+			]
+		},
+		{
+			"name": "linklist/BaseLinklist.controller.js.map",
+			"size": 21039,
+			"isDebug": true
+		},
+		{
+			"name": "linklist/Component-dbg.js",
+			"module": "sap/ovp/cards/generic/base/linklist/Component.js",
+			"size": 1843,
+			"isDebug": true,
+			"required": [
+				"sap/ovp/cards/generic/Component.js"
+			]
+		},
+		{
+			"name": "linklist/Component.js",
+			"module": "sap/ovp/cards/generic/base/linklist/Component.js",
+			"size": 860,
+			"required": [
+				"sap/ovp/cards/generic/Component.js"
+			]
+		},
+		{
+			"name": "linklist/Component.js.map",
+			"size": 781,
+			"isDebug": true
+		},
+		{
+			"name": "list/BaseList-dbg.controller.js",
+			"module": "sap/ovp/cards/generic/base/list/BaseList.controller.js",
+			"size": 19033,
+			"isDebug": true,
+			"required": [
+				"sap/m/MessageBox.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/app/resources.js",
+				"sap/ovp/cards/AnnotationHelper.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ovp/cards/Integration/IntegrationCard.js",
+				"sap/ovp/cards/NavigationHelper.js",
+				"sap/ovp/cards/OVPCardAsAPIUtils.js",
+				"sap/ovp/cards/ViewCacheHelper.js",
+				"sap/ovp/cards/generic/Card.controller.js",
+				"sap/ui/model/json/JSONModel.js",
+				"sap/ui/thirdparty/jquery.js"
+			]
+		},
+		{
+			"name": "list/BaseList.controller.js",
+			"module": "sap/ovp/cards/generic/base/list/BaseList.controller.js",
+			"size": 7061,
+			"required": [
+				"sap/m/MessageBox.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/app/resources.js",
+				"sap/ovp/cards/AnnotationHelper.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ovp/cards/Integration/IntegrationCard.js",
+				"sap/ovp/cards/NavigationHelper.js",
+				"sap/ovp/cards/OVPCardAsAPIUtils.js",
+				"sap/ovp/cards/ViewCacheHelper.js",
+				"sap/ovp/cards/generic/Card.controller.js",
+				"sap/ui/model/json/JSONModel.js",
+				"sap/ui/thirdparty/jquery.js"
+			]
+		},
+		{
+			"name": "list/BaseList.controller.js.map",
+			"size": 9556,
+			"isDebug": true
+		},
+		{
+			"name": "list/Component-dbg.js",
+			"module": "sap/ovp/cards/generic/base/list/Component.js",
+			"size": 1586,
+			"isDebug": true,
+			"required": [
+				"sap/ovp/cards/generic/Component.js"
+			]
+		},
+		{
+			"name": "list/Component.js",
+			"module": "sap/ovp/cards/generic/base/list/Component.js",
+			"size": 852,
+			"required": [
+				"sap/ovp/cards/generic/Component.js"
+			]
+		},
+		{
+			"name": "list/Component.js.map",
+			"size": 796,
+			"isDebug": true
+		},
+		{
+			"name": "resources.json",
+			"size": 6789
+		},
+		{
+			"name": "table/BaseTable-dbg.controller.js",
+			"module": "sap/ovp/cards/generic/base/table/BaseTable.controller.js",
+			"size": 12240,
+			"isDebug": true,
+			"required": [
+				"sap/m/MessageBox.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/app/resources.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ovp/cards/Integration/IntegrationCard.js",
+				"sap/ovp/cards/NavigationHelper.js",
+				"sap/ovp/cards/OVPCardAsAPIUtils.js",
+				"sap/ovp/cards/ViewCacheHelper.js",
+				"sap/ovp/cards/generic/Card.controller.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/thirdparty/jquery.js"
+			]
+		},
+		{
+			"name": "table/BaseTable.controller.js",
+			"module": "sap/ovp/cards/generic/base/table/BaseTable.controller.js",
+			"size": 4688,
+			"required": [
+				"sap/m/MessageBox.js",
+				"sap/ovp/app/OVPLogger.js",
+				"sap/ovp/app/OVPUtils.js",
+				"sap/ovp/app/resources.js",
+				"sap/ovp/cards/CommonUtils.js",
+				"sap/ovp/cards/Integration/IntegrationCard.js",
+				"sap/ovp/cards/NavigationHelper.js",
+				"sap/ovp/cards/OVPCardAsAPIUtils.js",
+				"sap/ovp/cards/ViewCacheHelper.js",
+				"sap/ovp/cards/generic/Card.controller.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/thirdparty/jquery.js"
+			]
+		},
+		{
+			"name": "table/BaseTable.controller.js.map",
+			"size": 6352,
+			"isDebug": true
+		},
+		{
+			"name": "table/Component-dbg.js",
+			"module": "sap/ovp/cards/generic/base/table/Component.js",
+			"size": 1573,
+			"isDebug": true,
+			"required": [
+				"sap/ovp/cards/generic/Component.js"
+			]
+		},
+		{
+			"name": "table/Component.js",
+			"module": "sap/ovp/cards/generic/base/table/Component.js",
+			"size": 832,
+			"required": [
+				"sap/ovp/cards/generic/Component.js"
+			]
+		},
+		{
+			"name": "table/Component.js.map",
+			"size": 788,
+			"isDebug": true
+		}
+	]
+}

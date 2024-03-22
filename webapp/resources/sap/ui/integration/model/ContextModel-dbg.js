@@ -25,7 +25,7 @@ sap.ui.define([
 	 * @extends sap.ui.model.json.JSONModel
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @alias sap.ui.integration.model.ContextModel
@@ -61,7 +61,7 @@ sap.ui.define([
 
 		if (bHasHost) {
 			this._mValues = this._mValues || {};
-			if (this._mValues[sAbsolutePath] !== undefined) {
+			if (this._mValues.hasOwnProperty(sAbsolutePath)) {
 				return this._mValues[sAbsolutePath];
 			}
 

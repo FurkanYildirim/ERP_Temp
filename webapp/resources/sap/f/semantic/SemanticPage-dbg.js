@@ -97,7 +97,7 @@ sap.ui.define([
 	* @extends sap.ui.core.Control
 	*
 	* @author SAP SE
-	* @version 1.108.14
+	* @version 1.115.1
 	*
 	* @constructor
 	* @public
@@ -189,7 +189,6 @@ sap.ui.define([
 				* If all the areas have assigned values greater than 1, the numbers are scaled so that at least one of them
 				* is equal to 1. For example, value of <code>2:4:8</code> is equal to <code>1:2:4</code>.
 				*
-				* <Note:> When this property is set the <code>titlePrimaryArea</code> property has no effect.
 				*
 				* @since 1.58
 				*/
@@ -230,7 +229,7 @@ sap.ui.define([
 				* the <code>SemanticPage</code> header is in its collapsed (snapped) state.</li>
 				* </ul>
 				*/
-				titleHeading: {type: "sap.ui.core.Control", multiple: false, defaultValue: null, forwarding: {getter: "_getTitle", aggregation: "heading"}},
+				titleHeading: {type: "sap.ui.core.Control", multiple: false, forwarding: {getter: "_getTitle", aggregation: "heading"}},
 
 				/**
 				* The <code>titleExpandedHeading</code> is positioned in the <code>SemanticPage</code> title left area
@@ -243,7 +242,7 @@ sap.ui.define([
 				* <code>titleSnappedHeading</code> to switch content when the header switches state.
 				* @since 1.58
 				*/
-				titleExpandedHeading: {type: "sap.ui.core.Control", multiple: false, defaultValue: null, forwarding: {getter: "_getTitle", aggregation: "expandedHeading"}},
+				titleExpandedHeading: {type: "sap.ui.core.Control", multiple: false, forwarding: {getter: "_getTitle", aggregation: "expandedHeading"}},
 
 				/**
 				* The <code>titleSnappedHeading</code> is positioned in the <code>SemanticPage</code> title left area
@@ -262,7 +261,7 @@ sap.ui.define([
 				* </ul>
 				* @since 1.58
 				*/
-				titleSnappedHeading: {type: "sap.ui.core.Control", multiple: false, defaultValue: null, forwarding: {getter: "_getTitle", aggregation: "snappedHeading"}},
+				titleSnappedHeading: {type: "sap.ui.core.Control", multiple: false, forwarding: {getter: "_getTitle", aggregation: "snappedHeading"}},
 
 				/**
 				 * The <code>SemanticPage</code> breadcrumbs.
@@ -279,7 +278,7 @@ sap.ui.define([
 				 * </ul>
 				 * @since 1.52
 				 */
-				titleBreadcrumbs: {type: "sap.m.IBreadcrumbs", multiple: false, defaultValue: null, forwarding: {getter: "_getTitle", aggregation: "breadcrumbs"}},
+				titleBreadcrumbs: {type: "sap.m.IBreadcrumbs", multiple: false, forwarding: {getter: "_getTitle", aggregation: "breadcrumbs"}},
 
 				/**
 				 * The only content that is displayed in the <code>SemanticPage</code> title
@@ -683,7 +682,9 @@ sap.ui.define([
 		this._getPage().setShowFooter(bShowFooter);
 		return this.setProperty("showFooter", bShowFooter, true);
 	};
-
+	/**
+	 * @deprecated As of version 1.58, <code>titlePrimaryArea</code> has been deprecated
+	 */
 	SemanticPage.prototype.setTitlePrimaryArea = function (oPrimaryArea) {
 		var oDynamicPageTitle = this._getTitle();
 

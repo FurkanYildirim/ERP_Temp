@@ -25,7 +25,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.write._internal.connectors.NeoLrepConnector
 	 * @since 1.81
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.write._internal.Storage
 	 */
@@ -61,6 +61,12 @@ sap.ui.define([
 		contextBasedAdaptation: {
 			create: function() {
 				return Promise.reject("contextBasedAdaptation.create is not implemented");
+			},
+			reorder: function() {
+				return Promise.reject("contextBasedAdaptation.reorder is not implemented");
+			},
+			load: function() {
+				return Promise.reject("contextBasedAdaptation.load is not implemented");
 			}
 		},
 		loadFeatures: function (mPropertyBag) {

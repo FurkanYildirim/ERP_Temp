@@ -23,7 +23,7 @@ sap.ui.define([
 	 * Note: Do not access the functions of this helper directly, but via <code>sap.ui.table.utils.TableUtils.Grouping...</code>
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @namespace
 	 * @alias sap.ui.table.utils._GroupingUtils
 	 * @private
@@ -321,7 +321,7 @@ sap.ui.define([
 				oRow.$("groupHeader")
 					.toggleClass("sapUiTableGroupIconOpen", bIsExpandable && bIsExpanded)
 					.toggleClass("sapUiTableGroupIconClosed", bIsExpandable && !bIsExpanded)
-					.attr("title", oTable._getShowStandardTooltips() && sTitle ? sTitle : null)
+					.attr("title", !oTable._getHideStandardTooltips() && sTitle ? sTitle : null)
 					.text(sTitle);
 				GroupingUtils.setGroupIndent(oRow, iIndent);
 				$Row.toggleClass("sapUiTableRowIndented", iIndent > 0)
@@ -549,7 +549,7 @@ sap.ui.define([
 
 			// the table need to fetch the updated/changed contexts again, therefore requires the binding to fire a change event
 			oTable._mTimeouts.groupingFireBindingChange = oTable._mTimeouts.groupingFireBindingChange || window.setTimeout(
-				function() {oBinding._fireChange();}, 0);
+				function() { oBinding._fireChange(); }, 0);
 		},
 
 		/**

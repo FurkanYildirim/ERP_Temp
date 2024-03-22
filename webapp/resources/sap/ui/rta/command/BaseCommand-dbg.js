@@ -13,7 +13,7 @@ sap.ui.define(["sap/ui/base/ManagedObject"], function(ManagedObject) {
 	 * @extends sap.ui.base.ManagedObject
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -31,6 +31,14 @@ sap.ui.define(["sap/ui/base/ManagedObject"], function(ManagedObject) {
 				},
 				runtimeOnly: {
 					type: "boolean"
+				},
+				/**
+				 * decides if the command execution is relevant for persistency which
+				 * enables or disables the save option
+				 */
+				relevantForSave: {
+					type: "boolean",
+					defaultValue: true
 				}
 			},
 			associations: {

@@ -9,6 +9,7 @@
  */
 sap.ui.define([
 		"sap/ui/core/library",
+		"sap/ui/core/Lib",
 		"sap/ui/base/DataType",
 		"./Icons",
 		"./thirdparty/base/features/OpenUI5Support",
@@ -18,7 +19,7 @@ sap.ui.define([
 		"./thirdparty/base/CSP",
 		"./thirdparty/base/UI5Element"
 	],
-	function(coreLibrary, DataType, Icons, OpenUI5Support, OpenUI5Enablement, AssetRegistry, CustomElementsScope, CSP, UI5Element) {
+	function(coreLibrary, Library, DataType, Icons, OpenUI5Support, OpenUI5Enablement, AssetRegistry, CustomElementsScope, CSP, UI5Element) {
 
 	"use strict";
 
@@ -28,7 +29,7 @@ sap.ui.define([
 	 * @namespace
 	 * @name sap.ui.webc
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 * @since 1.92.0
 	 * @experimental Since 1.92.0
@@ -40,14 +41,14 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.ui.webc.common
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 * @since 1.92.0
 	 * @experimental Since 1.92.0
 	 */
-	var thisLib = sap.ui.getCore().initLibrary({
+	var thisLib = Library.init({
 		name : "sap.ui.webc.common",
-		version: "1.108.14",
+		version: "1.115.1",
 		dependencies : ["sap.ui.core"],
 		noLibraryCSS: true,
 		designtime: "sap/ui/webc/common/designtime/library.designtime",

@@ -43,7 +43,7 @@ sap.ui.define([
 			appId: mPropertyBag.appId
 		};
 
-		var oDescriptorFlexController = ChangesController.getDescriptorFlexControllerInstance(mPropertyBag.selector);
+		var oDescriptorFlexController = ChangesController.getFlexControllerInstance(mPropertyBag.selector);
 
 		mPropertyBag.id = oDescriptorFlexController.getComponentName();
 		// Pass a flag to know which consumer is calling SaveAs handler
@@ -97,7 +97,7 @@ sap.ui.define([
 				return Promise.reject("App variant ID must be provided");
 			}
 
-			var oFlexController = ChangesController.getDescriptorFlexControllerInstance(mPropertyBag.selector);
+			var oFlexController = ChangesController.getFlexControllerInstance(mPropertyBag.selector);
 			mPropertyBag.reference = oFlexController.getComponentName();
 
 			// Pass a flag to determine the consumer who is calling SaveAs handler
@@ -187,10 +187,10 @@ sap.ui.define([
 		 *
 		 * @param {object} mPropertyBag - Object with parameters as properties
 		 * @param {string} mPropertyBag.appId - Reference app ID or an app variant ID
-		 * @param {object} mPropertyBag.changeSpecificData - Property bag holding the change information, see {@link sap.ui.fl.Change#createInitialFileContent}
+		 * @param {object} mPropertyBag.changeSpecificData - Property bag holding the change information
 		 * The property <code>mPropertyBag.changeSpecificData.packageName</code> is set to <code>$TMP</code> and internally since flex changes are always local when they are created.
 		 *
-		 * @returns {Promise|sap.ui.fl.Change} Promise resolves with the created change.
+		 * @returns {Promise|sap.ui.fl.apply._internal.flexObjects.FlexObject} Promise resolves with the created change.
 		 * @private
 		 * @ui5-restricted
 		 */
@@ -212,9 +212,9 @@ sap.ui.define([
 		 *
 		 * @param {object} mPropertyBag - Object with parameters as properties
 		 * @param {string} mPropertyBag.appId - Reference app ID or an app variant ID
-		 * @param {sap.ui.fl.Change} mPropertyBag.change - Change instance
+		 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} mPropertyBag.change - Change instance
 		 *
-		 * @returns {Promise|sap.ui.fl.Change} Promise resolves with the added change in persistence.
+		 * @returns {Promise|sap.ui.fl.apply._internal.flexObjects.FlexObject} Promise resolves with the added change in persistence.
 		 * @private
 	 	 * @ui5-restricted
 		 */

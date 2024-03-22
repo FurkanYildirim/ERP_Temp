@@ -54,10 +54,7 @@ sap.ui.define([
 					value: SearchFieldRenderer._getDescribedBy(oSF),
 					append: true
 				}
-			},
-			sToolTipValue,
-			sRefreshToolTip = oSF.getRefreshButtonTooltip(),
-			sResetToolTipValue;
+			};
 
 		// container
 		rm.openStart("div", oSF)
@@ -83,12 +80,17 @@ sap.ui.define([
 				.class('sapMSFF');
 
 			if (!bShowSearchBtn) {
-				rm.class("sapMSFNS"); //no search button
+				rm.class("sapMSFNS"); // no search button
 			} else if (bShowRefreshButton) {
 				rm.class('sapMSFReload');
 			}
 
 			rm.openEnd();
+
+			rm.openStart("span", sId + "-staticSearchIcon");
+			rm.attr("aria-hidden", true);
+			rm.class('sapMSFSSI'); // static search icon (needed for the Search Field in the Tool Header)
+			rm.openEnd().close("span");
 
 			rm.voidStart('input', sId + "-I")
 				.class("sapMSFI")
@@ -104,15 +106,15 @@ sap.ui.define([
 				rm.attr("autocorrect", "off");
 			}
 
-			var sTooltip = oSF.getTooltip_AsString();
-			if (sTooltip) {
-				rm.attr("title", sTooltip);
-			}
-
 			if (oSF.getEnableSuggestions() && Device.system.phone) {
 				// Always open a dialog on a phone if suggestions are on.
 				// avoid soft keyboard flickering
 				rm.attr("inputmode", "none");
+			}
+
+			var sTooltip = oSF.getTooltip_AsString();
+			if (sTooltip) {
+				rm.attr("title", sTooltip);
 			}
 
 			if (!oSF.getEnabled()) {
@@ -142,9 +144,6 @@ sap.ui.define([
 					.class("sapMSFB") // button
 					.attr("aria-hidden", true);
 
-				sResetToolTipValue = sValue === "" ? this.oSearchFieldToolTips.SEARCH_BUTTON_TOOLTIP : this.oSearchFieldToolTips.RESET_BUTTON_TOOLTIP;
-				rm.attr("title", sResetToolTipValue); // initial rendering reset is search when no value is set
-
 				if (Device.browser.firefox) {
 					rm.class("sapMSFBF"); // firefox, active state by preventDefault
 				}
@@ -167,14 +166,7 @@ sap.ui.define([
 						rm.class("sapMSFBF"); // firefox, active state by preventDefault
 					}
 
-					if (bShowRefreshButton) {
-						sToolTipValue = sRefreshToolTip === "" ? this.oSearchFieldToolTips.REFRESH_BUTTON_TOOLTIP : sRefreshToolTip;
-					} else {
-						sToolTipValue = this.oSearchFieldToolTips.SEARCH_BUTTON_TOOLTIP;
-					}
-
-					rm.attr("title", sToolTipValue)
-						.openEnd()
+					rm.openEnd()
 						.close("div");
 				}
 			}

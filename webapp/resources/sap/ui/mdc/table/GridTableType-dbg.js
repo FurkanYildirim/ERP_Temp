@@ -5,12 +5,20 @@
  */
 
 sap.ui.define([
-	"./TableTypeBase", "../library"
-], function(TableTypeBase, library) {
+	"./TableTypeBase",
+	"sap/ui/core/library",
+	"sap/m/table/Util",
+	"sap/ui/mdc/enums/TableRowCountMode"
+], function(
+	TableTypeBase,
+	coreLibrary,
+	MTableUtil,
+	TableRowCountMode
+) {
 	"use strict";
 
-	var InnerTable, InnerColumn, InnerRowAction, InnerRowActionItem, InnerMultiSelectionPlugin, InnerFixedRowMode, InnerAutoRowMode, InnerRowSettings;
-	var RowCountMode = library.RowCountMode;
+	var InnerTable, InnerColumn, InnerRowAction, InnerRowActionItem, InnerFixedRowMode, InnerAutoRowMode, InnerRowSettings;
+	var SortOrder = coreLibrary.SortOrder;
 
 	/**
 	 * Constructor for a new <code>GridTableType</code>.
@@ -20,14 +28,10 @@ sap.ui.define([
 	 * @class The table type info class for the metadata-driven table.
 	 * @extends sap.ui.mdc.table.TableTypeBase
 	 * @author SAP SE
-	 * @private
-	 * @experimental
-	 * @ui5-restricted sap.fe
-	 * MDC_PUBLIC_CANDIDATE
+	 * @public
 	 * @since 1.65
 	 * @alias sap.ui.mdc.table.GridTableType
 	 */
-
 	var GridTableType = TableTypeBase.extend("sap.ui.mdc.table.GridTableType", {
 		metadata: {
 			library: "sap.ui.mdc",
@@ -36,13 +40,13 @@ sap.ui.define([
 				 * Defines how the table handles the row count.
 				 */
 				rowCountMode: {
-					type: "sap.ui.mdc.RowCountMode",
-					defaultValue: RowCountMode.Auto
+					type: "sap.ui.mdc.enums.TableRowCountMode",
+					defaultValue: TableRowCountMode.Auto
 				},
 				/**
 				 * Row count of the inner table.<br>
-				 * This property specifies the minimum row count if <code>sap.ui.mdc.RowCountMode.Auto</code> is used.<br>
-				 * This property specifies the row count if <code>sap.ui.mdc.RowCountMode.Fixed</code> is used.
+				 * This property specifies the minimum row count if <code>sap.ui.mdc.enums.TableRowCountMode.Auto</code> is used.<br>
+				 * This property specifies the row count if <code>sap.ui.mdc.enums.TableRowCountMode.Fixed</code> is used.
 				 */
 				rowCount: {
 					type: "int",
@@ -52,182 +56,241 @@ sap.ui.define([
 				 * Number of indices which can be selected in a range.
 				 * Accepts positive integer values. If set to 0, the selection limit is disabled, and the Select All checkbox appears instead of the
 				 * Deselect All button.
+				 *
+				 * <b>Note:</b> To avoid severe performance problems, the limit should only be set to 0 in the following cases:
+				 * <ul>
+				 *   <li>With client-side models</li>
+				 *   <li>With server-side models if they are used in client mode</li>
+				 *   <li>If the entity set is small</li>
+				 * </ul>
+				 *
+				 * In other cases, we recommend to set the limit to at least double the value of the {@link sap.ui.mdc.Table#getThreshold threshold}
+				 * property of the table.
 				 */
-				selectionLimit : {
-					type : "int",
-					defaultValue : 200
+				selectionLimit: {
+					type: "int",
+					defaultValue: 200
 				},
 				/**
 				 * Determines whether the header selector is shown.
 				 */
-				showHeaderSelector : {
-					type : "boolean",
-					defaultValue : true
+				showHeaderSelector: {
+					type: "boolean",
+					defaultValue: true
+				},
+				/**
+				 * Defines the number of fixed columns in the inner table.
+				 */
+				fixedColumnCount: {
+					type: "int",
+					defaultValue: 0
 				}
 			}
 		}
 	});
 
-	GridTableType.prototype.updateRelevantTableProperty = function(oTable, sProperty, vValue) {
-		if (!oTable || !oTable.isA("sap.ui.table.Table")) {
+	GridTableType.prototype.exit = function() {
+		TableTypeBase.prototype.exit.apply(this, arguments);
+		this.disableColumnResize();
+	};
+
+	GridTableType.prototype.updateTableByProperty = function(sProperty, vValue) {
+		var oGridTable = this.getInnerTable();
+
+		if (!oGridTable) {
 			return;
 		}
 
 		if (sProperty === "rowCountMode") {
-			var oRowMode = oTable.getRowMode();
+			var oRowMode = oGridTable.getRowMode();
 			var bHideEmptyRows = false;
 
-			if (oRowMode && (vValue === RowCountMode.Fixed && !oRowMode.isA("sap.ui.table.rowmodes.FixedRowMode") ||
-							 vValue === RowCountMode.Auto && !oRowMode.isA("sap.ui.table.rowmodes.AutoRowMode"))) {
+			if (oRowMode && (vValue === TableRowCountMode.Fixed && !oRowMode.isA("sap.ui.table.rowmodes.FixedRowMode") ||
+							 vValue === TableRowCountMode.Auto && !oRowMode.isA("sap.ui.table.rowmodes.AutoRowMode"))) {
 				bHideEmptyRows = oRowMode.getHideEmptyRows();
 				oRowMode.destroy();
 				oRowMode = null;
 			}
 
 			if (!oRowMode) {
-				var RowMode = vValue === RowCountMode.Fixed ? InnerFixedRowMode : InnerAutoRowMode;
-				oTable.setRowMode(new RowMode({
+				var RowMode = vValue === TableRowCountMode.Fixed ? InnerFixedRowMode : InnerAutoRowMode;
+				oGridTable.setRowMode(new RowMode({
 					hideEmptyRows: bHideEmptyRows
 				}));
 			}
 
-			this._updateTableRowCount(oTable, vValue, this.getRowCount());
+			this._updateTableRowCount();
 		} else if (sProperty === "rowCount") {
-			this._updateTableRowCount(oTable, this.getRowCountMode(), vValue);
-		} else if (sProperty === "selectionLimit") {
-			oTable.getPlugins()[0].setLimit(vValue).setEnableNotification(vValue > 0);
-		} else if (sProperty === "showHeaderSelector") {
-			oTable.getPlugins()[0].setShowHeaderSelector(vValue);
+			this._updateTableRowCount();
+		} else if (sProperty === "fixedColumnCount") {
+			oGridTable.setFixedColumnCount(vValue);
 		}
 	};
 
-	GridTableType.prototype._updateTableRowCount = function(oTable, sMode, iValue) {
-		if (sMode === RowCountMode.Fixed) {
-			oTable.getRowMode().setRowCount(iValue);
+	GridTableType.prototype._updateTableRowCount = function() {
+		var oGridTable = this.getInnerTable();
+
+		if (this.getRowCountMode() === TableRowCountMode.Fixed) {
+			oGridTable.getRowMode().setRowCount(this.getRowCount());
 		} else {
-			oTable.getRowMode().setMinRowCount(iValue);
+			oGridTable.getRowMode().setMinRowCount(this.getRowCount());
 		}
 	};
 
-	GridTableType.updateDefault = function(oTable) {
-		if (oTable) {
-			oTable.setRowMode(new InnerAutoRowMode({
-				minRowCount: 10 // default in this class
-			}));
-		}
-	};
-
-	/* Below APIs are used during table creation */
-
-	GridTableType.loadGridTableLib = function() {
+	GridTableType.prototype.loadUiTableLibrary = function() {
 		if (!this._oGridTableLibLoaded) {
 			this._oGridTableLibLoaded = sap.ui.getCore().loadLibrary("sap.ui.table", true);
 		}
 		return this._oGridTableLibLoaded;
 	};
 
-	GridTableType.loadTableModules = function() {
-		if (!InnerTable) {
-			return new Promise(function(resolve, reject) {
-				this.loadGridTableLib().then(function() {
-					sap.ui.require([
-						"sap/ui/table/Table", "sap/ui/table/Column", "sap/ui/table/RowAction", "sap/ui/table/RowActionItem", "sap/ui/table/plugins/MultiSelectionPlugin",
-						"sap/ui/table/rowmodes/FixedRowMode", "sap/ui/table/rowmodes/AutoRowMode", "sap/ui/table/RowSettings"
-					], function(GridTable, GridColumn, RowAction, RowActionItem, MultiSelectionPlugin, FixedRowMode, AutoRowMode, RowSettings) {
-						InnerTable = GridTable;
-						InnerColumn = GridColumn;
-						InnerRowAction = RowAction;
-						InnerRowActionItem = RowActionItem;
-						InnerMultiSelectionPlugin = MultiSelectionPlugin;
-						InnerFixedRowMode = FixedRowMode;
-						InnerAutoRowMode = AutoRowMode;
-						InnerRowSettings = RowSettings;
-						resolve();
-					}, function() {
-						reject("Failed to load some modules");
-					});
-				});
-			}.bind(this));
-		} else {
+	GridTableType.prototype.loadModules = function() {
+		if (InnerTable) {
 			return Promise.resolve();
 		}
+
+		return this.loadUiTableLibrary().then(function() {
+			return new Promise(function(resolve, reject) {
+				sap.ui.require([
+					"sap/ui/table/Table", "sap/ui/table/Column", "sap/ui/table/RowAction", "sap/ui/table/RowActionItem",
+					"sap/ui/table/rowmodes/FixedRowMode", "sap/ui/table/rowmodes/AutoRowMode", "sap/ui/table/RowSettings"
+				], function(GridTable, GridColumn, RowAction, RowActionItem, FixedRowMode, AutoRowMode, RowSettings) {
+					InnerTable = GridTable;
+					InnerColumn = GridColumn;
+					InnerRowAction = RowAction;
+					InnerRowActionItem = RowActionItem;
+					InnerFixedRowMode = FixedRowMode;
+					InnerAutoRowMode = AutoRowMode;
+					InnerRowSettings = RowSettings;
+					resolve();
+				}, function() {
+					reject("Failed to load some modules");
+				});
+			});
+		});
 	};
 
-	GridTableType.createTable = function(sId, mSettings) {
-		return new InnerTable(sId, mSettings);
+	GridTableType.prototype.createTable = function(sId) {
+		var oTable = this.getTable();
+
+		if (!oTable || !InnerTable) {
+			return null;
+		}
+
+		var oInnerTable = new InnerTable(sId, this.getTableSettings());
+		oInnerTable._setHideStandardTooltips(true);
+		return oInnerTable;
+	};
+
+	GridTableType.prototype.getTableSettings = function() {
+		var oTable = this.getTable();
+		var mSelectionBehaviorMap = {
+			SingleMaster: "RowOnly"
+		};
+
+		return Object.assign({}, TableTypeBase.prototype.getTableSettings.apply(this, arguments), {
+			enableBusyIndicator: true,
+			enableColumnReordering: false,
+			threshold: this.getThreshold(),
+			cellClick: [this._onCellClick, this],
+			noData: oTable._getNoDataText(),
+			extension: [oTable._oToolbar],
+			ariaLabelledBy: [oTable._oTitle],
+			rowSettingsTemplate: this.getRowSettingsConfig(),
+			selectionMode: "None",
+			selectionBehavior: {
+				path: "$sap.ui.mdc.Table>/selectionMode",
+				formatter: function(sSelectionMode) {
+					return mSelectionBehaviorMap[sSelectionMode]; // Default is "RowSelector"
+				}
+			}
+		});
+	};
+
+	GridTableType.prototype._onCellClick = function(oEvent) {
+		this.callHook("RowPress", this.getTable(), {
+			bindingContext: oEvent.getParameter("rowBindingContext")
+		});
 	};
 
 	GridTableType.createColumn = function(sId, mSettings) {
-		var oColumn = new InnerColumn(sId, mSettings);
-		/* **** Ensure that the columnSelect event is fired always (esp. mobile) **** */
-		oColumn.attachColumnMenuOpen(function(oEvent){ oEvent.preventDefault(); });
-		oColumn._menuHasItems = function() { return true; };
-		/* **** */
-		return oColumn;
+		return new InnerColumn(sId, mSettings);
 	};
 
-	GridTableType.createMultiSelectionPlugin = function(oTable, aEventInfo) {
-		return new InnerMultiSelectionPlugin(oTable.getId() + "--multiSelectPlugin", {
-			selectionMode: TableTypeBase.getSelectionMode(oTable),
-			selectionChange: aEventInfo
-		});
-	};
+	GridTableType.prototype.enableColumnResize = function() {
+		var oTable = this.getTable();
+		var oGridTable = this.getInnerTable();
 
-	GridTableType.enableColumnResizer = function(oTable, oInnerTable) {
-		oInnerTable.getColumns().forEach(function(oColumn) {
+		if (!oTable || !oGridTable) {
+			return;
+		}
+
+		oGridTable.getColumns().forEach(function(oColumn) {
 			oColumn.setResizable(true);
 			oColumn.setAutoResizable(true);
 		});
-
-		oInnerTable.detachColumnResize(oTable._onColumnResize, oTable);
-		oInnerTable.attachColumnResize(oTable._onColumnResize, oTable);
+		oGridTable.detachColumnResize(this._onColumnResize, this);
+		oGridTable.attachColumnResize(this._onColumnResize, this);
 	};
 
-	GridTableType.disableColumnResizer = function(oTable, oInnerTable) {
-		oInnerTable.getColumns().forEach(function(oColumn) {
+	GridTableType.prototype.disableColumnResize = function() {
+		var oTable = this.getTable();
+		var oGridTable = this.getInnerTable();
+
+		if (!oTable || !oGridTable) {
+			return;
+		}
+
+		oGridTable.getColumns().forEach(function(oColumn) {
 			oColumn.setResizable(false);
 			oColumn.setAutoResizable(false);
 		});
-
-		oInnerTable.detachColumnResize(oTable._onColumnResize, oTable);
+		oGridTable.detachColumnResize(this._onColumnResize, this);
 	};
 
-	GridTableType.updateSelection = function(oTable) {
-		var sSelectionMode = TableTypeBase.getSelectionMode(oTable);
-		if (oTable.getSelectionMode() === library.SelectionMode.SingleMaster) {
-			oTable._oTable.setSelectionBehavior("RowOnly");
-		} else {
-			oTable._oTable.resetProperty("selectionBehavior");
-		}
-		oTable._oTable.getPlugins()[0].setSelectionMode(sSelectionMode);
+	GridTableType.prototype._onColumnResize = function(oEvent) {
+		var oTable = this.getTable();
+		var oGridTable = this.getInnerTable();
+		var oGridTableColumn = oEvent.getParameter("column");
+		var sWidth = oEvent.getParameter("width");
+		var iIndex = oGridTable.indexOfColumn(oGridTableColumn);
+		var oColumn = oTable.getColumns()[iIndex];
+
+		this.callHook("ColumnResize", oTable, {
+			column: oColumn,
+			width: sWidth
+		});
 	};
 
-	GridTableType.removeRowActions = function(oTable) {
-		var oInnerRowAction = oTable._oTable.getRowActionTemplate();
-		if (oInnerRowAction) {
-			oInnerRowAction.destroy();
-		}
-		oTable._oTable.setRowActionTemplate();
-		oTable._oTable.setRowActionCount();
-	};
+	GridTableType.prototype.updateRowSettings = function() {
+		var oGridTable = this.getInnerTable();
 
-	GridTableType.updateRowSettings = function(oTable, oRowSettings, fnRowActionPress) {
-		var oInnerRowSettings = new InnerRowSettings(undefined, oRowSettings.getAllSettings());
-		this.updateRowActions(oTable.getParent(), oRowSettings, fnRowActionPress);
-		oTable.getRowSettingsTemplate().destroy();
-		oTable.setRowSettingsTemplate(oInnerRowSettings);
-	};
-
-	GridTableType.updateRowActions = function (oTable, oRowSettings) {
-		this.removeRowActions(oTable);
-		if (!oRowSettings) {
+		if (!oGridTable) {
 			return;
 		}
-		if (!oRowSettings.isBound("rowActions") && (!oRowSettings.getRowActions() || oRowSettings.getRowActions().length == 0)) {
+
+		oGridTable.destroyRowSettingsTemplate();
+		oGridTable.setRowSettingsTemplate(new InnerRowSettings(this.getRowSettingsConfig()));
+		this.updateRowActions();
+	};
+
+	GridTableType.prototype.updateRowActions = function() {
+		var oGridTable = this.getInnerTable();
+
+		if (!oGridTable) {
+			return;
+		}
+
+		var oRowSettings = this.getTable().getRowSettings();
+
+		this._removeRowActions();
+
+		if (!oRowSettings || !oRowSettings.isBound("rowActions") && (!oRowSettings.getRowActions() || oRowSettings.getRowActions().length == 0)) {
 			return;
 		}
 
 		var oRowActions = oRowSettings.getAllActions();
+
 		if ("templateInfo" in oRowActions) {
 			var oTemplateInfo = oRowActions.templateInfo;
 			// Set template for inner row actions using temporary metadata
@@ -236,18 +299,18 @@ sap.ui.define([
 				visible: oTemplateInfo.visible,
 				icon: oTemplateInfo.icon,
 				text: oTemplateInfo.text,
-				press: [this._onRowActionPress, oTable]
+				press: [this._onRowActionPress, this]
 			});
 			// Remove temporary metadata from row actions object
 			delete oRowActions.templateInfo;
 		} else {
-			oRowActions.items = oRowActions.items.map(function (oRowActionItem) {
+			oRowActions.items = oRowActions.items.map(function(oRowActionItem) {
 				var oInnerRowActionItem = new InnerRowActionItem({
 					type: oRowActionItem.isBound("type") ? oRowActionItem.getBindingInfo("type") : oRowActionItem.getType(),
 					visible: oRowActionItem.isBound("visible") ? oRowActionItem.getBindingInfo("visible") : oRowActionItem.getVisible(),
 					icon: oRowActionItem.isBound("icon") ? oRowActionItem.getBindingInfo("icon") : oRowActionItem._getIcon(),
 					text: oRowActionItem.isBound("text") ? oRowActionItem.getBindingInfo("text") : oRowActionItem._getText(),
-					press: [this._onRowActionPress, oTable]
+					press: [this._onRowActionPress, this]
 				});
 				// Add custom data for MDC row action, so original is retrievable from inner row action item
 				oInnerRowActionItem.data("rowAction", oRowActionItem);
@@ -255,16 +318,29 @@ sap.ui.define([
 			}, this);
 		}
 
-		var oInnerRowAction = new InnerRowAction(oTable.getId() + "--rowAction", oRowActions);
-		oTable._oTable.setRowActionTemplate(oInnerRowAction);
-		oTable._oTable.setRowActionCount(oRowSettings.getRowActionCount());
+		oGridTable.setRowActionTemplate(new InnerRowAction(oRowActions));
+		oGridTable.setRowActionCount(oRowSettings.getRowActionCount());
 	};
 
-	GridTableType._onRowActionPress = function (oEvent) {
-		var oInnerRowActionItem = oEvent.getParameter("item");
-		var oRowActionsInfo = this.getRowSettings().getAllActions();
+	GridTableType.prototype._removeRowActions = function() {
+		var oGridTable = this.getInnerTable();
+		var oInnerRowAction = oGridTable.getRowActionTemplate();
 
-		if (this.getRowSettings().isBound("rowActions")) {
+		if (oInnerRowAction) {
+			oInnerRowAction.destroy();
+		}
+
+		oGridTable.setRowActionTemplate();
+		oGridTable.setRowActionCount();
+	};
+
+	GridTableType.prototype._onRowActionPress = function(oEvent) {
+		var oTable = this.getTable();
+		var oInnerRowActionItem = oEvent.getParameter("item");
+		var oRowSettings = oTable.getRowSettings();
+		var oRowActionsInfo = oRowSettings.getAllActions();
+
+		if (oRowSettings.isBound("rowActions")) {
 			var sActionModel = oRowActionsInfo.items.model;
 			var oActionContext = oInnerRowActionItem.getBindingContext(sActionModel);
 
@@ -276,14 +352,82 @@ sap.ui.define([
 
 			// Set model for row settings, as it is not propagated
 			this._oRowActionItem.setModel(this.getModel(sActionModel), sActionModel);
-			this.getRowSettings().addDependent(this._oRowActionItem);
+			oRowSettings.addDependent(this._oRowActionItem);
 		} else {
 			this._oRowActionItem = oInnerRowActionItem.data("rowAction");
 		}
-		var oRow = oEvent.getParameter("row");
-		this._oRowActionItem.firePress({
-			bindingContext: oRow.getBindingContext()
+
+		this.callHook("Press", this._oRowActionItem, {
+			bindingContext: oEvent.getParameter("row").getBindingContext()
 		});
+	};
+
+	GridTableType.prototype.removeToolbar = function() {
+		var oGridTable = this.getInnerTable();
+
+		if (oGridTable) {
+			oGridTable.removeExtension(this.getTable()._oToolbar);
+		}
+	};
+
+	GridTableType.prototype.scrollToIndex = function(iIndex) {
+		var oTable = this.getTable();
+		var oGridTable = this.getInnerTable();
+
+		if (!oGridTable) {
+			return Promise.reject();
+		}
+
+		return new Promise(function(resolve) {
+			if (iIndex === -1) {
+				iIndex = MTableUtil.isEmpty(oTable.getRowBinding()) ? 0 : oTable.getRowBinding().getLength();
+			}
+
+			if (oGridTable._setFirstVisibleRowIndex(iIndex)) {
+				oGridTable.attachEventOnce("rowsUpdated", function() {
+					resolve();
+				});
+			} else {
+				resolve();
+			}
+		});
+	};
+
+	GridTableType.prototype.getRowBinding = function() {
+		var oGridTable = this.getInnerTable();
+		return oGridTable ? oGridTable.getBinding() : undefined;
+	};
+
+	GridTableType.prototype.bindRows = function(oBindingInfo) {
+		var oGridTable = this.getInnerTable();
+
+		if (oGridTable) {
+			oGridTable.bindRows(oBindingInfo);
+		}
+	};
+
+	GridTableType.prototype.isTableBound = function() {
+		var oGridTable = this.getInnerTable();
+		return oGridTable ? oGridTable.isBound("rows") : false;
+	};
+
+	GridTableType.prototype.insertFilterInfoBar = function(oFilterInfoBar, sAriaLabelId) {
+		var oGridTable = this.getInnerTable();
+
+		if (oGridTable) {
+			oGridTable.insertExtension(oFilterInfoBar, 1);
+
+			if (!oGridTable.getAriaLabelledBy().includes(sAriaLabelId)) {
+				oGridTable.addAriaLabelledBy(sAriaLabelId);
+			}
+		}
+	};
+
+	GridTableType.prototype.updateSortIndicator = function(oColumn, sSortOrder) {
+		var oGridColumn = oColumn.getInnerColumn();
+
+		oGridColumn.setSorted(sSortOrder !== SortOrder.None);
+		oGridColumn.setSortOrder(sSortOrder === SortOrder.None ? undefined : sSortOrder);
 	};
 
 	return GridTableType;

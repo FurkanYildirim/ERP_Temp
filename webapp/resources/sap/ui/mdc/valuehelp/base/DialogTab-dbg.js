@@ -20,7 +20,7 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new control
 	 * @class Content for the <code>sap.ui.mdc.valuehelp.content.Dialog</code> element.
 	 * @extends sap.ui.core.Control
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @abstract
 	 * @private
@@ -52,7 +52,7 @@ sap.ui.define([
 						/**
 						 * Type of the selection change (add, remove)
 						 */
-						type: { type: "sap.ui.mdc.enum.SelectType" },
+						type: { type: "sap.ui.mdc.enums.ValueHelpSelectionType" },
 						/**
 						 * Changed conditions
 						 *

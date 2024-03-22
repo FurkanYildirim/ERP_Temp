@@ -325,13 +325,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 119069,
+			"size": 142758,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 118691,
+			"size": 142380,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -768,7 +768,7 @@
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 149641,
+			"size": 149608,
 			"theme": "sap_horizon_dark"
 		},
 		{
@@ -779,7 +779,7 @@
 		},
 		{
 			"name": "library.css",
-			"size": 149523,
+			"size": 149490,
 			"theme": "sap_horizon_dark"
 		},
 		{

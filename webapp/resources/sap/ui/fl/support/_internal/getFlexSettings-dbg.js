@@ -16,7 +16,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.support._internal.getFlexSettings
 	 * @since 1.99
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.support.api.SupportAPI
 	 */

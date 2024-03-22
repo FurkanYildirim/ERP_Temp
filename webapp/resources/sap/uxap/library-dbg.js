@@ -12,11 +12,16 @@ sap.ui.define([
 	"sap/ui/base/DataType",
 	"sap/ui/Device",
 	"sap/ui/thirdparty/jquery",
-	"sap/ui/core/library", // library dependency
-	"sap/f/library", // library dependency
-	"sap/m/library", // library dependency
-	"sap/ui/layout/library" // library dependency
-], function(Core, DataType, Device, jQuery) {
+	"sap/ui/base/Object",
+	// library dependency
+	"sap/ui/core/library",
+	// library dependency
+	"sap/f/library",
+	// library dependency
+	"sap/m/library",
+	// library dependency
+	"sap/ui/layout/library"
+], function(Core, DataType, Device, jQuery, BaseObject) {
 	"use strict";
 
 	/**
@@ -25,7 +30,7 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.uxap
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.36
 	 * @public
 	 */
@@ -68,7 +73,7 @@ sap.ui.define([
 			"sap.uxap.ObjectPageHeaderLayoutData",
 			"sap.uxap.ObjectPageLazyLoader"
 		],
-		version: "1.108.14",
+		version: "1.115.1",
 		extensions: {
 			flChangeHandlers: {
 				"sap.uxap.ObjectPageHeader": "sap/uxap/flexibility/ObjectPageHeader",
@@ -172,6 +177,7 @@ sap.ui.define([
 	 * @enum {string}
 	 * @public
 	 */
+
 	thisLib.ObjectPageHeaderDesign = {
 
 		/**
@@ -298,7 +304,7 @@ sap.ui.define([
 		 */
 		getClosestOPL: function (oControl) {
 
-			while (oControl && !(oControl instanceof sap.uxap.ObjectPageLayout)) {
+			while (oControl && !(BaseObject.isA(oControl, "sap.uxap.ObjectPageLayout"))) {
 				oControl = oControl.getParent();
 			}
 

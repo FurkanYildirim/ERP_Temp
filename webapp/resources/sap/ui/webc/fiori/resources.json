@@ -3,16 +3,16 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 2721
+			"size": 2680
 		},
 		{
 			"name": ".theming",
-			"size": 101
+			"size": 100
 		},
 		{
 			"name": "Bar-dbg.js",
 			"module": "sap/ui/webc/fiori/Bar.js",
-			"size": 3646,
+			"size": 3645,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -38,7 +38,7 @@
 		{
 			"name": "BarcodeScannerDialog-dbg.js",
 			"module": "sap/ui/webc/fiori/BarcodeScannerDialog.js",
-			"size": 2773,
+			"size": 2772,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -64,7 +64,7 @@
 		{
 			"name": "DynamicSideContent-dbg.js",
 			"module": "sap/ui/webc/fiori/DynamicSideContent.js",
-			"size": 7916,
+			"size": 7915,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -90,7 +90,7 @@
 		{
 			"name": "FilterItem-dbg.js",
 			"module": "sap/ui/webc/fiori/FilterItem.js",
-			"size": 1596,
+			"size": 1595,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -116,7 +116,7 @@
 		{
 			"name": "FilterItemOption-dbg.js",
 			"module": "sap/ui/webc/fiori/FilterItemOption.js",
-			"size": 1592,
+			"size": 1591,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -142,7 +142,7 @@
 		{
 			"name": "FlexibleColumnLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/FlexibleColumnLayout.js",
-			"size": 9026,
+			"size": 9025,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -168,7 +168,7 @@
 		{
 			"name": "IllustratedMessage-dbg.js",
 			"module": "sap/ui/webc/fiori/IllustratedMessage.js",
-			"size": 4252,
+			"size": 4251,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -194,7 +194,7 @@
 		{
 			"name": "MediaGallery-dbg.js",
 			"module": "sap/ui/webc/fiori/MediaGallery.js",
-			"size": 5391,
+			"size": 5390,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -220,7 +220,7 @@
 		{
 			"name": "MediaGalleryItem-dbg.js",
 			"module": "sap/ui/webc/fiori/MediaGalleryItem.js",
-			"size": 3307,
+			"size": 3306,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/EnabledPropagator.js",
@@ -248,7 +248,7 @@
 		{
 			"name": "NotificationAction-dbg.js",
 			"module": "sap/ui/webc/fiori/NotificationAction.js",
-			"size": 2985,
+			"size": 2984,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/EnabledPropagator.js",
@@ -278,7 +278,7 @@
 		{
 			"name": "NotificationListGroupItem-dbg.js",
 			"module": "sap/ui/webc/fiori/NotificationListGroupItem.js",
-			"size": 5128,
+			"size": 5127,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -306,7 +306,7 @@
 		{
 			"name": "NotificationListItem-dbg.js",
 			"module": "sap/ui/webc/fiori/NotificationListItem.js",
-			"size": 6147,
+			"size": 6146,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -334,7 +334,7 @@
 		{
 			"name": "Page-dbg.js",
 			"module": "sap/ui/webc/fiori/Page.js",
-			"size": 4283,
+			"size": 4282,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -360,7 +360,7 @@
 		{
 			"name": "ProductSwitch-dbg.js",
 			"module": "sap/ui/webc/fiori/ProductSwitch.js",
-			"size": 2131,
+			"size": 2130,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -386,7 +386,7 @@
 		{
 			"name": "ProductSwitchItem-dbg.js",
 			"module": "sap/ui/webc/fiori/ProductSwitchItem.js",
-			"size": 3455,
+			"size": 3454,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -412,7 +412,7 @@
 		{
 			"name": "ShellBar-dbg.js",
 			"module": "sap/ui/webc/fiori/ShellBar.js",
-			"size": 8903,
+			"size": 8902,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -438,7 +438,7 @@
 		{
 			"name": "ShellBarItem-dbg.js",
 			"module": "sap/ui/webc/fiori/ShellBarItem.js",
-			"size": 1895,
+			"size": 1894,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -464,7 +464,7 @@
 		{
 			"name": "SideNavigation-dbg.js",
 			"module": "sap/ui/webc/fiori/SideNavigation.js",
-			"size": 4271,
+			"size": 4270,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -490,7 +490,7 @@
 		{
 			"name": "SideNavigationItem-dbg.js",
 			"module": "sap/ui/webc/fiori/SideNavigationItem.js",
-			"size": 3087,
+			"size": 3086,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -516,7 +516,7 @@
 		{
 			"name": "SideNavigationSubItem-dbg.js",
 			"module": "sap/ui/webc/fiori/SideNavigationSubItem.js",
-			"size": 2170,
+			"size": 2169,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -542,7 +542,7 @@
 		{
 			"name": "SortItem-dbg.js",
 			"module": "sap/ui/webc/fiori/SortItem.js",
-			"size": 1510,
+			"size": 1509,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -568,7 +568,7 @@
 		{
 			"name": "Timeline-dbg.js",
 			"module": "sap/ui/webc/fiori/Timeline.js",
-			"size": 2722,
+			"size": 2721,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -594,7 +594,7 @@
 		{
 			"name": "TimelineItem-dbg.js",
 			"module": "sap/ui/webc/fiori/TimelineItem.js",
-			"size": 2818,
+			"size": 2817,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -620,7 +620,7 @@
 		{
 			"name": "UploadCollection-dbg.js",
 			"module": "sap/ui/webc/fiori/UploadCollection.js",
-			"size": 5278,
+			"size": 5277,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -648,7 +648,7 @@
 		{
 			"name": "UploadCollectionItem-dbg.js",
 			"module": "sap/ui/webc/fiori/UploadCollectionItem.js",
-			"size": 4982,
+			"size": 5752,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -668,13 +668,13 @@
 		},
 		{
 			"name": "UploadCollectionItem.js.map",
-			"size": 1287,
+			"size": 1288,
 			"isDebug": true
 		},
 		{
 			"name": "ViewSettingsDialog-dbg.js",
 			"module": "sap/ui/webc/fiori/ViewSettingsDialog.js",
-			"size": 5412,
+			"size": 5411,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -700,7 +700,7 @@
 		{
 			"name": "Wizard-dbg.js",
 			"module": "sap/ui/webc/fiori/Wizard.js",
-			"size": 6020,
+			"size": 6019,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/WebComponent.js",
@@ -726,7 +726,7 @@
 		{
 			"name": "WizardStep-dbg.js",
 			"module": "sap/ui/webc/fiori/WizardStep.js",
-			"size": 4572,
+			"size": 4571,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/EnabledPropagator.js",
@@ -885,9 +885,16 @@
 			"designtime": true
 		},
 		{
+			"name": "designtime/library-dbg.designtime.js",
+			"module": "sap/ui/webc/fiori/designtime/library.designtime.js",
+			"size": 312,
+			"isDebug": true,
+			"designtime": true
+		},
+		{
 			"name": "designtime/library-preload.designtime.js",
 			"module": "sap/ui/webc/fiori/designtime/library-preload.designtime.js",
-			"size": 5371,
+			"size": 5629,
 			"merged": true,
 			"designtime": true,
 			"included": [
@@ -897,12 +904,25 @@
 				"sap/ui/webc/fiori/designtime/SideNavigationItem.designtime.js",
 				"sap/ui/webc/fiori/designtime/SideNavigationSubItem.designtime.js",
 				"sap/ui/webc/fiori/designtime/UploadCollection.designtime.js",
-				"sap/ui/webc/fiori/designtime/UploadCollectionItem.designtime.js"
+				"sap/ui/webc/fiori/designtime/UploadCollectionItem.designtime.js",
+				"sap/ui/webc/fiori/designtime/library.designtime.js"
 			]
 		},
 		{
 			"name": "designtime/library-preload.designtime.js.map",
-			"size": 5229,
+			"size": 5446,
+			"isDebug": true,
+			"designtime": true
+		},
+		{
+			"name": "designtime/library.designtime.js",
+			"module": "sap/ui/webc/fiori/designtime/library.designtime.js",
+			"size": 250,
+			"designtime": true
+		},
+		{
+			"name": "designtime/library.designtime.js.map",
+			"size": 186,
 			"isDebug": true,
 			"designtime": true
 		},
@@ -1389,7 +1409,7 @@
 		{
 			"name": "illustrations/AddColumn-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/AddColumn.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/AddColumn.js"
@@ -1398,20 +1418,20 @@
 		{
 			"name": "illustrations/AddColumn.js",
 			"module": "sap/ui/webc/fiori/illustrations/AddColumn.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/AddColumn.js"
 			]
 		},
 		{
 			"name": "illustrations/AddColumn.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/AddPeople-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/AddPeople.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/AddPeople.js"
@@ -1420,20 +1440,20 @@
 		{
 			"name": "illustrations/AddPeople.js",
 			"module": "sap/ui/webc/fiori/illustrations/AddPeople.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/AddPeople.js"
 			]
 		},
 		{
 			"name": "illustrations/AddPeople.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/BalloonSky-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/BalloonSky.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/BalloonSky.js"
@@ -1442,20 +1462,20 @@
 		{
 			"name": "illustrations/BalloonSky.js",
 			"module": "sap/ui/webc/fiori/illustrations/BalloonSky.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/BalloonSky.js"
 			]
 		},
 		{
 			"name": "illustrations/BalloonSky.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/BeforeSearch-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/BeforeSearch.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/BeforeSearch.js"
@@ -1464,20 +1484,20 @@
 		{
 			"name": "illustrations/BeforeSearch.js",
 			"module": "sap/ui/webc/fiori/illustrations/BeforeSearch.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/BeforeSearch.js"
 			]
 		},
 		{
 			"name": "illustrations/BeforeSearch.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/Connection-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/Connection.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/Connection.js"
@@ -1486,20 +1506,20 @@
 		{
 			"name": "illustrations/Connection.js",
 			"module": "sap/ui/webc/fiori/illustrations/Connection.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/Connection.js"
 			]
 		},
 		{
 			"name": "illustrations/Connection.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/EmptyCalendar-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/EmptyCalendar.js",
-			"size": 108,
+			"size": 260,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/EmptyCalendar.js"
@@ -1508,20 +1528,20 @@
 		{
 			"name": "illustrations/EmptyCalendar.js",
 			"module": "sap/ui/webc/fiori/illustrations/EmptyCalendar.js",
-			"size": 143,
+			"size": 294,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/EmptyCalendar.js"
 			]
 		},
 		{
 			"name": "illustrations/EmptyCalendar.js.map",
-			"size": 163,
+			"size": 168,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/EmptyList-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/EmptyList.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/EmptyList.js"
@@ -1530,20 +1550,20 @@
 		{
 			"name": "illustrations/EmptyList.js",
 			"module": "sap/ui/webc/fiori/illustrations/EmptyList.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/EmptyList.js"
 			]
 		},
 		{
 			"name": "illustrations/EmptyList.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/EmptyPlanningCalendar-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/EmptyPlanningCalendar.js",
-			"size": 116,
+			"size": 268,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/EmptyPlanningCalendar.js"
@@ -1552,20 +1572,20 @@
 		{
 			"name": "illustrations/EmptyPlanningCalendar.js",
 			"module": "sap/ui/webc/fiori/illustrations/EmptyPlanningCalendar.js",
-			"size": 159,
+			"size": 310,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/EmptyPlanningCalendar.js"
 			]
 		},
 		{
 			"name": "illustrations/EmptyPlanningCalendar.js.map",
-			"size": 179,
+			"size": 184,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/ErrorScreen-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/ErrorScreen.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/ErrorScreen.js"
@@ -1574,20 +1594,20 @@
 		{
 			"name": "illustrations/ErrorScreen.js",
 			"module": "sap/ui/webc/fiori/illustrations/ErrorScreen.js",
-			"size": 139,
+			"size": 290,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/ErrorScreen.js"
 			]
 		},
 		{
 			"name": "illustrations/ErrorScreen.js.map",
-			"size": 159,
+			"size": 164,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/FilterTable-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/FilterTable.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/FilterTable.js"
@@ -1596,20 +1616,20 @@
 		{
 			"name": "illustrations/FilterTable.js",
 			"module": "sap/ui/webc/fiori/illustrations/FilterTable.js",
-			"size": 139,
+			"size": 290,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/FilterTable.js"
 			]
 		},
 		{
 			"name": "illustrations/FilterTable.js.map",
-			"size": 159,
+			"size": 164,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/GroupTable-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/GroupTable.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/GroupTable.js"
@@ -1618,20 +1638,20 @@
 		{
 			"name": "illustrations/GroupTable.js",
 			"module": "sap/ui/webc/fiori/illustrations/GroupTable.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/GroupTable.js"
 			]
 		},
 		{
 			"name": "illustrations/GroupTable.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoActivities-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoActivities.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoActivities.js"
@@ -1640,20 +1660,20 @@
 		{
 			"name": "illustrations/NoActivities.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoActivities.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoActivities.js"
 			]
 		},
 		{
 			"name": "illustrations/NoActivities.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoData-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoData.js",
-			"size": 101,
+			"size": 253,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoData.js"
@@ -1662,20 +1682,20 @@
 		{
 			"name": "illustrations/NoData.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoData.js",
-			"size": 129,
+			"size": 280,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoData.js"
 			]
 		},
 		{
 			"name": "illustrations/NoData.js.map",
-			"size": 149,
+			"size": 154,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoEntries-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoEntries.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoEntries.js"
@@ -1684,20 +1704,20 @@
 		{
 			"name": "illustrations/NoEntries.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoEntries.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoEntries.js"
 			]
 		},
 		{
 			"name": "illustrations/NoEntries.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoFilterResults-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoFilterResults.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoFilterResults.js"
@@ -1706,20 +1726,20 @@
 		{
 			"name": "illustrations/NoFilterResults.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoFilterResults.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoFilterResults.js"
 			]
 		},
 		{
 			"name": "illustrations/NoFilterResults.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoMail-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoMail.js",
-			"size": 101,
+			"size": 253,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoMail.js"
@@ -1728,20 +1748,20 @@
 		{
 			"name": "illustrations/NoMail.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoMail.js",
-			"size": 129,
+			"size": 280,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoMail.js"
 			]
 		},
 		{
 			"name": "illustrations/NoMail.js.map",
-			"size": 149,
+			"size": 154,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoMail_v1-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoMail_v1.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoMail_v1.js"
@@ -1750,20 +1770,20 @@
 		{
 			"name": "illustrations/NoMail_v1.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoMail_v1.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoMail_v1.js"
 			]
 		},
 		{
 			"name": "illustrations/NoMail_v1.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoNotifications-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoNotifications.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoNotifications.js"
@@ -1772,20 +1792,20 @@
 		{
 			"name": "illustrations/NoNotifications.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoNotifications.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoNotifications.js"
 			]
 		},
 		{
 			"name": "illustrations/NoNotifications.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoSavedItems-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoSavedItems.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoSavedItems.js"
@@ -1794,20 +1814,20 @@
 		{
 			"name": "illustrations/NoSavedItems.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoSavedItems.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoSavedItems.js"
 			]
 		},
 		{
 			"name": "illustrations/NoSavedItems.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoSavedItems_v1-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoSavedItems_v1.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoSavedItems_v1.js"
@@ -1816,20 +1836,20 @@
 		{
 			"name": "illustrations/NoSavedItems_v1.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoSavedItems_v1.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoSavedItems_v1.js"
 			]
 		},
 		{
 			"name": "illustrations/NoSavedItems_v1.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoSearchResults-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoSearchResults.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoSearchResults.js"
@@ -1838,20 +1858,20 @@
 		{
 			"name": "illustrations/NoSearchResults.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoSearchResults.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoSearchResults.js"
 			]
 		},
 		{
 			"name": "illustrations/NoSearchResults.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoTasks-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoTasks.js",
-			"size": 102,
+			"size": 254,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoTasks.js"
@@ -1860,20 +1880,20 @@
 		{
 			"name": "illustrations/NoTasks.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoTasks.js",
-			"size": 131,
+			"size": 282,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoTasks.js"
 			]
 		},
 		{
 			"name": "illustrations/NoTasks.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/NoTasks_v1-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoTasks_v1.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoTasks_v1.js"
@@ -1882,20 +1902,20 @@
 		{
 			"name": "illustrations/NoTasks_v1.js",
 			"module": "sap/ui/webc/fiori/illustrations/NoTasks_v1.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/NoTasks_v1.js"
 			]
 		},
 		{
 			"name": "illustrations/NoTasks_v1.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/PageNotFound-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/PageNotFound.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/PageNotFound.js"
@@ -1904,20 +1924,20 @@
 		{
 			"name": "illustrations/PageNotFound.js",
 			"module": "sap/ui/webc/fiori/illustrations/PageNotFound.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/PageNotFound.js"
 			]
 		},
 		{
 			"name": "illustrations/PageNotFound.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/ReloadScreen-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/ReloadScreen.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/ReloadScreen.js"
@@ -1926,20 +1946,20 @@
 		{
 			"name": "illustrations/ReloadScreen.js",
 			"module": "sap/ui/webc/fiori/illustrations/ReloadScreen.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/ReloadScreen.js"
 			]
 		},
 		{
 			"name": "illustrations/ReloadScreen.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/ResizeColumn-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/ResizeColumn.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/ResizeColumn.js"
@@ -1948,20 +1968,20 @@
 		{
 			"name": "illustrations/ResizeColumn.js",
 			"module": "sap/ui/webc/fiori/illustrations/ResizeColumn.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/ResizeColumn.js"
 			]
 		},
 		{
 			"name": "illustrations/ResizeColumn.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SearchEarth-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SearchEarth.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SearchEarth.js"
@@ -1970,20 +1990,20 @@
 		{
 			"name": "illustrations/SearchEarth.js",
 			"module": "sap/ui/webc/fiori/illustrations/SearchEarth.js",
-			"size": 139,
+			"size": 290,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SearchEarth.js"
 			]
 		},
 		{
 			"name": "illustrations/SearchEarth.js.map",
-			"size": 159,
+			"size": 164,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SearchFolder-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SearchFolder.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SearchFolder.js"
@@ -1992,20 +2012,20 @@
 		{
 			"name": "illustrations/SearchFolder.js",
 			"module": "sap/ui/webc/fiori/illustrations/SearchFolder.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SearchFolder.js"
 			]
 		},
 		{
 			"name": "illustrations/SearchFolder.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleBalloon-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleBalloon.js",
-			"size": 108,
+			"size": 260,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleBalloon.js"
@@ -2014,20 +2034,20 @@
 		{
 			"name": "illustrations/SimpleBalloon.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleBalloon.js",
-			"size": 143,
+			"size": 294,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleBalloon.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleBalloon.js.map",
-			"size": 163,
+			"size": 168,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleBell-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleBell.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleBell.js"
@@ -2036,20 +2056,20 @@
 		{
 			"name": "illustrations/SimpleBell.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleBell.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleBell.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleBell.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleCalendar-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleCalendar.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleCalendar.js"
@@ -2058,20 +2078,20 @@
 		{
 			"name": "illustrations/SimpleCalendar.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleCalendar.js",
-			"size": 145,
+			"size": 296,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleCalendar.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleCalendar.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleCheckMark-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleCheckMark.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleCheckMark.js"
@@ -2080,20 +2100,20 @@
 		{
 			"name": "illustrations/SimpleCheckMark.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleCheckMark.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleCheckMark.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleCheckMark.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleConnection-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleConnection.js",
-			"size": 111,
+			"size": 263,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleConnection.js"
@@ -2102,20 +2122,20 @@
 		{
 			"name": "illustrations/SimpleConnection.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleConnection.js",
-			"size": 149,
+			"size": 300,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleConnection.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleConnection.js.map",
-			"size": 169,
+			"size": 174,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleEmptyDoc-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleEmptyDoc.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleEmptyDoc.js"
@@ -2124,20 +2144,20 @@
 		{
 			"name": "illustrations/SimpleEmptyDoc.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleEmptyDoc.js",
-			"size": 145,
+			"size": 296,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleEmptyDoc.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleEmptyDoc.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleEmptyList-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleEmptyList.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleEmptyList.js"
@@ -2146,20 +2166,20 @@
 		{
 			"name": "illustrations/SimpleEmptyList.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleEmptyList.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleEmptyList.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleEmptyList.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleError-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleError.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleError.js"
@@ -2168,20 +2188,20 @@
 		{
 			"name": "illustrations/SimpleError.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleError.js",
-			"size": 139,
+			"size": 290,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleError.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleError.js.map",
-			"size": 159,
+			"size": 164,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleMagnifier-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleMagnifier.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleMagnifier.js"
@@ -2190,20 +2210,20 @@
 		{
 			"name": "illustrations/SimpleMagnifier.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleMagnifier.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleMagnifier.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleMagnifier.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleMail-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleMail.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleMail.js"
@@ -2212,20 +2232,20 @@
 		{
 			"name": "illustrations/SimpleMail.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleMail.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleMail.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleMail.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleNoSavedItems-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleNoSavedItems.js",
-			"size": 113,
+			"size": 265,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleNoSavedItems.js"
@@ -2234,20 +2254,20 @@
 		{
 			"name": "illustrations/SimpleNoSavedItems.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleNoSavedItems.js",
-			"size": 153,
+			"size": 304,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleNoSavedItems.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleNoSavedItems.js.map",
-			"size": 173,
+			"size": 178,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleNotFoundMagnifier-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleNotFoundMagnifier.js",
-			"size": 118,
+			"size": 270,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleNotFoundMagnifier.js"
@@ -2256,20 +2276,20 @@
 		{
 			"name": "illustrations/SimpleNotFoundMagnifier.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleNotFoundMagnifier.js",
-			"size": 163,
+			"size": 314,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleNotFoundMagnifier.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleNotFoundMagnifier.js.map",
-			"size": 183,
+			"size": 188,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleReload-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleReload.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleReload.js"
@@ -2278,20 +2298,20 @@
 		{
 			"name": "illustrations/SimpleReload.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleReload.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleReload.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleReload.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SimpleTask-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleTask.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleTask.js"
@@ -2300,20 +2320,20 @@
 		{
 			"name": "illustrations/SimpleTask.js",
 			"module": "sap/ui/webc/fiori/illustrations/SimpleTask.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SimpleTask.js"
 			]
 		},
 		{
 			"name": "illustrations/SimpleTask.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SleepingBell-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SleepingBell.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SleepingBell.js"
@@ -2322,20 +2342,20 @@
 		{
 			"name": "illustrations/SleepingBell.js",
 			"module": "sap/ui/webc/fiori/illustrations/SleepingBell.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SleepingBell.js"
 			]
 		},
 		{
 			"name": "illustrations/SleepingBell.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SortColumn-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SortColumn.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SortColumn.js"
@@ -2344,20 +2364,20 @@
 		{
 			"name": "illustrations/SortColumn.js",
 			"module": "sap/ui/webc/fiori/illustrations/SortColumn.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SortColumn.js"
 			]
 		},
 		{
 			"name": "illustrations/SortColumn.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SuccessBalloon-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessBalloon.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessBalloon.js"
@@ -2366,20 +2386,20 @@
 		{
 			"name": "illustrations/SuccessBalloon.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessBalloon.js",
-			"size": 145,
+			"size": 296,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessBalloon.js"
 			]
 		},
 		{
 			"name": "illustrations/SuccessBalloon.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SuccessCheckMark-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessCheckMark.js",
-			"size": 111,
+			"size": 263,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessCheckMark.js"
@@ -2388,20 +2408,20 @@
 		{
 			"name": "illustrations/SuccessCheckMark.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessCheckMark.js",
-			"size": 149,
+			"size": 300,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessCheckMark.js"
 			]
 		},
 		{
 			"name": "illustrations/SuccessCheckMark.js.map",
-			"size": 169,
+			"size": 174,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SuccessHighFive-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessHighFive.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessHighFive.js"
@@ -2410,20 +2430,20 @@
 		{
 			"name": "illustrations/SuccessHighFive.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessHighFive.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessHighFive.js"
 			]
 		},
 		{
 			"name": "illustrations/SuccessHighFive.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/SuccessScreen-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessScreen.js",
-			"size": 108,
+			"size": 260,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessScreen.js"
@@ -2432,20 +2452,20 @@
 		{
 			"name": "illustrations/SuccessScreen.js",
 			"module": "sap/ui/webc/fiori/illustrations/SuccessScreen.js",
-			"size": 143,
+			"size": 294,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/SuccessScreen.js"
 			]
 		},
 		{
 			"name": "illustrations/SuccessScreen.js.map",
-			"size": 163,
+			"size": 168,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/Tent-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/Tent.js",
-			"size": 99,
+			"size": 251,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/Tent.js"
@@ -2454,20 +2474,20 @@
 		{
 			"name": "illustrations/Tent.js",
 			"module": "sap/ui/webc/fiori/illustrations/Tent.js",
-			"size": 125,
+			"size": 276,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/Tent.js"
 			]
 		},
 		{
 			"name": "illustrations/Tent.js.map",
-			"size": 145,
+			"size": 150,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/UnableToLoad-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/UnableToLoad.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UnableToLoad.js"
@@ -2476,20 +2496,20 @@
 		{
 			"name": "illustrations/UnableToLoad.js",
 			"module": "sap/ui/webc/fiori/illustrations/UnableToLoad.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UnableToLoad.js"
 			]
 		},
 		{
 			"name": "illustrations/UnableToLoad.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/UnableToLoadImage-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/UnableToLoadImage.js",
-			"size": 112,
+			"size": 264,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UnableToLoadImage.js"
@@ -2498,20 +2518,20 @@
 		{
 			"name": "illustrations/UnableToLoadImage.js",
 			"module": "sap/ui/webc/fiori/illustrations/UnableToLoadImage.js",
-			"size": 151,
+			"size": 302,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UnableToLoadImage.js"
 			]
 		},
 		{
 			"name": "illustrations/UnableToLoadImage.js.map",
-			"size": 171,
+			"size": 176,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/UnableToUpload-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/UnableToUpload.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UnableToUpload.js"
@@ -2520,20 +2540,20 @@
 		{
 			"name": "illustrations/UnableToUpload.js",
 			"module": "sap/ui/webc/fiori/illustrations/UnableToUpload.js",
-			"size": 145,
+			"size": 296,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UnableToUpload.js"
 			]
 		},
 		{
 			"name": "illustrations/UnableToUpload.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/UploadCollection-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/UploadCollection.js",
-			"size": 111,
+			"size": 263,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UploadCollection.js"
@@ -2542,20 +2562,20 @@
 		{
 			"name": "illustrations/UploadCollection.js",
 			"module": "sap/ui/webc/fiori/illustrations/UploadCollection.js",
-			"size": 149,
+			"size": 300,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/UploadCollection.js"
 			]
 		},
 		{
 			"name": "illustrations/UploadCollection.js.map",
-			"size": 169,
+			"size": 174,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartArea-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartArea.js",
-			"size": 108,
+			"size": 260,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartArea.js"
@@ -2564,20 +2584,20 @@
 		{
 			"name": "illustrations/tnt/ChartArea.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartArea.js",
-			"size": 139,
+			"size": 290,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartArea.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartArea.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartArea2-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartArea2.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartArea2.js"
@@ -2586,20 +2606,20 @@
 		{
 			"name": "illustrations/tnt/ChartArea2.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartArea2.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartArea2.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartArea2.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartBPMNFlow-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartBPMNFlow.js",
-			"size": 112,
+			"size": 264,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBPMNFlow.js"
@@ -2608,20 +2628,20 @@
 		{
 			"name": "illustrations/tnt/ChartBPMNFlow.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartBPMNFlow.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBPMNFlow.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartBPMNFlow.js.map",
-			"size": 163,
+			"size": 168,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartBar-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartBar.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBar.js"
@@ -2630,20 +2650,20 @@
 		{
 			"name": "illustrations/tnt/ChartBar.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartBar.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBar.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartBar.js.map",
-			"size": 153,
+			"size": 158,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartBullet-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartBullet.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBullet.js"
@@ -2652,20 +2672,20 @@
 		{
 			"name": "illustrations/tnt/ChartBullet.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartBullet.js",
-			"size": 143,
+			"size": 294,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBullet.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartBullet.js.map",
-			"size": 159,
+			"size": 164,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartDoughnut-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartDoughnut.js",
-			"size": 112,
+			"size": 264,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartDoughnut.js"
@@ -2674,20 +2694,20 @@
 		{
 			"name": "illustrations/tnt/ChartDoughnut.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartDoughnut.js",
-			"size": 147,
+			"size": 298,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartDoughnut.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartDoughnut.js.map",
-			"size": 163,
+			"size": 168,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartFlow-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartFlow.js",
-			"size": 108,
+			"size": 260,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartFlow.js"
@@ -2696,20 +2716,20 @@
 		{
 			"name": "illustrations/tnt/ChartFlow.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartFlow.js",
-			"size": 139,
+			"size": 290,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartFlow.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartFlow.js.map",
-			"size": 155,
+			"size": 160,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartGantt-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartGantt.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartGantt.js"
@@ -2718,20 +2738,20 @@
 		{
 			"name": "illustrations/tnt/ChartGantt.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartGantt.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartGantt.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartGantt.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartOrg-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartOrg.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartOrg.js"
@@ -2740,20 +2760,20 @@
 		{
 			"name": "illustrations/tnt/ChartOrg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartOrg.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartOrg.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartOrg.js.map",
-			"size": 153,
+			"size": 158,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ChartPie-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartPie.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartPie.js"
@@ -2762,20 +2782,20 @@
 		{
 			"name": "illustrations/tnt/ChartPie.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ChartPie.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartPie.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ChartPie.js.map",
-			"size": 153,
+			"size": 158,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/CodePlaceholder-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/CodePlaceholder.js",
-			"size": 114,
+			"size": 266,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/CodePlaceholder.js"
@@ -2784,20 +2804,20 @@
 		{
 			"name": "illustrations/tnt/CodePlaceholder.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/CodePlaceholder.js",
-			"size": 151,
+			"size": 302,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/CodePlaceholder.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/CodePlaceholder.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Company-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Company.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Company.js"
@@ -2806,20 +2826,20 @@
 		{
 			"name": "illustrations/tnt/Company.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Company.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Company.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Company.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Components-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Components.js",
-			"size": 109,
+			"size": 261,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Components.js"
@@ -2828,20 +2848,20 @@
 		{
 			"name": "illustrations/tnt/Components.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Components.js",
-			"size": 141,
+			"size": 292,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Components.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Components.js.map",
-			"size": 157,
+			"size": 162,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/ExternalLink-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ExternalLink.js",
-			"size": 111,
+			"size": 263,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ExternalLink.js"
@@ -2850,20 +2870,20 @@
 		{
 			"name": "illustrations/tnt/ExternalLink.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/ExternalLink.js",
-			"size": 145,
+			"size": 296,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/ExternalLink.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/ExternalLink.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/FaceID-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/FaceID.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/FaceID.js"
@@ -2872,20 +2892,20 @@
 		{
 			"name": "illustrations/tnt/FaceID.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/FaceID.js",
-			"size": 133,
+			"size": 284,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/FaceID.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/FaceID.js.map",
-			"size": 149,
+			"size": 154,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Fingerprint-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Fingerprint.js",
-			"size": 110,
+			"size": 262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Fingerprint.js"
@@ -2894,20 +2914,20 @@
 		{
 			"name": "illustrations/tnt/Fingerprint.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Fingerprint.js",
-			"size": 143,
+			"size": 294,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Fingerprint.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Fingerprint.js.map",
-			"size": 159,
+			"size": 164,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Lock-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Lock.js",
-			"size": 103,
+			"size": 255,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Lock.js"
@@ -2916,20 +2936,20 @@
 		{
 			"name": "illustrations/tnt/Lock.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Lock.js",
-			"size": 129,
+			"size": 280,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Lock.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Lock.js.map",
-			"size": 145,
+			"size": 150,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Mission-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Mission.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Mission.js"
@@ -2938,20 +2958,20 @@
 		{
 			"name": "illustrations/tnt/Mission.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Mission.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Mission.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Mission.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/NoApplications-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/NoApplications.js",
-			"size": 113,
+			"size": 265,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoApplications.js"
@@ -2960,20 +2980,20 @@
 		{
 			"name": "illustrations/tnt/NoApplications.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/NoApplications.js",
-			"size": 149,
+			"size": 300,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoApplications.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/NoApplications.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/NoFlows-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/NoFlows.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoFlows.js"
@@ -2982,20 +3002,20 @@
 		{
 			"name": "illustrations/tnt/NoFlows.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/NoFlows.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoFlows.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/NoFlows.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/NoUsers-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/NoUsers.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoUsers.js"
@@ -3004,20 +3024,20 @@
 		{
 			"name": "illustrations/tnt/NoUsers.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/NoUsers.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoUsers.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/NoUsers.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Radar-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Radar.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Radar.js"
@@ -3026,20 +3046,20 @@
 		{
 			"name": "illustrations/tnt/Radar.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Radar.js",
-			"size": 131,
+			"size": 282,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Radar.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Radar.js.map",
-			"size": 147,
+			"size": 152,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Secrets-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Secrets.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Secrets.js"
@@ -3048,20 +3068,20 @@
 		{
 			"name": "illustrations/tnt/Secrets.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Secrets.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Secrets.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Secrets.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Services-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Services.js",
-			"size": 107,
+			"size": 259,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Services.js"
@@ -3070,20 +3090,20 @@
 		{
 			"name": "illustrations/tnt/Services.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Services.js",
-			"size": 137,
+			"size": 288,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Services.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Services.js.map",
-			"size": 153,
+			"size": 158,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/SessionExpired-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/SessionExpired.js",
-			"size": 113,
+			"size": 265,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/SessionExpired.js"
@@ -3092,20 +3112,20 @@
 		{
 			"name": "illustrations/tnt/SessionExpired.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/SessionExpired.js",
-			"size": 149,
+			"size": 300,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/SessionExpired.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/SessionExpired.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/SessionExpiring-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/SessionExpiring.js",
-			"size": 114,
+			"size": 266,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/SessionExpiring.js"
@@ -3114,20 +3134,20 @@
 		{
 			"name": "illustrations/tnt/SessionExpiring.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/SessionExpiring.js",
-			"size": 151,
+			"size": 302,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/SessionExpiring.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/SessionExpiring.js.map",
-			"size": 167,
+			"size": 172,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Success-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Success.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Success.js"
@@ -3136,20 +3156,20 @@
 		{
 			"name": "illustrations/tnt/Success.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Success.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Success.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Success.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/SuccessfulAuth-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/SuccessfulAuth.js",
-			"size": 113,
+			"size": 265,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/SuccessfulAuth.js"
@@ -3158,20 +3178,20 @@
 		{
 			"name": "illustrations/tnt/SuccessfulAuth.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/SuccessfulAuth.js",
-			"size": 149,
+			"size": 300,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/SuccessfulAuth.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/SuccessfulAuth.js.map",
-			"size": 165,
+			"size": 170,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Systems-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Systems.js",
-			"size": 106,
+			"size": 258,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Systems.js"
@@ -3180,20 +3200,20 @@
 		{
 			"name": "illustrations/tnt/Systems.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Systems.js",
-			"size": 135,
+			"size": 286,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Systems.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Systems.js.map",
-			"size": 151,
+			"size": 156,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Teams-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Teams.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Teams.js"
@@ -3202,20 +3222,20 @@
 		{
 			"name": "illustrations/tnt/Teams.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Teams.js",
-			"size": 131,
+			"size": 282,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Teams.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Teams.js.map",
-			"size": 147,
+			"size": 152,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Tools-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Tools.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Tools.js"
@@ -3224,20 +3244,20 @@
 		{
 			"name": "illustrations/tnt/Tools.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Tools.js",
-			"size": 131,
+			"size": 282,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Tools.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Tools.js.map",
-			"size": 147,
+			"size": 152,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/UnableToLoad-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/UnableToLoad.js",
-			"size": 111,
+			"size": 263,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/UnableToLoad.js"
@@ -3246,20 +3266,20 @@
 		{
 			"name": "illustrations/tnt/UnableToLoad.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/UnableToLoad.js",
-			"size": 145,
+			"size": 296,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/UnableToLoad.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/UnableToLoad.js.map",
-			"size": 161,
+			"size": 166,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/Unlock-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Unlock.js",
-			"size": 105,
+			"size": 257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Unlock.js"
@@ -3268,20 +3288,20 @@
 		{
 			"name": "illustrations/tnt/Unlock.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/Unlock.js",
-			"size": 133,
+			"size": 284,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/Unlock.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/Unlock.js.map",
-			"size": 149,
+			"size": 154,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/UnsuccessfulAuth-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/UnsuccessfulAuth.js",
-			"size": 115,
+			"size": 267,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/UnsuccessfulAuth.js"
@@ -3290,20 +3310,20 @@
 		{
 			"name": "illustrations/tnt/UnsuccessfulAuth.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/UnsuccessfulAuth.js",
-			"size": 153,
+			"size": 304,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/UnsuccessfulAuth.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/UnsuccessfulAuth.js.map",
-			"size": 169,
+			"size": 174,
 			"isDebug": true
 		},
 		{
 			"name": "illustrations/tnt/User2-dbg.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/User2.js",
-			"size": 104,
+			"size": 256,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/User2.js"
@@ -3312,14 +3332,14 @@
 		{
 			"name": "illustrations/tnt/User2.js",
 			"module": "sap/ui/webc/fiori/illustrations/tnt/User2.js",
-			"size": 131,
+			"size": 282,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/illustrations/tnt/User2.js"
 			]
 		},
 		{
 			"name": "illustrations/tnt/User2.js.map",
-			"size": 147,
+			"size": 152,
 			"isDebug": true
 		},
 		{
@@ -3337,15 +3357,16 @@
 		},
 		{
 			"name": "lib/zxing.js.map",
-			"size": 463197,
+			"size": 463191,
 			"isDebug": true
 		},
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/webc/fiori/library.js",
-			"size": 29519,
+			"size": 29532,
 			"isDebug": true,
 			"required": [
+				"sap/ui/core/Lib.js",
 				"sap/ui/webc/common/library.js",
 				"sap/ui/webc/fiori/library.config.js",
 				"sap/ui/webc/fiori/thirdparty/Assets.js"
@@ -3354,10 +3375,11 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/webc/fiori/library-preload.js",
-			"size": 4638310,
+			"size": 4649674,
 			"merged": true,
 			"required": [
 				"sap/ui/core/EnabledPropagator.js",
+				"sap/ui/core/Lib.js",
 				"sap/ui/fl/changeHandler/BaseRename.js",
 				"sap/ui/webc/common/WebComponent.js",
 				"sap/ui/webc/common/library.js",
@@ -4085,13 +4107,13 @@
 		},
 		{
 			"name": "library-preload.js.map",
-			"size": 1277720,
+			"size": 1278674,
 			"isDebug": true
 		},
 		{
 			"name": "library.config-dbg.js",
 			"module": "sap/ui/webc/fiori/library.config.js",
-			"size": 396,
+			"size": 548,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CSP.js"
@@ -4100,21 +4122,22 @@
 		{
 			"name": "library.config.js",
 			"module": "sap/ui/webc/fiori/library.config.js",
-			"size": 328,
+			"size": 479,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/CSP.js"
 			]
 		},
 		{
 			"name": "library.config.js.map",
-			"size": 397,
+			"size": 402,
 			"isDebug": true
 		},
 		{
 			"name": "library.js",
 			"module": "sap/ui/webc/fiori/library.js",
-			"size": 7266,
+			"size": 7264,
 			"required": [
+				"sap/ui/core/Lib.js",
 				"sap/ui/webc/common/library.js",
 				"sap/ui/webc/fiori/library.config.js",
 				"sap/ui/webc/fiori/thirdparty/Assets.js"
@@ -4122,17 +4145,17 @@
 		},
 		{
 			"name": "library.js.map",
-			"size": 5320,
+			"size": 5313,
 			"isDebug": true
 		},
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/webc/fiori/manifest.json",
-			"size": 3933
+			"size": 1209
 		},
 		{
 			"name": "resources.json",
-			"size": 530034
+			"size": 530635
 		},
 		{
 			"name": "thirdparty/Assets-dbg.js",
@@ -4163,7 +4186,7 @@
 		{
 			"name": "thirdparty/Bar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/Bar.js",
-			"size": 6251,
+			"size": 6214,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4189,13 +4212,13 @@
 		},
 		{
 			"name": "thirdparty/Bar.js.map",
-			"size": 2155,
+			"size": 2161,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/BarcodeScannerDialog-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/BarcodeScannerDialog.js",
-			"size": 7825,
+			"size": 7766,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4229,13 +4252,13 @@
 		},
 		{
 			"name": "thirdparty/BarcodeScannerDialog.js.map",
-			"size": 3886,
+			"size": 3892,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/DynamicSideContent-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/DynamicSideContent.js",
-			"size": 17444,
+			"size": 17375,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4269,13 +4292,13 @@
 		},
 		{
 			"name": "thirdparty/DynamicSideContent.js.map",
-			"size": 6699,
+			"size": 6706,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/FilterItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/FilterItem.js",
-			"size": 2075,
+			"size": 2050,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js"
@@ -4291,13 +4314,13 @@
 		},
 		{
 			"name": "thirdparty/FilterItem.js.map",
-			"size": 833,
+			"size": 839,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/FilterItemOption-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/FilterItemOption.js",
-			"size": 1899,
+			"size": 1881,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js"
@@ -4313,13 +4336,13 @@
 		},
 		{
 			"name": "thirdparty/FilterItemOption.js.map",
-			"size": 788,
+			"size": 794,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/FlexibleColumnLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/FlexibleColumnLayout.js",
-			"size": 25253,
+			"size": 25193,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4365,13 +4388,13 @@
 		},
 		{
 			"name": "thirdparty/FlexibleColumnLayout.js.map",
-			"size": 10449,
+			"size": 10455,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/IllustratedMessage-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/IllustratedMessage.js",
-			"size": 15981,
+			"size": 15922,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4407,13 +4430,13 @@
 		},
 		{
 			"name": "thirdparty/IllustratedMessage.js.map",
-			"size": 4487,
+			"size": 4493,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/Interfaces-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/Interfaces.js",
-			"size": 5050,
+			"size": 5049,
 			"isDebug": true
 		},
 		{
@@ -4429,7 +4452,7 @@
 		{
 			"name": "thirdparty/MediaGallery-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/MediaGallery.js",
-			"size": 18436,
+			"size": 18268,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Device.js",
@@ -4477,13 +4500,13 @@
 		},
 		{
 			"name": "thirdparty/MediaGallery.js.map",
-			"size": 8898,
+			"size": 8904,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/MediaGalleryItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/MediaGalleryItem.js",
-			"size": 8784,
+			"size": 8716,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Device.js",
@@ -4515,13 +4538,13 @@
 		},
 		{
 			"name": "thirdparty/MediaGalleryItem.js.map",
-			"size": 4420,
+			"size": 4423,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/NotificationAction-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/NotificationAction.js",
-			"size": 3172,
+			"size": 3138,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4539,13 +4562,13 @@
 		},
 		{
 			"name": "thirdparty/NotificationAction.js.map",
-			"size": 989,
+			"size": 995,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/NotificationListGroupItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/NotificationListGroupItem.js",
-			"size": 8073,
+			"size": 8019,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/fiori/thirdparty/NotificationListItemBase.js",
@@ -4579,13 +4602,13 @@
 		},
 		{
 			"name": "thirdparty/NotificationListGroupItem.js.map",
-			"size": 3811,
+			"size": 3817,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/NotificationListItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/NotificationListItem.js",
-			"size": 12497,
+			"size": 12431,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -4625,13 +4648,13 @@
 		},
 		{
 			"name": "thirdparty/NotificationListItem.js.map",
-			"size": 6065,
+			"size": 6071,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/NotificationListItemBase-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/NotificationListItemBase.js",
-			"size": 7608,
+			"size": 7549,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -4669,13 +4692,13 @@
 		},
 		{
 			"name": "thirdparty/NotificationListItemBase.js.map",
-			"size": 3624,
+			"size": 3629,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/Page-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/Page.js",
-			"size": 6678,
+			"size": 6631,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/MediaRange.js",
@@ -4703,13 +4726,13 @@
 		},
 		{
 			"name": "thirdparty/Page.js.map",
-			"size": 2383,
+			"size": 2389,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/ProductSwitch-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/ProductSwitch.js",
-			"size": 6129,
+			"size": 6084,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -4743,13 +4766,13 @@
 		},
 		{
 			"name": "thirdparty/ProductSwitch.js.map",
-			"size": 3334,
+			"size": 3338,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/ProductSwitchItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/ProductSwitchItem.js",
-			"size": 6791,
+			"size": 6735,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -4775,13 +4798,13 @@
 		},
 		{
 			"name": "thirdparty/ProductSwitchItem.js.map",
-			"size": 2630,
+			"size": 2635,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/ShellBar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/ShellBar.js",
-			"size": 34674,
+			"size": 34540,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/FeaturesRegistry.js",
@@ -4841,13 +4864,13 @@
 		},
 		{
 			"name": "thirdparty/ShellBar.js.map",
-			"size": 16490,
+			"size": 16496,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/ShellBarItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/ShellBarItem.js",
-			"size": 2625,
+			"size": 2599,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4865,13 +4888,13 @@
 		},
 		{
 			"name": "thirdparty/ShellBarItem.js.map",
-			"size": 1040,
+			"size": 1044,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/SideNavigation-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/SideNavigation.js",
-			"size": 10432,
+			"size": 10370,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -4907,13 +4930,13 @@
 		},
 		{
 			"name": "thirdparty/SideNavigation.js.map",
-			"size": 4243,
+			"size": 4249,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/SideNavigationItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/SideNavigationItem.js",
-			"size": 3972,
+			"size": 3935,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js"
@@ -4929,13 +4952,13 @@
 		},
 		{
 			"name": "thirdparty/SideNavigationItem.js.map",
-			"size": 1125,
+			"size": 1131,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/SideNavigationSubItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/SideNavigationSubItem.js",
-			"size": 2671,
+			"size": 2645,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js"
@@ -4951,13 +4974,13 @@
 		},
 		{
 			"name": "thirdparty/SideNavigationSubItem.js.map",
-			"size": 900,
+			"size": 904,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/SortItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/SortItem.js",
-			"size": 1790,
+			"size": 1772,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js"
@@ -4973,13 +4996,13 @@
 		},
 		{
 			"name": "thirdparty/SortItem.js.map",
-			"size": 762,
+			"size": 768,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/Timeline-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/Timeline.js",
-			"size": 6241,
+			"size": 6201,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -5015,13 +5038,13 @@
 		},
 		{
 			"name": "thirdparty/Timeline.js.map",
-			"size": 3436,
+			"size": 3440,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/TimelineItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/TimelineItem.js",
-			"size": 5516,
+			"size": 5473,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -5049,13 +5072,13 @@
 		},
 		{
 			"name": "thirdparty/TimelineItem.js.map",
-			"size": 2074,
+			"size": 2080,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/UploadCollection-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/UploadCollection.js",
-			"size": 11382,
+			"size": 11311,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js",
@@ -5099,13 +5122,13 @@
 		},
 		{
 			"name": "thirdparty/UploadCollection.js.map",
-			"size": 4621,
+			"size": 4627,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/UploadCollectionItem-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/UploadCollectionItem.js",
-			"size": 14284,
+			"size": 14210,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -5157,13 +5180,13 @@
 		},
 		{
 			"name": "thirdparty/UploadCollectionItem.js.map",
-			"size": 6694,
+			"size": 6699,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/ViewSettingsDialog-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/ViewSettingsDialog.js",
-			"size": 23826,
+			"size": 23693,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Device.js",
@@ -5219,13 +5242,13 @@
 		},
 		{
 			"name": "thirdparty/ViewSettingsDialog.js.map",
-			"size": 11791,
+			"size": 11796,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/Wizard-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/Wizard.js",
-			"size": 34896,
+			"size": 34881,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Device.js",
@@ -5279,13 +5302,13 @@
 		},
 		{
 			"name": "thirdparty/Wizard.js.map",
-			"size": 15573,
+			"size": 15579,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/WizardStep-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/WizardStep.js",
-			"size": 5104,
+			"size": 5068,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/UI5Element.js"
@@ -5301,13 +5324,13 @@
 		},
 		{
 			"name": "thirdparty/WizardStep.js.map",
-			"size": 938,
+			"size": 943,
 			"isDebug": true
 		},
 		{
 			"name": "thirdparty/WizardTab-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/WizardTab.js",
-			"size": 5694,
+			"size": 5643,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/Keys.js",
@@ -5333,7 +5356,7 @@
 		},
 		{
 			"name": "thirdparty/WizardTab.js.map",
-			"size": 2327,
+			"size": 2333,
 			"isDebug": true
 		},
 		{
@@ -5499,7 +5522,7 @@
 		{
 			"name": "thirdparty/fcl-utils/FCLLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/fcl-utils/FCLLayout.js",
-			"size": 8394,
+			"size": 8388,
 			"isDebug": true
 		},
 		{
@@ -6513,7 +6536,7 @@
 		{
 			"name": "thirdparty/generated/json-imports/Themes-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/json-imports/Themes.js",
-			"size": 3405,
+			"size": 3389,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js"
@@ -6535,7 +6558,7 @@
 		{
 			"name": "thirdparty/generated/json-imports/i18n-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/json-imports/i18n.js",
-			"size": 9109,
+			"size": 9057,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/i18n.js"
@@ -6557,7 +6580,7 @@
 		{
 			"name": "thirdparty/generated/templates/BarTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/BarTemplate.lit.js",
-			"size": 869,
+			"size": 868,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6579,7 +6602,7 @@
 		{
 			"name": "thirdparty/generated/templates/BarcodeScannerDialogTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/BarcodeScannerDialogTemplate.lit.js",
-			"size": 2156,
+			"size": 2155,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6601,7 +6624,7 @@
 		{
 			"name": "thirdparty/generated/templates/DynamicSideContentTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/DynamicSideContentTemplate.lit.js",
-			"size": 892,
+			"size": 891,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6623,7 +6646,7 @@
 		{
 			"name": "thirdparty/generated/templates/FlexibleColumnLayoutTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/FlexibleColumnLayoutTemplate.lit.js",
-			"size": 6200,
+			"size": 6199,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6645,7 +6668,7 @@
 		{
 			"name": "thirdparty/generated/templates/IllustratedMessageTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/IllustratedMessageTemplate.lit.js",
-			"size": 3654,
+			"size": 3647,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6667,7 +6690,7 @@
 		{
 			"name": "thirdparty/generated/templates/MediaGalleryItemTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/MediaGalleryItemTemplate.lit.js",
-			"size": 1550,
+			"size": 1546,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6689,7 +6712,7 @@
 		{
 			"name": "thirdparty/generated/templates/MediaGalleryTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/MediaGalleryTemplate.lit.js",
-			"size": 3661,
+			"size": 3654,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6711,7 +6734,7 @@
 		{
 			"name": "thirdparty/generated/templates/NotificationListGroupItemTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/NotificationListGroupItemTemplate.lit.js",
-			"size": 7474,
+			"size": 7465,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6733,7 +6756,7 @@
 		{
 			"name": "thirdparty/generated/templates/NotificationListItemTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/NotificationListItemTemplate.lit.js",
-			"size": 8019,
+			"size": 8009,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6755,7 +6778,7 @@
 		{
 			"name": "thirdparty/generated/templates/NotificationOverflowActionsPopoverTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/NotificationOverflowActionsPopoverTemplate.lit.js",
-			"size": 2050,
+			"size": 2048,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6777,7 +6800,7 @@
 		{
 			"name": "thirdparty/generated/templates/PageTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/PageTemplate.lit.js",
-			"size": 804,
+			"size": 803,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6799,7 +6822,7 @@
 		{
 			"name": "thirdparty/generated/templates/ProductSwitchItemTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/ProductSwitchItemTemplate.lit.js",
-			"size": 3375,
+			"size": 3366,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6821,7 +6844,7 @@
 		{
 			"name": "thirdparty/generated/templates/ProductSwitchTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/ProductSwitchTemplate.lit.js",
-			"size": 651,
+			"size": 650,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6843,7 +6866,7 @@
 		{
 			"name": "thirdparty/generated/templates/ShellBarPopoverTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/ShellBarPopoverTemplate.lit.js",
-			"size": 3988,
+			"size": 3985,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6865,7 +6888,7 @@
 		{
 			"name": "thirdparty/generated/templates/ShellBarTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/ShellBarTemplate.lit.js",
-			"size": 18109,
+			"size": 18085,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6887,7 +6910,7 @@
 		{
 			"name": "thirdparty/generated/templates/SideNavigationItemPopoverContentTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/SideNavigationItemPopoverContentTemplate.lit.js",
-			"size": 2692,
+			"size": 2690,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6909,7 +6932,7 @@
 		{
 			"name": "thirdparty/generated/templates/SideNavigationTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/SideNavigationTemplate.lit.js",
-			"size": 6851,
+			"size": 6841,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6931,7 +6954,7 @@
 		{
 			"name": "thirdparty/generated/templates/TimelineItemTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/TimelineItemTemplate.lit.js",
-			"size": 2623,
+			"size": 2616,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6953,7 +6976,7 @@
 		{
 			"name": "thirdparty/generated/templates/TimelineTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/TimelineTemplate.lit.js",
-			"size": 1005,
+			"size": 1003,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6975,7 +6998,7 @@
 		{
 			"name": "thirdparty/generated/templates/UploadCollectionItemTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/UploadCollectionItemTemplate.lit.js",
-			"size": 10626,
+			"size": 10611,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -6997,7 +7020,7 @@
 		{
 			"name": "thirdparty/generated/templates/UploadCollectionTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/UploadCollectionTemplate.lit.js",
-			"size": 3960,
+			"size": 3957,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -7019,7 +7042,7 @@
 		{
 			"name": "thirdparty/generated/templates/ViewSettingsDialogTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/ViewSettingsDialogTemplate.lit.js",
-			"size": 12635,
+			"size": 12619,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -7041,7 +7064,7 @@
 		{
 			"name": "thirdparty/generated/templates/WizardPopoverTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/WizardPopoverTemplate.lit.js",
-			"size": 2912,
+			"size": 2910,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -7063,7 +7086,7 @@
 		{
 			"name": "thirdparty/generated/templates/WizardTabTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/WizardTabTemplate.lit.js",
-			"size": 2270,
+			"size": 2265,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -7085,7 +7108,7 @@
 		{
 			"name": "thirdparty/generated/templates/WizardTemplate.lit-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/templates/WizardTemplate.lit.js",
-			"size": 4037,
+			"size": 4034,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/renderer/LitRenderer.js"
@@ -7107,7 +7130,7 @@
 		{
 			"name": "thirdparty/generated/themes/Bar.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/Bar.css.js",
-			"size": 2407,
+			"size": 2405,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7133,7 +7156,7 @@
 		{
 			"name": "thirdparty/generated/themes/BarcodeScannerDialog.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/BarcodeScannerDialog.css.js",
-			"size": 1523,
+			"size": 1521,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7159,7 +7182,7 @@
 		{
 			"name": "thirdparty/generated/themes/DynamicSideContent.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/DynamicSideContent.css.js",
-			"size": 1839,
+			"size": 1837,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7185,7 +7208,7 @@
 		{
 			"name": "thirdparty/generated/themes/FlexibleColumnLayout.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/FlexibleColumnLayout.css.js",
-			"size": 2958,
+			"size": 2956,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7211,7 +7234,7 @@
 		{
 			"name": "thirdparty/generated/themes/IllustratedMessage.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/IllustratedMessage.css.js",
-			"size": 4002,
+			"size": 4000,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7237,7 +7260,7 @@
 		{
 			"name": "thirdparty/generated/themes/InvisibleTextStyles.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/InvisibleTextStyles.css.js",
-			"size": 1190,
+			"size": 1188,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7263,7 +7286,7 @@
 		{
 			"name": "thirdparty/generated/themes/MediaGallery.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/MediaGallery.css.js",
-			"size": 4041,
+			"size": 4039,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7289,7 +7312,7 @@
 		{
 			"name": "thirdparty/generated/themes/MediaGalleryItem.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/MediaGalleryItem.css.js",
-			"size": 3199,
+			"size": 3197,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7315,7 +7338,7 @@
 		{
 			"name": "thirdparty/generated/themes/NotificationListGroupItem.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/NotificationListGroupItem.css.js",
-			"size": 3455,
+			"size": 3453,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7341,7 +7364,7 @@
 		{
 			"name": "thirdparty/generated/themes/NotificationListItem.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/NotificationListItem.css.js",
-			"size": 4567,
+			"size": 4565,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7367,7 +7390,7 @@
 		{
 			"name": "thirdparty/generated/themes/NotificationListItemBase.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/NotificationListItemBase.css.js",
-			"size": 1923,
+			"size": 1921,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7393,7 +7416,7 @@
 		{
 			"name": "thirdparty/generated/themes/NotificationOverflowActionsPopover.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/NotificationOverflowActionsPopover.css.js",
-			"size": 1244,
+			"size": 1242,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7419,7 +7442,7 @@
 		{
 			"name": "thirdparty/generated/themes/NotificationPrioIcon.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/NotificationPrioIcon.css.js",
-			"size": 1333,
+			"size": 1331,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7445,7 +7468,7 @@
 		{
 			"name": "thirdparty/generated/themes/Page.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/Page.css.js",
-			"size": 3528,
+			"size": 3526,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7471,7 +7494,7 @@
 		{
 			"name": "thirdparty/generated/themes/ProductSwitch.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/ProductSwitch.css.js",
-			"size": 1532,
+			"size": 1530,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7497,7 +7520,7 @@
 		{
 			"name": "thirdparty/generated/themes/ProductSwitchItem.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/ProductSwitchItem.css.js",
-			"size": 5470,
+			"size": 5468,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7523,7 +7546,7 @@
 		{
 			"name": "thirdparty/generated/themes/ShellBar.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/ShellBar.css.js",
-			"size": 11619,
+			"size": 11617,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7549,7 +7572,7 @@
 		{
 			"name": "thirdparty/generated/themes/ShellBarPopover.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/ShellBarPopover.css.js",
-			"size": 1148,
+			"size": 1146,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7575,7 +7598,7 @@
 		{
 			"name": "thirdparty/generated/themes/SideNavigation.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/SideNavigation.css.js",
-			"size": 2389,
+			"size": 2387,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7601,7 +7624,7 @@
 		{
 			"name": "thirdparty/generated/themes/SideNavigationPopover.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/SideNavigationPopover.css.js",
-			"size": 1110,
+			"size": 1108,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7627,7 +7650,7 @@
 		{
 			"name": "thirdparty/generated/themes/Timeline.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/Timeline.css.js",
-			"size": 1702,
+			"size": 1700,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7653,7 +7676,7 @@
 		{
 			"name": "thirdparty/generated/themes/TimelineItem.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/TimelineItem.css.js",
-			"size": 6978,
+			"size": 6976,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7679,7 +7702,7 @@
 		{
 			"name": "thirdparty/generated/themes/UploadCollection.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/UploadCollection.css.js",
-			"size": 2888,
+			"size": 2886,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7705,7 +7728,7 @@
 		{
 			"name": "thirdparty/generated/themes/UploadCollectionItem.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/UploadCollectionItem.css.js",
-			"size": 3677,
+			"size": 3675,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7731,7 +7754,7 @@
 		{
 			"name": "thirdparty/generated/themes/ViewSettingsDialog.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/ViewSettingsDialog.css.js",
-			"size": 2291,
+			"size": 2289,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7757,7 +7780,7 @@
 		{
 			"name": "thirdparty/generated/themes/Wizard.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/Wizard.css.js",
-			"size": 2826,
+			"size": 2824,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7783,7 +7806,7 @@
 		{
 			"name": "thirdparty/generated/themes/WizardPopover.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/WizardPopover.css.js",
-			"size": 1580,
+			"size": 1578,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -7809,7 +7832,7 @@
 		{
 			"name": "thirdparty/generated/themes/WizardTab.css-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/generated/themes/WizardTab.css.js",
-			"size": 4521,
+			"size": 4519,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Themes.js",
@@ -8027,7 +8050,7 @@
 		{
 			"name": "thirdparty/illustrations/AddColumn-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/AddColumn.js",
-			"size": 1613,
+			"size": 1611,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8057,7 +8080,7 @@
 		{
 			"name": "thirdparty/illustrations/AddPeople-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/AddPeople.js",
-			"size": 1613,
+			"size": 1611,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8087,7 +8110,7 @@
 		{
 			"name": "thirdparty/illustrations/BalloonSky-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/BalloonSky.js",
-			"size": 1634,
+			"size": 1632,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8117,7 +8140,7 @@
 		{
 			"name": "thirdparty/illustrations/BeforeSearch-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/BeforeSearch.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8147,7 +8170,7 @@
 		{
 			"name": "thirdparty/illustrations/Connection-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/Connection.js",
-			"size": 1638,
+			"size": 1636,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8177,7 +8200,7 @@
 		{
 			"name": "thirdparty/illustrations/EmptyCalendar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/EmptyCalendar.js",
-			"size": 1695,
+			"size": 1693,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8207,7 +8230,7 @@
 		{
 			"name": "thirdparty/illustrations/EmptyList-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/EmptyList.js",
-			"size": 1613,
+			"size": 1611,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8237,7 +8260,7 @@
 		{
 			"name": "thirdparty/illustrations/EmptyPlanningCalendar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/EmptyPlanningCalendar.js",
-			"size": 1865,
+			"size": 1863,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8267,7 +8290,7 @@
 		{
 			"name": "thirdparty/illustrations/ErrorScreen-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/ErrorScreen.js",
-			"size": 1661,
+			"size": 1659,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8297,7 +8320,7 @@
 		{
 			"name": "thirdparty/illustrations/FilterTable-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/FilterTable.js",
-			"size": 1655,
+			"size": 1653,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8327,7 +8350,7 @@
 		{
 			"name": "thirdparty/illustrations/GroupTable-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/GroupTable.js",
-			"size": 1634,
+			"size": 1632,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8357,7 +8380,7 @@
 		{
 			"name": "thirdparty/illustrations/NoActivities-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoActivities.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8387,7 +8410,7 @@
 		{
 			"name": "thirdparty/illustrations/NoData-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoData.js",
-			"size": 1550,
+			"size": 1548,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8417,7 +8440,7 @@
 		{
 			"name": "thirdparty/illustrations/NoEntries-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoEntries.js",
-			"size": 1613,
+			"size": 1611,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8447,7 +8470,7 @@
 		{
 			"name": "thirdparty/illustrations/NoFilterResults-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoFilterResults.js",
-			"size": 1739,
+			"size": 1737,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8477,7 +8500,7 @@
 		{
 			"name": "thirdparty/illustrations/NoMail-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoMail.js",
-			"size": 1550,
+			"size": 1548,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8507,7 +8530,7 @@
 		{
 			"name": "thirdparty/illustrations/NoMail_v1-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoMail_v1.js",
-			"size": 1592,
+			"size": 1590,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8537,7 +8560,7 @@
 		{
 			"name": "thirdparty/illustrations/NoNotifications-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoNotifications.js",
-			"size": 1739,
+			"size": 1737,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8567,7 +8590,7 @@
 		{
 			"name": "thirdparty/illustrations/NoSavedItems-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoSavedItems.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8597,7 +8620,7 @@
 		{
 			"name": "thirdparty/illustrations/NoSavedItems_v1-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoSavedItems_v1.js",
-			"size": 1718,
+			"size": 1716,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8627,7 +8650,7 @@
 		{
 			"name": "thirdparty/illustrations/NoSearchResults-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoSearchResults.js",
-			"size": 1739,
+			"size": 1737,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8657,7 +8680,7 @@
 		{
 			"name": "thirdparty/illustrations/NoTasks-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoTasks.js",
-			"size": 1571,
+			"size": 1569,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8687,7 +8710,7 @@
 		{
 			"name": "thirdparty/illustrations/NoTasks_v1-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/NoTasks_v1.js",
-			"size": 1613,
+			"size": 1611,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8717,7 +8740,7 @@
 		{
 			"name": "thirdparty/illustrations/PageNotFound-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/PageNotFound.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8747,7 +8770,7 @@
 		{
 			"name": "thirdparty/illustrations/ReloadScreen-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/ReloadScreen.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8777,7 +8800,7 @@
 		{
 			"name": "thirdparty/illustrations/ResizeColumn-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/ResizeColumn.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8807,7 +8830,7 @@
 		{
 			"name": "thirdparty/illustrations/SearchEarth-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SearchEarth.js",
-			"size": 1657,
+			"size": 1655,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8837,7 +8860,7 @@
 		{
 			"name": "thirdparty/illustrations/SearchFolder-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SearchFolder.js",
-			"size": 1682,
+			"size": 1680,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8867,7 +8890,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleBalloon-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleBalloon.js",
-			"size": 1691,
+			"size": 1689,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8897,7 +8920,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleBell-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleBell.js",
-			"size": 1644,
+			"size": 1642,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8927,7 +8950,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleCalendar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleCalendar.js",
-			"size": 1714,
+			"size": 1712,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8957,7 +8980,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleCheckMark-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleCheckMark.js",
-			"size": 1735,
+			"size": 1733,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -8987,7 +9010,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleConnection-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleConnection.js",
-			"size": 1752,
+			"size": 1750,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9017,7 +9040,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleEmptyDoc-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleEmptyDoc.js",
-			"size": 1702,
+			"size": 1700,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9047,7 +9070,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleEmptyList-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleEmptyList.js",
-			"size": 1727,
+			"size": 1725,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9077,7 +9100,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleError-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleError.js",
-			"size": 1661,
+			"size": 1659,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9107,7 +9130,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleMagnifier-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleMagnifier.js",
-			"size": 1733,
+			"size": 1731,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9137,7 +9160,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleMail-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleMail.js",
-			"size": 1626,
+			"size": 1624,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9167,7 +9190,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleNoSavedItems-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleNoSavedItems.js",
-			"size": 1790,
+			"size": 1788,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9197,7 +9220,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleNotFoundMagnifier-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleNotFoundMagnifier.js",
-			"size": 1891,
+			"size": 1889,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9227,7 +9250,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleReload-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleReload.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9257,7 +9280,7 @@
 		{
 			"name": "thirdparty/illustrations/SimpleTask-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SimpleTask.js",
-			"size": 1628,
+			"size": 1626,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9287,7 +9310,7 @@
 		{
 			"name": "thirdparty/illustrations/SleepingBell-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SleepingBell.js",
-			"size": 1682,
+			"size": 1680,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9317,7 +9340,7 @@
 		{
 			"name": "thirdparty/illustrations/SortColumn-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SortColumn.js",
-			"size": 1634,
+			"size": 1632,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9347,7 +9370,7 @@
 		{
 			"name": "thirdparty/illustrations/SuccessBalloon-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SuccessBalloon.js",
-			"size": 1710,
+			"size": 1708,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9377,7 +9400,7 @@
 		{
 			"name": "thirdparty/illustrations/SuccessCheckMark-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SuccessCheckMark.js",
-			"size": 1754,
+			"size": 1752,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9407,7 +9430,7 @@
 		{
 			"name": "thirdparty/illustrations/SuccessHighFive-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SuccessHighFive.js",
-			"size": 1729,
+			"size": 1727,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9437,7 +9460,7 @@
 		{
 			"name": "thirdparty/illustrations/SuccessScreen-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/SuccessScreen.js",
-			"size": 1697,
+			"size": 1695,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9467,7 +9490,7 @@
 		{
 			"name": "thirdparty/illustrations/Tent-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/Tent.js",
-			"size": 1512,
+			"size": 1510,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9497,7 +9520,7 @@
 		{
 			"name": "thirdparty/illustrations/UnableToLoad-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/UnableToLoad.js",
-			"size": 1676,
+			"size": 1674,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9527,7 +9550,7 @@
 		{
 			"name": "thirdparty/illustrations/UnableToLoadImage-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/UnableToLoadImage.js",
-			"size": 1781,
+			"size": 1779,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9557,7 +9580,7 @@
 		{
 			"name": "thirdparty/illustrations/UnableToUpload-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/UnableToUpload.js",
-			"size": 1718,
+			"size": 1716,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -9587,7 +9610,7 @@
 		{
 			"name": "thirdparty/illustrations/UploadCollection-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/UploadCollection.js",
-			"size": 1760,
+			"size": 1758,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12161,7 +12184,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartArea-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartArea.js",
-			"size": 1340,
+			"size": 1338,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12189,7 +12212,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartArea2-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartArea2.js",
-			"size": 1344,
+			"size": 1342,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12217,7 +12240,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartBPMNFlow-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBPMNFlow.js",
-			"size": 1416,
+			"size": 1414,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12245,7 +12268,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartBar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBar.js",
-			"size": 1321,
+			"size": 1319,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12273,7 +12296,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartBullet-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartBullet.js",
-			"size": 1378,
+			"size": 1376,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12301,7 +12324,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartDoughnut-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartDoughnut.js",
-			"size": 1416,
+			"size": 1414,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12329,7 +12352,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartFlow-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartFlow.js",
-			"size": 1340,
+			"size": 1338,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12357,7 +12380,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartGantt-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartGantt.js",
-			"size": 1359,
+			"size": 1357,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12385,7 +12408,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartOrg-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartOrg.js",
-			"size": 1321,
+			"size": 1319,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12413,7 +12436,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ChartPie-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ChartPie.js",
-			"size": 1321,
+			"size": 1319,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12441,7 +12464,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/CodePlaceholder-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/CodePlaceholder.js",
-			"size": 1454,
+			"size": 1452,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12469,7 +12492,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Company-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Company.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12497,7 +12520,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Components-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Components.js",
-			"size": 1359,
+			"size": 1357,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12525,7 +12548,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/ExternalLink-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/ExternalLink.js",
-			"size": 1397,
+			"size": 1395,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12553,7 +12576,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/FaceID-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/FaceID.js",
-			"size": 1283,
+			"size": 1281,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12581,7 +12604,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Fingerprint-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Fingerprint.js",
-			"size": 1378,
+			"size": 1376,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12609,7 +12632,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Lock-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Lock.js",
-			"size": 1245,
+			"size": 1243,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12637,7 +12660,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Mission-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Mission.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12665,7 +12688,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/NoApplications-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoApplications.js",
-			"size": 1435,
+			"size": 1433,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12693,7 +12716,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/NoFlows-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoFlows.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12721,7 +12744,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/NoUsers-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/NoUsers.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12749,7 +12772,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Radar-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Radar.js",
-			"size": 1264,
+			"size": 1262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12777,7 +12800,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Secrets-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Secrets.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12805,7 +12828,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Services-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Services.js",
-			"size": 1321,
+			"size": 1319,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12833,7 +12856,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/SessionExpired-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/SessionExpired.js",
-			"size": 1435,
+			"size": 1433,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12861,7 +12884,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/SessionExpiring-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/SessionExpiring.js",
-			"size": 1454,
+			"size": 1452,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12889,7 +12912,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Success-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Success.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12917,7 +12940,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/SuccessfulAuth-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/SuccessfulAuth.js",
-			"size": 1435,
+			"size": 1433,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12945,7 +12968,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Systems-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Systems.js",
-			"size": 1302,
+			"size": 1300,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -12973,7 +12996,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Teams-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Teams.js",
-			"size": 1264,
+			"size": 1262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -13001,7 +13024,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Tools-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Tools.js",
-			"size": 1264,
+			"size": 1262,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -13029,7 +13052,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/UnableToLoad-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/UnableToLoad.js",
-			"size": 1397,
+			"size": 1395,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -13057,7 +13080,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/Unlock-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/Unlock.js",
-			"size": 1283,
+			"size": 1281,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -13085,7 +13108,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/UnsuccessfulAuth-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/UnsuccessfulAuth.js",
-			"size": 1473,
+			"size": 1471,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -13113,7 +13136,7 @@
 		{
 			"name": "thirdparty/illustrations/tnt/User2-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/illustrations/tnt/User2.js",
-			"size": 1249,
+			"size": 1247,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/asset-registries/Illustrations.js",
@@ -14821,7 +14844,7 @@
 		{
 			"name": "thirdparty/types/BarDesign-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/BarDesign.js",
-			"size": 1364,
+			"size": 1357,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14843,7 +14866,7 @@
 		{
 			"name": "thirdparty/types/FCLLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/FCLLayout.js",
-			"size": 5008,
+			"size": 4996,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14865,7 +14888,7 @@
 		{
 			"name": "thirdparty/types/IllustrationMessageSize-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/IllustrationMessageSize.js",
-			"size": 2329,
+			"size": 2321,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14887,7 +14910,7 @@
 		{
 			"name": "thirdparty/types/IllustrationMessageType-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/IllustrationMessageType.js",
-			"size": 12967,
+			"size": 12876,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14909,7 +14932,7 @@
 		{
 			"name": "thirdparty/types/MediaGalleryItemLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/MediaGalleryItemLayout.js",
-			"size": 1658,
+			"size": 1653,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14931,7 +14954,7 @@
 		{
 			"name": "thirdparty/types/MediaGalleryLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/MediaGalleryLayout.js",
-			"size": 1536,
+			"size": 1530,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14953,7 +14976,7 @@
 		{
 			"name": "thirdparty/types/MediaGalleryMenuHorizontalAlign-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/MediaGalleryMenuHorizontalAlign.js",
-			"size": 1420,
+			"size": 1415,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14975,7 +14998,7 @@
 		{
 			"name": "thirdparty/types/MediaGalleryMenuVerticalAlign-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/MediaGalleryMenuVerticalAlign.js",
-			"size": 1416,
+			"size": 1411,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -14997,7 +15020,7 @@
 		{
 			"name": "thirdparty/types/PageBackgroundDesign-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/PageBackgroundDesign.js",
-			"size": 1472,
+			"size": 1466,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15019,7 +15042,7 @@
 		{
 			"name": "thirdparty/types/SideContentFallDown-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/SideContentFallDown.js",
-			"size": 1587,
+			"size": 1580,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15041,7 +15064,7 @@
 		{
 			"name": "thirdparty/types/SideContentPosition-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/SideContentPosition.js",
-			"size": 1424,
+			"size": 1419,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15063,7 +15086,7 @@
 		{
 			"name": "thirdparty/types/SideContentVisibility-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/SideContentVisibility.js",
-			"size": 1715,
+			"size": 1707,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15085,7 +15108,7 @@
 		{
 			"name": "thirdparty/types/TimelineLayout-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/TimelineLayout.js",
-			"size": 1204,
+			"size": 1199,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15107,7 +15130,7 @@
 		{
 			"name": "thirdparty/types/UploadCollectionDnDMode-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/UploadCollectionDnDMode.js",
-			"size": 1460,
+			"size": 1454,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15129,7 +15152,7 @@
 		{
 			"name": "thirdparty/types/UploadState-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/UploadState.js",
-			"size": 1543,
+			"size": 1536,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15151,7 +15174,7 @@
 		{
 			"name": "thirdparty/types/ViewSettingsDialogMode-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/types/ViewSettingsDialogMode.js",
-			"size": 1229,
+			"size": 1224,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/types/DataType.js"
@@ -15173,7 +15196,7 @@
 		{
 			"name": "thirdparty/upload-utils/UploadCollectionBodyDnD-dbg.js",
 			"module": "sap/ui/webc/fiori/thirdparty/upload-utils/UploadCollectionBodyDnD.js",
-			"size": 2893,
+			"size": 2878,
 			"isDebug": true,
 			"required": [
 				"sap/ui/webc/common/thirdparty/base/EventProvider.js",

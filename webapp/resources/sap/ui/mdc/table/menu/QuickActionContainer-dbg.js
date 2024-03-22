@@ -4,8 +4,8 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"../TableSettings",
 	"../ResponsiveTableType",
+	"../utils/Personalization",
 	"sap/m/table/columnmenu/QuickActionContainer",
 	"sap/m/table/columnmenu/QuickAction",
 	"sap/m/table/columnmenu/QuickSort",
@@ -18,8 +18,8 @@ sap.ui.define([
 	"sap/ui/core/Core",
 	"sap/ui/core/library"
 ], function(
-	TableSettings,
 	ResponsiveTableType,
+	PersonalizationUtils,
 	QuickActionContainerBase,
 	QuickAction,
 	QuickSort,
@@ -53,7 +53,7 @@ sap.ui.define([
 		this.destroyQuickActions(); // TODO: More efficient update would be good
 
 		if (oTable.isSortingEnabled()) {
-			var aSortableProperties = oPropertyHelper.getProperty(oColumn.getDataProperty()).getSortableProperties();
+			var aSortableProperties = oPropertyHelper.getProperty(oColumn.getPropertyKey()).getSortableProperties();
 			var aSortedProperties = oTable._getSortedProperties();
 
 			if (aSortableProperties.length > 0) {
@@ -75,14 +75,17 @@ sap.ui.define([
 					}),
 					change: function(oEvent) {
 						var oItem = oEvent.getParameter("item");
-						TableSettings.createSort(oTable, oItem.getKey(), oItem.getSortOrder(), true);
+						PersonalizationUtils.createSortChange(oTable, {
+							property: oItem.getKey(),
+							sortOrder: oItem.getSortOrder()
+						});
 					}
 				}));
 			}
 		}
 
 		if (oTable.isGroupingEnabled()) {
-			var aGroupableProperties = oPropertyHelper.getProperty(oColumn.getDataProperty()).getGroupableProperties();
+			var aGroupableProperties = oPropertyHelper.getProperty(oColumn.getPropertyKey()).getGroupableProperties();
 			var aGroupedProperties = oTable._getGroupedProperties();
 
 			if (aGroupableProperties.length > 0) {
@@ -99,15 +102,16 @@ sap.ui.define([
 						});
 					}),
 					change: function(oEvent) {
-						var oItem = oEvent.getParameter("item");
-						TableSettings.createGroup(oTable, oItem.getKey());
+						PersonalizationUtils.createGroupChange(oTable, {
+							property: oEvent.getParameter("item").getKey()
+						});
 					}
 				}));
 			}
 		}
 
 		if (oTable.isAggregationEnabled()) {
-			var aPropertiesThatCanBeTotaled = oPropertyHelper.getProperty(oColumn.getDataProperty()).getAggregatableProperties().filter(function(oProperty) {
+			var aPropertiesThatCanBeTotaled = oPropertyHelper.getProperty(oColumn.getPropertyKey()).getAggregatableProperties().filter(function(oProperty) {
 				return oProperty.extension && oProperty.extension.customAggregate;
 			});
 			var mAggregatedProperties = oTable._getAggregatedProperties();
@@ -122,16 +126,16 @@ sap.ui.define([
 						});
 					}),
 					change: function(oEvent) {
-						var oItem = oEvent.getParameter("item");
-						TableSettings.createAggregation(oTable, oItem.getKey());
+						PersonalizationUtils.createAggregateChange(oTable, {
+							property: oEvent.getParameter("item").getKey()
+						});
 					}
 				}));
 			}
 		}
 
-		if (oTable._bMobileTable && oTable.getEnableColumnResize()) {
-			var oColumnResize = ResponsiveTableType.startColumnResize(oTable._oTable, oTable._oTable.getColumns()[oTable.indexOfColumn(oColumn)], this.getMenu());
-			this.addQuickAction(oColumnResize);
+		if (oTable.getEnableColumnResize()) {
+			this.addQuickAction(oTable._getType().createColumnResizeMenuItem(oColumn, this.getMenu()));
 		}
 
 		return pCreateContent;

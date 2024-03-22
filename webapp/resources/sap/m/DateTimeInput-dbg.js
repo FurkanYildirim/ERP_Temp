@@ -19,7 +19,8 @@ sap.ui.define([
 	'sap/ui/core/library',
 	'sap/ui/Device',
 	"./DateTimeInputRenderer",
-	"sap/ui/core/Configuration"
+	"sap/ui/core/Configuration",
+	"sap/ui/core/date/UI5Date"
 ],
 function(
 	jQuery,
@@ -35,7 +36,8 @@ function(
 	coreLibrary,
 	Device,
 	DateTimeInputRenderer,
-	Configuration
+	Configuration,
+	UI5Date
 ) {
 	"use strict";
 
@@ -64,7 +66,7 @@ function(
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -361,7 +363,7 @@ function(
 
 		sValue = this.validateProperty("value", sValue);
 		if (sValue.toLowerCase() == "now") {
-			return this.setDateValue(new Date());
+			return this.setDateValue(UI5Date.getInstance());
 		}
 
 		if (sValue === this.getValue()) {
@@ -380,6 +382,13 @@ function(
 
 	};
 
+	/**
+	 * Setter for property <code>dateValue</code>.
+	 *
+	 * @param {Date} oDate A JavaScript Date
+	 * @returns {this} Reference to <code>this</code> for method chaining
+	 * @public
+	 */
 	DateTimeInput.prototype.setDateValue = function(oDate) {
 
 		if (!this._isValidDate(oDate)) {
@@ -556,7 +565,7 @@ function(
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} Current accessibility state of the control
+	 * @returns {sap.ui.core.AccessibilityInfo} Current accessibility state of the control
 	 * @protected
 	 */
 	DateTimeInput.prototype.getAccessibilityInfo = function() {
@@ -614,7 +623,7 @@ function(
 
 	/**
 	 * Returns the binding type pattern of 'value' property if such.
-	 * @return {*}
+	 * @returns {*}
 	 * @private
 	 **/
 	DateTimeInput.prototype._getBoundValueTypePattern = function() {

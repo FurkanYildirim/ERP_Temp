@@ -5,7 +5,7 @@
     "type": "library",
     "embeds": [],
     "applicationVersion": {
-      "version": "1.108.14"
+      "version": "1.115.1"
     },
     "title": "UI5 Web Components Retrofit Common",
     "description": "UI5 Web Components Retrofit Common",
@@ -31,20 +31,17 @@
   },
   "sap.ui5": {
     "dependencies": {
-      "minUI5Version": "1.108",
+      "minUI5Version": "1.115",
       "libs": {
         "sap.ui.core": {
-          "minVersion": "1.108.14"
+          "minVersion": "1.115.1"
         }
       }
     },
     "library": {
       "i18n": false,
-      "css": false,
       "content": {
-        "controls": [
-          "sap.ui.webc.common.WebComponent"
-        ],
+        "controls": [],
         "elements": [],
         "types": [],
         "interfaces": []

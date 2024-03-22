@@ -17,7 +17,7 @@ sap.ui.define([
 	 * @class
 	 * @namespace sap.ui.fl.write._internal.fieldExtensibility.ABAPExtensibilityVariant
 	 * @since 1.87
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 * @param {sap.ui.base.ManagedObject} oControl - Control to add extensions
 	 */

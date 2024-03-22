@@ -17,7 +17,7 @@ sap.ui.define([
 	 * Constructor for a <code>Unit</code> composite type.
 	 *
 	 * @param {object} [oFormatOptions]
-	 *   See parameter <code>oFormatOptions</code> of {@link sap.ui.model.type.Unit#constructor}.
+	 *   Format options as defined in {@link sap.ui.core.format.NumberFormat.getUnitInstance}.
 	 *   Format options are immutable, that is, they can only be set once on construction. Format
 	 *   options that are not supported or have a different default are listed below. If the format
 	 *   option <code>showMeasure</code> is set to <code>false</code>, model messages for the unit
@@ -58,12 +58,15 @@ sap.ui.define([
 	 * The measure part is formatted according to the customizing for the unit. Use the result of
 	 * the promise returned by {@link sap.ui.model.odata.v4.ODataMetaModel#requestUnitsOfMeasure}
 	 * for OData V4 or by {@link sap.ui.model.odata.ODataMetaModel#requestUnitsOfMeasure} for OData
-	 * V2 as unit customizing part. If no unit customizing is available, UI5's default formatting
-	 * applies.
+	 * V2 as unit customizing part. See
+	 * {@link topic:4d1b9d44941f483f9b7f579873d38685 Currency and Unit Customizing in OData V4}
+	 * resp. {@link topic:6c47b2b39db9404582994070ec3d57a2#loioaa9024c7c5444822a68daeb21a92bd51
+	 * Currency and Unit Customizing in OData V2} for more information. If no unit customizing is
+	 * available, UI5's default formatting applies.
 	 * @extends sap.ui.model.type.Unit
 	 * @public
 	 * @since 1.63.0
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	var Unit = BaseUnit.extend("sap.ui.model.odata.type.Unit", {
 		constructor : function (oFormatOptions, oConstraints, aDynamicFormatOptionNames) {

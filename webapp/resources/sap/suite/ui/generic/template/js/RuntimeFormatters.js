@@ -1,0 +1,2 @@
+sap.ui.define(["sap/base/security/encodeXML"],function(t){"use strict";var e={setRowNavigated:function(t){var e=this.getBindingContext()||this.getParent().getBindingContext();var n=e&&e.getPath();return!!n&&n===t},encodeHTML:function(e){return t(e)}};return e},true);
+//# sourceMappingURL=RuntimeFormatters.js.map

@@ -51,7 +51,7 @@ sap.ui.define([
          * @extends sap.m.Slider
          *
          * @author SAP SE
-         * @version 1.108.14
+         * @version 1.115.1
          *
          * @constructor
          * @public
@@ -288,7 +288,7 @@ sap.ui.define([
          * @param {sap.m.SliderTooltipBase} oTooltip Slider/Range slider tooltip
          * @returns {HTMLElement} The handle, from which the tooltip is responsible.
          * @private
-         * @ui5-restricted sap.m.SliderTooltipContainer.js
+         * @ui5-restricted sap.m.SliderTooltipContainer
          */
         RangeSlider.prototype._getHandleForTooltip = function (oTooltip) {
             var oHandle = oTooltip === this._mHandleTooltip.start.tooltip ?

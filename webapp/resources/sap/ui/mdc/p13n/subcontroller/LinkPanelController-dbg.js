@@ -6,16 +6,14 @@
 
 sap.ui.define([
     "sap/ui/mdc/p13n/P13nBuilder",
-	"./BaseController",
+	"./SelectionController",
     "sap/ui/mdc/p13n/panels/LinkSelectionPanel",
-    "sap/m/library",
-    "sap/m/MessageBox"
-], function (P13nBuilder, BaseController, SelectionPanel, library, MessageBox) {
+    "sap/m/MessageBox",
+    "sap/ui/mdc/enums/TableMultiSelectMode"
+], function (P13nBuilder, BaseController, SelectionPanel, MessageBox, TableMultiSelectMode) {
     "use strict";
 
     var oResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.mdc");
-
-    var MultiSelectMode = library.MultiSelectMode;
     var LinkPanelController = BaseController.extend("sap.ui.mdc.p13n.subcontroller.LinkPanelController", {
         constructor: function() {
 			BaseController.apply(this, arguments);
@@ -38,8 +36,9 @@ sap.ui.define([
         return this.getAdaptationControl().getItems().concat(this.getAdaptationControl());
     };
 
-    LinkPanelController.prototype.getAdaptationUI = function(oPropertyHelper) {
+    LinkPanelController.prototype.initAdaptationUI = function(oPropertyHelper) {
         var oSelectionPanel = new SelectionPanel({
+            title: oResourceBundle.getText("info.SELECTION_DIALOG_ALIGNEDTITLE"),
             showHeader: true,
             fieldColumn: oResourceBundle.getText("info.SELECTION_DIALOG_COLUMNHEADER_WITHOUT_COUNT"),
             enableCount: true,
@@ -48,7 +47,7 @@ sap.ui.define([
         });
         var oAdaptationData = this.mixInfoAndState(oPropertyHelper);
         oSelectionPanel.setP13nData(oAdaptationData.items);
-        oSelectionPanel.setMultiSelectMode(MultiSelectMode.Default);
+        oSelectionPanel.setMultiSelectMode(TableMultiSelectMode.Default);
         this._oPanel = oSelectionPanel;
         return Promise.resolve(oSelectionPanel);
     };
@@ -87,10 +86,10 @@ sap.ui.define([
 
         var oLinkItem = sap.ui.getCore().byId(sLinkItemId);
 
-        var aChanges = [];
+        var oAddRemoveChange;
 
         if (!oLinkItem) {
-            aChanges.push({
+            oAddRemoveChange = {
                 selectorElement: oControl,
                 changeSpecificData: {
                     changeType: "createItem",
@@ -98,18 +97,18 @@ sap.ui.define([
                         selector: sLinkItemId
                     }
                 }
-            });
+            };
         } else {
-            aChanges.push({
+            oAddRemoveChange = {
                 selectorElement: oLinkItem,
                 changeSpecificData: {
                     changeType: vOperations === "hideItem" ? "hideItem" : "revealItem",
                     content: {}
                 }
-            });
+            };
         }
 
-        return aChanges;
+        return oAddRemoveChange;
     };
 
     LinkPanelController.prototype.mixInfoAndState = function(oPropertyHelper) {
@@ -117,7 +116,7 @@ sap.ui.define([
         var aItemState = this.getCurrentState();
         var mExistingLinkItems = P13nBuilder.arrayToMap(aItemState);
 
-        var oP13nData = P13nBuilder.prepareAdaptationData(oPropertyHelper, function(mItem, oProperty){
+        var oP13nData = this.prepareAdaptationData(oPropertyHelper, function(mItem, oProperty){
 
             var oExistingLinkItem = mExistingLinkItems[oProperty.name];
             mItem.visible = oExistingLinkItem ? true : false;
@@ -132,7 +131,7 @@ sap.ui.define([
             return true;
         });
 
-        P13nBuilder.sortP13nData({
+        this.sortP13nData({
             visible: "visible",
             position: "position"
         }, oP13nData.items);
@@ -144,7 +143,7 @@ sap.ui.define([
         return oP13nData;
     };
 
-    LinkPanelController.prototype._createMoveChange = function(sId, sPropertyName, iNewIndex, sMoveOperation, oControl, bPersistId) {
+    LinkPanelController.prototype._createMoveChange = function(sPropertyName, iNewIndex, sMoveOperation, oControl) {
         return {
             selectorElement: oControl,
             changeSpecificData: {

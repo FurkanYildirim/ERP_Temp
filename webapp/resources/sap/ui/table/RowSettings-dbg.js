@@ -24,7 +24,7 @@ sap.ui.define([
 	 * The <code>RowSettings</code> control allows you to configure a row.
 	 * You can only use this control in the context of the <code>sap.ui.table.Table</code> control to define row settings.
 	 * @extends sap.ui.core.Element
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -51,7 +51,7 @@ sap.ui.define([
 				 *
 				 * @since 1.48.0
 				 */
-				highlight : {type : "string", group : "Appearance", defaultValue : "None"},
+				highlight: {type: "string", group: "Appearance", defaultValue: "None"},
 
 				/**
 				 * Defines the semantics of the {@link sap.ui.table.RowSettings#setHighlight highlight} property for accessibility purposes. It is
@@ -59,7 +59,7 @@ sap.ui.define([
 				 *
 				 * @since 1.62
 				 */
-				highlightText : {type : "string", group : "Misc", defaultValue : ""},
+				highlightText: {type: "string", group: "Misc", defaultValue: ""},
 
 				/**
 				 * The navigated state of a row.
@@ -69,7 +69,7 @@ sap.ui.define([
 				 *
 				 * @since 1.72
 				 */
-				navigated : {type : "boolean", group : "Appearance", defaultValue : false}
+				navigated: {type: "boolean", group: "Appearance", defaultValue: false}
 			}
 		}
 	});

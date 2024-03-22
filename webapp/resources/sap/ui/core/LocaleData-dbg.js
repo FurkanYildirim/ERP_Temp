@@ -5,9 +5,37 @@
  */
 
 //Provides the locale object sap.ui.core.LocaleData
-sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', './Locale', 'sap/base/assert', 'sap/base/util/LoaderExtensions', "sap/ui/core/Configuration"],
-	function(extend, BaseObject, CalendarType, Locale, assert, LoaderExtensions, Configuration) {
+sap.ui.define([
+	"./CalendarType",
+	"./Locale",
+	"sap/base/assert",
+	"sap/base/util/extend",
+	"sap/base/util/LoaderExtensions",
+	"sap/ui/base/Object",
+	"sap/ui/core/Configuration",
+	"sap/ui/core/date/CalendarWeekNumbering"
+], function(CalendarType, Locale, assert, extend, LoaderExtensions, BaseObject, Configuration, CalendarWeekNumbering) {
 	"use strict";
+
+	var rCIgnoreCase = /c/i,
+		rEIgnoreCase = /e/i,
+		/*
+		* With the upgrade of the CLDR to version 41 some unit keys have changed.
+		* For compatibility reasons this map is used for formatting units.
+		* It maps a legacy unit key to its renamed key.
+		*/
+		mLegacyUnit2CurrentUnit = {
+			"acceleration-meter-per-second-squared": "acceleration-meter-per-square-second",
+			"concentr-milligram-per-deciliter": "concentr-milligram-ofglucose-per-deciliter",
+			"concentr-part-per-million": "concentr-permillion",
+			"consumption-liter-per-100kilometers": "consumption-liter-per-100-kilometer",
+			"pressure-millimeter-of-mercury": "pressure-millimeter-ofhg",
+			"pressure-pound-per-square-inch": "pressure-pound-force-per-square-inch",
+			"pressure-inch-hg": "pressure-inch-ofhg",
+			"torque-pound-foot": "torque-pound-force-foot"
+		},
+		rNumberInScientificNotation = /^([+-]?)((\d+)(?:\.(\d+))?)[eE]([+-]?\d+)$/,
+		rTrailingZeroes = /0+$/;
 
 	/**
 	 * Creates an instance of LocaleData for the given locale.
@@ -18,7 +46,7 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 * @alias sap.ui.core.LocaleData
 	 */
@@ -261,6 +289,138 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		},
 
 		/**
+		 * Get flexible day periods in style format "abbreviated", "narrow" or "wide".
+		 *
+		 * @param {string} sWidth
+		 *   The required width for the flexible day period names
+		 * @param {sap.ui.core.CalendarType} [sCalendarType]
+		 *   The type of calendar. If it's not set, it falls back to the calendar type either set in
+		 *   configuration or calculated from locale.
+		 * @returns {object|undefined}
+		 *   Object of flexible day periods or 'undefined' if none can be found
+		 *
+		 * @example <caption>Output</caption>
+		 * {
+		 *   "midnight": "midnight",
+		 *   "noon": "noon",
+		 *   "morning1": "in the morning",
+		 *   "afternoon1": "in the afternoon",
+		 *   "evening1": "in the evening",
+		 *   "night1": "at night"
+		 * }
+		 *
+		 * @private
+		 */
+		getFlexibleDayPeriods : function (sWidth, sCalendarType) {
+			return this._get(getCLDRCalendarName(sCalendarType), "flexibleDayPeriods", "format",
+				sWidth);
+		},
+
+		/**
+		 * Get flexible day periods in style format "abbreviated", "narrow" or "wide" for case
+		 * "stand-alone".
+		 *
+		 * @param {string} sWidth
+		 *   The required width for the flexible day period names
+		 * @param {sap.ui.core.CalendarType} [sCalendarType]
+		 *   The type of calendar. If it's not set, it falls back to the calendar type either set in
+		 *   configuration or calculated from locale.
+		 * @returns {object|undefined}
+		 *   Object of flexible day periods or 'undefined' if none can be found
+		 *
+		 * @example <caption>Output</caption>
+		 * {
+		 *   "midnight": "midnight",
+		 *   "noon": "noon",
+		 *   "morning1": "in the morning",
+		 *   "afternoon1": "in the afternoon",
+		 *   "evening1": "in the evening",
+		 *   "night1": "at night"
+		 * }
+		 *
+		 * @private
+		 */
+		getFlexibleDayPeriodsStandAlone : function (sWidth, sCalendarType) {
+			return this._get(getCLDRCalendarName(sCalendarType), "flexibleDayPeriods",
+				"stand-alone", sWidth);
+		},
+
+		/**
+		 * Get flexible day period of time or a point in time
+		 *
+		 * @param {int} iHour Hour
+		 * @param {int} iMinute Minute
+		 * @returns {string} Key of flexible day period of time e.g. <code>afternoon2</code>
+		 *
+		 * @private
+		 */
+		getFlexibleDayPeriodOfTime : function (iHour, iMinute) {
+			var iAbsoluteMinutes, oDayPeriodRules, sPeriodMatch;
+
+			iAbsoluteMinutes = (iHour * 60 + iMinute) % 1440;
+			oDayPeriodRules = this._get("dayPeriodRules");
+
+			function parseToAbsoluteMinutes(sValue) {
+				var aSplit = sValue.split(":"),
+					sHour = aSplit[0],
+					sMinute = aSplit[1];
+
+				return parseInt(sHour) * 60 + parseInt(sMinute);
+			}
+
+			// unfortunately there are some overlaps:
+			// e.g. en.json
+			// "afternoon1": {
+			//   "_before": "18:00",
+			//   "_from": "12:00"
+			// },
+			// "noon": {
+			//   "_at": "12:00"
+			// }
+			// -> 12:00 can be either "noon" or "afternoon1" because "_from" is inclusive
+			// therefore first check all exact periods
+
+			sPeriodMatch = Object.keys(oDayPeriodRules).find(function (sDayPeriodRule) {
+				var oDayPeriodRule = oDayPeriodRules[sDayPeriodRule];
+
+				return oDayPeriodRule["_at"] &&
+					parseToAbsoluteMinutes(oDayPeriodRule["_at"]) === iAbsoluteMinutes;
+			});
+			if (sPeriodMatch) {
+				return sPeriodMatch;
+			}
+
+			return Object.keys(oDayPeriodRules).find(function (sDayPeriodRule) {
+				var iEndValue, aIntervals, iStartValue,
+					oDayPeriodRule = oDayPeriodRules[sDayPeriodRule];
+
+				if (oDayPeriodRule["_at"]) {
+					return false;
+				}
+
+				iStartValue = parseToAbsoluteMinutes(oDayPeriodRule["_from"]);
+				iEndValue = parseToAbsoluteMinutes(oDayPeriodRule["_before"]);
+
+				// periods which span across days need to be split into individual intervals
+				// e.g. "22:00 - 03:00" becomes "22:00 - 24:00" and "00:00 - 03:00"
+				if (iStartValue > iEndValue) {
+					aIntervals = [
+						{start : iStartValue, end : 1440}, // 24 * 60
+						{start : 0, end : iEndValue}
+					];
+				} else {
+					aIntervals = [
+						{start : iStartValue, end : iEndValue}
+					];
+				}
+
+				return aIntervals.some(function (oInterval) {
+					return oInterval.start <= iAbsoluteMinutes && oInterval.end > iAbsoluteMinutes;
+				});
+			});
+		},
+
+		/**
 		 * Get time pattern in style "short", "medium", "long" or "full".
 		 *
 		 * @param {string} sStyle the required style for the date pattern
@@ -362,12 +522,14 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		 * }
 		 * </pre>
 		 *
-		 * @return {Object<string, string>} the mapping, with 'key' being the IANA timezone ID, and 'value' being the translation.
-		 * @ui5-restricted sap.ui.core.format.DateFormat, sap.ui.export
+		 * @return {Object<string, string>} the mapping, with 'key' being the IANA timezone ID, and
+		 * 'value' being the translation.
+		 * @ui5-restricted sap.ui.core.format.DateFormat, sap.ui.export, sap.ushell
 		 * @private
 		 */
 		getTimezoneTranslations: function() {
-			this.mTimezoneTranslations = this.mTimezoneTranslations || _resolveTimezoneTranslationStructure(this._get("timezoneNames"));
+			this.mTimezoneTranslations = this.mTimezoneTranslations ||
+				_resolveTimezoneTranslationStructure(this._get("timezoneNames"));
 
 			// retrieve a copy such that the original object won't be modified.
 			return Object.assign({}, this.mTimezoneTranslations);
@@ -381,7 +543,7 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		 * Era (G), Year (y/Y), Quarter (q/Q), Month (M/L), Week (w/W), Day-Of-Week (E/e/c), Day (d/D),
 		 * Hour (h/H/k/K/), Minute (m), Second (s), Timezone (z/Z/v/V/O/X/x)
 		 *
-		 * See http://unicode.org/reports/tr35/tr35-dates.html#availableFormats_appendItems
+		 * See https://unicode.org/reports/tr35/tr35-dates.html#availableFormats_appendItems
 		 *
 		 * @param {string} sSkeleton the wanted skeleton format for the datetime pattern
 		 * @param {sap.ui.core.CalendarType} [sCalendarType] the type of calendar. If it's not set, it falls back to the calendar type either set in configuration or calculated from locale.
@@ -450,7 +612,7 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		 * Era (G), Year (y/Y), Quarter (q/Q), Month (M/L), Week (w/W), Day-Of-Week (E/e/c), Day (d/D),
 		 * Hour (h/H/k/K/), Minute (m), Second (s), Timezone (z/Z/v/V/O/X/x)
 		 *
-		 * See http://unicode.org/reports/tr35/tr35-dates.html#availableFormats_appendItems
+		 * See https://unicode.org/reports/tr35/tr35-dates.html#availableFormats_appendItems
 		 *
 		 * @param {string} sSkeleton the wanted skeleton format for the datetime pattern
 		 * @param {object|string} vGreatestDiff is either a string which represents the symbol matching the greatest difference in the two dates to format or an object which contains key-value pairs.
@@ -963,7 +1125,7 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		 * $100,000.00
 		 * ($100,000.00)
 		 *
-		 * @see http://cldr.unicode.org/translation/numbers-currency/number-patterns
+		 * @see https://cldr.unicode.org/translation/numbers-currency/number-patterns
 		 *
 		 * @param {string} sContext the context of the currency pattern (standard or accounting)
 		 * @returns {string} The pattern
@@ -1256,11 +1418,15 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 						oTimeEntry = oScale[sEntry];
 						iSign = sEntry.substr(18) === "past" ? -1 : 1;
 						aPluralCategories.forEach(function(sKey) { // eslint-disable-line no-loop-func
-							aPatterns.push({
-								scale: sScale,
-								sign: iSign,
-								pattern: oTimeEntry["relativeTimePattern-count-" + sKey]
-							});
+							var sPattern = oTimeEntry["relativeTimePattern-count-" + sKey];
+
+							if (sPattern) {
+								aPatterns.push({
+									scale: sScale,
+									sign: iSign,
+									pattern: sPattern
+								});
+							}
 						});
 					}
 				}
@@ -1563,7 +1729,12 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		 * @since 1.54
 		 */
 		getUnitFormat: function (sUnit) {
-			return this._get("units", "short", sUnit);
+			var oResult = this._get("units", "short", sUnit);
+
+			if (!oResult && mLegacyUnit2CurrentUnit[sUnit]) {
+				oResult = this._get("units", "short", mLegacyUnit2CurrentUnit[sUnit]);
+			}
+			return oResult;
 		},
 
 		/**
@@ -1678,9 +1849,8 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 		 * @since 1.28.6
 		 */
 		getPreferredCalendarType: function() {
-			var sCalendarPreference = this._get("calendarPreference"),
-				aCalendars = sCalendarPreference ? sCalendarPreference.split(" ") : [],
-				sCalendarName, sType, i;
+			var sCalendarName, sType, i,
+				aCalendars = this._get("calendarPreference") || [];
 
 			for ( i = 0 ; i < aCalendars.length ; i++ ) {
 				// No support for calendar subtypes (islamic) yet, so ignore part after -
@@ -1722,20 +1892,29 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 
 		/**
 		 * Returns the plural category (zero, one, two, few, many or other) for the given number value.
-		 * The number should be passed as a string with dot as decimal separator and the number of decimal/fraction digits
-		 * as used in the final output. This is needed in order to preserve trailing zeros which are relevant to
-		 * determine the right plural category.
+		 * The number must be passed as an unformatted number string with dot as decimal
+		 * separator (for example "12345.67"). To determine the correct plural category, it
+		 * is also necessary to keep the same number of decimal digits as given in the formatted
+		 * output string. For example "1" and "1.0" could be in different plural categories as
+		 * the number of decimal digits is different.
 		 *
-		 * @param {string|number} sNumber The number to find the plural category for
+		 * Compact numbers (for example in "short" format) must be provided in the
+		 * locale-independent CLDR compact notation. This notation uses the plural rule operand "c"
+		 * for the compact decimal exponent, for example "1.2c3" for "1.2K" (1200) or "4c6" for
+		 * "4M" (4000000).
+		 *
+		 * Note that the operand "e" is deprecated, but is a synonym corresponding to the CLDR
+		 * specification for "c" and may be redefined in the future.
+		 *
+		 * @param {string|number} vNumber The number to find the plural category for
 		 * @returns {string} The plural category
 		 * @public
 		 * @since 1.50
 		 */
-		getPluralCategory: function(sNumber) {
-			var oPlurals = this._get("plurals");
-			if (typeof sNumber === "number") {
-				sNumber = sNumber.toString();
-			}
+		getPluralCategory: function(vNumber) {
+			var sNumber = (typeof vNumber === "number") ? vNumber.toString() : vNumber,
+				oPlurals = this._get("plurals");
+
 			if (!this._pluralTest) {
 				this._pluralTest = {};
 			}
@@ -1745,13 +1924,23 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 					fnTest = this._parsePluralRule(oPlurals[sCategory]);
 					this._pluralTest[sCategory] = fnTest;
 				}
-				if (fnTest(sNumber)) {
+				if (fnTest(sNumber).bMatch) {
 					return sCategory;
 				}
 			}
 			return "other";
 		},
 
+		/**
+		 * Parses a language plural rule as specified in
+		 * https://unicode.org/reports/tr35/tr35-numbers.html#table-plural-operand-meanings
+		 *
+		 * @param {string} sRule The plural rule as a string
+		 * @returns {function(string)} A function to determine for a number given as string parameter if it matches the
+		 *   plural rule.
+		 *
+		 * @private
+		 */
 		_parsePluralRule: function(sRule) {
 
 			var OP_OR = "or",
@@ -1765,6 +1954,8 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 				OPD_T = "t",
 				OPD_V = "v",
 				OPD_W = "w",
+				OPD_C = "c",
+				OPD_E = "e",
 				RANGE = "..",
 				SEP = ",";
 
@@ -1870,6 +2061,14 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 					return function(o) {
 						return o.w;
 					};
+				} else if (accept(OPD_C)) {
+					return function(o) {
+						return o.c;
+					};
+				} else if (accept(OPD_E)) {
+					return function(o) {
+						return o.c; // c is an alias for e
+					};
 				} else {
 					throw new Error("Unknown operand: " + consume());
 				}
@@ -1902,31 +2101,83 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 				throw new Error("Not completely parsed");
 			}
 			return function(sValue) {
-				var iDotPos = sValue.indexOf("."),
-					sDecimal, sFraction, sFractionNoZeros, o;
+				var iDotPos, iExponent, iExponentPos, sFraction, sFractionNoZeros, sInteger, o;
 
+				// replace compact operand "c" to scientific "e" to be convertible in LocaleData.convertToDecimal
+				sValue = sValue.replace(rCIgnoreCase, "e");
+				iExponentPos = sValue.search(rEIgnoreCase);
+
+				iExponent = iExponentPos < 0 ? 0 : parseInt(sValue.slice(iExponentPos + 1));
+				sValue = LocaleData.convertToDecimal(sValue);
+
+				iDotPos = sValue.indexOf(".");
 				if (iDotPos === -1) {
-					sDecimal = sValue;
+					sInteger = sValue;
 					sFraction = "";
 					sFractionNoZeros = "";
 				} else {
-					sDecimal = sValue.substr(0, iDotPos);
-					sFraction = sValue.substr(iDotPos + 1);
-					sFractionNoZeros = sFraction.replace(/0+$/, '');
+					sInteger = sValue.slice(0, iDotPos);
+					sFraction = sValue.slice(iDotPos + 1);
+					sFractionNoZeros = sFraction.replace(rTrailingZeroes, "");
 				}
 
 				o = {
 					n: parseFloat(sValue),
-					i: parseInt(sDecimal),
+					i: parseInt(sInteger),
 					v: sFraction.length,
 					w: sFractionNoZeros.length,
-					f: parseInt(sFraction),
-					t: parseInt(sFractionNoZeros)
+					f: sFraction === "" ? 0 : parseInt(sFraction),
+					t: sFractionNoZeros === "" ? 0 : parseInt(sFractionNoZeros),
+					c: iExponent
 				};
-				return fnOr(o);
+				return {bMatch: fnOr(o), oOperands: o};
 			};
 		}
 	});
+
+	/**
+	 * Returns the non-scientific (=decimal) notation of the given numeric value which does not contain an exponent
+	 * value.
+	 * For numbers with a magnitude (ignoring sign) greater than or equal to 1e+21 or less than 1e-6, a conversion is
+	 * required, as Number#toString formats these in scientific notation.
+	 *
+	 * @param {float|string} vValue
+	 *   A number such as 10.1 or a string containing a number based on radix 10
+	 * @return {string} The number in decimal notation
+	 *
+	 * @private
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString#description
+	 */
+	LocaleData.convertToDecimal = function (vValue) {
+		var iIntegerLength, iExponent, iFractionLength, bNegative, iNewIntegerLength, aResult,
+			sValue = String(vValue);
+
+		if (!sValue.includes("e") && !sValue.includes("E")) {
+			return sValue;
+		}
+
+		aResult = sValue.match(rNumberInScientificNotation);
+		bNegative = aResult[1] === "-";
+		sValue = aResult[2].replace(".", "");
+		iIntegerLength = aResult[3] ? aResult[3].length : 0;
+		iFractionLength = aResult[4] ? aResult[4].length : 0;
+		iExponent = parseInt(aResult[5]);
+
+		iNewIntegerLength = iIntegerLength + iExponent;
+		if (iExponent > 0) {
+			sValue = iExponent < iFractionLength
+				? sValue.slice(0, iNewIntegerLength) + "." + sValue.slice(iNewIntegerLength)
+				: sValue = sValue.padEnd(iNewIntegerLength, "0");
+		} else {
+			sValue = -iExponent < iIntegerLength
+				? sValue = sValue.slice(0, iNewIntegerLength) + "." + sValue.slice(iNewIntegerLength)
+				: sValue = "0." + sValue.padStart(iFractionLength - iExponent, "0");
+		}
+		if (bNegative) {
+			sValue = "-" + sValue;
+		}
+		return sValue;
+	};
 
 	var mCLDRSymbolGroups = {
 		"Era": { field: "era", index: 0 },
@@ -2122,7 +2373,7 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 					} else if ( value === null ) {
 						// 'null' is used by the delta tooling as a marker that a value must not be taken form the fallback
 						delete obj[name];
-					} else if ( typeof value === 'object' && typeof fallbackValue === 'object' ) {
+					} else if ( typeof value === 'object' && typeof fallbackValue === 'object' && !Array.isArray(value) ) {
 						// both values are objects, merge them recursively
 						merge(value, fallbackValue);
 					}
@@ -2264,6 +2515,51 @@ sap.ui.define(['sap/base/util/extend', 'sap/ui/base/Object', './CalendarType', '
 			var mCustomData = this._getDeep(this.mCustomData, arguments);
 
 			return extend({}, mData, mCustomData);
+		},
+
+		/**
+		 * Returns the first day of the week defined by the calendar week numbering algorithm
+		 * set in the configuration, see {@link sap.ui.core.Configuration#setCalendarWeekNumbering}.
+		 * If no specific calendar week numbering algorithm is configured the value set by
+		 * {@link sap.ui.core.Configuration#setFirstDayOfWeek} is returned. Otherwise the first day
+		 * of the week is determined by the current locale, see {@link sap.ui.core.LocaleData#getFirstDayOfWeek}.
+		 *
+		 * Days are encoded as integer where Sunday=0, Monday=1 etc.
+		 *
+		 * @returns {int} The first day of week
+		 * @override sap.ui.core.LocalData#getFirstDayOfWeek
+		 * @since 1.113.0
+		 */
+		getFirstDayOfWeek: function() {
+			var sCalendarWeekNumbering = Configuration.getCalendarWeekNumbering();
+
+			if (sCalendarWeekNumbering === CalendarWeekNumbering.Default) {
+				return LocaleData.prototype.getFirstDayOfWeek.call(this);
+			}
+
+			return CalendarWeekNumbering.getWeekConfigurationValues(sCalendarWeekNumbering).firstDayOfWeek;
+		},
+
+		/**
+		 * Returns the required minimal number of days for the first week of a year defined by the
+		 * calendar week numbering algorithm set in the configuration,
+		 * see {@link sap.ui.core.Configuration#setCalendarWeekNumbering}.
+		 * If no specific calendar week numbering algorithm is configured the required minimal number
+		 * of days for the first week of a year is determined by the current locale,
+		 * see {@link sap.ui.core.LocaleData#getMinimalDaysInFirstWeek}.
+		 *
+		 * @returns {int} The required minimal number of days for the first week of a year
+		 * @override sap.ui.core.LocalData#getMinimalDaysInFirstWeek
+		 * @since 1.113.0
+		 */
+		getMinimalDaysInFirstWeek: function() {
+			var sCalendarWeekNumbering = Configuration.getCalendarWeekNumbering();
+
+			if (sCalendarWeekNumbering === CalendarWeekNumbering.Default) {
+				return LocaleData.prototype.getMinimalDaysInFirstWeek.call(this);
+			}
+
+			return CalendarWeekNumbering.getWeekConfigurationValues(sCalendarWeekNumbering).minimalDaysInFirstWeek;
 		}
 	});
 

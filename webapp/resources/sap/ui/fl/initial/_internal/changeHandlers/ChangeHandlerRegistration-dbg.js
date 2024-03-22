@@ -84,7 +84,7 @@ sap.ui.define([
 		 * @alias sap.ui.fl.registry.ChangeHandlerRegistration
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @private
 		 * @ui5-restricted sap.ui.fl
 		 *
@@ -92,6 +92,7 @@ sap.ui.define([
 		 */
 		getChangeHandlersOfLoadedLibsAndRegisterOnNewLoadedLibs: function () {
 			var oAlreadyLoadedLibraries = Core.getLoadedLibraries();
+			Core.attachLibraryChanged(handleLibraryRegistrationAfterFlexLibraryIsLoaded);
 			var aPromises = [];
 
 			Object.values(oAlreadyLoadedLibraries).forEach(function(oLibrary) {
@@ -99,8 +100,6 @@ sap.ui.define([
 					aPromises.push(registerFlexChangeHandlers(oLibrary.extensions.flChangeHandlers));
 				}
 			});
-
-			Core.attachLibraryChanged(handleLibraryRegistrationAfterFlexLibraryIsLoaded);
 
 			return Promise.all(aPromises);
 		},

@@ -55,7 +55,7 @@ sap.ui.define([
 	 * @alias sap.ui.integration.designtime.cardEditor.propertyEditor.complexMapEditor.ComplexMapEditor
 	 * @author SAP SE
 	 * @since 1.76
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @experimental 1.76

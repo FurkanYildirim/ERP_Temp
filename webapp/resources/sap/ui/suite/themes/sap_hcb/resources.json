@@ -25,13 +25,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 99692,
+			"size": 121005,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 99392,
+			"size": 120705,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
@@ -75,7 +75,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 1448
+			"size": 1450
 		},
 		{
 			"name": "shared.less",

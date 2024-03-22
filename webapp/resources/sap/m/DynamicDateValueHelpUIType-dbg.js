@@ -20,12 +20,11 @@ sap.ui.define(['sap/ui/core/Element'],
 		 * @extends sap.ui.core.Element
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @public
 		 * @since 1.92
 		 * @alias sap.m.DynamicDateValueHelpUIType
-		 * @experimental Since 1.92. This class is experimental and provides only limited functionality. Also the API might be changed in future.
 		 */
 		var DynamicDateValueHelpUIType = Element.extend("sap.m.DynamicDateValueHelpUIType", /** @lends sap.m.DynamicDateValueHelpUIType.prototype */ {
 			metadata: {
@@ -50,7 +49,7 @@ sap.ui.define(['sap/ui/core/Element'],
 					/**
 					 * Describes the options in a radio button group.
  					 */
-					options: { type: "string[]", multiple: true, defaultValue: null }
+					options: { type: "string[]", defaultValue: null }
 				}
 			}
 		});

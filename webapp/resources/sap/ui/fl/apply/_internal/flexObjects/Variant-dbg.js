@@ -9,6 +9,7 @@ sap.ui.define([
 	FlexObject
 ) {
 	"use strict";
+
 	/**
 	 * Base class for all variants.
 	 *
@@ -16,7 +17,7 @@ sap.ui.define([
 	 * @extends sap.ui.fl.apply._internal.flexObjects.FlexObject
 	 * @alias sap.ui.fl.apply._internal.flexObjects.Variant
 	 * @since 1.103
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */

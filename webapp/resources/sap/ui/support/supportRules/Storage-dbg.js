@@ -15,8 +15,6 @@ sap.ui.define([
 	/**
 	 * Encodes rules written by the user.
 	 * @private
-	 * @function
-	 * @name Encode
 	 * @param {string} sData Stringified object containing rule properties.
 	 * @returns {string} base-64 encoded string.
 	 */
@@ -27,8 +25,6 @@ sap.ui.define([
 	/**
 	 * Decodes the already encoded data by the user.
 	 * @private
-	 * @function
-	 * @name Decode
 	 * @param {string} sData Stringified base-64 object containing rule properties.
 	 * @returns {string} Stringified object containing rule properties.
 	 */
@@ -47,26 +43,24 @@ sap.ui.define([
 		};
 
 	/**
-	 * @class
 	 * The Storage is used to store and receive data in/from the LocalStorage in the browser.
+	 *
 	 * <h3>Overview</h3>
 	 * The Storage class is used to persist user settings.
+	 *
 	 * <h3>Usage</h3>
 	 * This class must be used with {@link sap.ui.support.RuleSerializer} and {@link sap.ui.support.Constants} in order to store user data in the LocalStorage.
 	 *
 	 * @name sap.ui.support.Storage
-	 * @alias sap.ui.support.Storage
 	 * @author SAP SE.
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 */
-	return {
+	return /** @lends sap.ui.support.Storage */ {
 
 		/**
 		 * Returns all previously created temporary rules.
 		 * @private
-		 * @name sap.ui.support.Storage.getRules
-		 * @method
 		 * @returns {object[]} An array containing all the temporary rules.
 		 */
 		getRules: function () {
@@ -95,8 +89,6 @@ sap.ui.define([
 		/**
 		 * Saves the temporary rules into the LocalStorage persistence layer.
 		 * @private
-		 * @name sap.ui.support.Storage.setRules
-		 * @method
 		 * @param {object[]} rules The temporary rules from the shared model.
 		 */
 		setRules: function (rules) {
@@ -107,8 +99,6 @@ sap.ui.define([
 		/**
 		 * Retrieves the selected rules which are stored in the LocalStorage persistence layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.getSelectedRules
 		 * @returns {object[]} All selected rules that are stored in the LocalStorage persistence layer.
 		 */
 		getSelectedRules: function () {
@@ -124,8 +114,6 @@ sap.ui.define([
 		/**
 		 * Stores which rules are selected to be run by the analyzer on the next check.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.setSelectedRules
 		 * @param {object[]} aSelectedRules The data for the libraries and their rules.
 		 */
 		setSelectedRules: function (aSelectedRules) {
@@ -135,8 +123,6 @@ sap.ui.define([
 		/**
 		 * Sets the context for the execution scope in the LocalStorage persistence layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.setSelectedContext
 		 * @param {object} selectedContext Object containing the <code>analyzeContext</code> and <code>subtreeExecutionContextId</code>.
 		 */
 		setSelectedContext: function(selectedContext) {
@@ -146,8 +132,6 @@ sap.ui.define([
 		/**
 		 * Retrieves the selected context from the LocalStorage persistence layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.getSelectedContext
 		 * @returns {string} Parsed value of the <code>selectedContext</code> key in the LocalStorage persistence layer.
 		 */
 		getSelectedContext: function() {
@@ -157,8 +141,6 @@ sap.ui.define([
 		/**
 		 * Sets the scope components that are selected.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.setSelectedScopeComponents
 		 * @param {object} contextComponent Component that's stored in the LocalStorage.
 		 */
 		setSelectedScopeComponents: function(contextComponent)  {
@@ -168,8 +150,6 @@ sap.ui.define([
 		/**
 		 * Gets the scope components that are selected.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.getSelectedScopeComponents
 		 * @returns {string} componentContext The selected components within a given scope.
 		 */
 		getSelectedScopeComponents: function() {
@@ -180,8 +160,6 @@ sap.ui.define([
 		/**
 		 * Overwrites the temporary rules into the local storage persistence layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.removeSelectedRules
 		 * @param {object[]} aSelectedRules The temporary rules from the shared model.
 		 */
 		removeSelectedRules: function(aSelectedRules) {
@@ -190,8 +168,6 @@ sap.ui.define([
 
 		/**
 		 * Sets the visible column setting selection.
-		 * @method
-		 * @name sap.ui.support.Storage.setVisibleColumns
 		 * @param {string[]} aVisibleColumns visible columns ids
 		 */
 		setVisibleColumns: function(aVisibleColumns)  {
@@ -200,8 +176,6 @@ sap.ui.define([
 
 		/**
 		 * Gets the visible column setting selection.
-		 * @method
-		 * @name sap.ui.support.Storage.getVisibleColumns
 		 * @returns {string[]} ids of visible columns.
 		 */
 		getVisibleColumns: function()  {
@@ -211,8 +185,6 @@ sap.ui.define([
 		/**
 		 * Retrieves the list of selection presets
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.getSelectionPresets
 		 * @returns {Object[]} The list of selection presets
 		 */
 		getSelectionPresets: function() {
@@ -222,8 +194,6 @@ sap.ui.define([
 		/**
 		 * Retrieves the list of custom presets
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.getCustomPresets
 		 * @returns {Object[]} The list of custom presets
 		 */
 		getCustomPresets: function() {
@@ -233,8 +203,6 @@ sap.ui.define([
 		/**
 		 * Sets the list of selection presets
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.setSelectionPresets
 		 * @param {Object[]} selectionPresets The list of selection presets
 		 */
 		setSelectionPresets: function(selectionPresets)  {
@@ -244,8 +212,6 @@ sap.ui.define([
 		/**
 		 * Sets the list of custom presets
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.setCustomPresets
 		 * @param {Object[]} customPresets The list of custom presets
 		 */
 		setCustomPresets: function(customPresets)  {
@@ -255,8 +221,6 @@ sap.ui.define([
 		/**
 		 * Removes all data from LocalStorage persistence layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.removeAllData
 		 */
 		removeAllData: function() {
 			_storage.removeItem(Constants.LOCAL_STORAGE_TEMP_RULES_KEY);
@@ -273,8 +237,6 @@ sap.ui.define([
 		/**
 		 * Creates a cookie with encoded information in the LocalStorage persistence layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.createPersistenceCookie
 		 * @param {string} sCookieName Name of the cookie.
 		 * @param {boolean} sCookieValue Contents of the cookie.
 		 * @returns {void}
@@ -286,9 +248,6 @@ sap.ui.define([
 		/**
 		 * Retrieves the persistence options of the user in the LocalStorage layer.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.readPersistenceCookie
-		 * @alias readPersistenceCookie
 		 * @param {string} sCookieName Name of the cookie.
 		 * @returns {string} sOutput The persistence options of the user.
 		 */
@@ -316,8 +275,6 @@ sap.ui.define([
 		/**
 		 * Removes the cookie with persistence information in the LocalStorage.
 		 * @private
-		 * @method
-		 * @name sap.ui.support.Storage.deletePersistenceCookie
 		 * @param {string} sCookieName Name of the cookie
 		 * @returns {void}
 		 */

@@ -4,13 +4,15 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/rta/command/BaseCommand",
 	"sap/ui/core/util/reflection/JsControlTreeModifier",
-	"sap/ui/fl/Utils"
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI",
+	"sap/ui/fl/Utils",
+	"sap/ui/rta/command/BaseCommand"
 ], function(
-	BaseCommand,
 	JsControlTreeModifier,
-	flUtils
+	ControlVariantApplyAPI,
+	flUtils,
+	BaseCommand
 ) {
 	"use strict";
 
@@ -20,7 +22,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.BaseCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.50
@@ -35,21 +37,35 @@ sap.ui.define([
 				},
 				sourceVariantReference: {
 					type: "string"
+				},
+				discardVariantContent: {
+					type: "boolean"
 				}
 			},
 			associations: {},
 			events: {}
+		},
+		constructor: function() {
+			BaseCommand.apply(this, arguments);
+			this.setRelevantForSave(false);
 		}
 	});
 
-	ControlVariantSwitch.prototype._getAppComponent = function () {
+	function discardVariantContent(sVReference) {
+		return this.oModel.eraseDirtyChangesOnVariant(this.sVariantManagementReference, sVReference)
+			.then(function(aDirtyChanges) {
+				this._aSourceVariantDirtyChanges = aDirtyChanges;
+			}.bind(this));
+	}
+
+	ControlVariantSwitch.prototype._getAppComponent = function() {
 		var oElement = this.getElement();
 		return oElement ? flUtils.getAppComponentForControl(oElement) : this.getSelector().appComponent;
 	};
 
-
 	/**
 	 * Template Method to implement execute logic, with ensure precondition Element is available.
+	 *
 	 * @public
 	 * @returns {Promise} Returns resolve after execution
 	 */
@@ -58,9 +74,17 @@ sap.ui.define([
 		var oAppComponent = this._getAppComponent();
 		var sNewVariantReference = this.getTargetVariantReference();
 
-		this.oModel = oAppComponent.getModel(flUtils.VARIANT_MODEL_NAME);
+		this.oModel = oAppComponent.getModel(ControlVariantApplyAPI.getVariantModelName());
 		this.sVariantManagementReference = JsControlTreeModifier.getSelector(oElement, oAppComponent).id;
-		return this._updateModelVariant(sNewVariantReference, oAppComponent);
+
+		return Promise.resolve()
+			.then(function() {
+				if (this.getDiscardVariantContent()) {
+					return discardVariantContent.call(this, this.getSourceVariantReference());
+				}
+				return undefined;
+			}.bind(this))
+			.then(this._updateModelVariant.bind(this, sNewVariantReference, oAppComponent));
 	};
 
 	/**
@@ -69,12 +93,24 @@ sap.ui.define([
 	 * @returns {Promise} Returns resolve after undo
 	 */
 	ControlVariantSwitch.prototype.undo = function() {
-		var sOldVariantReference = this.getSourceVariantReference();
+		var sSourceVariantReference = this.getSourceVariantReference();
 		var oAppComponent = this._getAppComponent();
-		return this._updateModelVariant(sOldVariantReference, oAppComponent);
+
+		return this._updateModelVariant(sSourceVariantReference, oAppComponent)
+		.then(function() {
+			// When discarding, dirty changes on source variant need to be applied AFTER the switch
+			if (this.getDiscardVariantContent()) {
+				return this.oModel.addAndApplyChangesOnVariant(this._aSourceVariantDirtyChanges)
+				.then(function() {
+					this._aSourceVariantDirtyChanges = null;
+					this.oModel.checkUpdate(true);
+				}.bind(this));
+			}
+			return undefined;
+		}.bind(this));
 	};
 
-	ControlVariantSwitch.prototype._updateModelVariant = function (sVariantReference, oAppComponent) {
+	ControlVariantSwitch.prototype._updateModelVariant = function(sVariantReference, oAppComponent) {
 		if (this.getTargetVariantReference() !== this.getSourceVariantReference()) {
 			return this.oModel.updateCurrentVariant({
 				variantManagementReference: this.sVariantManagementReference,

@@ -91,7 +91,7 @@ sap.ui.define([
 	 * @namespace sap.ui.fl.apply._internal.flexState.controlVariants.Switcher
 	 * @experimental Since 1.74
 	 * @since 1.74
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted
 	 */
@@ -115,7 +115,6 @@ sap.ui.define([
 			return Promise.resolve().then(function() {
 				//TODO: should be a function in FlexState e.g. getUIChanges()
 				mPropertyBag.changesMap = mPropertyBag.flexController._oChangePersistence.getChangesMapForComponent().mChanges;
-				mPropertyBag.variantsMap = VariantManagementState.getContent(mPropertyBag.reference);
 				var mChangesToBeSwitched = _getControlChangesForVariantSwitch(mPropertyBag);
 
 				return Reverter.revertMultipleChanges(mChangesToBeSwitched.changesToBeReverted, mPropertyBag)

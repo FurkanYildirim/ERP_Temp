@@ -70,13 +70,13 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.m
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.4
 	 * @public
 	 */
 	var thisLib = sap.ui.getCore().initLibrary({
 		name : "sap.m",
-		version: "1.108.14",
+		version: "1.115.1",
 		dependencies : ["sap.ui.core"],
 		designtime: "sap/m/designtime/library.designtime",
 		types: [
@@ -89,7 +89,9 @@ sap.ui.define([
 			"sap.m.BadgeState",
 			"sap.m.BadgeAnimationType",
 			"sap.m.BarDesign",
+			"sap.m.BorderDesign",
 			"sap.m.BreadcrumbsSeparatorStyle",
+			"sap.m.ButtonAccessibleRole",
 			"sap.m.ButtonType",
 			"sap.m.CarouselArrowsPlacement",
 			"sap.m.DateTimeInputType",
@@ -295,6 +297,7 @@ sap.ui.define([
 			"sap.m.OverflowToolbar",
 			"sap.m.OverflowToolbarButton",
 			"sap.m.OverflowToolbarToggleButton",
+			"sap.m.OverflowToolbarMenuButton",
 			"sap.m.P13nColumnsPanel",
 			"sap.m.P13nGroupPanel",
 			"sap.m.P13nSelectionPanel",
@@ -397,18 +400,19 @@ sap.ui.define([
 		],
 		elements: [
 			"sap.m.BadgeCustomData",
+			"sap.m.CarouselLayout",
 			"sap.m.Column",
 			"sap.m.ColumnPopoverActionItem",
 			"sap.m.ColumnPopoverCustomItem",
 			"sap.m.ColumnPopoverItem",
 			"sap.m.ColumnPopoverSortItem",
-			"sap.m.CustomDynamicDateOption",
 			"sap.m.DynamicDateOption",
 			"sap.m.DynamicDateValueHelpUIType",
 			"sap.m.FlexItemData",
 			"sap.m.FeedListItemAction",
 			"sap.m.IconTabFilter",
 			"sap.m.IconTabSeparator",
+			"sap.m.ImageCustomData",
 			"sap.m.LightBoxItem",
 			"sap.m.OverflowToolbarLayoutData",
 			"sap.m.MaskInputRule",
@@ -451,6 +455,7 @@ sap.ui.define([
 			"sap.m.ViewSettingsItem",
 			"sap.m.plugins.CellSelector",
 			"sap.m.plugins.ColumnResizer",
+			"sap.m.plugins.CopyProvider",
 			"sap.m.plugins.DataStateIndicator",
 			"sap.m.plugins.PasteProvider",
 			"sap.m.plugins.PluginBase",
@@ -485,6 +490,7 @@ sap.ui.define([
 			"sap.m.semantic.SortAction",
 			"sap.m.semantic.SortSelect",
 			"sap.m.table.columnmenu.Entry",
+			"sap.m.table.columnmenu.ActionItem",
 			"sap.m.table.columnmenu.Item",
 			"sap.m.table.columnmenu.ItemBase",
 			"sap.m.table.columnmenu.QuickAction",
@@ -788,6 +794,27 @@ sap.ui.define([
 		 */
 		Footer : "Footer"
 
+	};
+
+	/**
+	 * Available Border Design.
+	 *
+	 * @enum {string}
+	 * @public
+	 */
+	thisLib.BorderDesign = {
+
+		/**
+		 * A solid border color dependent on the theme.
+		 * @public
+		 */
+		Solid : "Solid",
+
+		/**
+		 * Specifies no border.
+		 * @public
+		 */
+		None : "None"
 	};
 
 	/**
@@ -1199,6 +1226,23 @@ sap.ui.define([
 		Saved: "Saved"
 
 	};
+
+	/**
+	 * @typedef {object} sap.m.DynamicDateRangeValue
+	 * @description Defines the <code>value</code> property of the DynamicDateRange control.
+	 * 		The object has two properties:
+	 * 			'operator' - a string, the key of a DynamicDateOption
+	 * 			'values' - an array of parameters for the same option
+	 * see {@link sap.m.DynamicDateRange}
+	 *
+	 * @property {string} operator
+	 * 		The key of a DynamicDateOption.
+	 * @property {Array<Date|int|string|any>} values
+	 * 		An array of parameters for the same option.
+	 *
+	 * @public
+	 * @since 1.111
+	 */
 
 
 	/**
@@ -1695,6 +1739,28 @@ sap.ui.define([
 	};
 
 	/**
+	 * Enumeration for possible Button accessibility roles.
+	 *
+	 * @enum {string}
+	 * @public
+	 * @since 1.114.0
+	 */
+	 thisLib.ButtonAccessibleRole = {
+
+		/**
+		 * Default mode.
+		 * @public
+		 */
+		Default: "Default",
+
+		/**
+		 * Button will receive <code>role="Link"</code> attibute.
+		 * @public
+		 */
+		Link: "Link"
+	};
+
+	/**
 	 * Defines how the input display text should be formatted.
 	 *
 	 * @enum {string}
@@ -2040,10 +2106,6 @@ sap.ui.define([
 	/**
 	 * Returns the number of tickmarks, which should be placed between labels.
 	 *
-	 * <b>Note:</b> There would always be a tickmark in the beginning and in the end of the slider,
-	 * regardless of the value that this method returns.
-	 *
-	 * @param {object} mOptions The option array
 	 * @returns {int} The number of tickmarks
 	 *
 	 * @function
@@ -2052,11 +2114,7 @@ sap.ui.define([
 	 */
 
 	/**
-	 * Returns how many tickmarks would be drawn on the screen.
-	 *
-	 * <b>Note:</b> There would always be a tickmark in the beginning and in the end of the slider,
-	 * regardless of the value this method returns. The start and the end tickmark are taken into account
-	 * for the later calculations.
+	 * Returns how many tickmarks would be drawn on the screen. The start and the end tickmark should be specified in this method.
 	 *
 	 * @param {float} fSize - Size of the scale. This is the distance between the start and end point i.e. 0..100
 	 * @param {float} fStep - The step walking from start to end.
@@ -2165,40 +2223,9 @@ sap.ui.define([
 
 	/**
 	 *
-	 *   Interface for controls which can have special behavior inside <code>sap.m.OverflowToolbar</code>.
-	 *   Controls that implement this interface must provide a <code>getOverflowToolbarConfig</code> method
-	 *   that accepts no arguments and returns an object with the following fields:
-	 *   <ul>
-	 *       <li><code>canOverflow</code> - A boolean that tells whether the control can move to the overflow menu or not.
-	 *
-	 *       <b>Note:</b> Even if <code>canOverflow</code> is set to <code>false</code>, the <code>propsUnrelatedToSize</code> field is taken into account,
-	 *       allowing to optimize the behavior of controls that do not need to overflow, but are used in an <code>sap.m.OverflowToolbar</code> regardless.</li>
-	 *
-	 *       <li><code>autoCloseEvents</code> - An array of strings, listing all of the control's events that should trigger the closing of the overflow menu, when fired.</li>
-	 *
-	 *       <li><code>invalidationEvents</code> - An array of strings, listing all of the control's events that should trigger the invalidation of the <code>sap.m.OverflowToolbar</code>, when fired.</li>
-	 *
-	 *       <li><code>propsUnrelatedToSize</code> - An array of strings, listing all of the control's properties that, when changed, should not cause the overflow toolbar to invalidate.
-	 *
-	 *       <b>Note:</b> By default <code>sap.m.OverflowToolbar</code> invalidates whenever any property of a child control changes. This is to ensure that whenever the size of a child control changes, the overflow toolbar's layout is recalculated.
-	 *       Some properties however do not affect control size, making it unnecessary to invalidate the overflow toolbar when they change. You can list them here for optimization purposes.</li>
-	 *
-	 *       <li><code>onBeforeEnterOverflow(oControl)</code> - A callback function that will be invoked before moving the control into the overflow menu. The control instance will be passed as an argument.
-	 *
-	 *       <b>Note:</b> The context of the function is not the control instance (use the <code>oControl</code> parameter for this purpose), but rather an internal helper object, associated with the current <code>sap.m.OverflowToolbar</code> instance.
-	 *       This object only needs to be manipulated in special cases (e.g. when you want to store state on it, rather than on the control instance).</li>
-	 *
-	 *       <li><code>onAfterExitOverflow(oControl)</code> - A callback function that will be invoked after taking the control out of the overflow menu (before moving it back to the toolbar itself). The control instance will be passed as an argument.
-	 *
-	 *       <b>Note:</b> See: <code>onBeforeEnterOverflow</code> for details about the function's context.</li>
-	 *
-	 *       <li><code>getCustomImportance()</code> - A function that, if provided, will be called to determine the priority of the control.
-	 *       This function must return a value of type <code>sap.m.OverflowToolbarPriority</code>. The string "Medium" is also accepted and interpreted as priority between <code>Low</code> and <code>High</code>.
-	 *
-	 *       <b>Note:</b> Normally priority in <code>sap.m.OverflowToolbar</code> is managed with the <code>priority</code> property of <code>sap.m.OverflowToolbarLayoutData</code>.
-	 *       However, some controls may have other means of defining priority, such as dedicated properties or other types of layout data for that purpose.
-	 *       In summary, implementing this function allows a control to override the default priority logic (<code>sap.m.OverflowToolbarLayoutData</code>) by providing its own.</li>
-	 *   </ul>
+	 * Interface for controls which can have special behavior inside <code>sap.m.OverflowToolbar</code>.
+	 * Controls that implement this interface must provide a <code>getOverflowToolbarConfig</code> method
+	 * that accepts no arguments and returns an object of type <code>sap.m.OverflowToolbarConfig</code>.
 	 *
 	 *   <b>Important:</b> In addition, the control can implement a CSS class, scoped with the <code>.sapMOverflowToolbarMenu-CTX</code> context selector, that will be applied whenever the control is inside the overflow menu.
 	 *   For example, to make your control take up the whole width of the overflow menu, you can add a context class to your control's base CSS file like this:
@@ -2977,6 +3004,62 @@ sap.ui.define([
 	};
 
 	/**
+	 * @typedef {object} sap.m.OverflowToolbarConfig
+	 * @description The object contains configuration information for the {@link sap.m.IOverflowToolbarContent} interface.
+	 *
+	 * @property {boolean} [canOverflow]
+	 * 	A boolean that tells whether the control can move to the overflow menu or not.
+	 * 	<b>Note:</b> Even if <code>canOverflow</code> is set to <code>false</code>, the <code>propsUnrelatedToSize</code> field is taken into account,
+	 * 	allowing to optimize the behavior of controls that do not need to overflow, but are used in an <code>sap.m.OverflowToolbar</code> regardless.
+	 * @property {string[]} [autoCloseEvents]
+	 * 	An array of strings, listing all of the control's events that should trigger the closing of the overflow menu, when fired.
+	 * @property {string[]} [invalidationEvents]
+	 * 	An array of strings, listing all of the control's events that should trigger the invalidation of the <code>sap.m.OverflowToolbar</code>, when fired.
+	 *	<b>Note:</b> By default <code>sap.m.OverflowToolbar</code> invalidates whenever any property of a child control changes. This is to ensure that whenever the size of a child control changes, the overflow toolbar's layout is recalculated.
+	 *  Some properties however do not affect control size, making it unnecessary to invalidate the overflow toolbar when they change. You can list them here for optimization purposes.
+	 * @property {string[]} [propsUnrelatedToSize]
+	 * 	An array of strings, listing all of the control's properties that, when changed, should not cause the overflow toolbar to invalidate.
+	 * @property {function} [onBeforeEnterOverflow]
+	 * 	A callback function that will be invoked before moving the control into the overflow menu. The control instance will be passed as an argument.
+	 *  <b>Note:</b> The context of the function is not the control instance (use the <code>oControl</code> parameter for this purpose), but rather an internal helper object, associated with the current <code>sap.m.OverflowToolbar</code> instance.
+	 *  This object only needs to be manipulated in special cases (e.g. when you want to store state on it, rather than on the control instance).
+	 * @property {function} [onAfterExitOverflow]
+	 * 	A callback function that will be invoked after taking the control out of the overflow menu (before moving it back to the toolbar itself). The control instance will be passed as an argument.
+	 *	<b>Note:</b> See: <code>onBeforeEnterOverflow</code> for details about the function's context.
+	 * @property {function} [getCustomImportance]
+	 * 	A function that, if provided, will be called to determine the priority of the control.
+	 *  This function must return a value of type <code>sap.m.OverflowToolbarPriority</code>. The string "Medium" is also accepted and interpreted as priority between <code>Low</code> and <code>High</code>.
+	 *  <b>Note:</b> Normally priority in <code>sap.m.OverflowToolbar</code> is managed with the <code>priority</code> property of <code>sap.m.OverflowToolbarLayoutData</code>.
+	 *  However, some controls may have other means of defining priority, such as dedicated properties or other types of layout data for that purpose.
+	 *  In summary, implementing this function allows a control to override the default priority logic (<code>sap.m.OverflowToolbarLayoutData</code>) by providing its own.
+	 * @public
+	 * @since 1.110
+	 */
+
+	 /**
+	 * The object contains accessibility state for a control.
+	 *
+	 * @typedef {object} sap.m.InputBaseAccessibilityState
+	 *
+	 * @property {string} [role]
+	 * 	The WAI-ARIA role which is implemented by the control.
+	 * @property {boolean} [invalid]
+	 * 	Whether the control is invalid.
+	 * @property {string} [errormessage]
+	 * 	The errormessage property.
+	 * @property {{value: string, append: boolean}} [labelledby]
+	 * 	The labelledby property.
+	 * @property {{value: string, append: boolean}} [describedby]
+	 * 	The describedby property.
+	 * @property {boolean | null} [disabled]
+	 * 	Whether the control is disabled. If not relevant, it shouldn`t be set or set as <code>null</code>.
+	 * @property {boolean | null} [readonly]
+	 * 	Whether the control is readonly. If not relevant, it shouldn`t be set or set as <code>null</code>.
+	 * @protected
+	 * @since 1.111
+	 */
+
+	/**
 	 * Marker interface for controls which are suitable as items for the ObjectHeader.
 	 *
 	 * @name sap.m.ObjectHeaderContainer
@@ -3403,7 +3486,6 @@ sap.ui.define([
 	 *
 	 * @public
 	 * @enum {string}
-	 * @experimental Since 1.92. These keys are experimental. The API might be changed in future.
 	 */
 	thisLib.StandardDynamicDateRangeKeys = {
 
@@ -3534,6 +3616,18 @@ sap.ui.define([
 		DATETOYEAR : "DATETOYEAR",
 
 		/**
+		 * The range will contain the last X minutes. The count of the minutes is selected from a StepInput.
+		 * @public
+		 */
+		LASTMINUTES : "LASTMINUTES",
+
+		/**
+		 * The range will contain the last X hours. The count of the hours is selected from a StepInput.
+		 * @public
+		 */
+		 LASTHOURS : "LASTHOURS",
+
+		/**
 		 * The range will contain the last X days. The count of the days is selected from a StepInput.
 		 * @public
 		 */
@@ -3562,6 +3656,18 @@ sap.ui.define([
 		 * @public
 		 */
 		LASTYEARS : "LASTYEARS",
+
+		/**
+		 * The range will contain the next X minutes. The count of the minutes is selected from a StepInput.
+		 * @public
+		 */
+		NEXTMINUTES : "NEXTMINUTES",
+
+		/**
+		 * The range will contain the next X hours. The count of the hours is selected from a StepInput.
+		 * @public
+		 */
+		NEXTHOURS : "NEXTHOURS",
 
 		/**
 		 * The range will contain the next X days. The count of the days is selected from a StepInput.
@@ -4127,14 +4233,40 @@ sap.ui.define([
 	 * Categories of column menu entries.
 	 *
 	 * @enum {string}
-	 * @private
+	 * @public
+	 * @since 1.110
 	 * @ui5-metamodel This enumeration also will be described in the UI5 (legacy) designtime metamodel
 	 */
 	thisLib.table.columnmenu.Category = {
+
+		/**
+		 * Sort category
+		 * @public
+		 */
 		Sort: "Sort",
+
+		/**
+		 * Filter category
+		 * @public
+		 */
 		Filter: "Filter",
+
+		/**
+		 * Group category
+		 * @public
+		 */
 		Group: "Group",
+
+		/**
+		 * Aggregate category
+		 * @public
+		 */
 		Aggregate: "Aggregate",
+
+		/**
+		 * Generic category
+		 * @public
+		 */
 		Generic: "Generic"
 	};
 
@@ -4598,6 +4730,27 @@ sap.ui.define([
 	};
 
 	/**
+	 * Available selection modes for the {@link sap.m.SinglePlanningCalendar}
+	 *
+	 * @enum {string}
+	 * @public
+	 * @since 1.113
+	 */
+	thisLib.SinglePlanningCalendarSelectionMode = {
+		/**
+		 * Single date selection.
+		 * @public
+		 */
+		SingleSelect: "SingleSelect",
+
+		/**
+		 * Мore than one date will be available to selection.
+		 * @public
+		 */
+		MultiSelect: "MultiSelect"
+	};
+
+	/**
 	 * Available sticky modes for the {@link sap.m.SinglePlanningCalendar}
 	 *
 	 * @enum {string}
@@ -4754,7 +4907,15 @@ sap.ui.define([
 		 * Renders the <code>clearAll</code> icon.
 		 * @public
 		 */
-		 ClearAll: "ClearAll"
+		ClearAll: "ClearAll",
+
+		/**
+		 * Renders the <code>selectAll</code> checkbox with warning popover.
+		 * Available only for sap.m.Table control
+		 * @public
+		 * @since 1.109
+		 */
+		SelectAll: "SelectAll"
 	};
 
 	/**
@@ -5243,7 +5404,7 @@ sap.ui.define([
 			 * @public
 			 */
 			triggerEmail: function(sEmail, sSubject, sBody, sCC, sBCC, bNewWindow) {
-				var bNewWindow = bNewWindow || false;
+				bNewWindow = bNewWindow || false;
 				this.redirect(this.normalizeEmail.apply(0, [sEmail, sSubject, sBody, sCC, sBCC]), bNewWindow);
 			},
 
@@ -5362,92 +5523,6 @@ sap.ui.define([
 			rm.close("div");
 		}
 	};
-
-	/**
-	 * Helper for Images.
-	 *
-	 * @namespace
-	 * @since 1.12
-	 * @protected
-	 */
-	thisLib.ImageHelper = (function() {
-
-		/**
-		 * Checks if value is not undefined, in which case the
-		 * setter function for a given property is called.
-		 * Returns true if value is set, false otherwise.
-		 *
-		 * @private
-		 */
-		function checkAndSetProperty(oControl, property, value) {
-			if (value !== undefined) {
-				var fSetter = oControl["set" + capitalize(property)];
-				if (typeof (fSetter) === "function") {
-					fSetter.call(oControl, value);
-					return true;
-				}
-			}
-			return false;
-		}
-		/** @lends sap.m.ImageHelper */
-		var oImageHelper = {
-			/**
-			 * Creates or updates an image control.
-			 *
-			 * @param {string} sImgId UD of the image to be dealt with.
-			 * @param {sap.m.Image} oImage The image to update. If undefined, a new image will be created.
-			 * @param {sap.ui.core.Control} oParent oImageControl's parentControl.
-			 * @param {object} mProperties Settings for the image control; the <code>src</code> property
-			 * MUST be contained; the keys of the object must be valid names of image settings
-			 * @param {string[]} aCssClassesToAdd Array of CSS classes which will be added if the image needs to be created.
-			 * @param {string[]} aCssClassesToRemove All CSS classes that oImageControl has and which are contained in this array
-			 * are removed before adding the CSS classes listed in aCssClassesToAdd.
-			 * @returns {sap.m.Image|sap.ui.core.Icon} The new or updated image control or icon
-			 *
-			 * @protected
-			 */
-			getImageControl: function(sImgId, oImage, oParent, mProperties, aCssClassesToAdd, aCssClassesToRemove) {
-				assert( mProperties.src , "sap.m.ImageHelper.getImageControl: mProperties do not contain 'src'");
-
-				// make sure, image is rerendered if icon source has changed
-				if (oImage && (oImage.getSrc() != mProperties.src)) {
-					oImage.destroy();
-					oImage = undefined;
-				}
-				// update or create image control
-				if (oImage && (oImage instanceof sap.m.Image || oImage instanceof sap.ui.core.Icon)) {
-					//Iterate through properties
-					for (var key in mProperties) {
-						checkAndSetProperty(oImage, key,  mProperties[key]);
-					}
-				} else {
-					//add 'id' to properties. This is required by utility method 'createControlByURI'
-					var mSettings = Object.assign({}, mProperties, {id: sImgId});
-					oImage = sap.ui.core.IconPool.createControlByURI(mSettings, sap.m.Image);
-					//Set the parent so the image gets re-rendered, when the parent is
-					oImage.setParent(oParent, null, true);
-				}
-
-				//Remove existing style classes which are contained in aCssClassesToRemove
-				//(the list of CSS classes allowed for deletion) to have them updated later on
-				//Unfortunately, there is no other way to do this but remove
-				//each class individually
-				if (aCssClassesToRemove) {
-					for (var l = 0, removeLen = aCssClassesToRemove.length; l !== removeLen; l++) {
-						oImage.removeStyleClass(aCssClassesToRemove[l]);
-					}
-				}
-				//Add style classes if necessary
-				if (aCssClassesToAdd) {
-					for (var k = 0, len = aCssClassesToAdd.length; k !== len; k++) {
-						oImage.addStyleClass(aCssClassesToAdd[k]);
-					}
-				}
-				return oImage;
-			}
-		};
-		return oImageHelper;
-	}());
 
 	/**
 	 * Helper for Popups.

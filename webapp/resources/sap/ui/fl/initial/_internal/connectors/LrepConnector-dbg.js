@@ -83,6 +83,8 @@ sap.ui.define([
 		 * @param {string} [mPropertyBag.preview.reference] Reference of the base application for building the preview request
 		 * @param {sap.ui.fl.Layer} [mPropertyBag.preview.maxLayer] Limit to which layer the preview data has to be requested
 		 * @param {boolean} [mPropertyBag.allContexts] Includes also restricted context
+		 * @param {string} [mPropertyBag.version] Version to be loaded
+		 * @param {string} [mPropertyBag.adaptationId] - Context-based adaptation to be loaded
 		 * @returns {Promise<object>} Promise resolving with the JSON parsed server response of the flex data request
 		 * or resolves with undefined in case cache bustering determines that no data is present
 		 */
@@ -91,7 +93,7 @@ sap.ui.define([
 				return Promise.resolve();
 			}
 
-			var mParameters = _pick(mPropertyBag, ["version", "allContexts"]);
+			var mParameters = _pick(mPropertyBag, ["version", "allContexts", "adaptationId"]);
 			this._addClientInfo(mParameters);
 			Utils.addSAPLogonLanguageInfo(mParameters);
 			var sAppDescriptorId;
@@ -124,7 +126,6 @@ sap.ui.define([
 					this.settings = oResponse.settings;
 					this.settings.isVariantAdaptationEnabled = !!this.settings.isPublicLayerAvailable;
 					this.settings.isContextSharingEnabled = true;
-					this.settings.isContextSharingEnabledForComp = true;
 					this.settings.isLocalResetEnabled = true;
 				}
 				if (!oResponse.loadModules) {

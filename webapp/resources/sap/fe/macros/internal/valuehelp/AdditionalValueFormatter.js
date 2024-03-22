@@ -1,0 +1,6 @@
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ *      (c) Copyright 2009-2023 SAP SE. All rights reserved
+ */
+sap.ui.define(["sap/fe/macros/internal/valuehelp/AdditionalValueHelper","sap/ui/core/library"],function(e,t){"use strict";var a=t.ValueState;var n=e.additionalValueHelper;function i(e,t){const a=n.getRelevantRecommendations(e||{},this.getBindingContext(),t)||[];if(a.length>0){return true}return false}i.__functionName="sap.fe.macros.internal.valuehelp.AdditionalValueFormatter#getGrowing";function r(e,t,i,r){let o=a.None;if(!this.getValue()){if(this.getValueState()=="None"||this.data("hasRecommendations")&&this.getValueState()=="Information"){let l;if(r==="Table"){l=this.getBindingContext()}else{l=t}if(l&&i){const t=n.getRelevantRecommendations(e||{},this.getBindingContext(),i)||[];if(t.length){this.data("hasRecommendations",true);o=a.Information}}}else{o=this.getValueState()}if(o==="Information"){this.setValueStateText(" ")}}return o}r.__functionName="sap.fe.macros.internal.valuehelp.AdditionalValueFormatter#formatValueState";const o=function(e){if(o.hasOwnProperty(e)){for(var t=arguments.length,a=new Array(t>1?t-1:0),n=1;n<t;n++){a[n-1]=arguments[n]}return o[e].apply(this,a)}else{return""}};o.getGrowing=i;o.formatValueState=r;return o},true);
+//# sourceMappingURL=AdditionalValueFormatter.js.map

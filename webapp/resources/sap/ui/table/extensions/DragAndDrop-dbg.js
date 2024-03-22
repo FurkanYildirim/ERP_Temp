@@ -137,6 +137,14 @@ sap.ui.define([
 					}
 				}
 			} else if (oDropControl.isA("sap.ui.table.Column")) {
+				var iTargetColumnIndex = TableUtils.getCellInfo(TableUtils.getCell(this, oEvent.target)).columnIndex;
+
+				if (oDraggedControl.isA("sap.ui.table.Column")
+					&& !TableUtils.Column.isColumnMovableTo(oDraggedControl, iTargetColumnIndex, true)) {
+					oEvent.setMarked("NonDroppable");
+					return;
+				}
+
 				var mTableCntRect = this.getDomRef("sapUiTableCnt").getBoundingClientRect();
 				oDragSession.setIndicatorConfig({
 					height: mTableCntRect.height - (this._getScrollExtension().isHorizontalScrollbarVisible() ? 16 : 0)
@@ -244,7 +252,7 @@ sap.ui.define([
 	 *
 	 * @extends sap.ui.table.extensions.ExtensionBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @alias sap.ui.table.extensions.DragAndDrop

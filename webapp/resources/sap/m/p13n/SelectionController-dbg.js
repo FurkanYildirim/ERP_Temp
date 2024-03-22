@@ -11,8 +11,9 @@ sap.ui.define([
     'sap/base/util/deepEqual',
     'sap/m/p13n/SelectionPanel',
     'sap/m/p13n/modules/xConfigAPI',
-    'sap/ui/core/Configuration'
-], function (diff, BaseObject, merge, deepEqual, SelectionPanel, xConfigAPI, Configuration) {
+    'sap/ui/core/Configuration',
+    'sap/ui/core/mvc/View'
+], function (diff, BaseObject, merge, deepEqual, SelectionPanel, xConfigAPI, Configuration, View) {
 	"use strict";
 
     /**
@@ -21,6 +22,9 @@ sap.ui.define([
 	 * @param {string} [sId] ID for the new control, generated automatically if no ID is given
 	 * @param {object} [mSettings] Initial settings for the new control
      * @param {sap.ui.core.Control} mSettings.control The control instance that is personalized by this controller
+     * @param {function} [mSettings.getKeyForItem] By default the SelectionController tries to identify the existing item through the
+     * key by checking if there is an existing item with this id. This behaviour can be overruled by implementing this method which will
+     * provide the according item of the <code>targetAggregation</code> to return the according key associated to this item.
      * @param {string} mSettings.targetAggregation The name of the aggregation that is now managed by this controller
 	 *
 	 * @class
@@ -29,10 +33,9 @@ sap.ui.define([
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
-	 * @experimental Since 1.104. Please note that the API of this control is not yet finalized!
 	 * @alias sap.m.p13n.SelectionController
 	 */
 	var SelectionController = BaseObject.extend("sap.m.p13n.SelectionController",{
@@ -41,12 +44,19 @@ sap.ui.define([
 
             this._oAdaptationControl = mSettings.control;
 
+            /**
+             * The 'stableKeys' can be provided in the constructor to exclude the keys from the p13n UI, while still respecting them in the
+             * delta logic. For instance by ignoring the first column of a TreeTable in the p13n dialog while still not removing this column
+             * on closing the dialog.
+             */
+            this._aStableKeys = mSettings.stableKeys || [];
+
             if (!this._oAdaptationControl) {
                 throw new Error("Always provide atleast a 'control' configuration when creating a new p13n controller!");
             }
 
             this._sTargetAggregation = mSettings.targetAggregation;
-            this._fSelector = mSettings.selector;
+            this._fSelector = mSettings.getKeyForItem;
 
             this._oP13nData = null;
             this._bLiveMode = false;
@@ -86,8 +96,8 @@ sap.ui.define([
      /**
      * Defines which control(s) are considered for the reset.
      *
-     * @returns {sap.ui.core.Control|sap.ui.core.Control[]}
-     */
+     * @returns {sap.ui.core.Control | sap.ui.core.Control[]}
+     **/
     SelectionController.prototype.getSelectorForReset = function() {
         return this._oAdaptationControl;
     };
@@ -117,13 +127,26 @@ sap.ui.define([
         return oSelectionPanel.setP13nData(oAdaptationData.items);
     };
 
+    var getViewForControl = function(oControl) {
+        if (oControl instanceof View) {
+            return oControl;
+        }
+
+        if (oControl && typeof oControl.getParent === "function") {
+            oControl = oControl.getParent();
+            return getViewForControl(oControl);
+        }
+    };
+
     SelectionController.prototype.getCurrentState = function(){
         var aState = [], aAggregationItems = this.getAdaptationControl().getAggregation(this.getTargetAggregation()) || [];
+        var oView = getViewForControl(this.getAdaptationControl());
         aAggregationItems.forEach(function(oItem, iIndex) {
-            var bRelevant = this._fSelector ? this._fSelector({key: oItem.getId()}) : oItem.getVisible();
-            if (bRelevant) {
+            var sId = oView ? oView.getLocalId(oItem.getId()) : oItem.getId();
+            var vRelevant = this._fSelector ? this._fSelector(oItem) : oItem.getVisible();
+            if (vRelevant) {
                 aState.push({
-                    key: oItem.getId()
+                    key: typeof vRelevant === "boolean" ? sId : vRelevant
                 });
             }
 		}.bind(this));
@@ -153,7 +176,6 @@ sap.ui.define([
                 aState.splice(iCurrentIndex, 1);
             }
 
-
         }
         return aState;
     };
@@ -173,6 +195,15 @@ sap.ui.define([
             ? mPropertyBag.changedState.filter(fnFilterUnselected) :
             this._getFilledArray(mPropertyBag.existingState, mPropertyBag.changedState, sPresenceAttribute).filter(fnFilterUnselected);
 
+        this._aStableKeys.forEach(function(sKey, iIndex){
+            var mExistingState = this.arrayToMap(this.getCurrentState());
+            var mNewState = this.arrayToMap(aNewStatePrepared);
+            var iStableIndex = mExistingState[sKey] || (iIndex - 1);
+
+            if (!mNewState.hasOwnProperty(sKey)) {
+                aNewStatePrepared.splice(iStableIndex, 0,mExistingState[sKey]);
+            }
+        }.bind(this));
         mPropertyBag.changedState = aNewStatePrepared;
 
         //Example: Dialog Ok --> don't trigger unnecessary flex change processing
@@ -199,83 +230,156 @@ sap.ui.define([
     *
     * @returns {array} Array containing the delta based created changes
     */
-    SelectionController.prototype.getArrayDeltaChanges = function (mDeltaInfo) {
+	SelectionController.prototype.getArrayDeltaChanges = function(mDeltaInfo) {
+		var aExistingArray = mDeltaInfo.existingState;
+		var aChangedArray = mDeltaInfo.changedState;
+		var oControl = mDeltaInfo.control;
+		var sInsertOperation = mDeltaInfo.changeOperations.add;
+		var sRemoveOperation = mDeltaInfo.changeOperations.remove;
+		var sMoveOperation = mDeltaInfo.changeOperations.move;
+		var aDeltaAttributes = mDeltaInfo.deltaAttributes || [];
 
-        var aExistingArray = mDeltaInfo.existingState;
-        var aChangedArray = mDeltaInfo.changedState;
-        var oControl = mDeltaInfo.control;
-        var sInsertOperation = mDeltaInfo.changeOperations.add;
-        var sRemoveOperation = mDeltaInfo.changeOperations.remove;
-        var sMoveOperation = mDeltaInfo.changeOperations.move;
-        var sGenerator = mDeltaInfo.generator;
+		var mDeleteInsert = this._calculateDeleteInserts(aExistingArray, aChangedArray, aDeltaAttributes);
+		var aChanges = this._createAddRemoveChanges(mDeleteInsert.deletes, oControl, sRemoveOperation, aDeltaAttributes);
 
-        var aDeltaAttributes = mDeltaInfo.deltaAttributes || [];
+		if (sMoveOperation) {
+			var aExistingArrayWithoutDeletes = this._removeItems(aExistingArray, mDeleteInsert.deletes);
+			var aChangedArrayWithoutnserts = this._removeItems(aChangedArray, mDeleteInsert.inserts);
+			var aMoveChanges = this._createMoveChanges(aExistingArrayWithoutDeletes, aChangedArrayWithoutnserts, oControl, sMoveOperation, aDeltaAttributes);
+			aChanges = aChanges.concat(aMoveChanges);
+		}
 
-        var fnSymbol = function(o) {
-            var sDiff = "";
-            aDeltaAttributes.forEach(function(sAttribute){
-                sDiff = sDiff + o[sAttribute];
-            });
-            return sDiff;
-        };
+		var aInsertChanges = this._createAddRemoveChanges(mDeleteInsert.inserts, oControl, sInsertOperation, aDeltaAttributes);
+		aChanges = aChanges.concat(aInsertChanges);
 
-        var aResults = diff(aExistingArray, aChangedArray, fnSymbol);
-        // Function to match field with exising field in the given array
-        var fMatch = function (oField, aArray) {
-            return aArray.filter(function (oExistingField) {
-                return oExistingField && (oExistingField.key === oField.key);
-            })[0];
-        };
+		return aChanges;
+	};
 
-        var aChanges = [];
-        var aProcessedArray = aExistingArray.slice(0);
+	SelectionController.prototype._createMoveChanges = function(aExistingItems, aChangedItems, oControl, sOperation, aDeltaAttributes) {
+		var sKey, nIndex, oItem, aChanges = [];
 
-        aResults.forEach(function (oResult) {
-            // Begin --> hack for handling result returned by diff
-            if (oResult.type === "delete" && aProcessedArray[oResult.index] === undefined) {
-                aProcessedArray.splice(oResult.index, 1);
-                return;
-            }
+		if (aExistingItems.length === aChangedItems.length) {
 
-            var oProp, oExistingProp, iLength;
-            if (oResult.type === "insert") {
-                oExistingProp = fMatch(aChangedArray[oResult.index], aProcessedArray);
-                if (oExistingProp) {
-                    oExistingProp.index = aProcessedArray.indexOf(oExistingProp);
-                    aProcessedArray.splice(oExistingProp.index, 1, undefined);
-                    aChanges = aChanges.concat(this._createAddRemoveChange(oControl, sRemoveOperation, this._getChangeContent(oExistingProp, aDeltaAttributes), sGenerator));
-                }
-            }
-            // End hack
-            oProp = oResult.type === "delete" ? aProcessedArray[oResult.index] : aChangedArray[oResult.index];
-            oProp.index = oResult.index;
-            if (oResult.type === "delete") {
-                aProcessedArray.splice(oProp.index, 1);
-            } else {
-                aProcessedArray.splice(oProp.index, 0, oProp);
-            }
-            // Move operation shows up as insert followed by delete OR delete followed by insert
-            if (sMoveOperation) {
-                iLength = aChanges.length;
-                // Get the last added change
-                if (iLength) {
-                    oExistingProp = aChanges[iLength - 1];
-                    oExistingProp = oExistingProp ? oExistingProp.changeSpecificData.content : undefined;
-                }
-                // Matching property exists with a different index --> then this is a move operation
-                if (oExistingProp && oExistingProp.key === oProp.key && oResult.index != oExistingProp.index) {
-                    // remove the last insert/delete operation
-                    aChanges.pop();
-                    aChanges = aChanges.concat(this._createMoveChange(oExistingProp.id, oExistingProp.key, oResult.index, sMoveOperation, oControl, sMoveOperation !== "moveSort", sGenerator));
-                    return;
-                }
-            }
+			var fnSymbol = function(o) {
+				var sDiff = "";
+				aDeltaAttributes.forEach(function(sAttribute) {
+					sDiff = sDiff + o[sAttribute];
+				});
+				return sDiff;
+			};
 
-            aChanges = aChanges.concat(this._createAddRemoveChange(oControl, oResult.type === "delete" ? sRemoveOperation : sInsertOperation, this._getChangeContent(oProp, aDeltaAttributes), sGenerator));
 
-        }.bind(this));
-        return aChanges;
-    };
+			var aDiff = diff(aExistingItems, aChangedItems, fnSymbol);
+			var aDeleted = [];
+			for (var i = 0; i < aDiff.length; i++) {
+				if (aDiff[i].type === "delete") {
+					oItem = aExistingItems[aDiff[i].index];
+					aDeleted.push(oItem);
+				} else if (aDiff[i].type === "insert") {
+					sKey = aChangedItems[aDiff[i].index].key || aChangedItems[aDiff[i].index].name;
+
+					nIndex = aDiff[i].index;
+					// eslint-disable-next-line no-loop-func
+					aDeleted.forEach(function(oItem) {
+						var nDelIndex = this._indexOfByKeyName(aChangedItems, oItem.key || oItem.name);
+						if (nDelIndex <= aDiff[i].index) {
+							nIndex++;
+						}
+					}.bind(this));
+					// eslint-enable-next-line no-loop-func
+
+					aChanges.push(this._createMoveChange(sKey, Math.min(nIndex, aChangedItems.length), sOperation, oControl));
+				}
+			}
+
+		}
+
+		return aChanges;
+	};
+
+   SelectionController.prototype._createAddRemoveChanges = function (aItems, oControl, sOperation, aDeltaAttributes) {
+	   var aChanges = [];
+	   for (var i = 0; i < aItems.length; i++) {
+		   aChanges.push(this._createAddRemoveChange(oControl, sOperation, this._getChangeContent(aItems[i], aDeltaAttributes)));
+	   }
+	   return aChanges;
+   };
+
+   SelectionController.prototype._removeItems = function (aTarget, aItems) {
+	   var sKey;
+	   var aResultingTarget = [];
+
+	   for (var i = 0; i < aTarget.length; i++) {
+		   sKey = aTarget[i].key || aTarget[i].name;
+		   if (this._indexOfByKeyName(aItems, sKey) === -1) {
+			   aResultingTarget.push(aTarget[i]);
+		   }
+	   }
+
+	   return aResultingTarget;
+   };
+
+   SelectionController.prototype._indexOfByKeyName = function (aArray, sKey) {
+	   var nIndex = -1;
+	   aArray.some(function(oItem, nIdx){
+		   if ((oItem.key === sKey) || (oItem.name === sKey)) {
+			   nIndex = nIdx;
+		   }
+		   return (nIndex != -1);
+	   });
+
+	   return nIndex;
+   };
+
+   SelectionController.prototype._calculateDeleteInserts = function (aSource, aTarget, aDeltaAttributes) {
+	   var i, sKey, oItem, nIdx;
+	   var mDeleteInserts = {
+		   deletes: [],
+		   inserts: []
+	   };
+
+	   for (i = 0; i < aSource.length; i++) {
+		   sKey = aSource[i].key || aSource[i].name;
+		   nIdx = this._indexOfByKeyName(aTarget, sKey);
+		   if (nIdx === -1) {
+			   oItem = merge({}, aSource[i]);
+			   mDeleteInserts.deletes.push(oItem);
+		   } else if (aDeltaAttributes.length){
+			   if (this._verifyDeltaAttributes(aSource[i], aTarget[nIdx], aDeltaAttributes)) {
+				   mDeleteInserts.deletes.push(aSource[i]);
+
+				   oItem = merge({}, aTarget[nIdx]);
+				   oItem.index = nIdx;
+				   mDeleteInserts.inserts.push(oItem);
+			   }
+		   }
+	   }
+	   for (i = 0; i < aTarget.length; i++) {
+		   sKey = aTarget[i].key || aTarget[i].name;
+		   if (this._indexOfByKeyName(aSource, sKey) === -1) {
+			   oItem = merge({}, aTarget[i]);
+			   oItem.index = i;
+			   mDeleteInserts.inserts.push(oItem);
+		   }
+	   }
+
+	   return mDeleteInserts;
+   };
+    SelectionController.prototype._verifyDeltaAttributes = function (oSource, oTarget, aDeltaAttributes) {
+		var bReturn = false;
+
+		aDeltaAttributes.some(function(sAttr) {
+			if (!oSource.hasOwnProperty(sAttr) && oTarget.hasOwnProperty(sAttr)  ||
+			     oSource.hasOwnProperty(sAttr) && !oTarget.hasOwnProperty(sAttr) ||
+				(oSource[sAttr] != oTarget[sAttr]) ) {
+					bReturn = true;
+				}
+
+				return bReturn;
+		});
+		return bReturn;
+
+	};
 
      /**
      * Method which reduces a propertyinfo map to changecontent relevant attributes.
@@ -291,7 +395,7 @@ sap.ui.define([
         var oChangeContent = {};
 
         // Index
-        if (oProperty.index >= 0) {
+        if (oProperty.hasOwnProperty("index") && oProperty.index >= 0) {
             oChangeContent.index = oProperty.index;
         }
 
@@ -305,22 +409,24 @@ sap.ui.define([
     };
 
     SelectionController.prototype._createAddRemoveChange = function(oControl, sOperation, oContent){
+		var oChangeContent = oContent;
+
+		if (sOperation === this.getChangeOperations()["add"]) {
+			oChangeContent.value = true;
+			oChangeContent.targetAggregation = this.getTargetAggregation();
+		}
+
         var oAddRemoveChange = {
             selectorElement: oControl,
             changeSpecificData: {
                 changeType: sOperation,
-                content: {
-                    key: oContent.key,
-                    targetAggregation: this.getTargetAggregation(),
-                    index: oContent.index,
-                    value: sOperation === this.getChangeOperations()["add"]
-                }
+                content:  oChangeContent
             }
         };
         return oAddRemoveChange;
     };
 
-    SelectionController.prototype._createMoveChange = function(sId, sPropertykey, iNewIndex, sMoveOperation, oControl, bPersistId){
+    SelectionController.prototype._createMoveChange = function(sPropertykey, iNewIndex, sMoveOperation, oControl){
         var oMoveChange =  {
             selectorElement: oControl,
             changeSpecificData: {
@@ -360,10 +466,10 @@ sap.ui.define([
         var mItemState = this.arrayToMap(aItemState);
 
         var oP13nData = this.prepareAdaptationData(oPropertyHelper, function(mItem, oProperty){
-            var oExisting = mItemState[oProperty.key];
-            mItem.visible = this._fSelector ? this._fSelector(oProperty) : (!!oExisting);
+            var oExisting = mItemState[oProperty.name || oProperty.key];
+            mItem.visible = !!oExisting;
             mItem.position =  oExisting ? oExisting.position : -1;
-            return !(oProperty.visible === false);
+            return !(oProperty.visible === false || (this._aStableKeys.indexOf(oProperty.name || oProperty.key) > -1));
         }.bind(this));
 
         this.sortP13nData({
@@ -380,7 +486,7 @@ sap.ui.define([
      *
      */
     SelectionController.prototype.getP13nData = function() {
-        return this._oPanel ? this._oPanel.getP13nData() : this._oAdaptationModel.getProperty("/items");
+        return this._oPanel ? this._oPanel.getP13nData() : this._oAdaptationModel && this._oAdaptationModel.getProperty("/items");
     };
 
     SelectionController.prototype.model2State = false;
@@ -392,8 +498,10 @@ sap.ui.define([
      */
     SelectionController.prototype.update = function(oPropertyHelper) {
         if (this._oPanel) {
-            var oAdaptationData = this.mixInfoAndState(oPropertyHelper);
-            this._oPanel.setP13nData(oAdaptationData.items);
+			if (!this._oPanel.isDestroyed()) {
+				var oAdaptationData = this.mixInfoAndState(oPropertyHelper);
+				this._oPanel.setP13nData(oAdaptationData.items);
+			}
         } else if (this._oAdaptationModel){
             //'setData' causes unnecessary rerendering in some cases
             var oP13nData = this.mixInfoAndState(oPropertyHelper);
@@ -406,9 +514,8 @@ sap.ui.define([
 		var aNewItemsPrepared = merge([], aPreviousItems);
 		var aNewItemState = merge([], aNewItems);
 
-		var mExistingItems = this.arrayToMap(aPreviousItems);
-
 		aNewItemState.forEach(function (oItem) {
+            var mExistingItems = this.arrayToMap(aNewItemsPrepared);
 			var oExistingItem = mExistingItems[oItem.key];
 			if (!oItem.hasOwnProperty(sRemoveProperty) || oItem[sRemoveProperty]) {
 				var iNewPosition = oItem.position;
@@ -425,7 +532,7 @@ sap.ui.define([
 			} else if (oExistingItem) {//check if exists before delete
 				aNewItemsPrepared[oExistingItem.position][sRemoveProperty] = false;
 			}
-		});
+		}.bind(this));
 
 		return aNewItemsPrepared;
 	};
@@ -439,8 +546,8 @@ sap.ui.define([
             var iIndex = oStateDiffContent.index;
             delete oStateDiffContent.index;
 
-            //set the position attribute in case to an explicit move
-            if (oChange.changeSpecificData.changeType === this.getChangeOperations()["move"]) {
+            //set the position in case its explicitly provided and different to the current position
+            if (iIndex !== undefined) {
                 oStateDiffContent.position = iIndex;
             }
 
@@ -465,6 +572,8 @@ sap.ui.define([
         oPropertyHelper.getProperties().forEach(function(oProperty) {
 
             var mItem = {};
+            mItem.key = oProperty.name || oProperty.key;
+            mItem.name = oProperty.name || oProperty.key;
 
             if (bEnhance) {
                 var bIsValid = fnEnhace(mItem, oProperty);
@@ -473,9 +582,7 @@ sap.ui.define([
                 }
             }
 
-            mItem.key = oProperty.key;
-            mItem.name = oProperty.key;
-            mItem.label = oProperty.label || oProperty.key;
+            mItem.label = oProperty.label || mItem.key;
             mItem.tooltip = oProperty.tooltip;
 
             if (mItemsGrouped) {
@@ -501,7 +608,22 @@ sap.ui.define([
 
     };
 
-    //TODO: generify
+
+    SelectionController.prototype._buildGroupStructure = function(mItemsGrouped) {
+        var aGroupedItems = [];
+        Object.keys(mItemsGrouped).forEach(function(sGroupKey){
+            this.sortP13nData("generic", mItemsGrouped[sGroupKey]);
+            aGroupedItems.push({
+                group: sGroupKey,
+                groupLabel: mItemsGrouped[sGroupKey][0].groupLabel || sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("p13n.BASIC_DEFAULT_GROUP"),//Grouplabel might not be necessarily be propagated to every item
+                groupVisible: true,
+                items: mItemsGrouped[sGroupKey]
+            });
+        }.bind(this));
+        return aGroupedItems;
+
+    };
+
     SelectionController.prototype.sortP13nData = function (oSorting, aItems) {
 
         var mP13nTypeSorting = oSorting;
@@ -514,7 +636,7 @@ sap.ui.define([
         var oCollator = window.Intl.Collator(sLocale, {});
 
         // group selected / unselected --> sort alphabetically in each group
-        aItems.sort(function (mField1, mField2) {
+        aItems.sort(function(mField1, mField2) {
             if (mField1[sSelectedAttribute] && mField2[sSelectedAttribute]) {
                 return (mField1[sPositionAttribute] || 0) - (mField2[sPositionAttribute] || 0);
             } else if (mField1[sSelectedAttribute]) {

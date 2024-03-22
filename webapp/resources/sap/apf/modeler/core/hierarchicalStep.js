@@ -1,0 +1,7 @@
+/*!
+ * SAP APF Analysis Path Framework
+ *
+ * (c) Copyright 2012-2014 SAP SE. All rights reserved
+ */
+sap.ui.define(["sap/apf/modeler/core/step","sap/apf/utils/exportToGlobal","sap/ui/thirdparty/jquery"],function(e,t,jQuery){"use strict";function r(t,a,i){e.call(this,t,a,i);var n;var o=this.createRepresentation;if(i){n=i.hierarchyProperty}this.getType=function(){return"hierarchicalStep"};this.getHierarchyProperty=function(){return n};this.setHierarchyProperty=function(e){n=e;this.getRepresentationContainer().getElements().forEach(function(e){e.setHierarchyProperty(n)})};this.createRepresentation=function(e){var t=o(e);if(n){t.setHierarchyProperty(n)}return t};this.getConsumableSortPropertiesForRepresentation=function(e){var t=this;var r=jQuery.Deferred();this.getAvailableProperties().done(function(i){a.instances.metadataFactory.getMetadata(t.getService()).then(function(a){var n=[];i.forEach(function(e){var r=a.getPropertyMetadata(t.getEntitySet(),e);if(r["aggregation-role"]==="measure"){n.push(e)}});r.resolve({available:n,consumable:t.getConsumableProperties(n,t.getSortPropertiesFromRepresentation(e))})},function(){r.resolve({available:[],consumable:[]})})});return r.promise()};this.copy=function(e){var t=sap.apf.modeler.core.ConfigurationObjects.deepDataCopy(this.getDataForCopy());t.hierarchyProperty=n;t.representationContainer=this.getRepresentationContainer().copy((e||this.getId())+"-Representation");return new r(e||this.getId(),a,t)}}t("sap.apf.modeler.core.HierarchicalStep",r);return r});
+//# sourceMappingURL=hierarchicalStep.js.map

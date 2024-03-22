@@ -43,13 +43,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 133587,
+			"size": 160038,
 			"designtime": true,
 			"theme": "sap_belize"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 133221,
+			"size": 159672,
 			"designtime": true,
 			"theme": "sap_belize"
 		},

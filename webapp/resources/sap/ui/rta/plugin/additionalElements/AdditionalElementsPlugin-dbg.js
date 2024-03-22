@@ -75,7 +75,7 @@ sap.ui.define([
 	 * @class The plugin allows to add additional elements that exist either hidden in the UI or in the OData service
 	 * @extends sap.ui.rta.plugin.Plugin
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.44
@@ -234,7 +234,7 @@ sap.ui.define([
 			var mActions;
 			var aAllElements = [];
 
-			return ActionExtractor.getActions(bOverlayIsSibling, oResponsibleElementOverlay, this)
+			return ActionExtractor.getActions(bOverlayIsSibling, oResponsibleElementOverlay, this, undefined, this.getDesignTime())
 				.then(function(mRetrievedActions) {
 					if (sAggregationName === "$$OnlyChildCustomField$$") {
 						return [];
@@ -343,7 +343,7 @@ sap.ui.define([
 						return false;
 					}
 
-					return ActionExtractor.getActions(bOverlayIsSibling, oOverlay, this, true)
+					return ActionExtractor.getActions(bOverlayIsSibling, oOverlay, this, true, this.getDesignTime())
 						.then(function (mActions) {
 							this.clearCachedElements();
 							return Utils.doIfAllControlsAreAvailable([oOverlay, mParents.parentOverlay], function () {
@@ -397,7 +397,7 @@ sap.ui.define([
 
 			this.clearExtensibilityInfo(bOverlayIsSibling);
 
-			return ActionExtractor.getActions(bOverlayIsSibling, oElementOverlay, this)
+			return ActionExtractor.getActions(bOverlayIsSibling, oElementOverlay, this, undefined, this.getDesignTime())
 				.then(function(mAllActions) {
 					each(mAllActions, function(sAggregationName) {
 						mActions = mAllActions[sAggregationName];

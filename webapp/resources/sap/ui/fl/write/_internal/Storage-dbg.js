@@ -22,7 +22,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.write._internal.Storage
 	 * @since 1.67
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
@@ -112,7 +112,7 @@ sap.ui.define([
 	// are in the same order (avoiding an unnecessary "reorder" section)
 	function findChangeCreateIndex(oCurrentChange, aCondensedChanges) {
 		var aNewChanges = aCondensedChanges.filter(function(oInnerChange) {
-			return oInnerChange.getState() === States.NEW
+			return oInnerChange.getState() === States.LifecycleState.NEW
 				&& oInnerChange.getFileType() === oCurrentChange.getFileType();
 		});
 		var iChangeCreateIndex = aNewChanges.findIndex(function(oNewChange) {
@@ -144,7 +144,7 @@ sap.ui.define([
 				if (oChange.condenserState) {
 					var bDifferentOrder = false;
 					if (oChange.condenserState === "delete") {
-						if (oChange.getState() === States.PERSISTED) {
+						if (oChange.getState() === States.LifecycleState.PERSISTED || oChange.getState() === States.LifecycleState.DELETED) {
 							if (!mCondense.delete) {
 								mCondense.delete = {};
 							}
@@ -158,7 +158,7 @@ sap.ui.define([
 						bDifferentOrder = mPropertyBag.allChanges[index].getId() !== mPropertyBag.condensedChanges[index - iOffset].getId();
 					}
 					if ((
-						(oChange.condenserState === "select" && oChange.getState() !== States.NEW)
+						(oChange.condenserState === "select" && oChange.getState() !== States.LifecycleState.NEW)
 						|| oChange.condenserState === "update"
 					) && bDifferentOrder && !bAlreadyReordered) {
 						var aReorderedChanges = mPropertyBag.condensedChanges.slice(index - iOffset).map(function(oChange) {
@@ -173,7 +173,7 @@ sap.ui.define([
 						mCondense.reorder[sFileType] = aReorderedChanges;
 						bAlreadyReordered = true;
 					}
-					if (oChange.condenserState === "select" && oChange.getState() === States.NEW) {
+					if (oChange.condenserState === "select" && oChange.getState() === States.LifecycleState.NEW) {
 						if (!mCondense.create) {
 							mCondense.create = {};
 						}
@@ -197,7 +197,7 @@ sap.ui.define([
 					}
 
 					delete oChange.condenserState;
-				} else if (oChange.getState() === States.NEW) {
+				} else if (oChange.getState() === States.LifecycleState.NEW) {
 					if (!mCondense.create) {
 						mCondense.create = {};
 					}
@@ -247,8 +247,8 @@ sap.ui.define([
 	 *
 	 * @param {object} mPropertyBag - Contains additional information for all the Connectors
 	 * @param {sap.ui.fl.Layer} mPropertyBag.layer - Layer on which the file should be stored
-	 * @param {sap.ui.fl.Change[]} mPropertyBag.allChanges - All changes for the given layer and app
-	 * @param {sap.ui.fl.Change[]} mPropertyBag.condensedChanges - The changes returned by the condenser
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} mPropertyBag.allChanges - All changes for the given layer and app
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} mPropertyBag.condensedChanges - The changes returned by the condenser
 	 * @param {string} [mPropertyBag._transport] - The transport ID which will be handled internally, so there is no need to be passed
 	 * @param {boolean} [mPropertyBag.isLegacyVariant] - Whether the update data has file type .variant or not
 	 * @param {number} [nParentVersion] - Indicates if changes should be written as a draft and on which version the changes should be based on
@@ -262,8 +262,18 @@ sap.ui.define([
 		if (
 			mCondense.create || mCondense.reorder || mCondense.update || mCondense.delete
 		) {
+			var oCreatedChanges = mCondense.create && mCondense.create.change ? mCondense.create.change : [];
 			mPropertyBag.flexObjects = mCondense;
-			return _executeActionByName("condense", mPropertyBag);
+			return _executeActionByName("condense", mPropertyBag)
+			.then(function(oResult) {
+				if (oResult && oResult.status && oResult.status === 205 && oCreatedChanges.length) {
+					var aResponse = oCreatedChanges.map(function(oChange) {
+						return Object.values(oChange).pop();
+					});
+					oResult.response = aResponse;
+				}
+				return oResult;
+			});
 		}
 		return Promise.resolve();
 	};
@@ -273,7 +283,7 @@ sap.ui.define([
 	 * The promise is rejected in case the removing failed or no connector is configured to handle the layer.
 	 *
 	 * @param {object} mPropertyBag - Contains additional information for all the Connectors
-	 * @param {sap.ui.fl.Change} mPropertyBag.flexObject - Flex Object to be deleted
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} mPropertyBag.flexObject - Flex Object to be deleted
 	 * @param {sap.ui.fl.Layer} mPropertyBag.layer - Layer on which the data should be deleted
 	 * @param {string} [mPropertyBag._transport] - The transport ID which will be handled internally, so there is no need to be passed
 	 * @returns {Promise} Promise resolving as soon as the writing was completed or rejects in case of an error
@@ -308,7 +318,7 @@ sap.ui.define([
 	 * @param {object} mPropertyBag - Contains additional information for all the Connectors
 	 * @param {string} mPropertyBag.reference - Flexibility reference
 	 * @param {sap.ui.fl.Layer} mPropertyBag.layer - Layer on which the reset should take place
-	 * @param {sap.ui.fl.Change[]} mPropertyBag.changes - Changes of the selected layer and flex reference
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} mPropertyBag.changes - Changes of the selected layer and flex reference
 	 * @param {string} [mPropertyBag.generator] - Generator with which the changes were created
 	 * @param {string[]} [mPropertyBag.selectorIds] - Selector IDs of controls for which the reset should filter
 	 * @param {string} [mPropertyBag.changeTypes] - Change types of the changes which should be reset
@@ -396,7 +406,7 @@ sap.ui.define([
 	 * @param {string} mPropertyBag.transportDialogSettings.styleClass - Style class name to be added in the TransportDialog
 	 * @param {string} mPropertyBag.layer - Working layer
 	 * @param {string} mPropertyBag.reference - Flex reference of the application
-	 * @param {sap.ui.fl.Change[]} mPropertyBag.localChanges - Local changes to be published
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} mPropertyBag.localChanges - Local changes to be published
 	 * @param {object[]} [mPropertyBag.appVariantDescriptors] - An array of app variant descriptors which needs to be transported
 	 * @returns {Promise<string>} Promise that can resolve to the following strings:
 	 * - "Cancel" if publish process was canceled
@@ -411,8 +421,28 @@ sap.ui.define([
 		create: function(mPropertyBag) {
 			return _getWriteConnectors()
 				.then(_executeActionByName.bind(undefined, "contextBasedAdaptation.create", mPropertyBag));
+		},
+		reorder: function(mPropertyBag) {
+			return _getWriteConnectors()
+				.then(_executeActionByName.bind(undefined, "contextBasedAdaptation.reorder", mPropertyBag));
+		},
+		update: function(mPropertyBag) {
+			return _getWriteConnectors()
+				.then(_executeActionByName.bind(undefined, "contextBasedAdaptation.update", mPropertyBag));
+		},
+		load: function(mPropertyBag) {
+			return _getWriteConnectors()
+				.then(_executeActionByName.bind(undefined, "contextBasedAdaptation.load", mPropertyBag));
+		},
+		writeChange: function(mPropertyBag) {
+			return Storage.write(mPropertyBag);
+		},
+		remove: function(mPropertyBag) {
+			return _getWriteConnectors()
+				.then(_executeActionByName.bind(undefined, "contextBasedAdaptation.remove", mPropertyBag));
 		}
 	};
+
 	Storage.versions = {
 		/**
 		 * Loads the versions for a given application and layer.

@@ -12,6 +12,7 @@ sap.ui.define([
 	'./Toolbar',
 	'./AssociativeOverflowToolbar',
 	'./Button',
+	'./AdditionalTextButton',
 	'./Popover',
 	'./Title',
 	'./ToolbarSpacer',
@@ -21,11 +22,13 @@ sap.ui.define([
 	'sap/ui/unified/calendar/CustomYearPicker',
 	'sap/ui/unified/calendar/IndexPicker',
 	'sap/ui/core/Configuration',
+	'sap/ui/core/date/CalendarWeekNumbering',
 	'sap/ui/unified/calendar/CalendarDate',
 	'sap/ui/core/IconPool',
 	'sap/ui/core/InvisibleText',
 	'sap/ui/core/library',
-	'./PlanningCalendarHeaderRenderer'
+	'./PlanningCalendarHeaderRenderer',
+	'sap/ui/core/date/UI5Date'
 ],
 function(
 	Element,
@@ -34,6 +37,7 @@ function(
 	Toolbar,
 	AssociativeOverflowToolbar,
 	Button,
+	AdditionalTextButton,
 	Popover,
 	Title,
 	ToolbarSpacer,
@@ -43,11 +47,13 @@ function(
 	CustomYearPicker,
 	IndexPicker,
 	Configuration,
+	CalendarWeekNumbering,
 	CalendarDate,
 	IconPool,
 	InvisibleText,
 	coreLibrary,
-	PlanningCalendarHeaderRenderer
+	PlanningCalendarHeaderRenderer,
+	UI5Date
 ) {
 	"use strict";
 
@@ -92,7 +98,7 @@ function(
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -113,7 +119,7 @@ function(
 				title: { type: "string", group: "Appearance", defaultValue: "" },
 
 				/**
-				 * Determines the start date used in the calendar picker, as a JavaScript date object. It is considered as a local date.
+				 * Determines the start date used in the calendar picker, as a UI5Date or JavaScript Date object. It is considered as a local date.
 				 * The time part will be ignored. The current date is used as default.
 				 */
 				startDate: { type : "object", group : "Data" },
@@ -124,12 +130,32 @@ function(
 				pickerText : { type : "string", group : "Data" },
 
 				/**
+				 * Determines the additional text of the button which opens the calendar picker.
+				 */
+				pickerTextInSecondaryType : { type : "string", group : "Data" },
+
+				/**
+				 * Defines the calendar week numbering used for display.
+				 * @private
+				 * @since 1.110.0
+				 */
+				calendarWeekNumbering : { type : "sap.ui.core.date.CalendarWeekNumbering", group : "Appearance", defaultValue: null},
+
+				/**
 				 * If set, the calendar type is used for display.
 				 * If not set, the calendar type of the global configuration is used.
 				 * @private
 				 * @since 1.108.0
 				 */
-				_primaryCalendarType : {type : "sap.ui.core.CalendarType", group : "Appearance", defaultValue : null}
+				_primaryCalendarType : {type : "sap.ui.core.CalendarType", group : "Appearance"},
+
+				/**
+				 * If set, the days are also displayed in this calendar type
+				 * If not set, the dates are only displayed in the primary calendar type
+				 * @privates
+				 * @since 1.109.0
+				 */
+				_secondaryCalendarType : {type : "sap.ui.core.CalendarType", group : "Appearance"}
 
 			},
 
@@ -293,6 +319,7 @@ function(
 		});
 		oCalendarPicker = new Calendar(sOPHId + "-Cal", {
 			ariaLabelledBy: InvisibleText.getStaticId("sap.m", "PCH_RANGE_PICKER"),
+			calendarWeekNumbering: this.getCalendarWeekNumbering(),
 			primaryCalendarType: sCalendarType
 		});
 		oCalendarPicker.attachEvent("select", this._handlePickerDateSelect, this);
@@ -333,18 +360,20 @@ function(
 		this.setAggregation("_indexPicker", oIndexPicker);
 		this._oIndexPicker = oIndexPicker;
 
-		this._oPickerBtn = new Button(sNavToolbarId + "-PickerBtn", {
+		this._oPickerBtn = new AdditionalTextButton(sNavToolbarId + "-PickerBtn", {
 			text: this.getPickerText(),
+			additionalText: this.getPickerTextInSecondaryType(),
 			ariaHasPopup: coreLibrary.aria.HasPopup.Dialog,
 			ariaLabelledBy: InvisibleText.getStaticId("sap.m", "PCH_SELECT_RANGE"),
 			press: function () {
 				if (this.fireEvent("_pickerButtonPress", {}, true)) {
-					var oDate = this.getStartDate() || new Date(),
+					var oDate = this.getStartDate() || UI5Date.getInstance(),
 						sCurrentPickerId = this.getAssociation("currentPicker");
 					oPicker = Element.registry.get(sCurrentPickerId);
 					if (oPicker.displayDate) {
 						oPicker.displayDate(oDate);
 					}
+					oPicker.setCalendarWeekNumbering && oPicker.setCalendarWeekNumbering(this.getCalendarWeekNumbering());
 					this._openCalendarPickerPopup(oPicker);
 				}
 			}.bind(this)
@@ -395,10 +424,13 @@ function(
 
 	PlanningCalendarHeader.prototype.onBeforeRendering = function () {
 		var bVisible = !!this.getActions().length || !!this.getTitle() || this._getOrCreateViewSwitch().getItems().length > 1;
-
-		this._getActionsToolbar().setProperty("visible", bVisible, true);
+		var sSecondaryCalendarType = this.getProperty("_secondaryCalendarType");
+		this._getActionsToolbar().setVisible(bVisible);
 
 		this.setPrimaryCalendarTypeToPickers(this.getProperty("_primaryCalendarType"));
+		if (sSecondaryCalendarType){
+			this.setSecondaryCalendarTypeToPickers(sSecondaryCalendarType);
+		}
 	};
 
 	PlanningCalendarHeader.prototype.setTitle = function (sTitle) {
@@ -458,7 +490,26 @@ function(
 		return this;
 	};
 
+	PlanningCalendarHeader.prototype.updatePickerText = function (oPickerTextInfo) {
+		if (!oPickerTextInfo) {
+			return this;
+		}
+		this.setPickerText(oPickerTextInfo.primaryType);
+		this.setPickerTextInSecondaryType(oPickerTextInfo.secondaryType);
+
+		return true;
+	};
+
+	PlanningCalendarHeader.prototype.setPickerTextInSecondaryType = function (sAdditionalText){
+		this.setProperty("pickerTextInSecondaryType", sAdditionalText);
+		this._oPickerBtn.setAdditionalText(sAdditionalText);
+		return this;
+	};
+
 	PlanningCalendarHeader.prototype.setPickerText = function (sText) {
+		if (!sText) {
+			return this;
+		}
 		this.setProperty("pickerText", sText);
 		this._oPickerBtn.setText(sText);
 
@@ -469,6 +520,12 @@ function(
 		this._oCalendar.setPrimaryCalendarType(sCalendarType);
 		this._oMonthPicker.setPrimaryCalendarType(sCalendarType);
 		this._oYearPicker.setPrimaryCalendarType(sCalendarType);
+	};
+
+	PlanningCalendarHeader.prototype.setSecondaryCalendarTypeToPickers = function (sCalendarType) {
+		this._oCalendar.setSecondaryCalendarType(sCalendarType);
+		this._oMonthPicker.setSecondaryCalendarType(sCalendarType);
+		this._oYearPicker.setSecondaryCalendarType(sCalendarType);
 	};
 
 	/**
@@ -565,7 +622,7 @@ function(
 
 	PlanningCalendarHeader.prototype._handleIndexPickerSelect = function (oEvent) {
 		var iSelectedIndex = this._oIndexPicker.getSelectedIndex();
-		var oSelectedDate = new Date(this._oCalendar.getMinDate());
+		var oSelectedDate = UI5Date.getInstance(this._oCalendar.getMinDate());
 		var oRelativeInfo = this._getRelativeInfo();
 
 		oSelectedDate.setDate(oSelectedDate.getDate() + iSelectedIndex * oRelativeInfo.iIntervalSize);

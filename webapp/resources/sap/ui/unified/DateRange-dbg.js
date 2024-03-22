@@ -20,7 +20,7 @@ sap.ui.define(['sap/ui/core/Element', './library', 'sap/ui/unified/calendar/Cale
 	 * @class
 	 * Date range for use in DatePicker
 	 * @extends sap.ui.core.Element
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -33,17 +33,25 @@ sap.ui.define(['sap/ui/core/Element', './library', 'sap/ui/unified/calendar/Cale
 		properties : {
 
 			/**
-			 * Start date for a date range. This must be a JavaScript date object.
+			 * Start date for a date range. This must be a UI5Date or JavaScript Date object.
 			 */
 			startDate : {type : "object", group : "Misc", defaultValue : null},
 
 			/**
-			 * End date for a date range. If empty only a single date is presented by this DateRange element. This must be a JavaScript date object.
+			 * End date for a date range. If empty only a single date is presented by this DateRange element. This must be a UI5Date or JavaScript Date object.
 			 */
 			endDate : {type : "object", group : "Misc", defaultValue : null}
 		}
 	}});
 
+	/**
+	 * Set start date for a date range.
+	 *
+	 * @param {Date|module:sap/ui/core/date/UI5Date} [oDate] A date instance
+	 * @param {boolean} [bInvalidate] If true, <code>startDate</code> is not marked as changed
+	 * @returns {this} Reference to <code>this</code> for method chaining
+	 * @public
+	 */
 	DateRange.prototype.setStartDate = function(oDate, bInvalidate){
 
 		if (oDate) {
@@ -59,6 +67,14 @@ sap.ui.define(['sap/ui/core/Element', './library', 'sap/ui/unified/calendar/Cale
 
 	};
 
+	/**
+	 * Set end date for a date range.
+	 *
+	 * @param {Date|module:sap/ui/core/date/UI5Date} [oDate] A date instance
+	 * @param {boolean} [bInvalidate] If true, <code>endDate</code> is not marked as changed
+	 * @returns {this} Reference to <code>this</code> for method chaining
+	 * @public
+	 */
 	DateRange.prototype.setEndDate = function(oDate, bInvalidate){
 
 		if (oDate) {

@@ -6,37 +6,36 @@
 
 sap.ui.define([
 	"sap/ui/core/Component",
-	"sap/ui/fl/Utils",
 	"sap/base/Log",
+	"sap/base/util/deepEqual",
 	"sap/base/util/merge",
 	"sap/base/util/ObjectPath",
 	"sap/base/util/isEmptyObject",
 	"sap/ui/base/ManagedObjectObserver",
 	"sap/ui/thirdparty/hasher",
 	"sap/base/util/includes",
-	"sap/ui/fl/apply/_internal/controlVariants/Utils",
-	"sap/ui/fl/apply/_internal/flexState/controlVariants/VariantManagementState"
+	"sap/ui/fl/apply/_internal/controlVariants/Utils"
 ], function(
 	Component,
-	Utils,
 	Log,
+	deepEqual,
 	merge,
 	ObjectPath,
 	isEmptyObject,
 	ManagedObjectObserver,
 	hasher,
 	includes,
-	VariantUtil,
-	VariantManagementState
+	VariantUtil
 ) {
 	"use strict";
 
 	var _mVariantIdChangeHandlers = {};
 
 	/**
-	 * URL handler utility for <code>sap.ui.fl variants</code> (@see sap.ui.fl.variants.VariantManagement}
+	 * URL handler utility for <code>sap.ui.fl variants</code> (see {@link sap.ui.fl.variants.VariantManagement})
 	 *
-	 * @namespace sap.ui.fl.apply._internal.variants.URLHandler
+	 * @namespace
+	 * @alias sap.ui.fl.apply._internal.controlVariants.URLHandler
 	 * @since 1.72
 	 * @private
 	 * @ui5-restricted sap.ui.fl.variants.VariantModel
@@ -106,7 +105,7 @@ sap.ui.define([
 	 * @param {string} sNewHash - New hash
 	 *
 	 * @returns {string} Value that signifies "Continue" navigation in the "ShellNavigation" service of ushell
-	 * {@see sap.ushell.services.ShellNavigation}
+	 * (see {@link sap.ushell.services.ShellNavigation})
 	 *
 	 * @private
 	 */
@@ -176,6 +175,7 @@ sap.ui.define([
 		var oParsedHash = oURLParsingService && oURLParsingService.parseShellHash(hasher.getHash());
 
 		if (oParsedHash && oParsedHash.params) {
+			var mOldHashParams = Object.assign({}, oParsedHash.params);
 			var mTechnicalParameters = oModel.oAppComponent
 				&& oModel.oAppComponent.getComponentData
 				&& oModel.oAppComponent.getComponentData()
@@ -196,7 +196,7 @@ sap.ui.define([
 				hasher.changed.active = false; // disable changed signal
 				hasher.replaceHash(oURLParsingService.constructShellHash(oParsedHash));
 				hasher.changed.active = true; // re-enable changed signal
-			} else {
+			} else if (!deepEqual(mOldHashParams, oParsedHash.params)) {
 				oCrossApplicationNavigationService.toExternal({
 					target: {
 						semanticObject: oParsedHash.semanticObject,
@@ -243,15 +243,11 @@ sap.ui.define([
 			if (Array.isArray(mURLParameters[VariantUtil.VARIANT_TECHNICAL_PARAMETER])) {
 				mURLParameters[VariantUtil.VARIANT_TECHNICAL_PARAMETER] = mURLParameters[VariantUtil.VARIANT_TECHNICAL_PARAMETER].map(decodeURIComponent);
 				mURLParameters[VariantUtil.VARIANT_TECHNICAL_PARAMETER].some(function(sParamDecoded, iIndex) {
-					var bVariantExistsForParameter = VariantManagementState.getVariant({
-						vmReference: mPropertyBag.vmReference,
-						vReference: sParamDecoded,
-						reference: oModel.oChangePersistence.getComponentName()
-					});
-					if (bVariantExistsForParameter) {
+					if (oModel.getVariant(sParamDecoded, mPropertyBag.vmReference)) {
 						mReturnObject.index = iIndex;
 						return true;
 					}
+					return false;
 				});
 			}
 		}
@@ -271,8 +267,8 @@ sap.ui.define([
 	URLHandler.variantTechnicalParameterName = "sap-ui-fl-control-variant-id";
 
 	/**
-	 * Initializes hash data for the passed variant model.
-	 * {@see sap.ui.fl.variants.VariantModel}
+	 * Initializes hash data for the passed variant model
+	 * (see {@link sap.ui.fl.variants.VariantModel}).
 	 *
 	 * @param {object} mPropertyBag - Property bag
 	 * @param {sap.ui.fl.variants.VariantModel} mPropertyBag.model - Variant model
@@ -457,8 +453,8 @@ sap.ui.define([
 	};
 
 	/**
-	 * Returns the current hash parameters from the variant model's hash data.
-	 * {@see sap.ui.fl.variants.VariantModel}
+	 * Returns the current hash parameters from the variant model's hash data
+	 * (see {@link sap.ui.fl.variants.VariantModel}).
 	 *
 	 * @param {object} mPropertyBag - Property bag
 	 * @param {sap.ui.fl.variants.VariantModel} mPropertyBag.model - Variant model

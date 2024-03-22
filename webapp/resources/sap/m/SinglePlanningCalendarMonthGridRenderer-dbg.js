@@ -12,7 +12,11 @@ sap.ui.define([
 	'./PlanningCalendarLegend',
 	'sap/ui/core/InvisibleText',
 	'sap/ui/core/Core',
-	'sap/ui/unified/library'
+	'sap/ui/unified/library',
+	"sap/ui/core/date/CalendarUtils",
+	'sap/ui/core/Locale',
+	"sap/ui/core/Configuration",
+	"sap/ui/core/date/UI5Date"
 	],
 	function(
 		CalendarDate,
@@ -22,7 +26,12 @@ sap.ui.define([
 		PlanningCalendarLegend,
 		InvisibleText,
 		Core,
-		unifiedLibrary) {
+		unifiedLibrary,
+		CalendarDateUtils,
+		Locale,
+		Configuration,
+		UI5Date
+		) {
 		"use strict";
 
 		// shortcut for sap.ui.unified.CalendarDayType
@@ -131,10 +140,10 @@ sap.ui.define([
 
 					// render appointments which started in previous rows
 					if (j === 0) {
-						this.renderAppointments(oRm, oControl, aPreviousWeekAppsPerDay[iCellIndex], j, aMoreCountPerCell[iCellIndex], oDensitySizes, i);
+						this.renderAppointments(oRm, oControl, aPreviousWeekAppsPerDay[iCellIndex], j, aMoreCountPerCell[iCellIndex], oDensitySizes, i, oDay);
 					}
 
-					this.renderAppointments(oRm, oControl, aAppsPerDay[iCellIndex], j, aMoreCountPerCell[iCellIndex], oDensitySizes, i);
+					this.renderAppointments(oRm, oControl, aAppsPerDay[iCellIndex], j, aMoreCountPerCell[iCellIndex], oDensitySizes, i, oDay);
 				}
 
 				oRm.close("div"); // end appointments
@@ -147,12 +156,15 @@ sap.ui.define([
 			var aSpecialDates = oControl._getSpecialDates(),
 				aDayTypes = Month.prototype._getDateTypes.call(oControl, oDay),
 				oFormat = oControl._getDateFormatter(),
-				bToday = oDay.isSame(CalendarDate.fromLocalJSDate(new Date())),
+				bToday = oDay.isSame(CalendarDate.fromLocalJSDate(UI5Date.getInstance())),
 				oType,
 				sLegendItemType;
 
 			oRm.openStart("div");
 			oRm.class("sapMSPCMonthDay");
+			if (oControl._checkDateSelected(oDay)) {
+				oRm.class("sapMSPCMonthDaySelected");
+			}
 			if (bToday) {
 				oRm.class("sapMSPCMonthDayToday");
 			}
@@ -221,18 +233,18 @@ sap.ui.define([
 			oRm.close("div");
 		};
 
-		SinglePlanningCalendarMonthGridRenderer.renderAppointments = function(oRm, oControl, apps, iColumn, iMore, oDensitySizes, iRow) {
+		SinglePlanningCalendarMonthGridRenderer.renderAppointments = function(oRm, oControl, apps, iColumn, iMore, oDensitySizes, iRow, oDay) {
 			var MAX_APPS = oControl._getMaxAppointments(),
 				iMaxLvl = iMore ? MAX_APPS - 2 : MAX_APPS - 1;
 
 			for (var i = 0; i < apps.length; i++) {
 				if (apps[i].level <= iMaxLvl) {
-					this.renderAppointment(oRm, oControl, apps[i], iColumn, oDensitySizes, iRow);
+					this.renderAppointment(oRm, oControl, apps[i], iColumn, oDensitySizes, iRow, oDay);
 				}
 			}
 		};
 
-		SinglePlanningCalendarMonthGridRenderer.renderAppointment = function(oRm, oControl, app, iColumn, oDensitySizes, iRow) {
+		SinglePlanningCalendarMonthGridRenderer.renderAppointment = function(oRm, oControl, app, iColumn, oDensitySizes, iRow, oDay) {
 			var oAppointment = app.data,
 				iWidth = app.width,
 				iLevel = app.level,
@@ -245,6 +257,7 @@ sap.ui.define([
 				sIcon = oAppointment.getIcon(),
 				sId = oAppointment.getId(),
 				bDraggable = oAppointment.getParent().getEnableAppointmentsDragAndDrop(),
+				oToday = oDay && oDay.isSame(CalendarDate.fromLocalJSDate(UI5Date.getInstance())),
 				mAccProps = {
 					role: "listitem",
 					labelledby: {
@@ -258,7 +271,22 @@ sap.ui.define([
 				iRight = iColumns - iColumn - iWidth,
 				bIsRTL = Core.getConfiguration().getRTL(),
 				aClasses,
-				iBorderThickness = Core.getConfiguration().getTheme().indexOf("_hc") ? 2 : 1;
+				sThemeName = Core.getConfiguration().getTheme(),
+				iBorderThickness;
+
+				if (sThemeName.includes("horizon")){
+					if (oToday) {
+						iBorderThickness = sThemeName.indexOf("_hc") ? 5 : 1;
+					} else {
+						iBorderThickness = sThemeName.indexOf("_hc") ? 3 : 1;
+					}
+				} else {
+					if (oToday) {
+						iBorderThickness = sThemeName.indexOf("_hc") ? 3 : 1;
+					} else {
+						iBorderThickness = sThemeName.indexOf("_hc") ? 2 : 1;
+					}
+				}
 
 			iRight = iRight < 0 ? 0 : iRight;
 
@@ -379,15 +407,28 @@ sap.ui.define([
 
 		SinglePlanningCalendarMonthGridRenderer.renderDayNames = function(oRm, oControl, oLocaleData) {
 			var iAPIFirstDayOfWeek = oControl.getFirstDayOfWeek(),
-				iFirstDayOfWeek = iAPIFirstDayOfWeek > 0 ? iAPIFirstDayOfWeek : oLocaleData.getFirstDayOfWeek(),
+				iFirstDayOfWeek,
 				sId = oControl.getId(),
 				sDayId,
 				sCalendarType = Core.getConfiguration().getCalendarType(),
 				aWeekDays = oLocaleData.getDaysStandAlone("abbreviated", sCalendarType),
 				aWeekDaysWide = oLocaleData.getDaysStandAlone("wide", sCalendarType),
-				oStartDate = new Date(oControl.getStartDate()),
+				oStartDate = UI5Date.getInstance(oControl.getStartDate()),
 				oFirstRenderedDate,
 				iDayIndex;
+
+
+				if (iAPIFirstDayOfWeek < 0 || iAPIFirstDayOfWeek > 6) {
+					var oWeekConfigurationValues = CalendarDateUtils.getWeekConfigurationValues(oControl.getCalendarWeekNumbering(), new Locale(Configuration.getFormatSettings().getFormatLocale().toString()));
+
+					if (oWeekConfigurationValues) {
+						iFirstDayOfWeek = oWeekConfigurationValues.firstDayOfWeek;
+					} else {
+						iFirstDayOfWeek = oControl._getCoreLocaleData().getFirstDayOfWeek();
+					}
+				} else {
+					iFirstDayOfWeek = iAPIFirstDayOfWeek;
+				}
 
 			oStartDate.setDate(oStartDate.getDate() - oStartDate.getDay() + iFirstDayOfWeek);
 			oFirstRenderedDate = CalendarDate.fromLocalJSDate(oStartDate);

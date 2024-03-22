@@ -5,7 +5,7 @@
  */
 
 sap.ui.define([
-	"./BaseController", "sap/ui/mdc/p13n/P13nBuilder", "sap/base/util/merge"
+	"./SelectionController", "sap/ui/mdc/p13n/P13nBuilder", "sap/base/util/merge"
 ], function (BaseController, P13nBuilder, merge) {
     "use strict";
 
@@ -49,11 +49,18 @@ sap.ui.define([
         };
     };
 
-    AdaptFiltersController.prototype.getAdaptationUI = function (oPropertyHelper) {
+    AdaptFiltersController.prototype.initAdaptationUI = function (oPropertyHelper) {
 
         return this.getAdaptationControl().retrieveInbuiltFilter().then(function(oAdaptationFilterBar){
-            var oAdaptationModel = this._getP13nModel(oPropertyHelper);
-            oAdaptationFilterBar.setP13nData(oAdaptationModel.oData);
+            var oAdaptationData = this.mixInfoAndState(oPropertyHelper);
+
+            oAdaptationFilterBar.getTitle = function() {
+                return sap.ui.getCore().getLibraryResourceBundle("sap.ui.mdc").getText("filterbar.ADAPT_TITLE");
+            };
+
+            this._oPanel = oAdaptationFilterBar;
+
+            oAdaptationFilterBar.setP13nData(oAdaptationData);
             oAdaptationFilterBar.setLiveMode(false);
             return oAdaptationFilterBar.createFilterFields().then(function(){
                 return oAdaptationFilterBar;
@@ -61,9 +68,16 @@ sap.ui.define([
         }.bind(this));
     };
 
-    AdaptFiltersController.prototype.update = function(){
-        BaseController.prototype.update.apply(this, arguments);
-        this.getAdaptationControl().getInbuiltFilter().createFilterFields();
+    AdaptFiltersController.prototype.getP13nData = function() {
+        return this._oPanel.getP13nData().items;
+    };
+
+    AdaptFiltersController.prototype.update = function(oPropertyHelper) {
+        if (this._oPanel) {
+            var oAdaptationData = this.mixInfoAndState(oPropertyHelper);
+            this._oPanel.setP13nData(oAdaptationData);
+            this.getAdaptationControl().getInbuiltFilter().createFilterFields();
+        }
     };
 
     AdaptFiltersController.prototype.mixInfoAndState = function(oPropertyHelper) {
@@ -73,7 +87,7 @@ sap.ui.define([
         var aItemState = this.getCurrentState();
         var mExistingProperties = P13nBuilder.arrayToMap(aItemState);
 
-        var oP13nData = P13nBuilder.prepareAdaptationData(oPropertyHelper, function(oItem, oProperty){
+        var oP13nData = this.prepareAdaptationData(oPropertyHelper, function(oItem, oProperty){
 
             var oExistingProperty = mExistingProperties[oProperty.name];
             var aExistingFilters = mExistingFilters[oProperty.name];
@@ -86,7 +100,7 @@ sap.ui.define([
             return !(oProperty.hiddenFilter === true ||  oProperty.name == "$search");
         }, true);
 
-        P13nBuilder.sortP13nData({
+        this.sortP13nData({
             visible: "visible",
             position: "position"
         }, oP13nData.items);

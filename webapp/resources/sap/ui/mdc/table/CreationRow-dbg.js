@@ -5,23 +5,21 @@
  */
 
 sap.ui.define([
-	"../library", "sap/ui/core/Element"
-], function(Library, Element) {
+	"sap/ui/core/Element", "sap/ui/mdc/enums/TableType"
+], function(Element, TableType) {
 	"use strict";
-
-	var TableType = Library.TableType;
 
 	/**
 	 * Constructor for a new <code>CreationRow</code>.
 	 *
 	 * @param {string} [sId] Optional ID for the new object; generated automatically if no non-empty ID is given
 	 * @param {object} [mSettings] Initial settings for the new control
-	 * @class Row that allows the user to enter data in a row-shaped form if the {@link sap.ui.mdc.TableType TableType} is "<code>Table</code>".
+	 * @class Row that allows the user to enter data in a row-shaped form if the {@link sap.ui.mdc.enums.TableType TableType} is "<code>Table</code>".
 	 * The form elements are aligned with the columns of the table and are created automatically based on the
 	 * {@link sap.ui.mdc.table.Column#getCreationTemplate creationTemplate} aggregation of the {@link sap.ui.mdc.table.Column}.
 	 * @extends sap.ui.core.Element
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @experimental
 	 * @private
@@ -71,7 +69,6 @@ sap.ui.define([
 	});
 
 	CreationRow.prototype.init = function() {
-		this._sTableType = "";
 		this._oInnerCreationRow = null;
 		this._mBindingContexts = {};
 	};
@@ -155,20 +152,20 @@ sap.ui.define([
 
 	CreationRow.prototype._updateInnerCreationRow = function() {
 		var oTable = this._getTable();
-		var sNewTableType = oTable ? oTable._getStringType() : "";
 		var pCreateInnerCreationRow;
 
-		// If tableType is not switched OR no inner table exists --> do nothing
-		if (this._sTableType === sNewTableType || !oTable || !oTable._oTable) {
+		if (!oTable || !oTable._oTable) {
 			return Promise.resolve();
 		}
 
-		this._sTableType = sNewTableType;
-
-		if (sNewTableType === TableType.Table) {
-			pCreateInnerCreationRow = this._createGridTableCreationRow();
-			oTable._oTable.getRowMode().setHideEmptyRows(this.getVisible());
-		} else { // TableType.ResponsiveTable
+		if (oTable._isOfType(TableType.Table, true)) {
+			if (!this._oInnerCreationRow || this._oInnerCreationRow.isDestroyed()) {
+				pCreateInnerCreationRow = this._createGridTableCreationRow();
+				oTable._oTable.getRowMode().setHideEmptyRows(this.getVisible());
+			} else {
+				pCreateInnerCreationRow = Promise.resolve();
+			}
+		} else {
 			pCreateInnerCreationRow = this._createResponsiveTableCreationRow();
 		}
 

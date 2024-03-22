@@ -26,7 +26,7 @@ function(
 	 * @extends sap.ui.base.ManagedObject
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -171,7 +171,7 @@ function(
 	 */
 	Plugin.prototype.callAggregationOverlayRegistrationMethods = function(oElementOverlay) {
 		if (this.registerAggregationOverlay) {
-			var aAggregationOverlays = oElementOverlay.getAggregationOverlays();
+			var aAggregationOverlays = oElementOverlay.getChildren();
 			aAggregationOverlays.forEach(this.registerAggregationOverlay.bind(this));
 		}
 	};
@@ -198,7 +198,7 @@ function(
 		}
 
 		if (this.deregisterAggregationOverlay) {
-			var aAggregationOverlays = oElementOverlay.getAggregationOverlays();
+			var aAggregationOverlays = oElementOverlay.getChildren();
 			aAggregationOverlays.forEach(this.deregisterAggregationOverlay.bind(this));
 		}
 	};

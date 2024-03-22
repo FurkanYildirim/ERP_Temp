@@ -325,13 +325,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 119083,
+			"size": 145571,
 			"designtime": true,
 			"theme": "sap_fiori_3"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 118715,
+			"size": 145203,
 			"designtime": true,
 			"theme": "sap_fiori_3"
 		},

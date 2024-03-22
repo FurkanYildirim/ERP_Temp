@@ -23,7 +23,7 @@ sap.ui.define(['sap/ui/commons/library', 'sap/ui/layout/form/GridElementData'],
 	 * @extends sap.ui.layout.form.GridElementData
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public

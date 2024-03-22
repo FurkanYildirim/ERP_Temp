@@ -11,7 +11,7 @@ sap.ui.define(
 		"sap/ui/mdc/filterbar/aligned/FilterItemLayout",
 		"sap/ui/mdc/filterbar/vh/FilterContainer",
 		"sap/m/Button",
-		"sap/ui/mdc/enum/PersistenceMode"
+		"sap/ui/mdc/enums/PersistenceMode"
 	],
 	function (
 		mLibrary,
@@ -40,9 +40,7 @@ sap.ui.define(
 		 * @namespace
 		 * @name sap.ui.mdc.filterbar.vh
 		 * @since 1.84.0
-		 * @private
-		 * @experimental As of version 1.84
-		 * @ui5-restricted sap.ui.mdc
+		 * @public
 		 */
 
 		/**
@@ -56,11 +54,9 @@ sap.ui.define(
 		 * The metadata information is provided via the {@link sap.ui.mdc.FilterBarDelegate FilterBarDelegate} implementation. This implementation has to be provided by the application.
 		 * @extends sap.ui.mdc.filterbar.FilterBarBase
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @constructor
-		 * @private
-		 * @ui5-restricted sap.fe
-		 * @MDC_PUBLIC_CANDIDATE
+		 * @public
 		 * @since 1.84.0
 		 * @alias sap.ui.mdc.filterbar.vh.FilterBar
 		 */
@@ -68,7 +64,31 @@ sap.ui.define(
 			"sap.ui.mdc.filterbar.vh.FilterBar",
 			{
 				metadata: {
+					library: "sap.ui.mdc",
 					properties: {
+						/**
+						 * Path to the <code>Delegate</code> module that provides the required APIs to execute model-specific logic.<br>
+						 * <b>Note:</b> Ensure that the related file can be requested (any required library has to be loaded before that).<br>
+						 * Do not bind or modify the module. This property can only be configured during control initialization.
+						 *
+						 * @experimental
+						 */
+						delegate: {
+							type: "object",
+							defaultValue: {
+								/**
+								 * Contains the class name which implements the {@link sap.ui.mdc.FilterBarDelegate FilterBarDelegate} class.
+								 */
+								name: "sap/ui/mdc/filterbar/vh/FilterBarDelegate",
+								/**
+								 * Contains the mandatory information about the metamodel name <code>modelName</code> and the main data part in its <code>collectionName</code>.<br>
+								 * <b>Note:</b> Additional information relevant for the specific {@link sap.ui.mdc.FilterBarDelegate FilterBarDelegate} implementation might be included but is of no relevance for the filter bar itself.
+								 */
+								payload: {
+									modelName: undefined,
+									collectionName: ""
+								}}
+						},
 						/**
 						 * Determines whether the Show/Hide Filters button is in the state show or hide.<br>
 						 */
@@ -139,29 +159,19 @@ sap.ui.define(
 
 			this._oFilterBarLayout.addControl(this._oBtnFilters);
 
-
 			this._oShowAllFiltersBtn = new Button(this.getId() + "-btnShowAllFilters", {
 				type: ButtonType.Transparent,
 				press: this._onShowAllFilters.bind(this),
-				text: this._oRb.getText("valuehelp.SHOWALLFILTERS")
+				text: this._oRb.getText("valuehelp.SHOWALLFILTERS"),
+				visible: false
 			});
+
 			this._oFilterBarLayout.addEndContent(this._oShowAllFiltersBtn);
-		};
-
-		FilterBar.prototype.applySettings = function(mSettings, oScope) {
-			this._applySettings(mSettings, oScope);
-			this._waitForMetadata();
-		};
-
-		FilterBar.prototype._handleConditionModelPropertyChange = function() {
-			FilterBarBase.prototype._handleConditionModelPropertyChange.apply(this, arguments);
-			this.fireFiltersChanged({conditionsBased: true});
 		};
 
 
 		FilterBar.prototype.init = function() {
 			FilterBarBase.prototype.init.apply(this, arguments);
-			this._bPersistValues = true;
 			this.getEngine().defaultProviderRegistry.attach(this, PersistenceMode.Transient);
 		};
 
@@ -281,6 +291,22 @@ sap.ui.define(
 			}
 
 			return this;
+		};
+
+		/**
+		 * Getter for the initial focusable <code>control</code> on the <code>FilterBar</code>.
+		 *
+		 * @returns {sap.ui.core.Control} Control instance which could get the focus.
+		 *
+		 * @private
+		 * @ui5-restricted sap.ui.mdc
+		 */
+		FilterBar.prototype.getInitialFocusedControl = function() {
+			var oCtrl = this.getBasicSearchField();
+			if (!oCtrl && this.getShowGoButton()) {
+				oCtrl = this._btnSearch;
+			}
+			return oCtrl;
 		};
 
 		return FilterBar;

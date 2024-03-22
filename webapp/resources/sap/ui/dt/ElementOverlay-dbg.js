@@ -5,6 +5,7 @@
  */
 
 sap.ui.define([
+	"sap/ui/base/Object",
 	"sap/ui/dt/Overlay",
 	"sap/ui/dt/OverlayRegistry",
 	"sap/ui/dt/OverlayUtil",
@@ -21,7 +22,8 @@ sap.ui.define([
 	"sap/base/util/merge",
 	"sap/base/util/restricted/_intersection",
 	"sap/base/util/restricted/_max"
-], function (
+], function(
+	BaseObject,
 	Overlay,
 	OverlayRegistry,
 	OverlayUtil,
@@ -55,7 +57,7 @@ sap.ui.define([
 	 * @extends sap.ui.dt.Overlay
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -855,16 +857,6 @@ sap.ui.define([
 	};
 
 	/**
-	 * TODO: remove method after all usage
-	 * Returns AggregationOverlays created for the public aggregations of the associated Element
-	 * @return {sap.ui.dt.AggregationOverlay[]} array of the AggregationOverlays
-	 * @deprecated
-	 */
-	ElementOverlay.prototype.getAggregationOverlays = function() {
-		return this.getAggregation("children") || [];
-	};
-
-	/**
 	 * Returns AggregationOverlay the public aggregations of the associated Element by aggregation name
 	 * @param {string} sAggregationName - Name of the aggregation
 	 * @param {string} sAggregationType - Type of the aggregation
@@ -898,7 +890,7 @@ sap.ui.define([
 	 */
 	ElementOverlay.prototype.getParentAggregationOverlay = function() {
 		var oParentAggregationOverlay = this.getParent();
-		return oParentAggregationOverlay instanceof sap.ui.dt.AggregationOverlay ? oParentAggregationOverlay : null;
+		return BaseObject.isA(oParentAggregationOverlay, "sap.ui.dt.AggregationOverlay") ? oParentAggregationOverlay : null;
 	};
 
 	/**
@@ -959,7 +951,7 @@ sap.ui.define([
 	 */
 	ElementOverlay.prototype.getElementVisibility = function() {
 		var oElement = this.getElement();
-		if (oElement instanceof sap.ui.core.Control) {
+		if (oElement instanceof Control) {
 			return oElement.getVisible();
 		}
 		var oDesignTimeMetadata = this.getDesignTimeMetadata();

@@ -32,46 +32,46 @@
 		},
 		{
 			"name": "ValueHelpDialog.less",
-			"size": 575,
+			"size": 637,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 2046,
+			"size": 1828,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 118298,
+			"size": 141593,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 117920,
+			"size": 141215,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 16934,
+			"size": 16868,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/mdc/themes/sap_horizon_dark/library-parameters.json",
-			"size": 846,
+			"size": 747,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library.css",
-			"size": 16929,
+			"size": 16865,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library.less",
-			"size": 3064,
+			"size": 3126,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -83,12 +83,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 17449,
+			"size": 17490,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 17444,
+			"size": 17487,
 			"theme": "sap_horizon_dark"
 		},
 		{

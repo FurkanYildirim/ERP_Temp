@@ -29,7 +29,7 @@ sap.ui.define([
 	 * <h3>Usage</h3> <code>sap.ui.webc.main.TreeItem</code> is an abstract element, representing a node in a <code>sap.ui.webc.main.Tree</code>. The tree itself is rendered as a list, and each <code>sap.ui.webc.main.TreeItem</code> is represented by a list item(<code>sap.ui.webc.main.TreeListItem</code>) in that list. Therefore, you should only use <code>sap.ui.webc.main.TreeItem</code> directly in your apps. The <code>sap.ui.webc.main.TreeListItem</code> list item is internal for the list, and not intended for public use.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public

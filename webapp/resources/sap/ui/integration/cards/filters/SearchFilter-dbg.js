@@ -23,7 +23,7 @@ sap.ui.define([
 	 * @extends sap.ui.integration.cards.filters.BaseFilter
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private

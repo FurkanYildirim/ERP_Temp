@@ -19,8 +19,6 @@ sap.ui.define([
 	"sap/base/util/each",
 	"sap/base/util/deepClone",
 	"sap/base/util/deepEqual",
-	"sap/base/util/values",
-	"sap/base/util/includes",
 	"sap/base/util/isPlainObject",
 	"sap/base/util/isEmptyObject",
 	"sap/base/util/restricted/_intersection",
@@ -51,8 +49,6 @@ sap.ui.define([
 	each,
 	deepClone,
 	deepEqual,
-	values,
-	includes,
 	isPlainObject,
 	isEmptyObject,
 	_intersection,
@@ -132,7 +128,7 @@ sap.ui.define([
 	 * @alias sap.ui.integration.designtime.baseEditor.BaseEditor
 	 * @author SAP SE
 	 * @since 1.70.0
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @experimental since 1.70.0
 	 * @ui5-restricted
@@ -676,7 +672,7 @@ sap.ui.define([
 		// Property editors which are not managed by the root wrapper
 		// have to be updated independently
 		var aIndependentEditors = aPropertyEditors.filter(function (oPropertyEditor) {
-			return !this._oRootWrapper || !includes(this._oRootWrapper._aEditorWrappers, oPropertyEditor.editor);
+			return !this._oRootWrapper || !this._oRootWrapper._aEditorWrappers.includes(oPropertyEditor.editor);
 		}.bind(this));
 
 		aIndependentEditors.forEach(function (oPropertyEditor) {
@@ -829,7 +825,7 @@ sap.ui.define([
 		}
 
 		this._oRootWrapper = new PropertyEditors({
-			config: values(mPropertiesConfig),
+			config: Object.values(mPropertiesConfig),
 			layout: this.getLayout(),
 			layoutConfig: vLayoutConfig
 		});
@@ -838,7 +834,7 @@ sap.ui.define([
 
 		return (
 			Promise.all(
-				values(this._mPropertyEditors)
+				Object.values(this._mPropertyEditors)
 					.reduce(function (aResult, aCurrent) {
 						return aResult.concat(aCurrent);
 					}, [])
@@ -1107,7 +1103,7 @@ sap.ui.define([
 	 * @returns {sap.ui.integration.designtime.baseEditor.PropertyEditor[]|sap.ui.integration.designtime.baseEditor.propertyEditor.BasePropertyEditor[]|null} List of property editors
 	 */
 	BaseEditor.prototype.getPropertyEditorsSync = function () {
-		return values(this._mPropertyEditors)
+		return Object.values(this._mPropertyEditors)
 			.reduce(function (aResult, aCurrent) {
 				return aResult.concat(aCurrent);
 			}, [])

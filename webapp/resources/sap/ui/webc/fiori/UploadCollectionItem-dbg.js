@@ -26,7 +26,7 @@ sap.ui.define([
 	 * <h3>Overview</h3> A component to be used within the <code>sap.ui.webc.fiori.UploadCollection</code>.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -175,6 +175,32 @@ sap.ui.define([
 	});
 
 	/* CUSTOM CODE START */
+
+	/**
+	 * Sets a new value for property {@link #setFile file}.
+	 *
+	 * Holds an instance of File associated with this item.
+	 *
+	 * When called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.
+	 *
+	 * @method
+	 * @param {File} [oFile] New value for property <code>file</code>
+	 * @public
+	 * @name sap.ui.webc.fiori.UploadCollectionItem#setFile
+	 * @returns {this} Reference to <code>this</code> in order to allow method chaining
+	 */
+
+	/**
+	 * Gets current value of property {@link #getFile file}.
+	 *
+	 * Holds an instance of File associated with this item.
+	 *
+	 * @method
+	 * @returns {File} Value of property <code>file</code>
+	 * @public
+	 * @name sap.ui.webc.fiori.UploadCollectionItem#getFile
+	 */
+
 	/* CUSTOM CODE END */
 
 	return UploadCollectionItem;

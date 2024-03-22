@@ -1176,11 +1176,11 @@ html.sap-desktop .sapMFC:focus {
 /* ================================= */
 
 .sapMFeedIn {
-	background-color: @sapUiHcReducedBackground;
+	   background-color: @sapGroup_ContentBackground;
 }
 
 .sapMFeedInFigure {
-	border-color: @sapUiHcReducedAltForeground;
+	   border-color: @sapUiHcReducedAltForeground;
 }
 /* END "FeedInput.less" */
 
@@ -1372,12 +1372,6 @@ html.sap-desktop .sapMGT:active .sapMGTFocusDiv {
 	border: 0.125rem dotted @sapUiContentFocusColor;
 }
 
-html.sap-desktop .sapMGTActionButtonPress.sapMGT:focus
-{
-		.sapMGTFocusDiv{
-			border: none;
-		}
-}
 
 html.sap-desktop .sapMGTActionButtonPress.sapMGT:active
 {
@@ -2028,11 +2022,11 @@ html.sap-desktop .sapMImageContent:focus {
 
 @_sap_m_InputBase_InnerMinWidth: 2.75rem;
 @_sap_m_InputBase_InnerPadding: 0 0.625rem;
-@_sap_m_InputBase_Height: 2.25rem;
 @_sap_m_InputBase_DisabledOpacity: @sapUiContentDisabledOpacity;
 @_sap_m_InputBase_IconLineHeight: 2.125rem;
 @_sap_m_InputBase_IconWidth: 2.125rem;
 @_sap_m_InputBase_IconMinWidth: 2.125rem;
+@_sap_m_InputBase_FocusOffset_Busy: 3px;
 
 .sapMInputBaseContentWrapper {
 
@@ -2190,7 +2184,6 @@ html.sap-desktop .sapMImageContent:focus {
 @_sap_m_LightBox_OverlayBackground: fade(@sapUiBlockLayerBackground, 80);
 @_sap_m_LightBox_ContainerBackground: @sapUiGroupContentBackground;
 @_sap_m_LightBox_SubtitleMarginTop: 0.25rem;
-@_sap_m_LightBox_ErrorIconColor: fade(@sapUiContentNonInteractiveIconColor, 50);
 
 /* ------------------------------- */
 /* Footer                          */
@@ -3460,7 +3453,7 @@ html[data-sap-ui-animation='on'] .sapMPageWithFloatingFooter {
 }
 
 /* if Panel is not expandable, we do wish header to come with own border */
-.sapMPanel > .sapMPanelHdr,
+.sapMPanel .sapMPanelHeadingDiv > .sapMPanelHdr,
 /* notice: sapMPanelWrappingDiv is available if Panel is expandable */
 .sapMPanelWrappingDiv,
 /* do not want border if expanded and if only header text */
@@ -4983,10 +4976,10 @@ html.sap-desktop .sapMSPCMonthDay.sapMSPCMonthDayToday:focus .sapMSPCMonthNowMar
 	margin-left: -0.9375rem;
 	top: -0.8125rem;
 	&:focus:before {
-		top: -5px;
-		bottom: -5px;
-		left: -5px;
-		right: -5px;
+		top: -0.3125rem;
+		bottom: -0.3125rem;
+		left: -0.3125rem;
+		right: -0.3125rem;
 	}
 }
 
@@ -5009,10 +5002,6 @@ html.sap-desktop .sapMSPCMonthDay.sapMSPCMonthDayToday:focus .sapMSPCMonthNowMar
 	left: -1rem;
 	font-size: @sapMFontSmallSize;
 	color: @sapUiContentLabelColor;
-}
-
-.sapMSliderTickmarks {
-	top: 0.675rem;
 }
 
 .sapMSliderTick {
@@ -5518,6 +5507,12 @@ html.sap-desktop {
 					width: 1.75rem;
 				}
 			}
+			&.sapMSwtOn .sapMSwtText.sapMSwtTextOff {
+				left: 3.75rem;
+			}
+			&.sapMSwtOff .sapMSwtText.sapMSwtTextOn {
+				left: -0.125rem;
+			}
 		}
 	}
 }
@@ -5827,6 +5822,16 @@ html[data-sap-ui-animation='on'] .sapMTabStrip .sapMTSTabsContainer .sapMTSTabs 
 /* CSS for control sap.m/TextArea    */
 /* Quartz High Contrast White theme  */
 /* ================================= */
+
+@_sapMTextAreaPadding: 0.375rem 0.5rem;
+@_sapMTextAreaPadding_Compact: 0.0625rem 0.375rem;
+@_sapMTextAreaReadonlyPadding: 0.375rem 0.5rem;
+@_sapMTextAreaReadonlyPadding_Compact: 0.0625rem 0.375rem;
+@_sapMTextAreaValueStateSuccessPadding: 0.375rem 0.5rem;
+@_sapMTextAreaValueStateSuccessPadding_Compact: 0.0625rem 0.375rem;
+@_sapMTextAreaValueStateInformationPadding: 0.4375rem 0.5625rem;
+@_sapMTextAreaValueStateInformationPadding_Compact: 0.125rem 0.4375rem;
+@_sapMTextAreaValueStateErrorWarningPadding: 0.375rem 0.5rem;
 
 .sapMFocus.sapMTextArea {
 	& .sapMInputBaseContentWrapper {
@@ -6288,7 +6293,7 @@ html.sap-desktop .sapMTokenizer.sapMTokenizerReadonly {
 /* Quartz High Contrast White theme  */
 /* ================================= */
 
-html.sap-desktop .sapMTBActive:focus {
+html.sap-desktop .sapMTBActive.sapMTBFocused {
 	outline: 0.125rem dotted @sapUiContentContrastFocusColor;
 	outline-offset: -0.1875rem;
 }

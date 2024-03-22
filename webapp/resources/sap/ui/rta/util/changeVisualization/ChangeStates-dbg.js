@@ -11,7 +11,7 @@ sap.ui.define([
 
 	var ChangeStates = {};
 
-	ChangeStates.ACTIVATED = "activated";
+	ChangeStates.ALL = "all";
 	ChangeStates.DRAFT = "draft";
 	ChangeStates.DIRTY = "dirty";
 
@@ -20,7 +20,7 @@ sap.ui.define([
 	 *
 	 * @returns {array} Array of change states.
 	 */
-	ChangeStates.getDraftState = function() {
+	ChangeStates.getDraftAndDirtyStates = function() {
 		return [this.DRAFT, this.DIRTY];
 	};
 

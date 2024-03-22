@@ -8,6 +8,7 @@ sap.ui.define([
 	"sap/m/library",
 	"sap/ui/core/Control",
 	"sap/ui/core/Core",
+	"sap/ui/core/library",
 	"sap/ui/core/delegate/ScrollEnablement",
 	"./WizardProgressNavigator",
 	"sap/ui/core/util/ResponsivePaddingsEnablement",
@@ -21,6 +22,7 @@ sap.ui.define([
 	library,
 	Control,
 	Core,
+	coreLibrary,
 	ScrollEnablement,
 	WizardProgressNavigator,
 	ResponsivePaddingsEnablement,
@@ -35,6 +37,9 @@ sap.ui.define([
 		// shortcut for sap.m.PageBackgroundDesign
 		var WizardBackgroundDesign = library.PageBackgroundDesign;
 		var WizardRenderMode = library.WizardRenderMode;
+
+		// shortcut for sap.ui.core.TitleLevel
+		var TitleLevel = coreLibrary.TitleLevel;
 
 		/**
 		 * Constructor for a new Wizard.
@@ -93,7 +98,7 @@ sap.ui.define([
 		 *
 		 * @extends sap.ui.core.Control
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -155,6 +160,15 @@ sap.ui.define([
 						type: "sap.m.WizardRenderMode",
 						group: "Appearance",
 						defaultValue: WizardRenderMode.Scroll
+					},
+					/**
+					 * Defines the semantic level of the step title. When using "Auto" the default value is taken into account.
+					 * @since 1.115
+					 */
+					stepTitleLevel: {
+						type: "sap.ui.core.TitleLevel",
+						group: "Appearance",
+						defaultValue: TitleLevel.H3
 					}
 				},
 				defaultAggregation: "steps",
@@ -245,9 +259,10 @@ sap.ui.define([
 		};
 
 		Wizard.prototype.onBeforeRendering = function () {
-			var oStep = this._getStartingStep();
+			var oStep = this._getStartingStep(),
+			sStepTitleLevel = (this.getStepTitleLevel() === TitleLevel.Auto) ? TitleLevel.H3 : this.getStepTitleLevel();
 
-			if (!this._isMinStepCountReached() || this._isMaxStepCountExceeded()) {
+			if (!this._isStepCountInRange()) {
 				Log.error("The Wizard is supposed to handle from 3 to 8 steps.");
 			}
 
@@ -257,6 +272,10 @@ sap.ui.define([
 				this._activateStep(oStep);
 				oStep._setNumberInvisibleText(1);
 			}
+
+			this.getSteps().forEach(function(oStep){
+				oStep.setProperty("_titleLevel", sStepTitleLevel);
+			});
 		};
 
 		Wizard.prototype.onAfterRendering = function () {
@@ -589,7 +608,7 @@ sap.ui.define([
 		 * @public
 		 */
 		Wizard.prototype.addStep = function (oWizardStep) {
-			if (this._isMaxStepCountExceeded()) {
+			if (this._isMaxStepCountReached()) {
 				Log.error("The Wizard is supposed to handle up to 8 steps.");
 				return this;
 			}
@@ -911,7 +930,7 @@ sap.ui.define([
 		 * @returns {boolean} True if the max step count is reached
 		 * @private
 		 */
-		Wizard.prototype._isMaxStepCountExceeded = function () {
+		Wizard.prototype._isMaxStepCountReached = function () {
 			var iStepCount = this._getStepCount();
 
 			if (this.getEnableBranching()) {
@@ -922,14 +941,18 @@ sap.ui.define([
 		};
 
 		/**
-		 * Checks whether the minimum step count is reached.
-		 * @returns {boolean} True if the min step count is reached
+		 * Checks if steps count is in the valid range
+		 * @returns {boolean} True if the step count is in the valid range
 		 * @private
 		 */
-		Wizard.prototype._isMinStepCountReached = function () {
+		Wizard.prototype._isStepCountInRange = function () {
 			var iStepCount = this._getStepCount();
 
-			return iStepCount >= Wizard.CONSTANTS.MINIMUM_STEPS;
+			if (iStepCount < Wizard.CONSTANTS.MINIMUM_STEPS || (!this.getEnableBranching() && iStepCount > Wizard.CONSTANTS.MAXIMUM_STEPS)) {
+				return false;
+			}
+
+			return true;
 		};
 
 		/**

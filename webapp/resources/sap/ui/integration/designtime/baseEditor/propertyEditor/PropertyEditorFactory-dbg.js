@@ -5,11 +5,7 @@
  */
 
 sap.ui.define([
-	"sap/base/util/includes",
-	"sap/base/util/values"
 ], function (
-	includes,
-	values
 ) {
 	"use strict";
 
@@ -19,7 +15,7 @@ sap.ui.define([
 	 * @namespace sap.ui.integration.designtime.baseEditor.propertyEditor.PropertyEditorFactory
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @static
 	 * @since 1.75
@@ -59,7 +55,7 @@ sap.ui.define([
 			}
 		});
 
-		return Promise.all(values(oLoadingPromisses)).then(function() {
+		return Promise.all(Object.values(oLoadingPromisses)).then(function() {
 			return oPropertyEditorClasses;
 		});
 	};
@@ -133,8 +129,7 @@ sap.ui.define([
 	 * @returns {boolean} <code>true</code> if the specified type is registered
 	 */
 	PropertyEditorFactory.hasType = function (sPropertyType) {
-		return includes(
-			Object.keys(PropertyEditorFactory.getTypes()),
+		return Object.keys(PropertyEditorFactory.getTypes()).includes(
 			sPropertyType
 		);
 	};

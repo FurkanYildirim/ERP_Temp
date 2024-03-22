@@ -24,7 +24,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.FlexCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.76
@@ -78,7 +78,7 @@ sap.ui.define([
 	AddXMLAtExtensionPoint.prototype._applyChange = function(vChange) {
 		// preload the module to be applicable in this session
 		var mModulePreloads = {};
-		mModulePreloads[vChange.getModuleName()] = this.getFragment();
+		mModulePreloads[vChange.getFlexObjectMetadata().moduleName] = this.getFragment();
 		sap.ui.require.preload(mModulePreloads);
 
 		var oChange = vChange.change || vChange;

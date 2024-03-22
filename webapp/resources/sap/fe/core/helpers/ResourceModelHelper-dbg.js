@@ -1,0 +1,42 @@
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ *      (c) Copyright 2009-2023 SAP SE. All rights reserved
+ */
+sap.ui.define(["sap/base/Log"], function (Log) {
+  "use strict";
+
+  var _exports = {};
+  /**
+   * Determines the resource model for a given control, view, controller or appComponent.
+   *
+   * @param scope The control, view, controller or appComponent for which the resource model should be determined.
+   * @returns The resource model
+   */
+  function getResourceModel(scope) {
+    if (scope.isA("sap.ui.core.mvc.Controller") || scope.isA("sap.ui.core.mvc.ControllerExtension")) {
+      var _scope$getView;
+      return (_scope$getView = scope.getView()) === null || _scope$getView === void 0 ? void 0 : _scope$getView.getModel("sap.fe.i18n");
+    } else {
+      return scope.getModel("sap.fe.i18n");
+    }
+  }
+  _exports.getResourceModel = getResourceModel;
+  function getLocalizedText(textOrToken, control) {
+    const matches = /{([A-Za-z0-9_.|@]+)>([A-Za-z0-9_.|]+)}/.exec(textOrToken);
+    if (matches) {
+      try {
+        const resourceBundle = control.getModel(matches[1]).getResourceBundle();
+        return resourceBundle.getText(matches[2]);
+      } catch (e) {
+        Log.info(`Unable to retrieve localized text ${textOrToken}`);
+      }
+    }
+    return textOrToken;
+  }
+  _exports.getLocalizedText = getLocalizedText;
+  return {
+    getResourceModel,
+    getLocalizedText
+  };
+}, false);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJnZXRSZXNvdXJjZU1vZGVsIiwic2NvcGUiLCJpc0EiLCJnZXRWaWV3IiwiZ2V0TW9kZWwiLCJnZXRMb2NhbGl6ZWRUZXh0IiwidGV4dE9yVG9rZW4iLCJjb250cm9sIiwibWF0Y2hlcyIsImV4ZWMiLCJyZXNvdXJjZUJ1bmRsZSIsImdldFJlc291cmNlQnVuZGxlIiwiZ2V0VGV4dCIsImUiLCJMb2ciLCJpbmZvIl0sInNvdXJjZVJvb3QiOiIuIiwic291cmNlcyI6WyJSZXNvdXJjZU1vZGVsSGVscGVyLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZXNvdXJjZUJ1bmRsZSBmcm9tIFwic2FwL2Jhc2UvaTE4bi9SZXNvdXJjZUJ1bmRsZVwiO1xuaW1wb3J0IExvZyBmcm9tIFwic2FwL2Jhc2UvTG9nXCI7XG5pbXBvcnQgQXBwQ29tcG9uZW50IGZyb20gXCJzYXAvZmUvY29yZS9BcHBDb21wb25lbnRcIjtcbmltcG9ydCBQYWdlQ29udHJvbGxlciBmcm9tIFwic2FwL2ZlL2NvcmUvUGFnZUNvbnRyb2xsZXJcIjtcbmltcG9ydCBSZXNvdXJjZU1vZGVsIGZyb20gXCJzYXAvZmUvY29yZS9SZXNvdXJjZU1vZGVsXCI7XG5pbXBvcnQgQ29udHJvbCBmcm9tIFwic2FwL3VpL2NvcmUvQ29udHJvbFwiO1xuaW1wb3J0IENvbnRyb2xsZXIgZnJvbSBcInNhcC91aS9jb3JlL212Yy9Db250cm9sbGVyXCI7XG5pbXBvcnQgQ29udHJvbGxlckV4dGVuc2lvbiBmcm9tIFwic2FwL3VpL2NvcmUvbXZjL0NvbnRyb2xsZXJFeHRlbnNpb25cIjtcblxuLyoqXG4gKiBEZXRlcm1pbmVzIHRoZSByZXNvdXJjZSBtb2RlbCBmb3IgYSBnaXZlbiBjb250cm9sLCB2aWV3LCBjb250cm9sbGVyIG9yIGFwcENvbXBvbmVudC5cbiAqXG4gKiBAcGFyYW0gc2NvcGUgVGhlIGNvbnRyb2wsIHZpZXcsIGNvbnRyb2xsZXIgb3IgYXBwQ29tcG9uZW50IGZvciB3aGljaCB0aGUgcmVzb3VyY2UgbW9kZWwgc2hvdWxkIGJlIGRldGVybWluZWQuXG4gKiBAcmV0dXJucyBUaGUgcmVzb3VyY2UgbW9kZWxcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIGdldFJlc291cmNlTW9kZWwoc2NvcGU6IENvbnRyb2wgfCBBcHBDb21wb25lbnQgfCBDb250cm9sbGVyIHwgQ29udHJvbGxlckV4dGVuc2lvbik6IFJlc291cmNlTW9kZWwge1xuXHRpZiAoc2NvcGUuaXNBPENvbnRyb2xsZXI+KFwic2FwLnVpLmNvcmUubXZjLkNvbnRyb2xsZXJcIikgfHwgc2NvcGUuaXNBPENvbnRyb2xsZXJFeHRlbnNpb24+KFwic2FwLnVpLmNvcmUubXZjLkNvbnRyb2xsZXJFeHRlbnNpb25cIikpIHtcblx0XHRyZXR1cm4gc2NvcGUuZ2V0VmlldygpPy5nZXRNb2RlbChcInNhcC5mZS5pMThuXCIpIGFzIFJlc291cmNlTW9kZWw7XG5cdH0gZWxzZSB7XG5cdFx0cmV0dXJuIHNjb3BlLmdldE1vZGVsKFwic2FwLmZlLmkxOG5cIikgYXMgUmVzb3VyY2VNb2RlbDtcblx0fVxufVxuXG5leHBvcnQgZnVuY3Rpb24gZ2V0TG9jYWxpemVkVGV4dCh0ZXh0T3JUb2tlbjogc3RyaW5nLCBjb250cm9sOiBDb250cm9sIHwgQXBwQ29tcG9uZW50IHwgUGFnZUNvbnRyb2xsZXIpIHtcblx0Y29uc3QgbWF0Y2hlcyA9IC97KFtBLVphLXowLTlfLnxAXSspPihbQS1aYS16MC05Xy58XSspfS8uZXhlYyh0ZXh0T3JUb2tlbik7XG5cdGlmIChtYXRjaGVzKSB7XG5cdFx0dHJ5IHtcblx0XHRcdGNvbnN0IHJlc291cmNlQnVuZGxlID0gKGNvbnRyb2wuZ2V0TW9kZWwobWF0Y2hlc1sxXSkgYXMgUmVzb3VyY2VNb2RlbCkuZ2V0UmVzb3VyY2VCdW5kbGUoKSBhcyBSZXNvdXJjZUJ1bmRsZTtcblx0XHRcdHJldHVybiByZXNvdXJjZUJ1bmRsZS5nZXRUZXh0KG1hdGNoZXNbMl0pO1xuXHRcdH0gY2F0Y2ggKGUpIHtcblx0XHRcdExvZy5pbmZvKGBVbmFibGUgdG8gcmV0cmlldmUgbG9jYWxpemVkIHRleHQgJHt0ZXh0T3JUb2tlbn1gKTtcblx0XHR9XG5cdH1cblx0cmV0dXJuIHRleHRPclRva2VuO1xufVxuXG5leHBvcnQgZGVmYXVsdCB7XG5cdGdldFJlc291cmNlTW9kZWwsXG5cdGdldExvY2FsaXplZFRleHRcbn07XG4iXSwibWFwcGluZ3MiOiI7QUFBQTtBQUFBO0FBQUE7Ozs7O0VBU0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0VBQ08sU0FBU0EsZ0JBQWdCLENBQUNDLEtBQWdFLEVBQWlCO0lBQ2pILElBQUlBLEtBQUssQ0FBQ0MsR0FBRyxDQUFhLDRCQUE0QixDQUFDLElBQUlELEtBQUssQ0FBQ0MsR0FBRyxDQUFzQixxQ0FBcUMsQ0FBQyxFQUFFO01BQUE7TUFDakkseUJBQU9ELEtBQUssQ0FBQ0UsT0FBTyxFQUFFLG1EQUFmLGVBQWlCQyxRQUFRLENBQUMsYUFBYSxDQUFDO0lBQ2hELENBQUMsTUFBTTtNQUNOLE9BQU9ILEtBQUssQ0FBQ0csUUFBUSxDQUFDLGFBQWEsQ0FBQztJQUNyQztFQUNEO0VBQUM7RUFFTSxTQUFTQyxnQkFBZ0IsQ0FBQ0MsV0FBbUIsRUFBRUMsT0FBZ0QsRUFBRTtJQUN2RyxNQUFNQyxPQUFPLEdBQUcsd0NBQXdDLENBQUNDLElBQUksQ0FBQ0gsV0FBVyxDQUFDO0lBQzFFLElBQUlFLE9BQU8sRUFBRTtNQUNaLElBQUk7UUFDSCxNQUFNRSxjQUFjLEdBQUlILE9BQU8sQ0FBQ0gsUUFBUSxDQUFDSSxPQUFPLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBbUJHLGlCQUFpQixFQUFvQjtRQUM1RyxPQUFPRCxjQUFjLENBQUNFLE9BQU8sQ0FBQ0osT0FBTyxDQUFDLENBQUMsQ0FBQyxDQUFDO01BQzFDLENBQUMsQ0FBQyxPQUFPSyxDQUFDLEVBQUU7UUFDWEMsR0FBRyxDQUFDQyxJQUFJLENBQUUscUNBQW9DVCxXQUFZLEVBQUMsQ0FBQztNQUM3RDtJQUNEO0lBQ0EsT0FBT0EsV0FBVztFQUNuQjtFQUFDO0VBQUEsT0FFYztJQUNkTixnQkFBZ0I7SUFDaEJLO0VBQ0QsQ0FBQztBQUFBIn0=

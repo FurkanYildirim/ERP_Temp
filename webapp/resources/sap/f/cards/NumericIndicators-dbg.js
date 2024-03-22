@@ -25,7 +25,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -50,6 +50,12 @@ sap.ui.define([
 				numberSize: { "type": "string", group : "Appearance", defaultValue: "L" },
 
 				/**
+				 * Whether the main numeric indicator is visible or not.
+				 * @since 1.109
+				 */
+				numberVisible: { "type": "boolean", defaultValue : true},
+
+				/**
 				 * Defines the unit of measurement (scaling prefix) for the main indicator.
 				 * Financial characters can be used for currencies and counters. The International System of Units (SI) prefixes can be used.
 				 * If the unit contains more than three characters, only the first three characters are displayed.
@@ -71,6 +77,7 @@ sap.ui.define([
 				 * The alignment of the side indicators.
 				 */
 				sideIndicatorsAlignment: { "type": "sap.f.cards.NumericHeaderSideIndicatorsAlignment", group: "Appearance", defaultValue : "Begin" }
+
 			},
 			aggregations: {
 
@@ -97,7 +104,8 @@ sap.ui.define([
 			.setValue(this.getNumber())
 			.setScale(this.getScale())
 			.setIndicator(this.getTrend())
-			.setValueColor(this.getState());
+			.setValueColor(this.getState())
+			.setVisible(this.getNumberVisible());
 	};
 
 	/**

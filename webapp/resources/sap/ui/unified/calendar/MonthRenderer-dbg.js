@@ -4,9 +4,29 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-sap.ui.define(['sap/ui/unified/calendar/CalendarUtils', 'sap/ui/unified/calendar/CalendarDate', 'sap/ui/unified/CalendarLegend', 'sap/ui/unified/CalendarLegendRenderer',
-	'sap/ui/core/library', 'sap/ui/unified/library', "sap/base/Log", 'sap/ui/core/InvisibleText', "sap/ui/core/Configuration"],
-	function(CalendarUtils, CalendarDate, CalendarLegend, CalendarLegendRenderer, coreLibrary, library, Log, InvisibleText, Configuration) {
+sap.ui.define([
+    'sap/ui/unified/calendar/CalendarUtils',
+    'sap/ui/unified/calendar/CalendarDate',
+    'sap/ui/unified/CalendarLegend',
+    'sap/ui/unified/CalendarLegendRenderer',
+	'sap/ui/core/library',
+    'sap/ui/unified/library',
+    "sap/base/Log",
+    'sap/ui/core/InvisibleText',
+    'sap/ui/core/date/UI5Date',
+    "sap/ui/core/Configuration"
+],
+	function(
+        CalendarUtils,
+        CalendarDate,
+        CalendarLegend,
+        CalendarLegendRenderer,
+        coreLibrary,
+        library,
+        Log,
+        InvisibleText,
+        UI5Date,
+        Configuration) {
 	"use strict";
 
 
@@ -313,7 +333,7 @@ sap.ui.define(['sap/ui/unified/calendar/CalendarUtils', 'sap/ui/unified/calendar
 	/**
 	 * Generates helper object from passed date
 	 * @param {sap.ui.unified.calendar.Month} oMonth the month instance
-	 * @param {sap.ui.unified.calendar.CalendarDate} oDate JavaScript date object
+	 * @param {sap.ui.unified.calendar.CalendarDate} oDate date instance
 	 * @returns {object} helper object
 	 * @private
 	 */
@@ -331,7 +351,7 @@ sap.ui.define(['sap/ui/unified/calendar/CalendarUtils', 'sap/ui/unified/calendar
 				iWeekendEnd: oLocaleData.getWeekendEnd(),
 				aNonWorkingDays: oMonth._getNonWorkingDays(),
 				sToday: oLocaleData.getRelativeDay(0),
-				oToday: CalendarDate.fromLocalJSDate(CalendarUtils._convertToTimezone(new Date(), Configuration.getTimezone()), oMonth.getPrimaryCalendarType()),
+				oToday: CalendarDate.fromLocalJSDate(UI5Date.getInstance(), oMonth.getPrimaryCalendarType()),
 				sId: oMonth.getId(),
 				oFormatLong: oMonth._getFormatLong(),
 				sPrimaryCalendarType: oMonth.getPrimaryCalendarType(),

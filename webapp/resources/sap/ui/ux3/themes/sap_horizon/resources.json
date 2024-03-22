@@ -163,13 +163,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 117721,
+			"size": 144119,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 117353,
+			"size": 143751,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},

@@ -79,7 +79,7 @@ sap.ui.define([], function () {
 
 				fSumRows += oLayoutSizes.rowGap;
 
-				if (fBottomOffsetInGrid < fSumRows) {
+				if (Math.round(fBottomOffsetInGrid) <= Math.round(fSumRows)) {
 					iEndRow = i + 1;
 					break;
 				}
@@ -108,7 +108,7 @@ sap.ui.define([], function () {
 
 				fSumCols += oLayoutSizes.columnGap;
 
-				if (fRightOffsetInGrid <= fSumCols) {
+				if (Math.round(fRightOffsetInGrid) <= Math.round(fSumCols)) {
 					iEndCol = i + 1;
 					break;
 				}

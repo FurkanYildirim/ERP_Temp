@@ -4,9 +4,7 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/base/util/includes"
 ], function (
-	includes
 ) {
 	"use strict";
 
@@ -15,7 +13,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.integration.designtime.baseEditor.validator.IsUniqueKey
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @static
 	 * @since 1.81
@@ -42,7 +40,7 @@ sap.ui.define([
 			return (
 				// Avoid duplicate key errors for the initial value
 				oConfig.currentKey === undefined
-				|| !includes(oConfig.keys, sValue)
+				|| !oConfig.keys.includes(sValue)
 				|| sValue === undefined
 				|| sValue === oConfig.currentKey
 			);

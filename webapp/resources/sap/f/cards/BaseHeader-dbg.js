@@ -38,7 +38,7 @@ sap.ui.define([
 	 * @abstract
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -135,21 +135,13 @@ sap.ui.define([
 	};
 
 	BaseHeader.prototype.ontap = function (oEvent) {
-		var srcControl = oEvent.srcControl;
-		if (srcControl && srcControl.getId().indexOf("overflowButton") > -1) { // better way?
-			return;
-		}
-
-		if (this._isInteractive()) {
+		if (this.isInteractive() && !this._isInsideToolbar(oEvent.target)) {
 			this.firePress();
 		}
 	};
 
-	/**
-	 * Fires the <code>sap.f.cards.NumericHeader</code> press event.
-	 */
-	BaseHeader.prototype.onsapselect = function () {
-		if (this._isInteractive()) {
+	BaseHeader.prototype.onsapselect = function (oEvent) {
+		if (this.isInteractive() && !this._isInsideToolbar(oEvent.target)) {
 			this.firePress();
 		}
 	};
@@ -256,7 +248,7 @@ sap.ui.define([
 		sFormattedText = oDateFormat.format(oUniversalDate);
 
 		// no less than "1 minute ago" should be shown, "30 seconds ago" should not be shown
-		if (oUniversalDate.getTime() + 59000 > (new Date()).getTime()) {
+		if (oUniversalDate.getTime() + 59000 > Date.now()) {
 			sFormattedText = "now"; //@todo get formatted (translated text) for "now"
 		}
 
@@ -305,13 +297,6 @@ sap.ui.define([
 	/**
 	 * @ui5-restricted
 	 */
-	BaseHeader.prototype.getAriaRole = function () {
-		return "group";
-	};
-
-	/**
-	 * @ui5-restricted
-	 */
 	BaseHeader.prototype.getTitleAriaRole = function () {
 		return "heading";
 	};
@@ -320,7 +305,7 @@ sap.ui.define([
 	 * @ui5-restricted
 	 */
 	BaseHeader.prototype.getFocusableElementAriaRole = function () {
-		return this.hasListeners("press") ? "button" : null;
+		return this.hasListeners("press") ? "button" : "group";
 	};
 
 	/**
@@ -356,8 +341,14 @@ sap.ui.define([
 		return oParent.isA("sap.f.GridContainer");
 	};
 
-	BaseHeader.prototype._isInteractive = function() {
+	BaseHeader.prototype.isInteractive = function() {
 		return this.hasListeners("press");
+	};
+
+	BaseHeader.prototype._isInsideToolbar = function(oElement) {
+		var oToolbar = this.getToolbar();
+
+		return oToolbar && oToolbar.getDomRef() && oToolbar.getDomRef().contains(oElement);
 	};
 
 	return BaseHeader;

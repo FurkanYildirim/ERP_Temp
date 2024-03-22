@@ -67,7 +67,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -301,6 +301,16 @@ sap.ui.define([
 	 * @private
 	 */
 	Panel.prototype.onsapspace = function(oEvent) {
+		var aHeaderTargets = [
+			this.getDomRef().querySelector(".sapMPanelWrappingDiv"),
+			this.getDomRef("expandButton")
+		];
+
+		if (aHeaderTargets.includes(oEvent.target)) {
+			// prevent browser scrolling
+			oEvent.preventDefault();
+		}
+
 		this.ontap(oEvent);
 	};
 

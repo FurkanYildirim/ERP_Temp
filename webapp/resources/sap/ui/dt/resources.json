@@ -3,16 +3,16 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 1244
+			"size": 1243
 		},
 		{
 			"name": ".theming",
-			"size": 74
+			"size": 73
 		},
 		{
 			"name": "AggregationDesignTimeMetadata-dbg.js",
 			"module": "sap/ui/dt/AggregationDesignTimeMetadata.js",
-			"size": 1740,
+			"size": 1739,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/DesignTimeMetadata.js"
@@ -34,39 +34,37 @@
 		{
 			"name": "AggregationOverlay-dbg.js",
 			"module": "sap/ui/dt/AggregationOverlay.js",
-			"size": 7633,
+			"size": 7845,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/merge.js",
 				"sap/ui/dt/ElementUtil.js",
 				"sap/ui/dt/Overlay.js",
 				"sap/ui/dt/OverlayUtil.js",
-				"sap/ui/dt/Util.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/Util.js"
 			]
 		},
 		{
 			"name": "AggregationOverlay.js",
 			"module": "sap/ui/dt/AggregationOverlay.js",
-			"size": 2986,
+			"size": 3001,
 			"required": [
 				"sap/base/util/merge.js",
 				"sap/ui/dt/ElementUtil.js",
 				"sap/ui/dt/Overlay.js",
 				"sap/ui/dt/OverlayUtil.js",
-				"sap/ui/dt/Util.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/Util.js"
 			]
 		},
 		{
 			"name": "AggregationOverlay.js.map",
-			"size": 4165,
+			"size": 4230,
 			"isDebug": true
 		},
 		{
 			"name": "ControlObserver-dbg.js",
 			"module": "sap/ui/dt/ControlObserver.js",
-			"size": 2409,
+			"size": 2408,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/ManagedObjectObserver.js"
@@ -88,7 +86,7 @@
 		{
 			"name": "DOMUtil-dbg.js",
 			"module": "sap/ui/dt/DOMUtil.js",
-			"size": 14985,
+			"size": 14854,
 			"isDebug": true,
 			"required": [
 				"sap/ui/Device.js",
@@ -101,7 +99,7 @@
 		{
 			"name": "DOMUtil.js",
 			"module": "sap/ui/dt/DOMUtil.js",
-			"size": 5406,
+			"size": 5310,
 			"required": [
 				"sap/ui/Device.js",
 				"sap/ui/core/Configuration.js",
@@ -112,13 +110,13 @@
 		},
 		{
 			"name": "DOMUtil.js.map",
-			"size": 8385,
+			"size": 8125,
 			"isDebug": true
 		},
 		{
 			"name": "DesignTime-dbg.js",
 			"module": "sap/ui/dt/DesignTime.js",
-			"size": 50223,
+			"size": 49996,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -149,7 +147,7 @@
 		{
 			"name": "DesignTime.js",
 			"module": "sap/ui/dt/DesignTime.js",
-			"size": 20156,
+			"size": 20079,
 			"required": [
 				"sap/base/Log.js",
 				"sap/base/util/includes.js",
@@ -178,13 +176,13 @@
 		},
 		{
 			"name": "DesignTime.js.map",
-			"size": 23471,
+			"size": 23398,
 			"isDebug": true
 		},
 		{
 			"name": "DesignTimeMetadata-dbg.js",
 			"module": "sap/ui/dt/DesignTimeMetadata.js",
-			"size": 10547,
+			"size": 10546,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/ObjectPath.js",
@@ -234,7 +232,7 @@
 		{
 			"name": "ElementDesignTimeMetadata-dbg.js",
 			"module": "sap/ui/dt/ElementDesignTimeMetadata.js",
-			"size": 10348,
+			"size": 10347,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/AggregationDesignTimeMetadata.js",
@@ -260,7 +258,7 @@
 		{
 			"name": "ElementOverlay-dbg.js",
 			"module": "sap/ui/dt/ElementOverlay.js",
-			"size": 34484,
+			"size": 34159,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -268,6 +266,7 @@
 				"sap/base/util/merge.js",
 				"sap/base/util/restricted/_intersection.js",
 				"sap/base/util/restricted/_max.js",
+				"sap/ui/base/Object.js",
 				"sap/ui/core/Control.js",
 				"sap/ui/dt/ControlObserver.js",
 				"sap/ui/dt/DOMUtil.js",
@@ -284,13 +283,14 @@
 		{
 			"name": "ElementOverlay.js",
 			"module": "sap/ui/dt/ElementOverlay.js",
-			"size": 14170,
+			"size": 14083,
 			"required": [
 				"sap/base/Log.js",
 				"sap/base/util/isPlainObject.js",
 				"sap/base/util/merge.js",
 				"sap/base/util/restricted/_intersection.js",
 				"sap/base/util/restricted/_max.js",
+				"sap/ui/base/Object.js",
 				"sap/ui/core/Control.js",
 				"sap/ui/dt/ControlObserver.js",
 				"sap/ui/dt/DOMUtil.js",
@@ -306,13 +306,13 @@
 		},
 		{
 			"name": "ElementOverlay.js.map",
-			"size": 17960,
+			"size": 17825,
 			"isDebug": true
 		},
 		{
 			"name": "ElementUtil-dbg.js",
 			"module": "sap/ui/dt/ElementUtil.js",
-			"size": 22233,
+			"size": 22187,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/isPlainObject.js",
@@ -321,14 +321,13 @@
 				"sap/ui/core/Element.js",
 				"sap/ui/core/UIArea.js",
 				"sap/ui/dt/DOMUtil.js",
-				"sap/ui/dt/Util.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/Util.js"
 			]
 		},
 		{
 			"name": "ElementUtil.js",
 			"module": "sap/ui/dt/ElementUtil.js",
-			"size": 7161,
+			"size": 7120,
 			"required": [
 				"sap/base/util/isPlainObject.js",
 				"sap/ui/base/Object.js",
@@ -336,19 +335,18 @@
 				"sap/ui/core/Element.js",
 				"sap/ui/core/UIArea.js",
 				"sap/ui/dt/DOMUtil.js",
-				"sap/ui/dt/Util.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/Util.js"
 			]
 		},
 		{
 			"name": "ElementUtil.js.map",
-			"size": 11047,
+			"size": 11019,
 			"isDebug": true
 		},
 		{
 			"name": "ManagedObjectObserver-dbg.js",
 			"module": "sap/ui/dt/ManagedObjectObserver.js",
-			"size": 23361,
+			"size": 23360,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/includes.js",
@@ -374,7 +372,7 @@
 		{
 			"name": "MetadataPropagationUtil-dbg.js",
 			"module": "sap/ui/dt/MetadataPropagationUtil.js",
-			"size": 9594,
+			"size": 9593,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/isEmptyObject.js",
@@ -400,7 +398,7 @@
 		{
 			"name": "MutationObserver-dbg.js",
 			"module": "sap/ui/dt/MutationObserver.js",
-			"size": 15557,
+			"size": 15556,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/restricted/_intersection.js",
@@ -432,7 +430,7 @@
 		{
 			"name": "Overlay-dbg.js",
 			"module": "sap/ui/dt/Overlay.js",
-			"size": 28766,
+			"size": 28476,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -450,7 +448,7 @@
 		{
 			"name": "Overlay.js",
 			"module": "sap/ui/dt/Overlay.js",
-			"size": 11220,
+			"size": 11168,
 			"required": [
 				"sap/base/Log.js",
 				"sap/ui/core/Element.js",
@@ -466,13 +464,13 @@
 		},
 		{
 			"name": "Overlay.js.map",
-			"size": 14151,
+			"size": 14110,
 			"isDebug": true
 		},
 		{
 			"name": "OverlayRegistry-dbg.js",
 			"module": "sap/ui/dt/OverlayRegistry.js",
-			"size": 3155,
+			"size": 3149,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/isEmptyObject.js",
@@ -484,7 +482,7 @@
 		{
 			"name": "OverlayRegistry.js",
 			"module": "sap/ui/dt/OverlayRegistry.js",
-			"size": 1243,
+			"size": 1242,
 			"required": [
 				"sap/base/util/isEmptyObject.js",
 				"sap/ui/base/ManagedObject.js",
@@ -494,13 +492,13 @@
 		},
 		{
 			"name": "OverlayRegistry.js.map",
-			"size": 1508,
+			"size": 1511,
 			"isDebug": true
 		},
 		{
 			"name": "OverlayUtil-dbg.js",
 			"module": "sap/ui/dt/OverlayUtil.js",
-			"size": 25041,
+			"size": 25007,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/UIArea.js",
@@ -511,7 +509,7 @@
 		{
 			"name": "OverlayUtil.js",
 			"module": "sap/ui/dt/OverlayUtil.js",
-			"size": 6842,
+			"size": 6809,
 			"required": [
 				"sap/ui/core/UIArea.js",
 				"sap/ui/dt/ElementUtil.js",
@@ -520,13 +518,13 @@
 		},
 		{
 			"name": "OverlayUtil.js.map",
-			"size": 10642,
+			"size": 10611,
 			"isDebug": true
 		},
 		{
 			"name": "Plugin-dbg.js",
 			"module": "sap/ui/dt/Plugin.js",
-			"size": 15762,
+			"size": 15738,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/ManagedObject.js",
@@ -536,7 +534,7 @@
 		{
 			"name": "Plugin.js",
 			"module": "sap/ui/dt/Plugin.js",
-			"size": 4816,
+			"size": 4794,
 			"required": [
 				"sap/ui/base/ManagedObject.js",
 				"sap/ui/dt/OverlayRegistry.js"
@@ -544,13 +542,13 @@
 		},
 		{
 			"name": "Plugin.js.map",
-			"size": 6201,
+			"size": 6188,
 			"isDebug": true
 		},
 		{
 			"name": "ScrollbarSynchronizer-dbg.js",
 			"module": "sap/ui/dt/ScrollbarSynchronizer.js",
-			"size": 5855,
+			"size": 5854,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/ManagedObject.js",
@@ -576,7 +574,7 @@
 		{
 			"name": "SelectionManager-dbg.js",
 			"module": "sap/ui/dt/SelectionManager.js",
-			"size": 7625,
+			"size": 7624,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/includes.js",
@@ -608,7 +606,7 @@
 		{
 			"name": "SelectionMode-dbg.js",
 			"module": "sap/ui/dt/SelectionMode.js",
-			"size": 763,
+			"size": 762,
 			"isDebug": true
 		},
 		{
@@ -624,7 +622,7 @@
 		{
 			"name": "TaskManager-dbg.js",
 			"module": "sap/ui/dt/TaskManager.js",
-			"size": 9214,
+			"size": 9213,
 			"isDebug": true,
 			"required": [
 				"sap/base/util/isPlainObject.js",
@@ -648,7 +646,7 @@
 		{
 			"name": "TaskRunner-dbg.js",
 			"module": "sap/ui/dt/TaskRunner.js",
-			"size": 2756,
+			"size": 2755,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -674,29 +672,27 @@
 		{
 			"name": "Util-dbg.js",
 			"module": "sap/ui/dt/Util.js",
-			"size": 8686,
+			"size": 8359,
 			"isDebug": true,
 			"required": [
 				"sap/ui/Device.js",
 				"sap/ui/base/ManagedObject.js",
-				"sap/ui/dt/DesignTimeStatus.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/DesignTimeStatus.js"
 			]
 		},
 		{
 			"name": "Util.js",
 			"module": "sap/ui/dt/Util.js",
-			"size": 2490,
+			"size": 2385,
 			"required": [
 				"sap/ui/Device.js",
 				"sap/ui/base/ManagedObject.js",
-				"sap/ui/dt/DesignTimeStatus.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/DesignTimeStatus.js"
 			]
 		},
 		{
 			"name": "Util.js.map",
-			"size": 3406,
+			"size": 3266,
 			"isDebug": true
 		},
 		{
@@ -777,43 +773,45 @@
 		{
 			"name": "enablement/ElementEnablementTest-dbg.js",
 			"module": "sap/ui/dt/enablement/ElementEnablementTest.js",
-			"size": 8209,
+			"size": 8679,
 			"isDebug": true,
 			"required": [
+				"sap/base/Log.js",
 				"sap/base/util/ObjectPath.js",
 				"sap/ui/dt/DesignTime.js",
 				"sap/ui/dt/ElementOverlay.js",
 				"sap/ui/dt/enablement/Test.js",
 				"sap/ui/dt/enablement/Util.js",
 				"sap/ui/qunit/utils/waitForThemeApplied.js",
-				"sap/ui/thirdparty/jquery.js",
 				"sap/ui/thirdparty/sinon-4.js"
-			]
+			],
+			"dynRequired": true
 		},
 		{
 			"name": "enablement/ElementEnablementTest.js",
 			"module": "sap/ui/dt/enablement/ElementEnablementTest.js",
-			"size": 4582,
+			"size": 4897,
 			"required": [
+				"sap/base/Log.js",
 				"sap/base/util/ObjectPath.js",
 				"sap/ui/dt/DesignTime.js",
 				"sap/ui/dt/ElementOverlay.js",
 				"sap/ui/dt/enablement/Test.js",
 				"sap/ui/dt/enablement/Util.js",
 				"sap/ui/qunit/utils/waitForThemeApplied.js",
-				"sap/ui/thirdparty/jquery.js",
 				"sap/ui/thirdparty/sinon-4.js"
-			]
+			],
+			"dynRequired": true
 		},
 		{
 			"name": "enablement/ElementEnablementTest.js.map",
-			"size": 4649,
+			"size": 5037,
 			"isDebug": true
 		},
 		{
 			"name": "enablement/Test-dbg.js",
 			"module": "sap/ui/dt/enablement/Test.js",
-			"size": 6258,
+			"size": 6257,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/ManagedObject.js"
@@ -835,7 +833,7 @@
 		{
 			"name": "enablement/Util-dbg.js",
 			"module": "sap/ui/dt/enablement/Util.js",
-			"size": 3222,
+			"size": 3221,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/DOMUtil.js",
@@ -911,7 +909,7 @@
 		{
 			"name": "enablement/report/LibraryReport-dbg.js",
 			"module": "sap/ui/dt/enablement/report/LibraryReport.js",
-			"size": 3536,
+			"size": 3535,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/enablement/ElementEnablementTest.js",
@@ -935,7 +933,7 @@
 		{
 			"name": "enablement/report/QUnitReport-dbg.js",
 			"module": "sap/ui/dt/enablement/report/QUnitReport.js",
-			"size": 2525,
+			"size": 2524,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/ManagedObject.js"
@@ -957,7 +955,7 @@
 		{
 			"name": "enablement/report/Statistic-dbg.js",
 			"module": "sap/ui/dt/enablement/report/Statistic.js",
-			"size": 3171,
+			"size": 3206,
 			"isDebug": true,
 			"required": [
 				"sap/m/Label.js",
@@ -971,7 +969,7 @@
 		{
 			"name": "enablement/report/Statistic.js",
 			"module": "sap/ui/dt/enablement/report/Statistic.js",
-			"size": 1835,
+			"size": 1865,
 			"required": [
 				"sap/m/Label.js",
 				"sap/m/Text.js",
@@ -983,13 +981,13 @@
 		},
 		{
 			"name": "enablement/report/Statistic.js.map",
-			"size": 1737,
+			"size": 1758,
 			"isDebug": true
 		},
 		{
 			"name": "enablement/report/StatisticRenderer-dbg.js",
 			"module": "sap/ui/dt/enablement/report/StatisticRenderer.js",
-			"size": 988,
+			"size": 987,
 			"isDebug": true
 		},
 		{
@@ -1005,7 +1003,7 @@
 		{
 			"name": "enablement/report/Table-dbg.js",
 			"module": "sap/ui/dt/enablement/report/Table.js",
-			"size": 5719,
+			"size": 5718,
 			"isDebug": true,
 			"required": [
 				"sap/m/Button.js",
@@ -1047,23 +1045,23 @@
 		{
 			"name": "enablement/report/TableRenderer-dbg.js",
 			"module": "sap/ui/dt/enablement/report/TableRenderer.js",
-			"size": 952,
+			"size": 948,
 			"isDebug": true
 		},
 		{
 			"name": "enablement/report/TableRenderer.js",
 			"module": "sap/ui/dt/enablement/report/TableRenderer.js",
-			"size": 399
+			"size": 396
 		},
 		{
 			"name": "enablement/report/TableRenderer.js.map",
-			"size": 449,
+			"size": 444,
 			"isDebug": true
 		},
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/dt/library.js",
-			"size": 1307,
+			"size": 1305,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/ManagedObjectMetadata.js",
@@ -1074,7 +1072,7 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/dt/library-preload.js",
-			"size": 175700,
+			"size": 175543,
 			"merged": true,
 			"required": [
 				"sap/base/Log.js",
@@ -1177,13 +1175,13 @@
 		},
 		{
 			"name": "library-preload.js.map",
-			"size": 225728,
+			"size": 225505,
 			"isDebug": true
 		},
 		{
 			"name": "library.js",
 			"module": "sap/ui/dt/library.js",
-			"size": 823,
+			"size": 822,
 			"required": [
 				"sap/ui/base/ManagedObjectMetadata.js",
 				"sap/ui/core/library.js",
@@ -1198,12 +1196,12 @@
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/dt/manifest.json",
-			"size": 870
+			"size": 868
 		},
 		{
 			"name": "plugin/ContextMenu-dbg.js",
 			"module": "sap/ui/dt/plugin/ContextMenu.js",
-			"size": 16808,
+			"size": 16807,
 			"isDebug": true,
 			"required": [
 				"sap/base/assert.js",
@@ -1241,7 +1239,7 @@
 		{
 			"name": "plugin/ControlDragDrop-dbg.js",
 			"module": "sap/ui/dt/plugin/ControlDragDrop.js",
-			"size": 4857,
+			"size": 4856,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/ElementUtil.js",
@@ -1267,7 +1265,7 @@
 		{
 			"name": "plugin/CutPaste-dbg.js",
 			"module": "sap/ui/dt/plugin/CutPaste.js",
-			"size": 7205,
+			"size": 7193,
 			"isDebug": true,
 			"required": [
 				"sap/ui/Device.js",
@@ -1282,7 +1280,7 @@
 		{
 			"name": "plugin/CutPaste.js",
 			"module": "sap/ui/dt/plugin/CutPaste.js",
-			"size": 3685,
+			"size": 3674,
 			"required": [
 				"sap/ui/Device.js",
 				"sap/ui/dt/OverlayRegistry.js",
@@ -1295,13 +1293,13 @@
 		},
 		{
 			"name": "plugin/CutPaste.js.map",
-			"size": 4618,
+			"size": 4606,
 			"isDebug": true
 		},
 		{
 			"name": "plugin/DragDrop-dbg.js",
 			"module": "sap/ui/dt/plugin/DragDrop.js",
-			"size": 23680,
+			"size": 23751,
 			"isDebug": true,
 			"required": [
 				"sap/ui/Device.js",
@@ -1316,7 +1314,7 @@
 		{
 			"name": "plugin/DragDrop.js",
 			"module": "sap/ui/dt/plugin/DragDrop.js",
-			"size": 11706,
+			"size": 11719,
 			"required": [
 				"sap/ui/Device.js",
 				"sap/ui/base/Object.js",
@@ -1329,13 +1327,13 @@
 		},
 		{
 			"name": "plugin/DragDrop.js.map",
-			"size": 14545,
+			"size": 14598,
 			"isDebug": true
 		},
 		{
 			"name": "plugin/ElementMover-dbg.js",
 			"module": "sap/ui/dt/plugin/ElementMover.js",
-			"size": 13385,
+			"size": 13372,
 			"isDebug": true,
 			"required": [
 				"sap/ui/base/ManagedObject.js",
@@ -1348,7 +1346,7 @@
 		{
 			"name": "plugin/ElementMover.js",
 			"module": "sap/ui/dt/plugin/ElementMover.js",
-			"size": 4676,
+			"size": 4665,
 			"required": [
 				"sap/ui/base/ManagedObject.js",
 				"sap/ui/base/Object.js",
@@ -1359,13 +1357,13 @@
 		},
 		{
 			"name": "plugin/ElementMover.js.map",
-			"size": 6505,
+			"size": 6493,
 			"isDebug": true
 		},
 		{
 			"name": "plugin/MouseSelection-dbg.js",
 			"module": "sap/ui/dt/plugin/MouseSelection.js",
-			"size": 1922,
+			"size": 1921,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/Plugin.js"
@@ -1387,37 +1385,35 @@
 		{
 			"name": "plugin/TabHandling-dbg.js",
 			"module": "sap/ui/dt/plugin/TabHandling.js",
-			"size": 4350,
+			"size": 4294,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dom/jquery/Selectors.js",
 				"sap/ui/dt/Overlay.js",
 				"sap/ui/dt/OverlayRegistry.js",
-				"sap/ui/dt/Plugin.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/Plugin.js"
 			]
 		},
 		{
 			"name": "plugin/TabHandling.js",
 			"module": "sap/ui/dt/plugin/TabHandling.js",
-			"size": 2332,
+			"size": 2344,
 			"required": [
 				"sap/ui/dom/jquery/Selectors.js",
 				"sap/ui/dt/Overlay.js",
 				"sap/ui/dt/OverlayRegistry.js",
-				"sap/ui/dt/Plugin.js",
-				"sap/ui/thirdparty/jquery.js"
+				"sap/ui/dt/Plugin.js"
 			]
 		},
 		{
 			"name": "plugin/TabHandling.js.map",
-			"size": 2525,
+			"size": 2522,
 			"isDebug": true
 		},
 		{
 			"name": "plugin/ToolHooks-dbg.js",
 			"module": "sap/ui/dt/plugin/ToolHooks.js",
-			"size": 1369,
+			"size": 1368,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dt/Plugin.js"
@@ -1438,7 +1434,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 39076
+			"size": 38878
 		},
 		{
 			"name": "themes/base/.theming",
@@ -1447,7 +1443,7 @@
 		},
 		{
 			"name": "themes/base/ContextMenu.less",
-			"size": 2049,
+			"size": 2382,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -1470,13 +1466,13 @@
 		},
 		{
 			"name": "themes/base/css_variables.source.less",
-			"size": 114928,
+			"size": 138413,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "themes/base/library-RTL.css",
-			"size": 5040,
+			"size": 5637,
 			"theme": "base"
 		},
 		{
@@ -1487,12 +1483,12 @@
 		},
 		{
 			"name": "themes/base/library.css",
-			"size": 5038,
+			"size": 5632,
 			"theme": "base"
 		},
 		{
 			"name": "themes/base/library.less",
-			"size": 6481,
+			"size": 6814,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -1504,12 +1500,12 @@
 		},
 		{
 			"name": "themes/base/library_skeleton-RTL.css",
-			"size": 4675,
+			"size": 5272,
 			"theme": "base"
 		},
 		{
 			"name": "themes/base/library_skeleton.css",
-			"size": 4673,
+			"size": 5267,
 			"theme": "base"
 		},
 		{
@@ -1542,19 +1538,19 @@
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.less",
-			"size": 101174,
+			"size": 122487,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.source.less",
-			"size": 100874,
+			"size": 122187,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "themes/sap_hcb/library-RTL.css",
-			"size": 5685,
+			"size": 6282,
 			"theme": "sap_hcb"
 		},
 		{
@@ -1565,7 +1561,7 @@
 		},
 		{
 			"name": "themes/sap_hcb/library.css",
-			"size": 5683,
+			"size": 6277,
 			"theme": "sap_hcb"
 		},
 		{
@@ -1582,18 +1578,18 @@
 		},
 		{
 			"name": "themes/sap_hcb/library_skeleton-RTL.css",
-			"size": 5286,
+			"size": 5883,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "themes/sap_hcb/library_skeleton.css",
-			"size": 5284,
+			"size": 5878,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "util/ZIndexManager-dbg.js",
 			"module": "sap/ui/dt/util/ZIndexManager.js",
-			"size": 6779,
+			"size": 6778,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",

@@ -9,11 +9,11 @@
  */
 sap.ui.define([
 	'sap/ui/base/DataType',
+	'sap/ui/core/Lib',
 	'sap/ui/core/mvc/ViewType', // provides sap.ui.core.mvc.ViewType
-	'./CalendarType', // provides sap.ui.core.CalendarType
-	'./Core' // provides sap.ui.getCore()
+	'./CalendarType' // provides sap.ui.core.CalendarType
 ],
-	function(DataType, ViewType) {
+	function(DataType, Library, ViewType) {
 	"use strict";
 
 	/**
@@ -25,13 +25,13 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.ui.core
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 0.8
 	 * @public
 	 */
-	 var thisLib = sap.ui.getCore().initLibrary({
-		 name : "sap.ui.core",
-		 version: "1.108.14",
+	 var thisLib = Library.init({
+		 name: "sap.ui.core",
+		 version: "1.115.1",
 		 designtime: "sap/ui/core/designtime/library.designtime",
 		 types: [
 
@@ -749,6 +749,54 @@ sap.ui.define([
 		Dialog : "Dialog"
 
 	};
+
+	/**
+	 * The object contains accessibility information for a control.
+	 *
+	 * @typedef {object} sap.ui.core.AccessibilityInfo
+	 *
+	 * @property {string} [role]
+	 * 	The WAI-ARIA role which is implemented by the control.
+	 * @property {string} [type]
+	 * 	A translated text that represents the control type. Might correlate with the role.
+	 * @property {string} [description]
+	 * 	Describes the most relevant control state (e.g. the input's value) - it should be a translated text.
+	 * 	<b>Note:</b> The type and the enabled/editable state shouldn`t be handled here.
+	 * @property {boolean} [focusable]
+	 * 	Whether the control can get the focus.
+	 * @property {boolean | null} [enabled]
+	 * 	 Whether the control is enabled. If not relevant, it shouldn`t be set or <code>null</code> can be provided.
+	 * @property {boolean | null} [editable]
+	 * 	Whether the control is editable. If not relevant, it shouldn`t be set or <code>null</code> can be provided.
+	 * @property {boolean | null} [readonly]
+	 * 	Whether the control is readonly. If not relevant, it shouldn`t be set or <code>null</code> can be provided.
+	 * @property {sap.ui.core.Element[]} [children]
+	 * 	A list of elements or controls that are aggregated by the given control (e.g. when the control is a layout).
+	 * 	Primitive values in the list will be ignored.
+	 * 	<b>Note:</b> Children should only be provided when it is helpful to understand the accessibility context
+	 * 	(e.g. a form control shouldn`t provide details of its internals (fields, labels, ...) but a layout should).
+	 * @protected
+	 * @since 1.110
+	 */
+
+	/**
+	 * The object contains focus information for input controls.
+	 *
+	 * @typedef {object} sap.ui.core.FocusInfo
+	 *
+	 * @property {string} [id]
+	 * 	The ID of the focused control.
+	 * @property {int} [cursorPos]
+	 * 	The position of the cursor.
+	 * @property {int} [selectionStart]
+	 * 	The start position of selection.
+	 * @property {int} [selectionEnd]
+	 * 	The end position of selection.
+	 * @property {boolean | undefined} [preventScroll]
+	 * 	Prevents scrolling.
+	 * @protected
+	 * @since 1.111
+	 */
 
 	/**
 	 * Configuration options for the colors of a progress bar.
@@ -1491,7 +1539,7 @@ sap.ui.define([
 	/**
 	 * Sort order of a column.
 	 *
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @enum {string}
 	 * @public
 	 * @since 1.61.0
@@ -1711,19 +1759,18 @@ sap.ui.define([
 	 * @interface
 	 * @public
 	 * @experimental As of version 1.98
-	 * @since 1.98.0
+	 * @since 1.98
 	 *
 	 */
 
 	/**
 	 * Opens the menu using the column header.
-	 * @param {sap.ui.core.Control} oControl
-	 *   Specifies the control where the menu is placed.
+	 * @param {sap.ui.core.Control|HTMLElement} oAnchor Specifies the element where the menu is placed.
 	 *
 	 * @public
 	 * @function
 	 * @experimental As of version 1.98
-	 * @since 1.98.0
+	 * @since 1.98
 	 * @name sap.ui.core.IColumnHeaderMenu.openBy
 	 */
 
@@ -1792,7 +1839,7 @@ sap.ui.define([
 
 	/**
 	 * Opens the control by given opener ref.
-	 * @param {jQuery.Event | object} oEvent
+	 * @param {jQuery.Event | {left: float, top: float, offsetX: float, offsetY: float}} oEvent
 	 *   An <code>oncontextmenu</code> event object or an object with properties left, top, offsetX, offsetY
 	 * @param {sap.ui.core.Element|HTMLElement} oOpenerRef
 	 *   The element which will get the focus back again after the menu was closed
@@ -1906,7 +1953,7 @@ sap.ui.define([
 	 *
 	 * This is an optional method. If not defined, the <code>value</code> property or the <code>text</code> property is used to determine the value.
 	 *
-	 * @returns {string|Promise} Formatted value or a <code>Promise</code> returning the formatted value if resolved
+	 * @returns {string|Promise<string>} Formatted value or a <code>Promise</code> returning the formatted value if resolved
 	 * @since 1.86.0
 	 * @public
 	 * @experimental As of version 1.86

@@ -25,7 +25,7 @@ sap.ui.define([
 	 * Helper object to build the RTA commands resulting from the AdditionalElements Plugin
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @since 1.94
 	 * @experimental Since 1.94. This class is experimental and provides only limited functionality. Also the API might be changed in future.

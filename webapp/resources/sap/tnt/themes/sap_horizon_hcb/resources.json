@@ -14,64 +14,64 @@
 		},
 		{
 			"name": "NavigationList.less",
-			"size": 465,
+			"size": 851,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "SideNavigation.less",
-			"size": 296,
+			"size": 445,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "ToolHeader.less",
-			"size": 432,
+			"size": 7371,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "ToolPage.less",
-			"size": 308,
+			"size": 1226,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 5452,
+			"size": 10396,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 118808,
+			"size": 147776,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 118438,
+			"size": 147406,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 16219,
+			"size": 27789,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/tnt/themes/sap_horizon_hcb/library-parameters.json",
-			"size": 2280,
+			"size": 4425,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.css",
-			"size": 16216,
+			"size": 27788,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.less",
-			"size": 3743,
+			"size": 12135,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -83,17 +83,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 15745,
+			"size": 26244,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 15742,
+			"size": 26243,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "resources.json",
-			"size": 1784
+			"size": 1788
 		}
 	]
 }

@@ -11,12 +11,13 @@ sap.ui.define([
 	'sap/ui/model/ParseException',
 	'sap/ui/model/ValidateException',
 	'sap/ui/model/type/String',
-	'sap/ui/mdc/enum/FieldDisplay',
+	'sap/ui/mdc/enums/FieldDisplay',
+	'sap/ui/mdc/enums/OperatorValueType',
 	'sap/ui/mdc/condition/FilterOperatorUtil',
-	'sap/ui/mdc/condition/Operator',
 	'sap/ui/mdc/condition/Condition',
-	'sap/ui/mdc/enum/BaseType',
-	'sap/ui/mdc/enum/ConditionValidated',
+	'sap/ui/mdc/condition/ConditionValidateException',
+	'sap/ui/mdc/enums/BaseType',
+	'sap/ui/mdc/enums/ConditionValidated',
 	'sap/base/util/merge',
 	'sap/base/strings/whitespaceReplacer',
 	'sap/ui/base/SyncPromise'
@@ -28,9 +29,10 @@ sap.ui.define([
 		ValidateException,
 		StringType,
 		FieldDisplay,
+		OperatorValueType,
 		FilterOperatorUtil,
-		Operator,
 		Condition,
+		ConditionValidateException,
 		BaseType,
 		ConditionValidated,
 		merge,
@@ -46,40 +48,36 @@ sap.ui.define([
 	 * Constructor for a Condition type.
 	 *
 	 * @class
-	 * This class represents a type that is used to map a single condition to a single-value control
+	 * This class represents a type that is used to map a single condition to a single-value control.
 	 *
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @since 1.62.0
-	 * @private
-	 * @ui5-restricted sap.ui.mdc.field.FieldBase, sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
 	 *
 	 * @param {object} [oFormatOptions] Formatting options
 	 * @param {sap.ui.model.Type} [oFormatOptions.valueType] Type of the value of the condition (used for formatting, parsing and validating)
 	 * @param {string[]} [oFormatOptions.operators] Possible operators to be used in the condition
-	 * @param {sap.ui.mdc.enum.FieldDisplay} [oFormatOptions.display] DisplayFormat used to visualize a value
-	 * @param {string} [oFormatOptions.fieldHelpID] ID of the field help to determine the key and description // TODO: async request????
-	 * @param {boolean} [oFormatOptions.hideOperator] If set, only the value of the condition is shown, but no operator //TODO
+	 * @param {sap.ui.mdc.enums.FieldDisplay} [oFormatOptions.display] DisplayFormat used to visualize a value
+	 * @param {string} [oFormatOptions.valueHelpID] ID of the value help to determine the key and description
+	 * @param {boolean} [oFormatOptions.hideOperator] If set, only the value of the condition is shown, but no operator. (Use it only if just one operator is supported.)
 	 * @param {int} [oFormatOptions.maxConditions] Maximum number of allowed conditions
 	 * @param {sap.ui.model.Context} [oFormatOptions.bindingContext] <code>BindingContext</code> of field. Used to get a key or description from the value help using in/out parameters. (In a table, the value help might be connected to a different row)
 	 * @param {sap.ui.model.Type} [oFormatOptions.originalDateType] Type used on field, for example, for date types; a different type is used internally to have different <code>formatOptions</code>
-	 * @param {sap.ui.model.Type} [oFormatOptions.additionalType] additional Type used on other part of a field. (This is the case for unit fields.)
-	 * @param {sap.ui.model.Type[]} [oFormatOptions.compositeTypes] additional Types used for parts of a <code>CompositeType</code>
-	 * @param {function} [oFormatOptions.getConditions] Function to get the existing conditions of the field. Only used if <code>isUnit</code> is set. // TODO: better solution
+	 * @param {sap.ui.model.Type} [oFormatOptions.additionalType] additional type used on other part of a field. (For example, for unit fields.)
+	 * @param {sap.ui.model.Type[]} [oFormatOptions.compositeTypes] additional types used for parts of a <code>CompositeType</code>
+	 * @param {function} [oFormatOptions.getConditions] Function to get the existing conditions of the field.
 	 * @param {function} [oFormatOptions.asyncParsing] Callback function to tell the <code>Field</code> the parsing is asynchronous.
-	 * @param {object} [oFormatOptions.navigateCondition] Condition of keyboard navigation. If this is filled, no real parsing is needed as the condition has already been determined and is just returned
+	 * @param {sap.ui.mdc.condition.ConditionObject} [oFormatOptions.navigateCondition] Condition of keyboard navigation. If this is filled, no real parsing is needed as the condition has already been determined and is just returned
 	 * @param {object} [oFormatOptions.delegate] Field delegate to handle model-specific logic
 	 * @param {object} [oFormatOptions.payload] Payload of the delegate
 	 * @param {boolean} [oFormatOptions.preventGetDescription] If set, description is not read by <code>formatValue</code> as it is known that no description exists or might be set later
-	 * @param {sap.ui.mdc.condition.ConditionModel} [oFormatOptions.conditionModel] <code>ConditionModel</code>, if bound to one
-	 * @param {string} [oFormatOptions.conditionModelName] Name of the <code>ConditionModel</code>, if bound to one
 	 * @param {string} [oFormatOptions.defaultOperatorName] Name of the default <code>Operator</code>
 	 * @param {boolean} [oFormatOptions.convertWhitespaces] If set, whitespaces will be replaced by special characters to display whitespaces in HTML
-	 * @param {sap.ui.core.Control} [oFormatOptions.control] Instance if the calling control
+	 * @param {sap.ui.core.Control} [oFormatOptions.control] Instance of the calling control
 	 * @param {object} [oConstraints] Value constraints
 	 * @alias sap.ui.mdc.field.ConditionType
 	 */
@@ -109,24 +107,22 @@ sap.ui.define([
 
 	/**
 	 * Formats the given condition to an output value of the given target type.
-	 * This values are formatted using the given data type. Depending of the operator
-	 * and the configuration (set in <code>FormatOptions</code>) a description will be determined via given value help or delegate.
+	 * These values are formatted using the given data type. Depending on the operator
+	 * and the configuration (set in <code>FormatOptions</code>), a description will be determined by a given value help or delegate.
 	 *
 	 * @param {sap.ui.mdc.condition.ConditionObject} oCondition
 	 *	The condition to be formatted
 	 * @param {string} sTargetType
-	 *	The target type; see {@link topic:ac56d92162ed47ff858fdf1ce26c18c4 Allowed Property Types}
-	 *	In addition to the standard target types <code>sap.ui.mdc.raw</code> can be used. In this case the value is not formatted and just
-	 *	forwarded to the target. If the value is an array representing data for a <code>CompositeType</code> the index of the needed raw value can be added to the
-	 *	name (For example if a unit should be forwarded as raw value <code>sap.ui.mdc.raw:1</code> can be used).
+	 *	The target type; see {@link topic:ac56d92162ed47ff858fdf1ce26c18c4 Allowed Property Types}.
+	 *	In addition to the standard target types, <code>sap.ui.mdc.raw</code> can be used. In this case the value is not formatted and just
+	 *	forwarded to the target. If the value is an array representing data for a <code>CompositeType</code>, the index of the needed raw value can be added to the
+	 *	name (For example, if a unit should be forwarded as raw value, <code>sap.ui.mdc.raw:1</code> can be used).
 	 * @return {any|Promise}
 	 *	The formatted output value or a <code>Promise</code> resolving with the formatted value
 	 * @throws {sap.ui.model.FormatException}
 	 *	If formatting to the target type is not possible
 	 *
-	 * @private
-	 * @ui5-restricted sap.ui.mdc.field.FieldBase, sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
 	 */
 	ConditionType.prototype.formatValue = function(oCondition, sTargetType) {
 
@@ -165,12 +161,10 @@ sap.ui.define([
 						(bIsUnit || (oCondition.operator === oEQOperator.name && !oCondition.values[1]))) {
 					// handle sync case and async case similar
 					var oBindingContext = this.oFormatOptions.bindingContext;
-					var oConditionModel = this.oFormatOptions.conditionModel;
-					var sConditionModelName = this.oFormatOptions.conditionModelName;
 					var vKey = bIsUnit ? oCondition.values[0][1] : oCondition.values[0];
 
 					return SyncPromise.resolve().then(function() {
-						return _getDescription.call(this, vKey, oCondition, oType, oBindingContext, oConditionModel, sConditionModelName);
+						return _getDescription.call(this, vKey, oCondition, oType, oBindingContext);
 					}.bind(this)).then(function(vDescription) { // if description needs to be requested -> return if it is resolved
 						if (vDescription) {
 							oCondition = merge({}, oCondition); // do not manipulate original object
@@ -291,38 +285,68 @@ sap.ui.define([
 	/**
 	 * Parses an external value of the given source type to a condition that holds the value in model
 	 * representation.
-	 * These values are parsed using the given data type. Depending of the operator
-	 * and the configuration (set in <code>FormatOptions</code>) a value will be determined via given value help or delegate.
+	 * These values are parsed using the given data type. Depending on the operator
+	 * and the configuration (set in <code>FormatOptions</code>), a value will be determined by a given value help or delegate.
 	 *
 	 * @param {any} vValue
-	 *	The value to be parsed
+	 *	The value that is parsed
 	 * @param {string} sSourceType
 	 *	The type of the given value; see
 	 *	{@link topic:ac56d92162ed47ff858fdf1ce26c18c4 Allowed Property Types}
-	 *	In addition to the standard source types <code>sap.ui.mdc.raw</code> can be used. In this case the value is not parsed and just
-	 *	used in the condition. If the value of the condition is an array representing data for a <code>CompositeType</code> the index of the needed raw value can be added to the
-	 *	name (For example if a unit should be forwarded as raw value <code>sap.ui.mdc.raw:1</code> can be used).
+	 *	In addition to the standard source types, <code>sap.ui.mdc.raw</code> can be used. In this case the value is not parsed and just
+	 *	used in the condition. If the value of the condition is an array representing data for a <code>CompositeType</code>, the index of the needed raw value can be added to the
+	 *	name (For example, if a unit should be forwarded as raw value <code>sap.ui.mdc.raw:1</code> can be used).
 	 * @return {null|sap.ui.mdc.condition.ConditionObject|Promise<null|sap.ui.mdc.condition.ConditionObject>}
 	 *	The condition or a <code>Promise</code> resolving with the condition.
-	 *  If there is no value <code>null</code> is returned.
+	 *  If there is no value, <code>null</code> is returned.
 	 * @throws {sap.ui.model.ParseException}
-	 *	If parsing to the model type is not possible; the message of the exception is language
-	 *	dependent as it may be displayed on the UI
+	 *	If parsing to the model type is not possible; the message of the exception is language-dependent as it may be displayed on the UI
 	 *
-	 * @private
-	 * @ui5-restricted sap.ui.mdc.field.FieldBase, sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
 	 */
 	ConditionType.prototype.parseValue = function(vValue, sSourceType) {
 
-		if (this._bDestroyed) { // if destroyed do nothing
-			return null;
-		}
-
+		var bInputValidationEnabled = _isInputValidationEnabled.call(this);
 		if (!sSourceType) {
 			sSourceType = "string";
 		} else if (sSourceType === "any" && typeof vValue === "string") {
 			sSourceType = "string";
+		}
+
+		return this._parseValue(vValue, sSourceType, bInputValidationEnabled);
+
+	};
+
+	// own function as API for parseValue cannot be extended by inherited class
+	/**
+	 * Parses an external value of the given source type to a condition that holds the value in model
+	 * representation.
+	 * These values are parsed using the given data type. Depending on the operator
+	 * and the configuration (set in <code>FormatOptions</code>) a value will be determined by a given value help or delegate.
+	 *
+	 * @param {any} vValue
+	 *	The value that is parsed
+	 * @param {string} sSourceType
+	 *	The type of the given value; see
+	 *	{@link topic:ac56d92162ed47ff858fdf1ce26c18c4 Allowed Property Types}
+	 *	In addition to the standard source types, <code>sap.ui.mdc.raw</code> can be used. In this case the value is not parsed and just
+	 *	used in the condition. If the value of the condition is an array representing data for a <code>CompositeType</code> ,the index of the needed raw value can be added to the
+	 *	name (For example, if a unit should be forwarded as raw value <code>sap.ui.mdc.raw:1</code> can be used).
+	 * @param {boolean} bInputValidationEnabled
+	 *	If set, input validation is enabled, otherwise disabled, even if delegate or ValueHelp allows it. (Pasting multiple values)
+	 * @return {null|sap.ui.mdc.condition.ConditionObject|Promise<null|sap.ui.mdc.condition.ConditionObject>}
+	 *	The condition or a <code>Promise</code> resolving with the condition.
+	 *  If there is no value, <code>null</code> is returned.
+	 * @throws {sap.ui.model.ParseException}
+	 *	If parsing to the model type is not possible; the message of the exception is language-dependent as it may be displayed on the UI
+	 *
+	 * @private
+	 * @ui5-restricted sap.ui.mdc.field.ConditionsType
+	 */
+	ConditionType.prototype._parseValue = function(vValue, sSourceType, bInputValidationEnabled) {
+
+		if (this._bDestroyed) { // if destroyed do nothing
+			return null;
 		}
 
 		var oNavigateCondition = this.oFormatOptions.navigateCondition;
@@ -335,14 +359,13 @@ sap.ui.define([
 		}
 
 		var sDisplay = _getDisplay.call(this);
-		var bInputValidationEnabled = _isInputValidationEnabled.call(this);
 		var oType = _getValueType.call(this);
 		var oOriginalType = _getOriginalType.call(this);
 		var aOperators = _getOperators.call(this);
 		var bIsUnit = _isUnit(oType);
 		var sDefaultOperator;
 
-		if (vValue === null || vValue === undefined || (vValue === "" && !bInputValidationEnabled)) { // check if "" is a key in FieldHelp
+		if (vValue === null || vValue === undefined || (vValue === "" && !bInputValidationEnabled)) { // check if "" is a key in ValueHelp
 			if (!_isCompositeType.call(this, oType)) {
 				return null; // TODO: for all types???
 			}
@@ -368,7 +391,7 @@ sap.ui.define([
 						oOperator = _getDefaultOperator.call(this, aOperators, oType);
 
 						if (bInputValidationEnabled && !_isCompositeType.call(this, oType)) {
-							// try first to use EQ and find it in FieldHelp. If not found try later with default operator
+							// try first to use EQ and find it in ValueHelp. If not found try later with default operator
 							var oEQOperator = FilterOperatorUtil.getEQOperator(aOperators);
 							if (aOperators.indexOf(oEQOperator.name) >= 0) { // as EQ is returned if not in List
 								bCheckForDefault = !!oOperator && oOperator.name !== oEQOperator.name; // only if default operator exists and is different
@@ -400,7 +423,7 @@ sap.ui.define([
 					var iCallCount = this._oCalls.last;
 
 					if ((!bCompositeType || bIsUnit) && oOperator.validateInput && bInputValidationEnabled) {
-						// use FieldHelp to determine condition (for unit part also if composite type used)
+						// use ValueHelp to determine condition (for unit part also if composite type used)
 						oCondition = _parseDetermineKeyAndDescription.call(this, oOperator, vValue, oType, bUseDefaultOperator, bCheckForDefault, aOperators, sDisplay, true);
 						if (oCondition instanceof Promise) {
 							return _fnReturnPromise.call(this, oCondition);
@@ -418,10 +441,11 @@ sap.ui.define([
 							}
 						} catch (oException) {
 							var oMyException = oException;
-							if (oMyException instanceof ParseException && oOriginalType) {
+							if (oMyException instanceof ParseException && oOriginalType && !bCompositeType) {
 								// As internal yyyy-MM-dd is used as pattern for dates (times similar) the
 								// parse exception might contain this as pattern. The user should see the pattern thats shown
 								// So try to parse date with the original type to get parseException with right pattern.
+								// Not for CompositeTypes as here the parts might have different configuartion what leads to different messages.
 								try {
 									oOriginalType.parseValue(vValue, "string", oOriginalType._aCurrentValue);
 								} catch (oOriginalException) {
@@ -484,12 +508,12 @@ sap.ui.define([
 			var oFormatOptions = oOriginalType.getFormatOptions();
 			var oConstraints = oOriginalType.getConstraints();
 			var oDelegate = this.oFormatOptions.delegate;
-			var oPayload = this.oFormatOptions.payload;
-			var sBaseType = oDelegate && oDelegate.getTypeUtil(oPayload).getBaseType(sName, oFormatOptions, oConstraints); // don't use _getBaseType to get "real" unit type
+			var oField = this.oFormatOptions.control;
+			var sBaseType = oDelegate && oDelegate.getTypeMap(oField).getBaseType(sName, oFormatOptions, oConstraints); // don't use _getBaseType to get "real" unit type
 			if ((sBaseType === BaseType.Unit || sBaseType === BaseType.DateTime) &&
 					!oCondition.values[0][1] && oType._aCurrentValue) {
 				// TODO: if no unit provided use last one
-				var sUnit = oType._aCurrentValue[1] ? oType._aCurrentValue[1] : null; // if no unit set null
+				var sUnit = oType._aCurrentValue[1] === undefined ? null : oType._aCurrentValue[1]; // undefined in CompositeType means "not changed" -> if no current unit it needs to be null
 				oCondition.values[0][1] = sUnit;
 				if (oCondition.operator === "BT") {
 					oCondition.values[1][1] = sUnit;
@@ -512,8 +536,6 @@ sap.ui.define([
 		var vCheckValue;
 		var vCheckParsedValue;
 		var oBindingContext = this.oFormatOptions.bindingContext;
-		var oConditionModel = this.oFormatOptions.conditionModel;
-		var sConditionModelName = this.oFormatOptions.conditionModelName;
 		var aValues;
 
 		if (vValue === "") {
@@ -563,7 +585,7 @@ sap.ui.define([
 		var fnSuccess = function(oResult) {
 			if (oResult) {
 				var aValues = [oResult.key];
-				if (oOperator.valueTypes.length > 1 && oOperator.valueTypes[1] !== Operator.ValueType.Static) {
+				if (oOperator.valueTypes.length > 1 && oOperator.valueTypes[1] !== OperatorValueType.Static) {
 					// description is supported
 					aValues.push(oResult.description);
 				}
@@ -572,7 +594,7 @@ sap.ui.define([
 				// no empty key -> no condition
 				return null;
 			} else {
-				// FieldHelp might not fire an exception if nothing found -> but handle this as error
+				// ValueHelp might not fire an exception if nothing found -> but handle this as error
 				return fnError.call(this, new ParseException(this._oResourceBundle.getText("valuehelp.VALUE_NOT_EXIST", [vValue])));// use original value in message
 			}
 		};
@@ -623,7 +645,7 @@ sap.ui.define([
 		}
 
 		return SyncPromise.resolve().then(function() {
-			return _getItemForValue.call(this, vCheckValue, vCheckParsedValue, oType, oBindingContext, bCheckKey, bCheckDescription, oConditionModel, sConditionModelName);
+			return _getItemForValue.call(this, vCheckValue, vCheckParsedValue, oType, oBindingContext, bCheckKey, bCheckDescription);
 		}.bind(this)).then(function(oResult) {
 			return fnGetResult.call(this, oResult, fnSuccess);
 		}.bind(this)).catch(function(oException) {
@@ -638,7 +660,7 @@ sap.ui.define([
 		var oCondition;
 
 		if (oOperator && aOperators.indexOf(oOperator.name) >= 0) {
-			oCondition = oOperator.getCondition(vValue, oType, FieldDisplay.Value, true); // use Value as displayFormat if nothing found in FieldHelp
+			oCondition = oOperator.getCondition(vValue, oType, FieldDisplay.Value, true); // use Value as displayFormat if nothing found in ValueHelp
 			oCondition.validated = ConditionValidated.NotValidated;
 		}
 
@@ -687,16 +709,14 @@ sap.ui.define([
 	 * Validates a given condition. The values of the condition are validated using the given data type.
 	 *
 	 * @param {sap.ui.mdc.condition.ConditionObject} oCondition
-	 *	The condition to be validated
+	 *	The condition that is validated
 	 * @returns {void|Promise}
 	 *	<code>undefined</code> or a <code>Promise</code> resolving with an undefined value
-	 * @throws {sap.ui.model.ValidateException}
+	 * @throws {sap.ui.mdc.condition.ConditionValidateException}
 	 *	If at least one of the values of the condition is not valid for the given data type; the message of the exception is
-	 *	language dependent as it may be displayed on the UI
+	 *	language-dependent as it may be displayed on the UI
 	 *
-	 * @private
-	 * @ui5-restricted sap.ui.mdc.field.FieldBase, sap.fe
-	 * @MDC_PUBLIC_CANDIDATE
+	 * @public
 	 */
 	ConditionType.prototype.validateValue = function(oCondition) {
 
@@ -704,6 +724,7 @@ sap.ui.define([
 		var oOriginalType = _getOriginalType.call(this);
 		var aOperators = _getOperators.call(this);
 		var bIsUnit = _isUnit(oType);
+		var bCompositeType = _isCompositeType.call(this, oType);
 		var aCompositeTypes = _getCompositeTypes.call(this);
 		var iCompositePart = 0;
 
@@ -713,16 +734,31 @@ sap.ui.define([
 			// check if type allows to be null
 			if (FilterOperatorUtil.onlyEQ(aOperators)) {
 				// TODO: also for FilterField case?
+				var vCheckValue = null;
 				try {
 					if (oType.hasOwnProperty("_sParsedEmptyString") && oType._sParsedEmptyString !== null) { //TODO: find solution for all types
 						// empty string is parsed as empty string or "0", so validate for this
-						oType.validateValue(oType._sParsedEmptyString);
-					} else {
-						oType.validateValue(null);
+						vCheckValue = oType._sParsedEmptyString;
 					}
-				} catch (oError) {
-					if (oError instanceof ValidateException) {
-						throw oError;
+					oType.validateValue(vCheckValue);
+				} catch (oException) {
+					if (oException instanceof ValidateException) {
+						try {
+							if (oOriginalType && !bCompositeType) {
+								// As internal yyyy-MM-dd is used as pattern for dates (times similar) the
+								// ValidateException might contain this as pattern. The user should see the pattern thats shown
+								// So try to validate date with the original type to get ValidateException with right pattern.
+								// Not for CompositeTypes as here the parts might have different configuartion what leads to different messages.
+								oOriginalType.validateValue(vCheckValue);
+							}
+							throw oException;
+						} catch (oException) {
+							if (oException instanceof ValidateException) {
+								// add condition to exception to improve mapping in FieldBase handleValidationError
+								throw new ConditionValidateException(oException.message, oException.violatedConstraints, null);
+							}
+							throw oException;
+						}
 					} else {
 						//validation breaks with runtime error -> just ignore
 						//TODO: is this the right way?
@@ -735,7 +771,7 @@ sap.ui.define([
 
 		if (typeof oCondition !== "object" || !oCondition.operator || !oCondition.values ||
 				!Array.isArray(oCondition.values)) {
-			throw new ValidateException(this._oResourceBundle.getText("field.VALUE_NOT_VALID"));
+			throw new ConditionValidateException(this._oResourceBundle.getText("field.VALUE_NOT_VALID"), undefined, typeof oCondition === "object" ? merge({}, oCondition) : oCondition);
 		}
 
 		var oOperator = FilterOperatorUtil.getOperator(oCondition.operator);
@@ -746,19 +782,28 @@ sap.ui.define([
 		}
 
 		if (!oOperator || aOperators.indexOf(oOperator.name) === -1) {
-			throw new ValidateException("No valid condition provided, Operator wrong.");
+			throw new ConditionValidateException("No valid condition provided, Operator wrong.", undefined, merge({}, oCondition));
 		}
 
 		try {
 			oOperator.validate(oCondition.values, oType, aCompositeTypes, iCompositePart);
 		} catch (oException) {
-			if (oException instanceof ValidateException && oOriginalType) {
-				// As internal yyyy-MM-dd is used as pattern for dates (times similar) the
-				// ValidateException might contain this as pattern. The user should see the pattern thats shown
-				// So try to validate date with the original type to get ValidateException with right pattern.
-				oOperator.validate(oCondition.values, oOriginalType, aCompositeTypes, iCompositePart);
+			try {
+				if (oException instanceof ValidateException && oOriginalType && !bCompositeType) {
+					// As internal yyyy-MM-dd is used as pattern for dates (times similar) the
+					// ValidateException might contain this as pattern. The user should see the pattern thats shown
+					// So try to validate date with the original type to get ValidateException with right pattern.
+					// Not for CompositeTypes as here the parts might have different configuartion what leads to different messages.
+					oOperator.validate(oCondition.values, oOriginalType, aCompositeTypes, iCompositePart);
+				}
+				throw oException;
+			} catch (oException) {
+				if (oException instanceof ValidateException) {
+					// add condition to exception to improve mapping in FieldBase handleValidationError
+					throw new ConditionValidateException(oException.message, oException.violatedConstraints, merge({}, oCondition));
+				}
+				throw oException;
 			}
-			throw oException;
 		}
 
 	};
@@ -819,13 +864,13 @@ sap.ui.define([
 
 	}
 
-	function _getFieldHelp() {
+	function _getValueHelp() {
 
-		var sID = this.oFormatOptions.fieldHelpID;
+		var sID = this.oFormatOptions.valueHelpID;
 		if (sID) {
-			var oFieldHelp = sap.ui.getCore().byId(sID);
-			if (oFieldHelp && oFieldHelp.isValidationSupported()) {
-				return oFieldHelp;
+			var oValueHelp = sap.ui.getCore().byId(sID);
+			if (oValueHelp && oValueHelp.isValidationSupported()) {
+				return oValueHelp;
 			}
 		}
 
@@ -906,6 +951,9 @@ sap.ui.define([
 		if (oResult.outParameters) {
 			oCondition.outParameters = oResult.outParameters;
 		}
+		if (oResult.payload) {
+			oCondition.payload = oResult.payload;
+		}
 
 		return oCondition;
 
@@ -927,8 +975,8 @@ sap.ui.define([
 		var oFormatOptions = oType.getFormatOptions();
 		var oConstraints = oType.getConstraints();
 		var oDelegate = this.oFormatOptions.delegate;
-		var oPayload = this.oFormatOptions.payload;
-		var sBaseType = oDelegate ? oDelegate.getTypeUtil(oPayload).getBaseType(sType, oFormatOptions, oConstraints) : BaseType.String;
+		var oField = this.oFormatOptions.control;
+		var sBaseType = oDelegate ? oDelegate.getTypeMap(oField).getBaseType(sType, oFormatOptions, oConstraints) : BaseType.String;
 
 		if (sBaseType === BaseType.Unit) {
 			sBaseType = BaseType.Numeric;
@@ -940,91 +988,77 @@ sap.ui.define([
 
 	function _isInputValidationEnabled() {
 
-		var oFieldHelp = _getFieldHelp.call(this);
+		var oValueHelp = _getValueHelp.call(this);
 		var oDelegate = this.oFormatOptions.delegate;
-		var oPayload = this.oFormatOptions.payload;
 
 		if (oDelegate) {
-			return oDelegate.isInputValidationEnabled(oPayload, oFieldHelp);
+			return oDelegate.isInputValidationEnabled(this.oFormatOptions.control, oValueHelp);
 		} else {
-			return !!oFieldHelp;
+			return !!oValueHelp;
 		}
 
 	}
 
 	function _isInvalidInputAllowed() {
 
-		var oFieldHelp = _getFieldHelp.call(this);
+		var oValueHelp = _getValueHelp.call(this);
 		var oDelegate = this.oFormatOptions.delegate;
-		var oPayload = this.oFormatOptions.payload;
 
 		if (oDelegate) {
-			return oDelegate.isInvalidInputAllowed(oPayload, oFieldHelp);
-		} else if (oFieldHelp) {
-			return !oFieldHelp.getValidateInput();
+			return oDelegate.isInvalidInputAllowed(this, oValueHelp);
+		} else if (oValueHelp) {
+			return !oValueHelp.getValidateInput();
 		} else {
 			return true;
 		}
 
 	}
 
-	function _getItemForValue(vValue, vParsedValue, oType, oBindingContext, bCheckKey, bCheckDescription, oConditionModel, sConditionModelName) {
+	function _getItemForValue(vValue, vParsedValue, oType, oBindingContext, bCheckKey, bCheckDescription) {
 
-		var oFieldHelp = _getFieldHelp.call(this);
+		var oValueHelp = _getValueHelp.call(this);
 		var oDelegate = this.oFormatOptions.delegate;
-		var oPayload = this.oFormatOptions.payload;
 		var oControl = this.oFormatOptions.control;
 		var oConfig = {
 				value: vValue,
 				parsedValue: vParsedValue,
 				dataType: oType,
-				inParameters: undefined, // TODO: needed?
-				outParameters: undefined, // TODO: needed?
 				bindingContext: oBindingContext,
 				checkKey: bCheckKey,
 				checkDescription: bCheckDescription,
-				conditionModel: oConditionModel,
-				conditionModelName: sConditionModelName,
 				exception: ParseException,
 				control: oControl
 		};
 
 		if (oDelegate) {
-			return oDelegate.getItemForValue(oPayload, oFieldHelp, oConfig);
-		} else if (oFieldHelp) {
-			return oFieldHelp.getItemForValue(oConfig);
+			return oDelegate.getItemForValue(oControl, oValueHelp, oConfig);
+		} else if (oValueHelp) {
+			return oValueHelp.getItemForValue(oConfig);
 		}
 
 	}
 
-	function _getDescription(vKey, oCondition, oType, oBindingContext, oConditionModel, sConditionModelName) {
+	function _getDescription(vKey, oCondition, oType, oBindingContext) {
 
-		var oFieldHelp = _getFieldHelp.call(this);
+		var oValueHelp = _getValueHelp.call(this);
 		var oDelegate = this.oFormatOptions.delegate;
-		var oPayload = this.oFormatOptions.payload;
 		var oControl = this.oFormatOptions.control;
 		if (oDelegate) {
-			return oDelegate.getDescription(oPayload, oFieldHelp, vKey, oCondition.inParameters, oCondition.outParameters, oBindingContext, oConditionModel, sConditionModelName, oCondition.payload, oControl, oType);
-		} else if (oFieldHelp) {
-			if (oFieldHelp.isA("sap.ui.mdc.ValueHelp")) {
-				var oConfig = {
-					value: vKey,
-					parsedValue: vKey,
-					dataType: oType,
-					context: {inParameters: oCondition.inParameters, outParameters: oCondition.outParameters, payload: oCondition.payload},
-					bindingContext: oBindingContext,
-					conditionModel: oConditionModel,
-					conditionModelName: sConditionModelName,
-					checkKey: true,
-					checkDescription: false,
-					caseSensitive: true, // case sensitive as used to get description for known key
-					exception: FormatException,
-					control: oControl
-				};
-				return oFieldHelp.getItemForValue(oConfig);
-			} else {
-				return oFieldHelp.getTextForKey(vKey, oCondition.inParameters, oCondition.outParameters, oBindingContext, oConditionModel, sConditionModelName);
-			}
+			return oDelegate.getDescription(oControl, oValueHelp, vKey, oCondition.inParameters, oCondition.outParameters, oBindingContext, undefined, undefined, oCondition.payload, oControl, oType);
+		} else if (oValueHelp) {
+			var oConfig = {
+				value: vKey,
+				parsedValue: vKey,
+				dataType: oType,
+				context: {inParameters: oCondition.inParameters, outParameters: oCondition.outParameters, payload: oCondition.payload},
+				bindingContext: oBindingContext,
+				checkKey: true,
+				checkDescription: false,
+				caseSensitive: true, // case sensitive as used to get description for known key
+				exception: FormatException,
+				control: oControl
+			};
+			return oValueHelp.getItemForValue(oConfig);
 		}
 
 	}

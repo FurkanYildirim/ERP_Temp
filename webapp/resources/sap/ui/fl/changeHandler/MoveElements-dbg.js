@@ -18,7 +18,7 @@ sap.ui.define([
 	 *
 	 * @alias sap.ui.fl.changeHandler.MoveElements
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @experimental Since 1.34.0
 	 */
 	var MoveElements = { };
@@ -84,7 +84,7 @@ sap.ui.define([
 	/**
 	 * Moves an element from one aggregation to another.
 	 *
-	 * @param {sap.ui.fl.Change} oChange change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange change object with instructions to be applied on the control map
 	 * @param {sap.ui.core.Control} oSourceParent control that matches the change selector for applying the change, which is the source of the move
 	 * @param {object} mPropertyBag - map of properties
 	 * @param {object} mPropertyBag.view - xml node representing a ui5 view

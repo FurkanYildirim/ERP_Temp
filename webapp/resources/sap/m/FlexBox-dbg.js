@@ -62,7 +62,7 @@ function(
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
 	 * @alias sap.m.FlexBox
@@ -305,7 +305,7 @@ function(
 	 * Gets the accessibility information.
 	 *
 	 * @protected
-	 * @returns {object} The accessibility information.
+	 * @returns {sap.ui.core.AccessibilityInfo} The accessibility information.
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 */
 	FlexBox.prototype.getAccessibilityInfo = function() {

@@ -17,6 +17,7 @@ sap.ui.define([
 	"sap/base/Log",
 	"sap/m/Button",
 	"sap/ui/core/Core",
+	"sap/ui/core/Configuration",
 	"sap/ui/core/InvisibleText"
 ], function(
 	library,
@@ -30,6 +31,7 @@ sap.ui.define([
 	Log,
 	Button,
 	Core,
+	Configuration,
 	InvisibleText
 ) {
 	"use strict";
@@ -83,7 +85,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -219,12 +221,15 @@ sap.ui.define([
 	 * @public
 	 */
 	MessageStrip.prototype.close = function () {
+		var sAnimationMode = Configuration.getAnimationMode(),
+			bHasAnimations = sAnimationMode !== Configuration.AnimationMode.none && sAnimationMode !== Configuration.AnimationMode.minimal;
+
 		var fnClosed = function () {
 			this.setVisible(false);
 			this.fireClose();
 		}.bind(this);
 
-		if (!Core.getConfiguration().getAnimation()) {
+		if (!bHasAnimations) {
 			fnClosed();
 			return;
 		}

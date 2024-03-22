@@ -16,7 +16,7 @@ sap.ui.define(function() {
 	 * @namespace
 	 * @name sap.ui.dt.SelectionMode
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @experimental This class is experimental and provides only limited functionality. Also the API might be changed in future.
 	 * @private
 	 */

@@ -7,24 +7,25 @@ sap.ui.define([
 	"./BaseListContent",
 	"./ListContentRenderer",
 	"sap/ui/util/openWindow",
-	"sap/ui/core/ResizeHandler",
 	"sap/m/library",
 	"sap/m/List",
-	"sap/m/ObjectStatus",
+	"sap/f/cards/loading/ListPlaceholder",
+	"sap/ui/integration/controls/ObjectStatus",
 	"sap/ui/integration/library",
 	"sap/ui/integration/util/BindingHelper",
 	"sap/ui/integration/util/BindingResolver",
 	"sap/ui/integration/controls/Microchart",
 	"sap/ui/integration/controls/MicrochartLegend",
 	"sap/ui/integration/controls/ListContentItem",
-	"sap/ui/integration/controls/ActionsStrip"
+	"sap/ui/integration/controls/ActionsStrip",
+	"sap/ui/integration/cards/list/MicrochartsResizeHelper"
 ], function (
 	BaseListContent,
 	ListContentRenderer,
 	openWindow,
-	ResizeHandler,
 	mLibrary,
 	List,
+	ListPlaceholder,
 	ObjectStatus,
 	library,
 	BindingHelper,
@@ -32,7 +33,8 @@ sap.ui.define([
 	Microchart,
 	MicrochartLegend,
 	ListContentItem,
-	ActionsStrip
+	ActionsStrip,
+	MicrochartsResizeHelper
 ) {
 	"use strict";
 
@@ -68,7 +70,7 @@ sap.ui.define([
 	 * @extends sap.ui.integration.cards.BaseListContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -93,24 +95,13 @@ sap.ui.define([
 	});
 
 	/**
-	 * Called when control is initialized.
+	 * Called on before rendering of the control.
+	 * @private
 	 */
-	ListContent.prototype.init = function () {
-		BaseListContent.prototype.init.apply(this, arguments);
+	ListContent.prototype.onBeforeRendering = function () {
+		BaseListContent.prototype.onBeforeRendering.apply(this, arguments);
 
-		var oList = this._getList();
-		var that = this;
-
-		this.setAggregation("_content", oList);
-
-		oList.attachUpdateFinished(function () {
-			if (that._iVisibleItems) {
-				var aItems = oList.getItems();
-				for (var i = that._iVisibleItems + 1; i < aItems.length; i++) {
-					aItems[i].setVisible(false);
-				}
-			}
-		});
+		this._getList().setBackgroundDesign(this.getDesign());
 	};
 
 	/**
@@ -124,17 +115,24 @@ sap.ui.define([
 			this._oItemTemplate = null;
 		}
 
-		if (this._iMicrochartsResizeHandler) {
-			ResizeHandler.deregister(this._iMicrochartsResizeHandler);
-			this._iMicrochartsResizeHandler = undefined;
+		if (this._oMicrochartsResizeHelper) {
+			this._oMicrochartsResizeHelper.destroy();
+			this._oMicrochartsResizeHelper = null;
 		}
 	};
 
 	/**
 	 * @override
 	 */
-	ListContent.prototype.onAfterRendering = function () {
-		this._resizeMicrocharts();
+	ListContent.prototype.createLoadingPlaceholder = function (oConfiguration) {
+		var oCard = this.getCardInstance(),
+			iContentMinItems = oCard.getContentMinItems(oConfiguration);
+
+		return new ListPlaceholder({
+			minItems: iContentMinItems !== null ? iContentMinItems : 2,
+			item: oConfiguration.item,
+			itemHeight: ListContentRenderer.getItemMinHeight(oConfiguration, this) + "rem"
+		});
 	};
 
 	/**
@@ -151,24 +149,23 @@ sap.ui.define([
 	/**
 	 * @override
 	 */
-	ListContent.prototype.setConfiguration = function (oConfiguration) {
-		BaseListContent.prototype.setConfiguration.apply(this, arguments);
-		oConfiguration = this.getParsedConfiguration();
+	ListContent.prototype.applyConfiguration = function () {
+		BaseListContent.prototype.applyConfiguration.apply(this, arguments);
+
+		var oConfiguration = this.getParsedConfiguration();
 
 		if (!oConfiguration) {
-			return this;
+			return;
 		}
 
 		if (oConfiguration.items) {
 			this._setStaticItems(oConfiguration.items);
-			return this;
+			return;
 		}
 
 		if (oConfiguration.item) {
 			this._setItem(oConfiguration);
 		}
-
-		return this;
 	};
 
 	/**
@@ -221,7 +218,8 @@ sap.ui.define([
 	 * Handler for when data is changed.
 	 */
 	ListContent.prototype.onDataChanged = function () {
-		this._handleNoItemsError(this.getParsedConfiguration().item);
+		BaseListContent.prototype.onDataChanged.apply(this, arguments);
+
 		this._checkHiddenNavigationItems(this.getParsedConfiguration().item);
 	};
 
@@ -240,8 +238,42 @@ sap.ui.define([
 			this._oList = new List({
 				id: this.getId() + "-list",
 				growing: false,
-				showNoData: false
+				showNoData: false,
+				ariaLabelledBy: this.getHeaderTitleId(),
+				updateFinished: function () {
+					if (this._iVisibleItems) {
+						var aItems = this._oList.getItems();
+						for (var i = this._iVisibleItems + 1; i < aItems.length; i++) {
+							aItems[i].setVisible(false);
+						}
+					}
+				}.bind(this)
 			});
+
+			// remove the custom accessibility announcement from the sap.m.ListBase
+			// so the additional elements (like attributes) are also read
+			this._oList.onItemFocusIn = function (oItem, oFocusedControl) {
+				this._oList._handleStickyItemFocus(oItem.getDomRef());
+			}.bind(this);
+
+			this._oList.addEventDelegate({
+				onfocusin: function (oEvent) {
+					if (!(oEvent.srcControl instanceof ListContentItem)) {
+						return;
+					}
+
+					var fItemBottom = oEvent.target.getBoundingClientRect().bottom;
+					var fContentBottom = this.getDomRef().getBoundingClientRect().bottom;
+					var fDist = Math.abs(fItemBottom - fContentBottom);
+					var ROUNDED_CORNER_PX_THRESHOLD = 10;
+
+					if (fDist < ROUNDED_CORNER_PX_THRESHOLD) {
+						oEvent.srcControl.addStyleClass("sapUiIntLCIRoundedCorners");
+					}
+				}
+			}, this);
+
+			this.setAggregation("_content", this._oList);
 		}
 
 		return this._oList;
@@ -258,18 +290,21 @@ sap.ui.define([
 		var mItem = oConfiguration.item,
 			oList = this._getList(),
 			bIsSkeleton = this.isSkeleton(),
+			oObjectStatus,
 			mSettings = {
-				iconDensityAware: false,
 				title: mItem.title && (mItem.title.value || mItem.title),
 				description: mItem.description && (mItem.description.value || mItem.description),
 				highlight: mItem.highlight,
+				highlightText: mItem.highlightText,
 				info: mItem.info && mItem.info.value,
 				infoState: mItem.info && mItem.info.state,
+				infoVisible: mItem.info && mItem.info.visible,
+				showInfoStateIcon: mItem.info && mItem.info.showStateIcon,
+				customInfoStatusIcon: mItem.info && mItem.info.customStateIcon,
 				attributes: []
 			};
 
 		if (mItem.icon) {
-
 			mSettings.icon = BindingHelper.formattedProperty(mItem.icon.src, function (sValue) {
 				return this._oIconFormatter.formatSrc(sValue);
 			}.bind(this));
@@ -278,10 +313,10 @@ sap.ui.define([
 			mSettings.iconInitials = mItem.icon.initials || mItem.icon.text;
 			mSettings.iconVisible = mItem.icon.visible;
 
-			if (mSettings.title && mSettings.description) {
-				mSettings.iconSize = AvatarSize.S;
-			} else {
+			if (ListContentItem.getLinesCount(mItem) === 1) {
 				mSettings.iconSize = AvatarSize.XS;
+			} else {
+				mSettings.iconSize = AvatarSize.S;
 			}
 
 			mSettings.iconSize = mItem.icon.size || mSettings.iconSize;
@@ -294,12 +329,16 @@ sap.ui.define([
 
 		if (mItem.attributes) {
 			mItem.attributes.forEach(function (attr) {
-				mSettings.attributes.push(new ObjectStatus({
+				oObjectStatus = new ObjectStatus({
 					text: attr.value,
 					state: attr.state,
 					emptyIndicatorMode: EmptyIndicatorMode.On,
-					visible: attr.visible
-				}));
+					visible: attr.visible,
+					showStateIcon: attr.showStateIcon,
+					icon: attr.customStateIcon
+				});
+
+				mSettings.attributes.push(oObjectStatus);
 			});
 		}
 
@@ -360,29 +399,9 @@ sap.ui.define([
 			this.awaitEvent(LEGEND_COLORS_LOAD);
 		}
 
+		this._oMicrochartsResizeHelper = new MicrochartsResizeHelper(this._oList);
+
 		return oChart;
-	};
-
-	/**
-	 * @private
-	 */
-	 ListContent.prototype._resizeMicrocharts = function () {
-		var $charts = this.$().find(".sapUiIntMicrochartChart"),
-			iShortestWidth = Number.MAX_VALUE;
-
-		if ($charts.length === 0) {
-			return;
-		}
-
-		$charts.each(function (iIndex, oChartWrapper) {
-			iShortestWidth = Math.min(iShortestWidth, oChartWrapper.offsetWidth);
-		});
-
-		$charts.find(".sapUiIntMicrochartChartInner").css("max-width", iShortestWidth + "px");
-
-		if (!this._iMicrochartsResizeHandler) {
-			this._iMicrochartsResizeHandler = ResizeHandler.register(this, this._resizeMicrocharts.bind(this));
-		}
 	};
 
 	/**
@@ -395,13 +414,13 @@ sap.ui.define([
 		var oList = this._getList();
 		mItems.forEach(function (oItem) {
 			var oListItem = new ListContentItem({
-				iconDensityAware: false,
 				title: oItem.title ? oItem.title : "",
 				description: oItem.description ? oItem.description : "",
 				icon: oItem.icon ? oItem.icon : "",
 				infoState: oItem.infoState ? oItem.infoState : "None",
 				info: oItem.info ? oItem.info : "",
-				highlight: oItem.highlight ? oItem.highlight : "None"
+				highlight: oItem.highlight ? oItem.highlight : "None",
+				highlightText: oItem.highlightText ? oItem.highlightText : ""
 			});
 
 			// Here can be called _attachAction so that navigation service can be used

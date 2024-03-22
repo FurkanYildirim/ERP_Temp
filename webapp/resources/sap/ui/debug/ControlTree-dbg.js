@@ -33,7 +33,7 @@ sap.ui.define('sap/ui/debug/ControlTree', [
 	 * @class Control Tree used for the Debug Environment
 	 * @extends sap.ui.base.EventProvider
 	 * @author Martin Schaus, Frank Weigel
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @alias sap.ui.debug.ControlTree
 	 * @private
 	 */

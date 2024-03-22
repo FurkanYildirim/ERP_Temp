@@ -1,0 +1,1 @@
+{"version":3,"file":"TableSelectionMode.js","names":["sap","ui","define","TableSelectionMode","None","Single","SingleMaster","Multi"],"sources":["TableSelectionMode-dbg.js"],"mappings":";;;;;AAMAA,IAAIC,GAAGC,OAAO,WACV,aAWA,IAAIC,EAAqB,CAKrBC,KAAM,OAKNC,OAAQ,SAMRC,aAAc,eAKdC,MAAO,SAGX,OAAOJ,CAEX,EAAkB"}

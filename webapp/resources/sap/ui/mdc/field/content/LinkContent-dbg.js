@@ -4,13 +4,17 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/mdc/field/content/DefaultContent"
-], function(DefaultContent) {
+	"sap/ui/mdc/field/content/DefaultContent",
+	"sap/m/library"
+], function(DefaultContent, mLibrary) {
 	"use strict";
+
+	var EmptyIndicatorMode = mLibrary.EmptyIndicatorMode;
 
 	/**
 	 * Object-based definition of the link content type that is used in the {@link sap.ui.mdc.field.content.ContentFactory}.
-	 * This defines which controls to load and create for a given {@link sap.ui.mdc.enum.ContentMode}.
+	 * This defines which controls to load and create for a given {@link sap.ui.mdc.enums.ContentMode}.
+	 * @namespace
 	 * @author SAP SE
 	 * @private
 	 * @ui5-restricted sap.ui.mdc
@@ -18,7 +22,6 @@ sap.ui.define([
 	 * @since 1.87
 	 * @alias sap.ui.mdc.field.content.LinkContent
 	 * @extends sap.ui.mdc.field.content.DefaultContent
-	 * @MDC_PUBLIC_CANDIDATE
 	 */
 	var LinkContent = Object.assign({}, DefaultContent, {
 		getDisplay: function() {
@@ -36,14 +39,15 @@ sap.ui.define([
 		createDisplay: function(oContentFactory, aControlClasses, sId) {
 			var Link = aControlClasses[0];
 			var oConditionsType = oContentFactory.getConditionsType();
-			// do no set width to open the FieldInfo ast the end of the Link
+			// do no set width to open the FieldInfo at the end of the Link
 			var oLink = new Link(sId, {
 				text: { path: "$field>/conditions", type: oConditionsType },
 				textAlign: "{$field>/textAlign}",
 				textDirection: "{$field>/textDirection}",
 				tooltip: "{$field>/tooltip}",
 				press: oContentFactory.getHandleContentPress(),
-				wrapping: "{$field>/multipleLines}"
+				wrapping: "{$field>/multipleLines}",
+				emptyIndicatorMode: EmptyIndicatorMode.Auto
 			});
 			var oFieldInfo = oContentFactory.getField().getFieldInfo();
 			if (oFieldInfo) {
@@ -53,7 +57,6 @@ sap.ui.define([
 			}
 
 			oContentFactory.setAriaLabelledBy(oLink);
-			oContentFactory.setBoundProperty("text");
 
 			return [oLink];
 		},

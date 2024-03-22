@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-// Provides the Design Time Metadata for the sap.ui.fl.variants.VariantManagement control.
+// Provides the Design Time Metadata for the sap.ui.m.VariantManagement control.
 sap.ui.define([
 ], function(
 ) {
@@ -59,6 +59,12 @@ sap.ui.define([
 				ignore: false
 			},
 			level: {
+				ignore: false
+			},
+			titleStyle: {
+				ignore: false
+			},
+			maxWidth: {
 				ignore: false
 			}
 		}

@@ -59,7 +59,7 @@ sap.ui.define([
 	 * @extends sap.m.QuickViewBase
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -353,7 +353,7 @@ sap.ui.define([
 		var $container = oPopupControl.$().find('.sapMPopoverCont');
 
 		if ($container[0] && !$container[0].style.height) {
-			$container[0].style.height = $container.height() + 'px';
+			$container[0].style.height = $container.outerHeight() + 'px';
 		}
 	};
 

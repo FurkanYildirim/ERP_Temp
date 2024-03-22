@@ -55,19 +55,19 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 115179,
+			"size": 136492,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 114879,
+			"size": 136192,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 62181,
+			"size": 62876,
 			"theme": "sap_hcb"
 		},
 		{
@@ -78,7 +78,7 @@
 		},
 		{
 			"name": "library.css",
-			"size": 62201,
+			"size": 62896,
 			"theme": "sap_hcb"
 		},
 		{
@@ -95,12 +95,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 66750,
+			"size": 67445,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 66772,
+			"size": 67467,
 			"theme": "sap_hcb"
 		},
 		{

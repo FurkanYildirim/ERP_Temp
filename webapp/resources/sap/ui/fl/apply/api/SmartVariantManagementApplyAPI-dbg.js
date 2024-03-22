@@ -5,6 +5,7 @@
  */
 
 sap.ui.define([
+	"sap/base/util/UriParameters",
 	"sap/ui/fl/apply/_internal/flexState/compVariants/CompVariantMerger",
 	"sap/ui/fl/apply/_internal/flexState/compVariants/Utils",
 	"sap/ui/fl/apply/_internal/flexState/FlexState",
@@ -12,6 +13,7 @@ sap.ui.define([
 	"sap/ui/fl/Utils",
 	"sap/ui/fl/LayerUtils"
 ], function(
+	UriParameters,
 	CompVariantMerger,
 	CompVariantUtils,
 	FlexState,
@@ -38,6 +40,8 @@ sap.ui.define([
 
 	function getCompEntities(mPropertyBag) {
 		var oControl = mPropertyBag.control;
+		var oVMControl = (oControl.getVariantManagement && oControl.getVariantManagement()) || oControl;
+		var sSVMControlId = oVMControl.getId();
 		var sReference = ManifestUtils.getFlexReferenceForControl(oControl);
 
 		// TODO clarify why in a test we come here without an initialized FlexState (1980546095)
@@ -50,26 +54,19 @@ sap.ui.define([
 			var sPersistencyKey = CompVariantUtils.getPersistencyKey(oControl);
 			var mCompVariantsMap = FlexState.getCompVariantsMap(sReference);
 			//Store external input data to FlexState so they can be restored after invalidating cache
-			FlexState.setInitialNonFlCompVariantData(sReference, sPersistencyKey, mPropertyBag.standardVariant, mPropertyBag.variants);
-			return mCompVariantsMap._initialize(sPersistencyKey, mPropertyBag.variants);
+			FlexState.setInitialNonFlCompVariantData(sReference, sPersistencyKey, mPropertyBag.standardVariant, mPropertyBag.variants, sSVMControlId);
+			return mCompVariantsMap._initialize(sPersistencyKey, mPropertyBag.variants, sSVMControlId);
 		});
-	}
-
-	function appendComponentToString(sComponentName) {
-		if (sComponentName.length > 0 && sComponentName.indexOf(".Component") < 0) {
-			sComponentName += ".Component";
-		}
-		return sComponentName;
 	}
 
 	/**
 	 * Object containing data for a SmartVariantManagement control.
 	 *
 	 * @typedef {object} sap.ui.fl.apply.api.SmartVariantManagementApplyAPI.Response
-	 * @property {sap.ui.fl.Change[]} variants - Variants for the control
-	 * @property {sap.ui.fl.Change[]} changes - Changes on variants for the control
-	 * @property {sap.ui.fl.Change | undefined} defaultVariant - DefaultVariant change to be applied
-	 * @property {sap.ui.fl.Change | undefined} standardVariant - StandardVariant change to be applied
+	 * @property {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} variants - Variants for the control
+	 * @property {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} changes - Changes on variants for the control
+	 * @property {sap.ui.fl.apply._internal.flexObjects.FlexObject | undefined} defaultVariant - DefaultVariant change to be applied
+	 * @property {sap.ui.fl.apply._internal.flexObjects.FlexObject | undefined} standardVariant - StandardVariant change to be applied
 	 * @since 1.83
 	 * @private
 	 * @ui5-restricted
@@ -101,7 +98,7 @@ sap.ui.define([
 		 */
 
 		/**
-		 * Calls the back end asynchronously and fetches all {@link sap.ui.fl.Change}s and variants pointing to this control.
+		 * Calls the back end asynchronously and fetches all {@link sap.ui.fl.apply._internal.flexObjects.FlexObject}s and variants pointing to this control.
 		 *
 		 * @param {object} mPropertyBag - Object with parameters as properties
 		 * @param {sap.ui.comp.smartvariants.SmartVariantManagement|
@@ -117,41 +114,8 @@ sap.ui.define([
 			return getCompEntities(mPropertyBag)
 				.then(function(mCompMaps) {
 					var sPersistencyKey = CompVariantUtils.getPersistencyKey(mPropertyBag.control);
-					return CompVariantMerger.merge(sPersistencyKey, mCompMaps, mPropertyBag.standardVariant);
+					return CompVariantMerger.merge(sPersistencyKey, mCompMaps, mPropertyBag.standardVariant, mPropertyBag.control);
 				});
-		},
-
-		/**
-		 * Indicates if the current application is a variant of an existing one.
-		 *
-		 * @param {object} mPropertyBag - Object with parameters as properties
-		 * @param {sap.ui.comp.smartvariants.SmartVariantManagement} mPropertyBag.control - SAPUI5 Smart Variant Management control
-		 * @returns {boolean} <code>true</code> if it's an application variant
-		 * @private
-		 * @ui5-restricted
-		 */
-		isApplicationVariant: function(mPropertyBag) {
-			var oControl = mPropertyBag.control;
-			var oAppComponent = Utils.getAppComponentForControl(oControl);
-			var sFlexReference = ManifestUtils.getFlexReferenceForControl(oAppComponent);
-			var sAppId = appendComponentToString(Utils.getAppIdFromManifest(oAppComponent.getManifest()));
-
-			if (sFlexReference !== sAppId) {
-				return true;
-			}
-
-			var oComponent = Utils.getComponentForControl(oControl);
-
-			// special case for SmartTemplating to reach the real appComponent
-			if (oComponent && oComponent.getAppComponent) {
-				oComponent = oComponent.getAppComponent();
-
-				if (oComponent) {
-					return true;
-				}
-			}
-
-			return false;
 		},
 
 		/**
@@ -174,7 +138,9 @@ sap.ui.define([
 		 * @ui5-restricted
 		 */
 		isVariantDownport: function() {
-			return SmartVariantManagementApplyAPI.isVendorLayer() && Utils.isHotfixMode();
+			var oUriParams = UriParameters.fromQuery(window.location.search);
+			var sIsHotfixMode = oUriParams.get("hotfix");
+			return SmartVariantManagementApplyAPI.isVendorLayer() && (sIsHotfixMode === "true");
 		},
 
 		/**

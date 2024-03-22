@@ -22,7 +22,7 @@ sap.ui.define([
 	 *
 	 * @alias sap.ui.fl.changeHandler.AddIFrame
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.72
 	 * @private
 	 */
@@ -31,7 +31,7 @@ sap.ui.define([
 	/**
 	 * Add the IFrame control to the target control within the target aggregation.
 	 *
-	 * @param {sap.ui.fl.Change} oChange Change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange Change object with instructions to be applied on the control map
 	 * @param {sap.ui.core.Control} oControl Control that matches the change selector for applying the change
 	 * @param {object} mPropertyBag Map of properties
 	 * @param {object} mPropertyBag.modifier Modifier for the controls
@@ -69,7 +69,7 @@ sap.ui.define([
 	/**
 	 * Reverts previously applied change.
 	 *
-	 * @param {sap.ui.fl.Change} oChange Change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange Change object with instructions to be applied on the control map
 	 * @param {sap.ui.core.Control} oControl Control that matches the change selector for applying the change
 	 * @param {object} mPropertyBag Map of properties
 	 * @param {object} mPropertyBag.modifier Modifier for the controls
@@ -80,7 +80,7 @@ sap.ui.define([
 	/**
 	 * Completes the change by adding change handler specific content.
 	 *
-	 * @param {sap.ui.fl.Change} oChange Change object to be completed
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange Change object to be completed
 	 * @param {object} oSpecificChangeInfo Specific change information
 	 * @param {object} oSpecificChangeInfo.content Must contain UI extension settings
 	 * @param {string} oSpecificChangeInfo.content.targetAggregation Aggregation to add the extension to

@@ -30,7 +30,7 @@ sap.ui.define([
 	 * <h3>Responsive Behavior</h3> <code>sap.ui.webc.fiori.ViewSettingsDialog</code> stretches on full screen on phones.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public

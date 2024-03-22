@@ -4,15 +4,21 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-sap.ui.define(['sap/ui/base/Object', "sap/ui/thirdparty/jquery", "sap/base/Log", "sap/ui/core/Configuration"],
-	function(BaseObject, jQuery, Log, Configuration) {
+sap.ui.define([
+	"sap/ui/base/Object",
+	"sap/ui/thirdparty/jquery",
+	"sap/base/Log",
+	"sap/ui/core/Configuration",
+	"sap/ui/core/Element"
+],
+	function(BaseObject, jQuery, Log, Configuration, Element) {
 	"use strict";
 
 	/**
 	 * Handles dragging of a control over a given grid container.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @extends sap.ui.base.Object
 	 *
@@ -450,7 +456,7 @@ sap.ui.define(['sap/ui/base/Object', "sap/ui/thirdparty/jquery", "sap/base/Log",
 			return null;
 		}
 
-		oTargetControl = $target.control(0, true);
+		oTargetControl = Element.closestTo($target[0], true);
 
 		if (!sBeforeOrAfter) {
 			sBeforeOrAfter = this._calculateDropBeforeOrAfter(oTargetControl, oDragEvent);

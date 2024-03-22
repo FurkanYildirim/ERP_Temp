@@ -8,35 +8,35 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 1504,
+			"size": 1640,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 131464,
+			"size": 157945,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 131088,
+			"size": 157569,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 22793,
+			"size": 20425,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/integration/themes/sap_bluecrystal/library-parameters.json",
-			"size": 571,
+			"size": 634,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library.css",
-			"size": 22785,
+			"size": 20419,
 			"theme": "sap_bluecrystal"
 		},
 		{
@@ -53,12 +53,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 23608,
+			"size": 21596,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 23600,
+			"size": 21590,
 			"theme": "sap_bluecrystal"
 		},
 		{

@@ -31,7 +31,7 @@ sap.ui.define([
 	 * @author SAP SE
 	 * @experimental Since 1.58
 	 * @since 1.58
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted
 	*/
@@ -117,7 +117,7 @@ sap.ui.define([
 				 *
 				 * @method sap.ui.rta.service.ControllerExtension.getTemplate
 				 * @param {string} sViewId - ID of the view whose template should be retrieved
-				 * @return {Promise} Promise that resolves with the template as string or rejects when the file was not found
+				 * @return {Promise<string>} Promise that resolves with the template as string or rejects when the file was not found
 				 * @public
 				 */
 				getTemplate: function(sViewId) {

@@ -8,12 +8,14 @@ sap.ui.define([
 	"sap/ui/fl/initial/_internal/changeHandlers/ChangeHandlerStorage",
 	"sap/ui/fl/Utils",
 	"sap/ui/fl/Layer",
-	"sap/ui/fl/Change",
 	"sap/ui/fl/ChangePersistenceFactory",
 	"sap/ui/fl/write/_internal/Versions",
 	"sap/ui/fl/apply/_internal/changes/Applier",
 	"sap/ui/fl/apply/_internal/changes/Reverter",
 	"sap/ui/fl/apply/_internal/controlVariants/URLHandler",
+	"sap/ui/fl/apply/_internal/flexObjects/FlexObjectFactory",
+	"sap/ui/fl/apply/_internal/flexObjects/States",
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI",
 	"sap/ui/core/util/reflection/JsControlTreeModifier",
 	"sap/ui/core/util/reflection/XmlTreeModifier",
 	"sap/ui/core/Component",
@@ -22,12 +24,14 @@ sap.ui.define([
 	ChangeHandlerStorage,
 	Utils,
 	Layer,
-	Change,
 	ChangePersistenceFactory,
 	Versions,
 	Applier,
 	Reverter,
 	URLHandler,
+	FlexObjectFactory,
+	States,
+	ControlVariantApplyAPI,
 	JsControlTreeModifier,
 	XmlTreeModifier,
 	Component,
@@ -37,7 +41,7 @@ sap.ui.define([
 
 	function revertChangesAndUpdateVariantModel(oComponent, bSkipUrlUpdate, aChanges) {
 		return Promise.resolve()
-			.then(function () {
+			.then(function() {
 				if (aChanges.length !== 0) {
 					// Always revert changes in reverse order
 					aChanges.reverse();
@@ -48,17 +52,10 @@ sap.ui.define([
 					});
 				}
 			}.bind(this))
-			.then(function () {
+			.then(function() {
 				if (oComponent) {
-					var oModel = oComponent.getModel(Utils.VARIANT_MODEL_NAME);
+					var oModel = oComponent.getModel(ControlVariantApplyAPI.getVariantModelName());
 					if (oModel) {
-						aChanges.forEach(function (oChange) {
-							var sVariantReference = oChange.getVariantReference();
-							if (sVariantReference) {
-								oModel.removeChange(oChange);
-							}
-						});
-
 						// Temporary fix, parameters generally should not be removed
 						if (!bSkipUrlUpdate) {
 							URLHandler.update({
@@ -84,7 +81,7 @@ sap.ui.define([
 	 * @alias sap.ui.fl.FlexController
 	 * @experimental Since 1.27.0
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	var FlexController = function(sComponentName) {
 		this._oChangePersistence = undefined;
@@ -128,16 +125,13 @@ sap.ui.define([
 	/**
 	 * Base function for creation of a change
 	 *
-	 * @param {object} oChangeSpecificData - Property bag (nvp) holding the change information (see sap.ui.fl.Change#createInitialFileContent)
+	 * @param {object} oChangeSpecificData - Property bag holding the change information
 	 * The property "oPropertyBag.packageName" is set to $TMP and internally since flex changes are always local when they are created.
 	 * @param {sap.ui.core.Component} oAppComponent - Application Component of the control at runtime in case a map has been used
-	 * @returns {sap.ui.fl.Change} the created change
+	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject} the created change
 	 * @public
 	 */
 	FlexController.prototype.createBaseChange = function(oChangeSpecificData, oAppComponent) {
-		var oChangeFileContent;
-		var oChange;
-
 		if (!oAppComponent) {
 			throw new Error("No application component found. To offer flexibility a valid relation to its owning component must be present.");
 		}
@@ -145,8 +139,7 @@ sap.ui.define([
 		oChangeSpecificData.reference = this.getComponentName(); //in this case the component name can also be the value of sap-app-id
 		oChangeSpecificData.packageName = "$TMP"; // first a flex change is always local, until all changes of a component are made transportable
 
-		oChangeFileContent = Change.createInitialFileContent(oChangeSpecificData);
-		oChange = new Change(oChangeFileContent);
+		var oChange = FlexObjectFactory.createUIChange(oChangeSpecificData);
 
 		if (oChangeSpecificData.variantReference) {
 			oChange.setVariantReference(oChangeSpecificData.variantReference);
@@ -174,7 +167,7 @@ sap.ui.define([
 			})
 			.then(function () {
 				// completeChangeContent changes the content and might make it dirty
-				oChange.setState(Change.states.NEW);
+				oChange.setState(States.LifecycleState.NEW);
 				return oChange;
 			})
 			.catch(function(oError) {
@@ -185,12 +178,12 @@ sap.ui.define([
 	/**
 	 * Create a change with an ExtensionPoint as selector.
 	 *
-	 * @param {object} oChangeSpecificData - Property bag (nvp) holding the change information (see sap.ui.fl.Change#createInitialFileContent)
+	 * @param {object} oChangeSpecificData - Property bag (nvp) holding the change information
 	 * The property "oPropertyBag.packageName" is set to $TMP and internally since flex changes are always local when they are created.
 	 * @param {object} mExtensionPointReference - Reference map for extension point
 	 * @param {string} mExtensionPointReference.name - Name of the extension point
 	 * @param {sap.ui.core.Component} mExtensionPointReference.view - View including the extension point
-	 * @returns {Promise.<sap.ui.fl.Change>} Created change wrapped in a promise
+	 * @returns {Promise.<sap.ui.fl.apply._internal.flexObjects.FlexObject>} Created change wrapped in a promise
 	 * @public
 
 	 */
@@ -216,13 +209,13 @@ sap.ui.define([
 	/**
 	 * Create a change
 	 *
-	 * @param {object} oChangeSpecificData - Property bag (nvp) holding the change information (see sap.ui.fl.Change#createInitialFileContent)
+	 * @param {object} oChangeSpecificData - Property bag (nvp) holding the change information
 	 * The property "oPropertyBag.packageName" is set to $TMP and internally since flex changes are always local when they are created.
 	 * @param {sap.ui.core.Control | map} oControl - Control for which the change will be added
 	 * @param {string} oControl.id - ID of the control in case a map has been used to specify the control
 	 * @param {sap.ui.core.Component} [oControl.appComponent] - Application component of the control at runtime in case a map has been used
 	 * @param {string} oControl.controlType - Control type of the control in case a map has been used
-	 * @returns {Promise.<sap.ui.fl.Change>} Created change wrapped in a promise
+	 * @returns {Promise.<sap.ui.fl.apply._internal.flexObjects.FlexObject>} Created change wrapped in a promise
 	 * @public
 	 */
 	FlexController.prototype.createChangeWithControlSelector = function(oChangeSpecificData, oControl) {
@@ -257,10 +250,10 @@ sap.ui.define([
 	/**
 	 * Adds a change to the flex persistence (not yet saved). Will be saved with #saveAll.
 	 *
-	 * @param {object} oChangeSpecificData property bag (nvp) holding the change information (see sap.ui.fl.Change#createInitialFileContent
+	 * @param {object} oChangeSpecificData property bag (nvp) holding the change information
 	 * The property "oPropertyBag.packageName" is set to $TMP internally since flex changes are always local when they are created.
 	 * @param {sap.ui.core.Control} oControl control for which the change will be added
-	 * @returns {Promise.<sap.ui.fl.Change>} the created change
+	 * @returns {Promise.<sap.ui.fl.apply._internal.flexObjects.FlexObject>} the created change
 	 * @public
 	 */
 	FlexController.prototype.addChange = function(oChangeSpecificData, oControl) {
@@ -285,21 +278,14 @@ sap.ui.define([
 	 * createChange again, but expects a fully computed and appliable change.
 	 * Will be saved with #saveAll.
 	 *
-	 * @param {object} oChange property bag (nvp) holding the change information (see sap.ui.fl.Change#createInitialFileContent
+	 * @param {object} oChange property bag (nvp) holding the change information
 	 * The property "oPropertyBag.packageName" is set to $TMP internally since flex changes are always local when they are created.
 	 * @param {sap.ui.core.Component} oAppComponent - Application component
-	 * @returns {sap.ui.fl.Change} the created change
+	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject} the created change
 	 * @public
 	 */
 	FlexController.prototype.addPreparedChange = function(oChange, oAppComponent) {
-		if (oChange.getVariantReference()) {
-			// variant model is always associated with the app component
-			var oModel = oAppComponent.getModel(Utils.VARIANT_MODEL_NAME);
-			oModel.addChange(oChange);
-		}
-
 		this._oChangePersistence.addChange(oChange, oAppComponent);
-
 		return oChange;
 	};
 
@@ -313,14 +299,11 @@ sap.ui.define([
 	 *
 	 * Otherwise it will be marked for deletion.
 	 *
-	 * @param {sap.ui.fl.Change} oChange - the change to be deleted
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - the change to be deleted
 	 * @param {sap.ui.core.Component} oAppComponent - Application component instance
 	 */
-	FlexController.prototype.deleteChange = function(oChange, oAppComponent) {
+	FlexController.prototype.deleteChange = function(oChange) {
 		this._oChangePersistence.deleteChange(oChange);
-		if (oChange.getVariantReference()) {
-			oAppComponent.getModel(Utils.VARIANT_MODEL_NAME).removeChange(oChange);
-		}
 	};
 
 	/**
@@ -472,7 +455,7 @@ sap.ui.define([
 		var aDraftFilenames;
 		if (bDraft) {
 			var oVersionModel = Versions.getVersionsModel({
-				reference: Utils.normalizeReference(this._sComponentName),
+				reference: this._sComponentName,
 				layer: Layer.CUSTOMER // only the customer layer has draft active
 			});
 			sParentVersion = oVersionModel.getProperty("/persistedVersion");
@@ -483,13 +466,18 @@ sap.ui.define([
 			.then(function(oResult) {
 				if (bDraft && oResult && oResult.response) {
 					var vChangeDefinition = oResult.response;
+					var aDraftFilenames = [];
 					if (Array.isArray(vChangeDefinition)) {
+						vChangeDefinition.forEach(function(change) {
+							aDraftFilenames.push(change.fileName);
+						});
 						// the reference and layer of all items are the same
 						vChangeDefinition = vChangeDefinition[0];
 					}
 					Versions.onAllChangesSaved({
 						reference: vChangeDefinition.reference,
-						layer: vChangeDefinition.layer
+						layer: vChangeDefinition.layer,
+						draftFilenames: aDraftFilenames
 					});
 				}
 				return oResult;
@@ -533,7 +521,7 @@ sap.ui.define([
 	 * @param {object} [mPropertyBag.appDescriptor] Manifest that belongs to the current running component
 	 * @param {string} [mPropertyBag.siteId] ID of the site belonging to the current running component
 	 * @param {boolean} bInvalidateCache - (optional) should the cache be invalidated
-	 * @returns {Promise} Promise resolves with a map of all {sap.ui.fl.Change} having the changeId as key
+	 * @returns {Promise} Promise resolves with a map of all {sap.ui.fl.apply._internal.flexObjects.FlexObject} having the changeId as key
 	 * @public
 	 */
 	FlexController.prototype.getComponentChanges = function(mPropertyBag, bInvalidateCache) {
@@ -545,7 +533,7 @@ sap.ui.define([
 	 *
 	 * @param {object} oSelector selector of the control
 	 * @param {sap.ui.core.Component} oComponent - component instance that is currently loading
-	 * @returns {sap.ui.fl.Change[]} Array of all open dependent changes for the control
+	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} Array of all open dependent changes for the control
 	 */
 	FlexController.prototype.getOpenDependentChangesForControl = function(oSelector, oComponent) {
 		return this._oChangePersistence.getOpenDependentChangesForControl(oSelector, oComponent);
@@ -616,7 +604,7 @@ sap.ui.define([
 	 * Saves changes sequentially on the associated change persistence instance;
 	 * This API must be only used in scnarios without draft (like personalization).
 	 *
-	 * @param {sap.ui.fl.Change[]} aDirtyChanges Array of dirty changes to be saved
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aDirtyChanges Array of dirty changes to be saved
 	 * @param {sap.ui.core.UIComponent} [oAppComponent] - AppComponent instance
 	 * @returns {Promise} A Promise which resolves when all changes have been saved
 	 * @public

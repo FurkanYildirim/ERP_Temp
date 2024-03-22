@@ -22,7 +22,7 @@ sap.ui.define(['sap/ui/base/Object', "sap/ui/util/Storage"],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @alias sap.ui.core.History
 	 * @protected
 	 */

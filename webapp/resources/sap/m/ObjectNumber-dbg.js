@@ -42,11 +42,13 @@ sap.ui.define([
 	 *
 	 * With 1.63, large design of the control is supported by setting <code>sapMObjectNumberLarge</code> CSS class to the <code>ObjectNumber</code>.
 	 *
+	 * With 1.110, inner text wrapping could be enabled by adding the <code>sapMObjectNumberLongText</code> CSS class to the <code>ObjectNumber</code>. This class can be added by using оObjectStatus.addStyleClass("sapMObjectNumberLongText");
+	 *
 	 * <b>Note:</b> To fulfill the design guidelines when you are using <code>sapMObjectNumberLarge</code> CSS class set the <code>emphasized</code> property to <code>false</code>.
 	 *
 	 * @extends sap.ui.core.Control
 	 * @implements sap.ui.core.IFormContent
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -158,7 +160,7 @@ sap.ui.define([
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} Current accessibility state of the control
+	 * @returns {sap.ui.core.AccessibilityInfo} Current accessibility state of the control
 	 * @protected
 	 */
 	ObjectNumber.prototype.getAccessibilityInfo = function() {

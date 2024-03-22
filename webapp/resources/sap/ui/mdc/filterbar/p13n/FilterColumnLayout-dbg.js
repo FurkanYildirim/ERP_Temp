@@ -30,13 +30,12 @@ sap.ui.define(['sap/m/ColumnListItem', 'sap/m/ColumnListItemRenderer', 'sap/m/La
 	});
 
 	FilterColumnLayout.prototype._getFieldPath = function () {
-		return this._sFieldPath;
+		return this._oFilterField ? this._oFilterField.getPropertyKey() : null;
 	};
 
 	FilterColumnLayout.prototype.setFilterField = function (oFilterField) {
-		this._sLabel = oFilterField.getLabel();
 		this._oFilterField = oFilterField;
-		this._sFieldPath = oFilterField.getFieldPath();
+		this._sLabel = oFilterField.getLabel();
 	};
 
 	FilterColumnLayout.prototype.getCells = function() {
@@ -58,7 +57,6 @@ sap.ui.define(['sap/m/ColumnListItem', 'sap/m/ColumnListItemRenderer', 'sap/m/La
 	FilterColumnLayout.prototype.exit = function () {
 		ColumnListItem.prototype.exit.apply(this, arguments);
 		this._oFilterField = null;
-		this._sFieldPath = null;
 	};
 
 	return FilterColumnLayout;

@@ -20,43 +20,43 @@
 		},
 		{
 			"name": "Card.less",
-			"size": 11642,
+			"size": 11713,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "CardLoading.less",
-			"size": 4343,
+			"size": 4381,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "CardNumericIndicators.less",
-			"size": 851,
+			"size": 850,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "DynamicPage.less",
-			"size": 9258,
+			"size": 9854,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "DynamicPageHeader.less",
-			"size": 1547,
+			"size": 1643,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "DynamicPageTitle.less",
-			"size": 8850,
+			"size": 8871,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "FlexibleColumnLayout.less",
-			"size": 3214,
+			"size": 3248,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -68,13 +68,13 @@
 		},
 		{
 			"name": "GridDragAndDrop.less",
-			"size": 160,
+			"size": 172,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "GridList.less",
-			"size": 2457,
+			"size": 2552,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -116,13 +116,13 @@
 		},
 		{
 			"name": "ShellBar.less",
-			"size": 8689,
+			"size": 8746,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "SidePanel.less",
-			"size": 12252,
+			"size": 16504,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -140,7 +140,7 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 4620,
+			"size": 4762,
 			"theme": "base"
 		},
 		{
@@ -151,29 +151,29 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 119157,
+			"size": 142780,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 86314,
+			"size": 90934,
 			"theme": "base"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/f/themes/base/library-parameters.json",
-			"size": 1875,
+			"size": 1940,
 			"theme": "base"
 		},
 		{
 			"name": "library.css",
-			"size": 86318,
+			"size": 90934,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 83556,
+			"size": 88827,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -185,12 +185,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 89292,
+			"size": 94386,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 89297,
+			"size": 94387,
 			"theme": "base"
 		},
 		{

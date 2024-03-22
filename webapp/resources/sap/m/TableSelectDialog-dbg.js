@@ -11,10 +11,11 @@ sap.ui.define([
 	'./SearchField',
 	'./Table',
 	'./library',
-	"sap/ui/core/library",
+	'sap/ui/core/library',
 	'./SelectDialogBase',
 	'sap/ui/core/InvisibleText',
-	"sap/ui/core/InvisibleMessage",
+	'sap/ui/core/InvisibleMessage',
+	'sap/ui/core/UIArea',
 	'sap/ui/Device',
 	'sap/m/Toolbar',
 	'sap/m/Text',
@@ -32,6 +33,7 @@ sap.ui.define([
 	SelectDialogBase,
 	InvisibleText,
 	InvisibleMessage,
+	UIArea,
 	Device,
 	Toolbar,
 	Text,
@@ -53,6 +55,9 @@ sap.ui.define([
 
 	// shortcut for sap.ui.core.InvisibleMessageMode
 	var InvisibleMessageMode = CoreLibrary.InvisibleMessageMode;
+
+	// shortcut for sap.ui.core.TitleLevel
+	var TitleLevel = CoreLibrary.TitleLevel;
 
 	/**
 	 * Constructor for a new TableSelectDialog.
@@ -105,7 +110,7 @@ sap.ui.define([
 	 * When using the <code>sap.m.TableSelectDialog</code> in SAP Quartz and Horizon themes, the breakpoints and layout paddings could be determined by the dialog's width. To enable this concept and add responsive paddings to an element of the control, you have to add the following classes depending on your use case: <code>sapUiResponsivePadding--header</code>, <code>sapUiResponsivePadding--subHeader</code>, <code>sapUiResponsivePadding--content</code>, <code>sapUiResponsivePadding--footer</code>.
 	 * @extends sap.m.SelectDialogBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -206,7 +211,14 @@ sap.ui.define([
 				 * @since 1.72
 				 * @public
 				 */
-				titleAlignment : {type : "sap.m.TitleAlignment", group : "Misc", defaultValue : TitleAlignment.Auto}
+				titleAlignment : {type : "sap.m.TitleAlignment", group : "Misc", defaultValue : TitleAlignment.Auto},
+
+				/**
+				 * Allows overriding the SearchField's default placeholder text. If not set, the word "Search" in the current local language or English will be used as a placeholder.
+				 * @since 1.110
+			 	 * @public
+			 	 */
+				searchPlaceholder: {type: "string", group: "Appearance"}
 			},
 			defaultAggregation : "items",
 			aggregations : {
@@ -420,7 +432,7 @@ sap.ui.define([
 			titleAlignment: this.getTitleAlignment(),
 			contentMiddle: [
 				new Title(this.getId()  + "-dialog-title", {
-					level: "H2"
+					level: TitleLevel.H1
 				})
 			]
 		});
@@ -480,7 +492,7 @@ sap.ui.define([
 		// but only if it added it there itself. As we did that, we have to remove it also on our own
 		if ( this._bAppendedToUIArea ) {
 			var oStatic = sap.ui.getCore().getStaticAreaRef();
-			oStatic = sap.ui.getCore().getUIArea(oStatic);
+			oStatic = UIArea.registry.get(oStatic.id);
 			oStatic.removeContent(this, true);
 		}
 
@@ -548,7 +560,7 @@ sap.ui.define([
 	TableSelectDialog.prototype.open = function (sSearchValue) {
 		if (!this.getParent() && !this._bAppendedToUIArea) {
 			var oStatic = sap.ui.getCore().getStaticAreaRef();
-			oStatic = sap.ui.getCore().getUIArea(oStatic);
+			oStatic = UIArea.registry.get(oStatic.id);
 			oStatic.addContent(this, true);
 			this._bAppendedToUIArea = true;
 		}
@@ -767,6 +779,30 @@ sap.ui.define([
 	 */
 	TableSelectDialog.prototype.getNoDataText = function () {
 		return this._oTable.getNoDataText();
+	};
+
+	/**
+	 * Set the internal SearchField's placeholder property
+	 * @override
+	 * @public
+	 * @param {string} sSearchPlaceholder The placeholder text
+	 * @returns {this} <code>this</code> pointer for chaining
+	 */
+	TableSelectDialog.prototype.setSearchPlaceholder = function (sSearchPlaceholder) {
+		this.setProperty("searchPlaceholder", sSearchPlaceholder);
+		this._oSearchField.setPlaceholder(sSearchPlaceholder);
+
+		return this;
+	};
+
+	/**
+	 * Get the internal SearchField's placeholder property
+	 * @override
+	 * @public
+	 * @returns {string} the current placeholder text
+	 */
+	TableSelectDialog.prototype.getSearchPlaceholder = function () {
+		return this._oSearchField.getPlaceholder();
 	};
 
 	/**

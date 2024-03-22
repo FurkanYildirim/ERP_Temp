@@ -24,7 +24,7 @@ function(
 	 * TaskRunner run tasks defined in sap.ui.dt.TaskManager.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private

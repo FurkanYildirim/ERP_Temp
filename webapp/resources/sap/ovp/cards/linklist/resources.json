@@ -1,0 +1,180 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "AnnotationHelper-dbg.js",
+			"module": "sap/ovp/cards/linklist/AnnotationHelper.js",
+			"size": 14356,
+			"isDebug": true,
+			"required": [
+				"sap/ovp/cards/AnnotationHelper.js",
+				"sap/ovp/cards/MetadataAnalyser.js",
+				"sap/ui/model/odata/AnnotationHelper.js"
+			]
+		},
+		{
+			"name": "AnnotationHelper.js",
+			"module": "sap/ovp/cards/linklist/AnnotationHelper.js",
+			"size": 4492,
+			"required": [
+				"sap/ovp/cards/AnnotationHelper.js",
+				"sap/ovp/cards/MetadataAnalyser.js",
+				"sap/ui/model/odata/AnnotationHelper.js"
+			]
+		},
+		{
+			"name": "AnnotationHelper.js.map",
+			"size": 6692,
+			"isDebug": true
+		},
+		{
+			"name": "Component-dbg.js",
+			"module": "sap/ovp/cards/linklist/Component.js",
+			"size": 1865,
+			"isDebug": true,
+			"required": [
+				"sap/ovp/cards/generic/base/linklist/Component.js",
+				"sap/ovp/cards/linklist/AnnotationHelper.js"
+			]
+		},
+		{
+			"name": "Component.js",
+			"module": "sap/ovp/cards/linklist/Component.js",
+			"size": 853,
+			"required": [
+				"sap/ovp/cards/generic/base/linklist/Component.js",
+				"sap/ovp/cards/linklist/AnnotationHelper.js"
+			]
+		},
+		{
+			"name": "Component.js.map",
+			"size": 779,
+			"isDebug": true
+		},
+		{
+			"name": "LinkList-dbg.controller.js",
+			"module": "sap/ovp/cards/linklist/LinkList.controller.js",
+			"size": 1159,
+			"isDebug": true,
+			"required": [
+				"sap/ovp/cards/generic/base/linklist/BaseLinklist.controller.js",
+				"sap/ovp/filter/FilterUtils.js",
+				"sap/ui/core/Core.js"
+			]
+		},
+		{
+			"name": "LinkList.controller.js",
+			"module": "sap/ovp/cards/linklist/LinkList.controller.js",
+			"size": 649,
+			"required": [
+				"sap/ovp/cards/generic/base/linklist/BaseLinklist.controller.js",
+				"sap/ovp/filter/FilterUtils.js",
+				"sap/ui/core/Core.js"
+			]
+		},
+		{
+			"name": "LinkList.controller.js.map",
+			"size": 765,
+			"isDebug": true
+		},
+		{
+			"name": "LinkList.fragment.xml",
+			"module": "sap/ovp/cards/linklist/LinkList.fragment.xml",
+			"size": 1444,
+			"condRequired": [
+				"sap/ovp/cards/linklist/fragments/LinkListCarousel.fragment.xml",
+				"sap/ovp/cards/linklist/fragments/LinkListStandard.fragment.xml",
+				"sap/ovp/cards/linklist/fragments/LinkListStaticDataCarousel.fragment.xml",
+				"sap/ovp/cards/linklist/fragments/LinkListStaticDataStandard.fragment.xml"
+			]
+		},
+		{
+			"name": "fragments/LinkListCarousel.fragment.xml",
+			"module": "sap/ovp/cards/linklist/fragments/LinkListCarousel.fragment.xml",
+			"size": 11974,
+			"required": [
+				"sap/m/Carousel.js",
+				"sap/m/VBox.js",
+				"sap/ovp/ui/CustomData.js"
+			],
+			"condRequired": [
+				"sap/m/HBox.js",
+				"sap/m/Image.js",
+				"sap/m/Link.js",
+				"sap/m/Text.js",
+				"sap/ovp/cards/generic/ContactDetails.fragment.xml",
+				"sap/ui/core/Icon.js"
+			]
+		},
+		{
+			"name": "fragments/LinkListNavigationTargets.fragment.xml",
+			"module": "sap/ovp/cards/linklist/fragments/LinkListNavigationTargets.fragment.xml",
+			"size": 511,
+			"required": [
+				"sap/m/CustomListItem.js",
+				"sap/m/HBox.js",
+				"sap/m/List.js",
+				"sap/m/Popover.js"
+			]
+		},
+		{
+			"name": "fragments/LinkListStandard.fragment.xml",
+			"module": "sap/ovp/cards/linklist/fragments/LinkListStandard.fragment.xml",
+			"size": 15086,
+			"required": [
+				"sap/m/CustomListItem.js",
+				"sap/m/HBox.js",
+				"sap/m/List.js",
+				"sap/m/VBox.js",
+				"sap/ovp/ui/CustomData.js"
+			],
+			"condRequired": [
+				"sap/f/Avatar.js",
+				"sap/m/FlexBox.js",
+				"sap/m/Label.js",
+				"sap/m/Link.js",
+				"sap/ovp/cards/generic/ContactDetails.fragment.xml",
+				"sap/ui/core/Icon.js"
+			]
+		},
+		{
+			"name": "fragments/LinkListStaticDataCarousel.fragment.xml",
+			"module": "sap/ovp/cards/linklist/fragments/LinkListStaticDataCarousel.fragment.xml",
+			"size": 6403,
+			"required": [
+				"sap/m/Carousel.js",
+				"sap/m/VBox.js",
+				"sap/ovp/ui/CustomData.js"
+			],
+			"condRequired": [
+				"sap/m/HBox.js",
+				"sap/m/Image.js",
+				"sap/m/Link.js",
+				"sap/m/Text.js",
+				"sap/ui/core/Icon.js"
+			]
+		},
+		{
+			"name": "fragments/LinkListStaticDataStandard.fragment.xml",
+			"module": "sap/ovp/cards/linklist/fragments/LinkListStaticDataStandard.fragment.xml",
+			"size": 14110,
+			"required": [
+				"sap/m/HBox.js",
+				"sap/m/List.js",
+				"sap/ovp/ui/CustomData.js"
+			],
+			"condRequired": [
+				"sap/f/Avatar.js",
+				"sap/m/CustomListItem.js",
+				"sap/m/FlexBox.js",
+				"sap/m/Label.js",
+				"sap/m/VBox.js",
+				"sap/ui/core/Icon.js"
+			]
+		},
+		{
+			"name": "resources.json",
+			"size": 4539
+		}
+	]
+}

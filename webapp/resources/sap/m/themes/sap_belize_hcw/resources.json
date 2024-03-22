@@ -212,7 +212,7 @@
 		},
 		{
 			"name": "MenuListItem.less",
-			"size": 60,
+			"size": 636,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -320,7 +320,7 @@
 		},
 		{
 			"name": "Panel.less",
-			"size": 681,
+			"size": 806,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -422,7 +422,7 @@
 		},
 		{
 			"name": "Slider.less",
-			"size": 1174,
+			"size": 1242,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -434,7 +434,7 @@
 		},
 		{
 			"name": "SplitButton.less",
-			"size": 873,
+			"size": 996,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -476,7 +476,7 @@
 		},
 		{
 			"name": "TextArea.less",
-			"size": 330,
+			"size": 760,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -536,7 +536,7 @@
 		},
 		{
 			"name": "Toolbar.less",
-			"size": 850,
+			"size": 858,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -584,40 +584,40 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 47687,
+			"size": 48776,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 174006,
+			"size": 198782,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 173638,
+			"size": 198414,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 730622,
+			"size": 743942,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/m/themes/sap_belize_hcw/library-parameters.json",
-			"size": 20097,
+			"size": 20604,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library.css",
-			"size": 730613,
+			"size": 743937,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library.less",
-			"size": 107972,
+			"size": 109302,
 			"designtime": true,
 			"theme": "sap_belize_hcw"
 		},
@@ -629,17 +629,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 778243,
+			"size": 792579,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 778234,
+			"size": 792574,
 			"theme": "sap_belize_hcw"
 		},
 		{
 			"name": "resources.json",
-			"size": 11822
+			"size": 11823
 		},
 		{
 			"name": "shared.less",

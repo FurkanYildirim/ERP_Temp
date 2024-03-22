@@ -6,14 +6,10 @@
 
 sap.ui.define([
 	"sap/ui/util/openWindow",
-	"sap/ui/fl/registry/Settings",
-	"sap/ui/fl/apply/_internal/flexState/ManifestUtils",
 	"sap/ui/fl/write/_internal/fieldExtensibility/ABAPExtensibilityVariantFactory",
 	"sap/ui/fl/write/_internal/fieldExtensibility/ServiceValidation"
 ], function(
 	openWindow,
-	Settings,
-	ManifestUtils,
 	ABAPExtensibilityVariantFactory,
 	ServiceValidation
 ) {
@@ -44,7 +40,7 @@ sap.ui.define([
 	 * @namespace sap.ui.fl.write._internal.fieldExtensibility.ABAPAccess
 	 * @experimental Since 1.87.0
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	var ABAPAccess = {};
 
@@ -63,12 +59,10 @@ sap.ui.define([
 	 * @inheritDoc
 	 */
 	ABAPAccess.isExtensibilityEnabled = function(oControl) {
-		var sComponentName = ManifestUtils.getFlexReferenceForControl(oControl);
-		if (!sComponentName) {
-			return Promise.resolve(false);
-		}
-		return Settings.getInstance(sComponentName).then(function(oSettings) {
-			return oSettings.isModelS();
+		return getExtensibilityVariant(oControl).then(function(oExtensibilityVariant) {
+			return oExtensibilityVariant.getNavigationUri().then(function(sNavigationUri) {
+				return Boolean(sNavigationUri);
+			});
 		});
 	};
 
@@ -104,6 +98,16 @@ sap.ui.define([
 				}
 			});
 		});
+	};
+
+	/**
+	 * Resets the cached data
+	 *
+	 * @public
+	 */
+	ABAPAccess.reset = function() {
+		_oCurrentControl = null;
+		_oExtensibilityVariant = null;
 	};
 
 	/**

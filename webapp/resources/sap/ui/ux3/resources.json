@@ -3,16 +3,16 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 1907
+			"size": 1906
 		},
 		{
 			"name": ".theming",
-			"size": 75
+			"size": 74
 		},
 		{
 			"name": "ActionBar-dbg.js",
 			"module": "sap/ui/ux3/ActionBar.js",
-			"size": 53409,
+			"size": 53408,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -90,7 +90,7 @@
 		{
 			"name": "Collection-dbg.js",
 			"module": "sap/ui/ux3/Collection.js",
-			"size": 5462,
+			"size": 5461,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Element.js",
@@ -116,7 +116,7 @@
 		{
 			"name": "CollectionInspector-dbg.js",
 			"module": "sap/ui/ux3/CollectionInspector.js",
-			"size": 18923,
+			"size": 18922,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/Button.js",
@@ -168,7 +168,7 @@
 		{
 			"name": "DataSet-dbg.js",
 			"module": "sap/ui/ux3/DataSet.js",
-			"size": 20490,
+			"size": 20506,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -210,7 +210,7 @@
 		{
 			"name": "DataSetItem-dbg.js",
 			"module": "sap/ui/ux3/DataSetItem.js",
-			"size": 2256,
+			"size": 2255,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Element.js",
@@ -256,7 +256,7 @@
 		{
 			"name": "DataSetSimpleView-dbg.js",
 			"module": "sap/ui/ux3/DataSetSimpleView.js",
-			"size": 15016,
+			"size": 15015,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -306,7 +306,7 @@
 		{
 			"name": "Exact-dbg.js",
 			"module": "sap/ui/ux3/Exact.js",
-			"size": 5972,
+			"size": 5971,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/Button.js",
@@ -348,7 +348,7 @@
 		{
 			"name": "ExactArea-dbg.js",
 			"module": "sap/ui/ux3/ExactArea.js",
-			"size": 2390,
+			"size": 2374,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/Toolbar.js",
@@ -361,7 +361,7 @@
 		{
 			"name": "ExactArea.js",
 			"module": "sap/ui/ux3/ExactArea.js",
-			"size": 912,
+			"size": 900,
 			"required": [
 				"sap/ui/commons/Toolbar.js",
 				"sap/ui/core/Control.js",
@@ -372,7 +372,7 @@
 		},
 		{
 			"name": "ExactArea.js.map",
-			"size": 870,
+			"size": 852,
 			"isDebug": true
 		},
 		{
@@ -402,7 +402,7 @@
 		{
 			"name": "ExactAttribute-dbg.js",
 			"module": "sap/ui/ux3/ExactAttribute.js",
-			"size": 11808,
+			"size": 11807,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Element.js",
@@ -426,7 +426,7 @@
 		{
 			"name": "ExactBrowser-dbg.js",
 			"module": "sap/ui/ux3/ExactBrowser.js",
-			"size": 10919,
+			"size": 10918,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/Button.js",
@@ -484,7 +484,7 @@
 		{
 			"name": "ExactList-dbg.js",
 			"module": "sap/ui/ux3/ExactList.js",
-			"size": 45466,
+			"size": 45465,
 			"isDebug": true,
 			"required": [
 				"sap/base/security/encodeXML.js",
@@ -576,7 +576,7 @@
 		{
 			"name": "FacetFilter-dbg.js",
 			"module": "sap/ui/ux3/FacetFilter.js",
-			"size": 1822,
+			"size": 1821,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Control.js",
@@ -602,7 +602,7 @@
 		{
 			"name": "FacetFilterList-dbg.js",
 			"module": "sap/ui/ux3/FacetFilterList.js",
-			"size": 9199,
+			"size": 9198,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/ListBox.js",
@@ -670,7 +670,7 @@
 		{
 			"name": "Feed-dbg.js",
 			"module": "sap/ui/ux3/Feed.js",
-			"size": 11769,
+			"size": 11768,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/DropdownBox.js",
@@ -712,7 +712,7 @@
 		{
 			"name": "FeedChunk-dbg.js",
 			"module": "sap/ui/ux3/FeedChunk.js",
-			"size": 19431,
+			"size": 19430,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/Menu.js",
@@ -792,7 +792,7 @@
 		{
 			"name": "Feeder-dbg.js",
 			"module": "sap/ui/ux3/Feeder.js",
-			"size": 8810,
+			"size": 8809,
 			"isDebug": true,
 			"required": [
 				"sap/ui/Device.js",
@@ -854,7 +854,7 @@
 		{
 			"name": "NavigationBar-dbg.js",
 			"module": "sap/ui/ux3/NavigationBar.js",
-			"size": 28782,
+			"size": 28781,
 			"isDebug": true,
 			"required": [
 				"sap/base/assert.js",
@@ -928,7 +928,7 @@
 		{
 			"name": "NavigationItem-dbg.js",
 			"module": "sap/ui/ux3/NavigationItem.js",
-			"size": 2388,
+			"size": 2387,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Item.js",
@@ -952,7 +952,7 @@
 		{
 			"name": "NotificationBar-dbg.js",
 			"module": "sap/ui/ux3/NotificationBar.js",
-			"size": 38426,
+			"size": 38429,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -970,7 +970,7 @@
 		{
 			"name": "NotificationBar.js",
 			"module": "sap/ui/ux3/NotificationBar.js",
-			"size": 15846,
+			"size": 15831,
 			"required": [
 				"sap/base/Log.js",
 				"sap/ui/Device.js",
@@ -986,7 +986,7 @@
 		},
 		{
 			"name": "NotificationBar.js.map",
-			"size": 20148,
+			"size": 20129,
 			"isDebug": true
 		},
 		{
@@ -1018,7 +1018,7 @@
 		{
 			"name": "Notifier-dbg.js",
 			"module": "sap/ui/ux3/Notifier.js",
-			"size": 8431,
+			"size": 8430,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -1056,7 +1056,7 @@
 		{
 			"name": "Overlay-dbg.js",
 			"module": "sap/ui/ux3/Overlay.js",
-			"size": 10635,
+			"size": 10634,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Control.js",
@@ -1092,7 +1092,7 @@
 		{
 			"name": "OverlayContainer-dbg.js",
 			"module": "sap/ui/ux3/OverlayContainer.js",
-			"size": 2250,
+			"size": 2249,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dom/jquery/Focusable.js",
@@ -1144,7 +1144,7 @@
 		{
 			"name": "OverlayDialog-dbg.js",
 			"module": "sap/ui/ux3/OverlayDialog.js",
-			"size": 6787,
+			"size": 6786,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -1216,7 +1216,7 @@
 		{
 			"name": "QuickView-dbg.js",
 			"module": "sap/ui/ux3/QuickView.js",
-			"size": 13988,
+			"size": 13987,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/CalloutBase.js",
@@ -1278,7 +1278,7 @@
 		{
 			"name": "Shell-dbg.js",
 			"module": "sap/ui/ux3/Shell.js",
-			"size": 94155,
+			"size": 94154,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -1456,7 +1456,7 @@
 		{
 			"name": "ThingAction-dbg.js",
 			"module": "sap/ui/ux3/ThingAction.js",
-			"size": 1726,
+			"size": 1725,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Element.js",
@@ -1480,7 +1480,7 @@
 		{
 			"name": "ThingGroup-dbg.js",
 			"module": "sap/ui/ux3/ThingGroup.js",
-			"size": 1513,
+			"size": 1512,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Element.js",
@@ -1504,7 +1504,7 @@
 		{
 			"name": "ThingInspector-dbg.js",
 			"module": "sap/ui/ux3/ThingInspector.js",
-			"size": 21584,
+			"size": 21583,
 			"isDebug": true,
 			"required": [
 				"sap/ui/dom/jquery/Focusable.js",
@@ -1564,7 +1564,7 @@
 		{
 			"name": "ThingViewer-dbg.js",
 			"module": "sap/ui/ux3/ThingViewer.js",
-			"size": 15661,
+			"size": 15660,
 			"isDebug": true,
 			"required": [
 				"sap/ui/core/Control.js",
@@ -1618,7 +1618,7 @@
 		{
 			"name": "ToolPopup-dbg.js",
 			"module": "sap/ui/ux3/ToolPopup.js",
-			"size": 64943,
+			"size": 64942,
 			"isDebug": true,
 			"required": [
 				"sap/base/Log.js",
@@ -1690,7 +1690,7 @@
 		{
 			"name": "library-dbg.js",
 			"module": "sap/ui/ux3/library.js",
-			"size": 7371,
+			"size": 7369,
 			"isDebug": true,
 			"required": [
 				"sap/ui/commons/library.js",
@@ -1700,7 +1700,7 @@
 		{
 			"name": "library-preload.js",
 			"module": "sap/ui/ux3/library-preload.js",
-			"size": 317873,
+			"size": 317841,
 			"merged": true,
 			"required": [
 				"sap/base/Log.js",
@@ -1827,13 +1827,13 @@
 		},
 		{
 			"name": "library-preload.js.map",
-			"size": 378147,
+			"size": 378110,
 			"isDebug": true
 		},
 		{
 			"name": "library.js",
 			"module": "sap/ui/ux3/library.js",
-			"size": 2163,
+			"size": 2162,
 			"required": [
 				"sap/ui/commons/library.js",
 				"sap/ui/core/library.js"
@@ -1847,7 +1847,7 @@
 		{
 			"name": "manifest.json",
 			"module": "sap/ui/ux3/manifest.json",
-			"size": 3484
+			"size": 3480
 		},
 		{
 			"name": "messagebundle.properties",
@@ -1971,7 +1971,7 @@
 		{
 			"name": "messagebundle_fi.properties",
 			"module": "sap/ui/ux3/messagebundle_fi.properties",
-			"size": 5735,
+			"size": 5727,
 			"locale": "fi",
 			"raw": "messagebundle.properties"
 		},
@@ -2364,7 +2364,7 @@
 		},
 		{
 			"name": "themes/base/css_variables.source.less",
-			"size": 114684,
+			"size": 138169,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -2838,13 +2838,13 @@
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.less",
-			"size": 100777,
+			"size": 122090,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "themes/sap_hcb/css_variables.source.less",
-			"size": 100477,
+			"size": 121790,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},

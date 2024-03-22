@@ -15,7 +15,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.integration.designtime.baseEditor.validator.NotABinding
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @static
 	 * @since 1.81

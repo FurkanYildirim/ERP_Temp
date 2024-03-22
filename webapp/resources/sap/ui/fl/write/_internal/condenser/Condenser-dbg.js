@@ -13,12 +13,13 @@ sap.ui.define([
 	"sap/ui/core/Core",
 	"sap/ui/fl/changeHandler/condenser/Classification",
 	"sap/ui/fl/apply/_internal/changes/Utils",
+	"sap/ui/fl/apply/_internal/flexObjects/UIChange",
+	"sap/ui/fl/apply/_internal/flexObjects/States",
 	"sap/ui/fl/write/_internal/condenser/classifications/LastOneWins",
 	"sap/ui/fl/write/_internal/condenser/classifications/Reverse",
 	"sap/ui/fl/write/_internal/condenser/classifications/Update",
 	"sap/ui/fl/write/_internal/condenser/UIReconstruction",
 	"sap/ui/fl/write/_internal/condenser/Utils",
-	"sap/ui/fl/Change",
 	"sap/ui/fl/Utils",
 	"sap/ui/performance/Measurement",
 	"sap/base/util/restricted/_isEqual"
@@ -31,12 +32,13 @@ sap.ui.define([
 	Core,
 	CondenserClassification,
 	ChangesUtils,
+	UIChange,
+	States,
 	LastOneWins,
 	Reverse,
 	Update,
 	UIReconstruction,
 	CondenserUtils,
-	Change,
 	FlUtils,
 	Measurement,
 	_isEqual
@@ -49,7 +51,7 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.ui.fl.write._internal.condenser.Condenser
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	var Condenser = {};
 
@@ -71,7 +73,7 @@ sap.ui.define([
 	/**
 	 * Verify 'move' subtype has already been added to the data structure before 'create' subtype and they both belong to the same targetContainer
 	 *
-	 * @param {Map} mSubtypes - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
+	 * @param {object} mSubtypes - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
 	 * @param {object} oCondenserInfo - Condenser specific information that is delivered by the change handler
 	 * @returns {boolean} <code>true</code> if the 'move' subtype has been added to the data structure before 'create' subtype
 	 */
@@ -85,7 +87,7 @@ sap.ui.define([
 	/**
 	 * Verify 'destroy' subtype has already been added to the data structure before 'move' subtype
 	 *
-	 * @param {Map} mSubtypes - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
+	 * @param {object} mSubtypes - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
 	 * @param {object} oCondenserInfo - Condenser specific information that is delivered by the change handler
 	 * @returns {boolean} <code>true</code> if the 'destroy' subtype has been added to the data structure before 'move' subtype
 	 */
@@ -96,7 +98,7 @@ sap.ui.define([
 	/**
 	 * Verify 'destroy' subtype has already been added to the data structure before 'create' subtype
 	 *
-	 * @param {Map} mClassifications - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
+	 * @param {object} mClassifications - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
 	 * @param {object} oCondenserInfo - Condenser specific information that is delivered by the change handler
 	 * @returns {boolean} <code>true</code> if the 'move' subtype has been added to the data structure before 'create' subtype
 	 */
@@ -107,10 +109,10 @@ sap.ui.define([
 	/**
 	 * Adds an index-related change to the data structures.
 	 *
-	 * @param {Map} mClassifications - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
-	 * @param {Map} mUIReconstructions - Map of UI reconstructions that holds key-value pairs. A key is a selector ID of the container. A value is a nested map which contains initial and target UI reconstructions
+	 * @param {object} mClassifications - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
+	 * @param {object} mUIReconstructions - Map of UI reconstructions that holds key-value pairs. A key is a selector ID of the container. A value is a nested map which contains initial and target UI reconstructions
 	 * @param {object} oCondenserInfo - Condenser specific information that is delivered by the change handler
-	 * @param {sap.ui.fl.Change} oChange - Change instance that will be added to the array
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance that will be added to the array
 	 * @returns {Promise} resolves when the change is added to the data structure
 	 */
 	function addIndexRelatedChange(mClassifications, mUIReconstructions, oCondenserInfo, oChange) {
@@ -127,6 +129,8 @@ sap.ui.define([
 				oChange.condenserState = "delete";
 			}
 			mClassifications[sClassification][0].updateChange = oChange;
+		} else {
+			oChange.condenserState = "delete";
 		}
 
 		if (
@@ -151,9 +155,9 @@ sap.ui.define([
 
 	/**
 	 * Adds a non-index related change to the map.
-	 * @param {Map} mClassifications - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
+	 * @param {object} mClassifications - Map of properties that holds key-value pairs. A key is a unique identifier. A value is an array object that contains changes
 	 * @param {object} oCondenserInfo - Condenser specific information that is delivered by the change handler
-	 * @param {sap.ui.fl.Change} oChange - Change instance that will be added to the array
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance that will be added to the array
 	 * @returns {Promise} returns when change is added to the map
 	 */
 	function addNonIndexRelatedChange(mClassifications, oCondenserInfo, oChange) {
@@ -168,11 +172,11 @@ sap.ui.define([
 	/**
 	 * Adds a classified change to the data structures.
 	 *
-	 * @param {Map} mTypes - Map of classification types that holds key-value pairs. A key is a unique identifier. A value is a nested map which contains non-index-related and index-related reduced changes
-	 * @param {Map} mUIReconstructions - Map of UI reconstructions that holds key-value pairs. A key is a selector ID of the container. A value is a nested map which contains initial and target UI reconstructions
-	 * @param {sap.ui.fl.Change[]} aIndexRelatedChanges - Array of all index related changes
-	 * @param {Object} oCondenserInfo - Condenser-specific information that is delivered by the change handler
-	 * @param {sap.ui.fl.Change} oChange - Change instance that will be added to the array
+	 * @param {object} mTypes - Map of classification types that holds key-value pairs. A key is a unique identifier. A value is a nested map which contains non-index-related and index-related reduced changes
+	 * @param {object} mUIReconstructions - Map of UI reconstructions that holds key-value pairs. A key is a selector ID of the container. A value is a nested map which contains initial and target UI reconstructions
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aIndexRelatedChanges - Array of all index related changes
+	 * @param {object} oCondenserInfo - Condenser-specific information that is delivered by the change handler
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance that will be added to the array
 	 * @returns {Promise} returns when change is added to the data structures
 	 */
 	function addClassifiedChange(mTypes, mUIReconstructions, aIndexRelatedChanges, oCondenserInfo, oChange) {
@@ -186,15 +190,19 @@ sap.ui.define([
 		}
 
 		aIndexRelatedChanges.push(oChange);
-		return addIndexRelatedChange(mClassifications, mUIReconstructions, oCondenserInfo, oChange);
+		// with custom aggregations multiple aggregations can have the same affectedControl
+		if (!mClassifications[oCondenserInfo.targetAggregation]) {
+			mClassifications[oCondenserInfo.targetAggregation] = {};
+		}
+		return addIndexRelatedChange(mClassifications[oCondenserInfo.targetAggregation], mUIReconstructions, oCondenserInfo, oChange);
 	}
 
 	/**
 	 * Adds an unclassified change to the data structure.
 	 *
-	 * @param {Map} mTypes - Map of change types that holds key-value pairs. A key is a unique identifier. A value is an array object that contains all unclassified changes
+	 * @param {object} mTypes - Map of change types that holds key-value pairs. A key is a unique identifier. A value is an array object that contains all unclassified changes
 	 * @param {string} sKey - Key of the "unclassified" map that reflects the fact that the delivered change is not classified
-	 * @param {sap.ui.fl.Change} oChange - Change instance
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance
 	 */
 	function addUnclassifiedChange(mTypes, sKey, oChange) {
 		if (!mTypes[sKey]) {
@@ -208,7 +216,7 @@ sap.ui.define([
 	 * Retrieves the condenser information from the change handler
 	 *
 	 * @param {sap.ui.core.Component} oAppComponent - Application component of the control at runtime
-	 * @param {sap.ui.fl.Change} oChange - Change instance
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance
 	 * @returns {Promise.<object>} - Resolves with the condenser information or undefined
 	 */
 	function getCondenserInfoFromChangeHandler(oAppComponent, oChange) {
@@ -258,14 +266,16 @@ sap.ui.define([
 	/**
 	 * Retrieves the classification types map.
 	 *
-	 * @param {Map} mReducedChanges - Map of reduced changes
+	 * @param {object} mReducedChanges - Map of reduced changes
 	 * @param {object} oCondenserInfo - Condenser-specific information that is delivered by the change handler
-	 * @param {sap.ui.fl.Change} oChange - Change instance
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change instance
 	 * @param {sap.ui.core.Component} oAppComponent - Application component of the control at runtime
-	 * @returns {Map} Classification types map
+	 * @returns {object} Classification types map
 	 */
 	function getTypesMap(mReducedChanges, oCondenserInfo, oChange, oAppComponent) {
-		var sAffectedControlId = oCondenserInfo !== undefined ? oCondenserInfo.affectedControl : JsControlTreeModifier.getControlIdBySelector(oChange.getSelector(), oAppComponent);
+		var sAffectedControlId = oCondenserInfo !== undefined
+			? oCondenserInfo.affectedControl
+			: JsControlTreeModifier.getControlIdBySelector(oChange.getSelector(), oAppComponent);
 		if (!mReducedChanges[sAffectedControlId]) {
 			mReducedChanges[sAffectedControlId] = {};
 		}
@@ -273,8 +283,13 @@ sap.ui.define([
 		// (e.g. iFrame added as Section) and the changes must be brought to the same group (= same affected control)
 		if (oCondenserInfo && oCondenserInfo.updateControl) {
 			var sUpdateControlId = oCondenserInfo.updateControl;
-			mReducedChanges[sAffectedControlId] = Object.assign(mReducedChanges[sAffectedControlId], mReducedChanges[sUpdateControlId]);
-			delete mReducedChanges[sUpdateControlId];
+			var aPath = [CondenserUtils.NOT_INDEX_RELEVANT, CondenserClassification.Update, oCondenserInfo.uniqueKey];
+			var oUpdateCondenserInfo = ObjectPath.get(aPath, mReducedChanges[sUpdateControlId]);
+			if (oUpdateCondenserInfo) {
+				ObjectPath.set(aPath, oUpdateCondenserInfo, mReducedChanges[sAffectedControlId]);
+				delete mReducedChanges[sUpdateControlId][CondenserUtils.NOT_INDEX_RELEVANT]
+					[CondenserClassification.Update][oCondenserInfo.uniqueKey];
+			}
 		}
 		return mReducedChanges[sAffectedControlId];
 	}
@@ -286,7 +301,7 @@ sap.ui.define([
 	 * 			"<selectorId>": {
 	 * 				"<type>":
 	 * 					"<classification>":
-	 * 						"<uniqueKey>": [<sap.ui.fl.Change>]
+	 * 						"<uniqueKey>": [<sap.ui.fl.apply._internal.flexObjects.FlexObject>]
 	 * 				...
 	 * 				"nonIndexRelated": {
 	 * 					"lastOneWins" : {
@@ -299,9 +314,11 @@ sap.ui.define([
 	 * 				}
 	 * 				...
 	 * 				"indexRelated": {
-	 * 					"move": [oCondenserInfo],
-	 * 					"create": [oCondenserInfo],
-	 * 					"destroy": [oCondenserInfo]
+	 * 					"<targetAggregation>": {
+	 * 						"move": [oCondenserInfo],
+	 * 						"create": [oCondenserInfo],
+	 * 						"destroy": [oCondenserInfo]
+	 * 					}
 	 * 				}
 	 * 				...
 	 * 				"unclassified" : [oChange6, oChange7, oChange8]
@@ -318,10 +335,10 @@ sap.ui.define([
 	 * 		}
 	 *
 	 * @param {sap.ui.core.Component} oAppComponent - Application component of the control at runtime
-	 * @param {Map} mReducedChanges - Map of reduced changes
-	 * @param {Map} mUIReconstructions - Map of UI reconstructions
-	 * @param {sap.ui.fl.Change[]} aIndexRelatedChanges - Array of all index related changes
-	 * @param {sap.ui.fl.Change[]} aChanges - All Change instances
+	 * @param {object} mReducedChanges - Map of reduced changes
+	 * @param {object} mUIReconstructions - Map of UI reconstructions
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aIndexRelatedChanges - Array of all index related changes
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aChanges - All Change instances
 	 * @returns {Promise} Resolves when all changes were added to the maps
 	 */
 	function defineMaps(oAppComponent, mReducedChanges, mUIReconstructions, aIndexRelatedChanges, aChanges) {
@@ -371,19 +388,21 @@ sap.ui.define([
 	 * If the original change is marked for deletion, the update can be skipped
 	 * If the original change is already persisted, the new content is an update
 	 *
-	 * @param {Map} mTypes - Map with the changes
+	 * @param {object} mTypes - Map with the changes
 	 * @param {object} oCondenserInfo - Condenser-specific information that is delivered by the change handler
-	 * @param {sap.ui.fl.Change} oChange - The change that is getting updated
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - The change that is getting updated
 	 */
 	function condenseUpdateChange(mTypes, oCondenserInfo, oChange) {
-		var oUpdateCondenserInfo = ObjectPath.get([CondenserUtils.NOT_INDEX_RELEVANT, CondenserClassification.Update, oCondenserInfo.uniqueKey], mTypes);
+		var aPath = [CondenserUtils.NOT_INDEX_RELEVANT, CondenserClassification.Update, oCondenserInfo.uniqueKey];
+		var oUpdateCondenserInfo = ObjectPath.get(aPath, mTypes);
 		if (oUpdateCondenserInfo) {
 			oUpdateCondenserInfo.change.condenserState = "delete";
 			if (oChange.condenserState === "delete") {
 				return;
 			}
 			oCondenserInfo.update(oChange, oUpdateCondenserInfo.updateContent);
-			if (oChange.getState() === Change.states.PERSISTED) {
+			delete mTypes[CondenserUtils.NOT_INDEX_RELEVANT][CondenserClassification.Update][oCondenserInfo.uniqueKey];
+			if (oChange.isPersisted()) {
 				oChange.condenserState = "update";
 			}
 		}
@@ -392,9 +411,9 @@ sap.ui.define([
 	/**
 	 * Retrieves an array of changes from the delivered data structure.
 	 *
-	 * @param {Map} mObjects - Delivered data structure
-	 * @param {sap.ui.fl.Change[]} aChanges - Array of changes
-	 * @returns {sap.ui.fl.Change[]} All necessary changes in the map of reduced changes
+	 * @param {object} mObjects - Delivered data structure
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aChanges - Array of changes
+	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} All necessary changes in the map of reduced changes
 	 */
 	 function getChanges(mObjects, aChanges) {
 		each(mObjects, function(sKey, vSubObjects) {
@@ -406,7 +425,7 @@ sap.ui.define([
 				return getChanges(vSubObjects, aChanges);
 			} else if (Array.isArray(vSubObjects)) {
 				vSubObjects.forEach(function(oObject) {
-					if (oObject instanceof Change) {
+					if (oObject instanceof UIChange) {
 						aChanges.push(oObject);
 					} else {
 						aChanges.push(oObject.change);
@@ -420,8 +439,8 @@ sap.ui.define([
 	/**
 	 * Retrieves an array of changes from the reduced changes map.
 	 *
-	 * @param {Map} mReducedChanges - Map of reduced changes
-	 * @returns {sap.ui.fl.Change[]} Array of the reduced changes
+	 * @param {object} mReducedChanges - Map of reduced changes
+	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} Array of the reduced changes
 	 */
 	function getAllReducedChanges(mReducedChanges) {
 		return getChanges(mReducedChanges, []);
@@ -430,7 +449,7 @@ sap.ui.define([
 	/**
 	 * Retrieves an array of index-related changes from the array of reduced changes.
 	 *
-	 * @param {Map} mReducedChanges - Map of reduced changes
+	 * @param {object} mReducedChanges - Map of reduced changes
 	 * @param {object[]} aCondenserInfos - Empty array object that will be filled with condenser info objects
 	 * @returns {object[]} Array of objects that contain condenser-specific information and change instance
 	 */
@@ -440,7 +459,7 @@ sap.ui.define([
 				getCondenserInfos(vSubObjects, aCondenserInfos);
 			} else if (Array.isArray(vSubObjects)) {
 				vSubObjects.forEach(function(oObject) {
-					if (!(oObject instanceof Change)) {
+					if (!(oObject instanceof UIChange)) {
 						aCondenserInfos.push(oObject);
 					}
 				});
@@ -452,8 +471,8 @@ sap.ui.define([
 	/**
 	 * Sorts an array of reduced changes in the initial order.
 	 *
-	 * @param {sap.ui.fl.Change[]} aChanges - Array of changes
-	 * @param {sap.ui.fl.Change[]} aReducedChanges - Array of reduced changes
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aChanges - Array of changes
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aReducedChanges - Array of reduced changes
 	 */
 	function sortByInitialOrder(aChanges, aReducedChanges) {
 		aReducedChanges.sort(function(a, b) {
@@ -479,7 +498,18 @@ sap.ui.define([
 		});
 	}
 
-	function handleChangeUpdate(aCondenserInfos, aReducedChanges) {
+	/**
+	 * Adding a change of the same classification to the map will only add it as updateChange to the condenser info,
+	 * which means that the condenser info holds the first (updateChange) and the last (change) change of the same classification.
+	 * If there is an updateChange attached to the condenser info object and that change is already persisted,
+	 * that change will be used over the newest change.
+	 *
+	 * @param {object[]} aCondenserInfos - Condenser info objects
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aReducedChanges - Array of reduced changes
+	 * @param {object[]} aReducedIndexRelatedChangesPerContainer - Array with index related reduced changes per container
+	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} Updated reduced changes
+	 */
+	function handleChangeUpdate(aCondenserInfos, aReducedChanges, aReducedIndexRelatedChangesPerContainer) {
 		aCondenserInfos.forEach(function(oCondenserInfo) {
 			var oUpdateChange = oCondenserInfo.updateChange;
 			if (
@@ -487,21 +517,30 @@ sap.ui.define([
 				// "Update" only modifies the change content. If we support other
 				// updates on a change, this code has to be adjusted.
 				&& !_isEqual(oUpdateChange.getContent(), oCondenserInfo.change.getContent())
-				&& oUpdateChange.getState() !== Change.states.NEW
+				&& oUpdateChange.getState() !== States.LifecycleState.NEW
 			) {
-				var oCondensedChange = oCondenserInfo.change;
-				if (oUpdateChange.getId() !== oCondensedChange.getId()) {
-					var oNewContent = oCondensedChange.getContent();
+				var oLastChange = oCondenserInfo.change;
+				if (oUpdateChange.getId() !== oLastChange.getId()) {
+					var oNewContent = oLastChange.getContent();
 					oUpdateChange.setContent(oNewContent);
-					oCondensedChange.condenserState = "delete";
+					oUpdateChange.setRevertData(oLastChange.getRevertData());
+					oLastChange.condenserState = "delete";
 					aReducedChanges = aReducedChanges.map(function(oChange) {
-						if (oChange.getId() === oCondensedChange.getId()) {
+						if (oChange.getId() === oLastChange.getId()) {
 							return oUpdateChange;
 						}
 						return oChange;
 					});
+					aReducedIndexRelatedChangesPerContainer.forEach(function(aReducedIndexRelatedChanges, iIndex) {
+						aReducedIndexRelatedChangesPerContainer[iIndex] = aReducedIndexRelatedChanges.map(function(oChange) {
+							if (oChange.getId() === oLastChange.getId()) {
+								return oUpdateChange;
+							}
+							return oChange;
+						});
+					});
 				} else {
-					oUpdateChange.setState(Change.states.DIRTY);
+					oUpdateChange.setState(States.LifecycleState.DIRTY);
 				}
 				oUpdateChange.condenserState = "update";
 			}
@@ -525,7 +564,7 @@ sap.ui.define([
 	 * (6) Finally, if it is required the index-related changes will be swapped in the array of the reduced changes.
 	 *
 	 * @param {sap.ui.core.Component} oAppComponent - Application component of the control at runtime
-	 * @param {sap.ui.fl.Change[]} aChanges - Array of changes
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject[]} aChanges - Array of changes
 	 * @returns {Promise} Promise resolved with the reduced array of changes
 	 */
 	Condenser.condense = function(oAppComponent, aChanges) {
@@ -535,11 +574,18 @@ sap.ui.define([
 		var aAllIndexRelatedChanges = [];
 
 		// filter out objects which are not of type change, e.g. Variants, AppVariants, AppVariantInlineChange
+		// or are not applied (e.g. not part of the active variant) or were deleted
 		var aNotCondensableChanges = [];
 		var aCondensableChanges = [];
 		aChanges.slice(0).reverse().forEach(function(oChange) {
-			if (oChange instanceof Change && oChange.isSuccessfullyApplied()) {
-				aCondensableChanges.push(oChange);
+			if (oChange instanceof UIChange) {
+				if (oChange.getState() === States.LifecycleState.DELETED) {
+					oChange.condenserState = "delete";
+				} else if (oChange.isSuccessfullyApplied()) {
+					aCondensableChanges.push(oChange);
+				} else {
+					aNotCondensableChanges.push(oChange);
+				}
 			} else {
 				aNotCondensableChanges.push(oChange);
 			}
@@ -587,9 +633,16 @@ sap.ui.define([
 				Measurement.end("Condenser_sort");
 
 				if (bSuccess) {
+					// during the simulation more changes can become obsolete
+					aReducedChanges = aReducedChanges.filter(function(oChange) {
+						return oChange.condenserState !== "delete";
+					});
+					aCondenserInfos = aCondenserInfos.filter(function(oCondenserInfo) {
+						return oCondenserInfo.change.condenserState !== "delete";
+					});
 					// until now aReducedChanges still has the newer changes.
 					// after replacing them with the older change they have to be sorted again
-					aReducedChanges = handleChangeUpdate(aCondenserInfos, aReducedChanges);
+					aReducedChanges = handleChangeUpdate(aCondenserInfos, aReducedChanges, aReducedIndexRelatedChangesPerContainer);
 					sortByInitialOrder(aChanges, aReducedChanges);
 					// sort the different containers independently
 					aReducedIndexRelatedChangesPerContainer.forEach(function(aReducedIndexRelatedChanges) {

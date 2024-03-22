@@ -46,11 +46,11 @@ function(
 		 * @extends sap.ui.core.Control
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @private
-		 * @ui5-restricted sap.m.MenuButton,sap.ui.richtextEditor.ToolbarWrapper
+		 * @ui5-restricted sap.m.MenuButton,sap.ui.richtexteditor.ToolbarWrapper
 		 * @alias sap.m.SplitButton
 		 */
 		var SplitButton = Control.extend("sap.m.SplitButton", /** @lends sap.m.SplitButton.prototype */ {

@@ -13,26 +13,27 @@ sap.ui.define([
 	"use strict";
 
 	/**
-	 * Constructor for a new QuickActionBase.
+	 * Constructor for a new <code>QuickActionBase</code>.
 	 *
-	 * @param {string} [sId] ID for the new QuickActionBase, generated automatically if no ID is given
-	 * @param {object} [mSettings] Initial settings for the new QuickActionBase
+	 * @param {string} [sId] ID for the new <code>QuickActionBase</code>, generated automatically if no ID is given
+	 * @param {object} [mSettings] Initial settings for the new <code>QuickActionBase</code>
 	 *
 	 * @class
-	 * The QuickActionBase serves as a base class for quick actions.
-	 * This base class is faceless and should be inherited by elements which intend to serve as quick actions for the sap.m.table.columnmenu.Menu.
+	 * The <code>QuickActionBase</code> class is used as a base class for quick actions for the <code>sap.m.table.columnmenu.Menu</code>.
+	 * This faceless class can be used to specify control- and application-specific quick actions.
 	 *
 	 * @extends sap.m.table.columnmenu.Entry
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
-	 * @private
-	 * @experimental
+	 * @public
+	 * @since 1.110
 	 *
 	 * @alias sap.m.table.columnmenu.QuickActionBase
 	 */
 	var QuickActionBase = Entry.extend("sap.m.table.columnmenu.QuickActionBase", {
+
 		metadata: {
 			"abstract": true,
 			library: "sap.m"
@@ -40,7 +41,7 @@ sap.ui.define([
 	});
 
 	/**
-	 * This method can be used to retrieve the effective quick actions.
+	 * Retrieves the effective quick actions.
 	 *
 	 * Subclasses can implement this method, if there are compositions of other quick actions.
 	 * @returns {sap.m.table.columnmenu.QuickActionBase[]} The effective quick actions
@@ -58,7 +59,7 @@ sap.ui.define([
 		}
 
 		this.setProperty("visible", bVisible);
-		this.getMenu() && this.getMenu()._createQuickActionGrids();
+		this.getMenu() && this.getMenu()._initQuickActionContainer();
 		return this;
 	};
 

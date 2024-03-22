@@ -75,7 +75,7 @@ sap.ui.define([
 	 * @implements sap.ui.commons.ToolbarItem
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -669,8 +669,7 @@ sap.ui.define([
 	TextField.extend("sap.ui.commons.SearchField.TF", {
 
 		metadata : {
-			library: "sap.ui.commons",
-			visibility : "hidden"
+			library: "sap.ui.commons"
 		},
 
 	  constructor : function (sId, mSettings) {
@@ -769,8 +768,7 @@ sap.ui.define([
 	ComboBox.extend("sap.ui.commons.SearchField.CB", {
 
 		metadata : {
-			library: "sap.ui.commons",
-			visibility : "hidden"
+			library: "sap.ui.commons"
 		},
 
 		constructor: function(sId, mSettings) {

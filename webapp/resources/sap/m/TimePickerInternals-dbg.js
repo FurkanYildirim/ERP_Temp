@@ -14,7 +14,8 @@ sap.ui.define([
 	"sap/ui/core/Locale",
 	"./library",
 	"./Button",
-	'./TimePickerInternalsRenderer',
+	"sap/ui/core/date/UI5Date",
+	"./TimePickerInternalsRenderer",
 	"sap/ui/core/Configuration"
 ],
 	function(
@@ -27,6 +28,7 @@ sap.ui.define([
 		Locale,
 		library,
 		Button,
+        UI5Date,
 		TimePickerInternalsRenderer,
 		Configuration
 	) {
@@ -47,7 +49,7 @@ sap.ui.define([
 		 * @extends sap.ui.core.Control
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @private
@@ -77,7 +79,7 @@ sap.ui.define([
 					 * The <code>displayFormat</code> comes from the browser language settings if not set explicitly.
 					 *
 					 */
-					displayFormat: {name: "displayFormat", type: "string", group: "Appearance"},
+					displayFormat: {type: "string", group: "Appearance"},
 
 					/**
 					 * Sets the minutes clock step. The step must be at least 1
@@ -437,11 +439,22 @@ sap.ui.define([
 		TimePickerInternals.prototype._getTimeSeparators = function (sDisplayFormat) {
 			var aFormatParts = DateFormat.getInstance({ pattern: sDisplayFormat }).aFormatArray,
 				aSeparators = [],
+				bAmPmMarker,
 				bPreviousWasEntity,
 				iIndex;
 
+				if (!aFormatParts.length) {
+					return aSeparators;
+				}
+
+				if (aFormatParts[0].type !== 'text') {
+					aSeparators.push("");
+				}
+
 				for (iIndex = 0; iIndex < aFormatParts.length; iIndex++) {
-					if (aFormatParts[iIndex].type !== "text") {
+					if (aFormatParts[iIndex].type === 'amPmMarker') {
+						bAmPmMarker = true;
+					} else if (aFormatParts[iIndex].type !== "text") {
 						if (bPreviousWasEntity) {
 							// there was previous non-separator entity, and this one is the same too, so add empty separator
 							aSeparators.push("");
@@ -455,6 +468,8 @@ sap.ui.define([
 						bPreviousWasEntity = false;
 					}
 				}
+
+				bAmPmMarker && aSeparators.push("");
 
 				return aSeparators;
 		};
@@ -608,7 +623,7 @@ sap.ui.define([
 					type: ButtonType.Transparent,
 					visible: false,
 					press: function () {
-						this._setTimeValues(new Date());
+						this._setTimeValues(UI5Date.getInstance());
 					}.bind(this)
 				}).addStyleClass("sapMTPNow");
 			}

@@ -24,7 +24,7 @@ sap.ui.define([
 			var oRow = oTable.getRows()[iIndex];
 
 			if (oRow && bSelected != null) {
-				TableUtils.toggleRowSelection(oTable, oRow.getIndex(), bSelected);
+				TableUtils.toggleRowSelection(oTable, oRow, bSelected);
 			}
 		},
 
@@ -181,7 +181,7 @@ sap.ui.define([
 	 * @class Extension for sap.ui.table.Table that allows synchronization with a table.
 	 * @extends sap.ui.table.extensions.ExtensionBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @alias sap.ui.table.extensions.Synchronization

@@ -9,7 +9,7 @@ sap.ui.define([
 ], function (EventProvider) {
 	"use strict";
 
-	var ERROR_INSTANCING = "StateHandlerRegistry: This class is a singleton and should not be used without an AdaptationProvider. Please use 'sap.m.p13n.Engine.getInstance().stateHandlerRegistry' instead";
+	var ERROR_INSTANCING = "StateHandlerRegistry: This class is a singleton and should not be used without an AdaptationProvider. Please use 'Engine.getInstance().stateHandlerRegistry' instead";
 
 	//Singleton storage
 	var oStateHandlerRegistry;
@@ -18,10 +18,10 @@ sap.ui.define([
 	 * Constructor for a new StateHandlerRegistry.
 	 *
 	 * @class
-	 * @extends sap.ui.base.Object
+	 * @extends sap.ui.base.EventProvider
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @since 1.104
@@ -73,21 +73,22 @@ sap.ui.define([
 	 * Fires an {@link sap.ui.base.Event event} with the given settings and notifies all attached event handlers.
 	 *
 	 * @param {sap.ui.core.Control} oControl The control instance
-	 * @param {object} oState The updated state
+	 * @param {object} oFullState The updated state after change processing
 	 * @returns {this} Returns <code>this</code> to allow method chaining
 	 */
-	StateHandlerRegistry.prototype.fireChange = function(oControl, oState) {
+	StateHandlerRegistry.prototype.fireChange = function(oControl, oFullState) {
 		return EventProvider.prototype.fireEvent.call(this, "stateChange", {
 			control: oControl,
-			state: oState
+			state: oFullState
 		});
 	};
 
 	/**
+	 * This method is the central point of access to the DefaultProviderRegistry Singleton.
+	 *
 	 * @private
 	 * @ui5-restricted sap.m
 	 *
-	 * This method is the central point of access to the DefaultProviderRegistry Singleton.
 	 * @returns {this} Returns the <code>StateHandlerRegistry</code> instance.
 	 */
 	StateHandlerRegistry.getInstance = function () {

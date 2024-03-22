@@ -93,6 +93,10 @@ sap.ui.define([
 			oVariantData.executeOnSelection = oVariantInput.executeOnSelection;
 		}
 
+		if (oVariantInput.adaptationId !== undefined) {
+			oVariantData.adaptationId = oVariantInput.adaptationId;
+		}
+
 		return FlexObjectFactory.createCompVariant(oVariantData);
 	}
 
@@ -117,7 +121,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.apply._internal.flexState.compVariants.CompVariantMerger
 	 * @since 1.86
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
@@ -182,7 +186,7 @@ sap.ui.define([
 		 *
 		 * @function
 		 * @since 1.89
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @private
 		 * @ui5-restricted sap.ui.fl
 		 *

@@ -1,0 +1,116 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": ".theming",
+			"size": 137,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "BarListCard.less",
+			"size": 335,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "Card.less",
+			"size": 2071,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "DashboardLayout.less",
+			"size": 0,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "LinkListCard.less",
+			"size": 76,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "OVPApp.less",
+			"size": 1040,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "ObjectStream.less",
+			"size": 1442,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "StackPlaceHolder.less",
+			"size": 215,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "css_variables.css",
+			"size": 776,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "css_variables.less",
+			"size": 157181,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "css_variables.source.less",
+			"size": 156811,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "img/ovpDarkBg.png",
+			"size": 70907,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library-RTL.css",
+			"size": 55399,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library-parameters.json",
+			"module": "sap/ovp/themes/sap_bluecrystal/library-parameters.json",
+			"size": 238,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library.css",
+			"size": 55383,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library.less",
+			"size": 5977,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library.source.less",
+			"size": 373,
+			"designtime": true,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library_skeleton-RTL.css",
+			"size": 58278,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "library_skeleton.css",
+			"size": 58262,
+			"theme": "sap_bluecrystal"
+		},
+		{
+			"name": "resources.json",
+			"size": 2088
+		}
+	]
+}

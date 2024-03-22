@@ -8,12 +8,13 @@
 sap.ui.define([
 	"sap/base/util/each",
 	"sap/base/util/isEmptyObject",
+	"sap/ui/core/date/UI5Date",
 	"sap/ui/core/format/DateFormat",
 	"sap/ui/model/FormatException",
 	"sap/ui/model/ParseException",
 	"sap/ui/model/SimpleType",
 	"sap/ui/model/ValidateException"
-], function(each, isEmptyObject, DateFormat, FormatException, ParseException, SimpleType,
+], function(each, isEmptyObject, UI5Date, DateFormat, FormatException, ParseException, SimpleType,
 		ValidateException) {
 	"use strict";
 
@@ -26,7 +27,7 @@ sap.ui.define([
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
 	 * @param {object} [oFormatOptions] Formatting options. For a list of all available options, see {@link sap.ui.core.format.DateFormat.getDateInstance DateFormat}.
@@ -155,7 +156,7 @@ sap.ui.define([
 					oValue = parseInt(oValue);
 				}
 			}
-			oValue = new Date(oValue);
+			oValue = UI5Date.getInstance(oValue);
 			return oValue;
 		}
 	};
@@ -221,8 +222,8 @@ sap.ui.define([
 	 * @returns {string|undefined}
 	 *   The language-dependent placeholder text or <code>undefined</code> if the type does not offer a placeholder
 	 *
-	 * @private
-	 * @ui5-restricted sap.m
+	 * @experimental As of version 1.114.0
+	 * @public
 	 */
 	Date1.prototype.getPlaceholderText = function () {
 		return this.oOutputFormat.getPlaceholderText();

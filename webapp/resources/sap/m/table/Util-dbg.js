@@ -9,8 +9,9 @@ sap.ui.define([
 	"sap/ui/core/Core",
 	"sap/ui/core/theming/Parameters",
 	"sap/m/IllustratedMessage",
-	"sap/m/Button"
-], function(MLibrary, Core, ThemeParameters, IllustratedMessage, Button) {
+	"sap/m/Button",
+	"sap/ui/core/InvisibleMessage"
+], function(MLibrary, Core, ThemeParameters, IllustratedMessage, Button, InvisibleMessage) {
 	"use strict";
 	/*global Intl*/
 
@@ -20,7 +21,7 @@ sap.ui.define([
 	 * @namespace
 	 * @alias module:sap/m/table/Util
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.96.0
 	 * @private
 	 * @ui5-restricted sap.fe, sap.ui.mdc, sap.ui.comp
@@ -30,7 +31,8 @@ sap.ui.define([
 	// local privates
 	var sDefaultFont = "";
 	var fBaseFontSize = parseFloat(MLibrary.BaseFontSize);
-
+	var oSelectAllNotificationPopover = null;
+	var pGetSelectAllPopover = null;
 	/**
 	 * Measures the given text width in a canvas and returns the value in rem.
 	 *
@@ -152,22 +154,35 @@ sap.ui.define([
 	 * @param {float} [fContentWidth] The calculated width of the cell in rem
 	 * @param {int} [iMaxWidth=19] The maximum header width in rem
 	 * @param {int} [iMinWidth=2] The minimum header width in rem
+	 * @param {boolean} [bRequired=false] Determines whether the given column header is marked as required
 	 * @returns {float} The calculated header width in rem
 	 * @private
+	 * @ui5-restricted sap.ui.comp
 	 */
 	Util.calcHeaderWidth = (function() {
 		var sHeaderFont = "";
+		var sRequiredFont = "";
 		var fnGetHeaderFont = function() {
 			if (!sHeaderFont) {
 				sHeaderFont = [ThemeParameters.get({ name: "sapUiColumnHeaderFontWeight" }) || "normal", sDefaultFont].join(" ");
 			}
 			return sHeaderFont;
 		};
+		var fnGetRequiredFont = function() {
+			if (!sRequiredFont) {
+				sRequiredFont = [ThemeParameters.get({ name: "sapMFontLargeSize" }) || "normal", sDefaultFont].join(" ");
+			}
+			return sRequiredFont;
+		};
 
-		Core.attachThemeChanged(function() { sHeaderFont = ""; });
+		Core.attachThemeChanged(function() {
+			sHeaderFont = "";
+			sRequiredFont = "";
+		});
 
-		return function(sHeader, fContentWidth, iMaxWidth, iMinWidth) {
+		return function(sHeader, fContentWidth, iMaxWidth, iMinWidth, bRequired) {
 			var iHeaderLength = sHeader.length;
+			var fRequired = 0;
 			iMaxWidth = iMaxWidth || 19;
 			iMinWidth = iMinWidth || 2;
 
@@ -177,8 +192,14 @@ sap.ui.define([
 			if (iMinWidth > iHeaderLength) {
 				return iMinWidth;
 			}
+
+			if (bRequired) {
+				fRequired = 0.125 /* margin */ + Util.measureText("*", fnGetRequiredFont());
+			}
+
 			if (!fContentWidth) {
-				return Util.measureText(sHeader, fnGetHeaderFont());
+				var fHeaderWidth = Util.measureText(sHeader, fnGetHeaderFont());
+				return fHeaderWidth + fRequired;
 			}
 
 			fContentWidth = Math.max(fContentWidth, iMinWidth);
@@ -194,7 +215,7 @@ sap.ui.define([
 
 			var fHeaderWidthDiff = Math.max(0, fOrigHeaderWidth - fMaxHeaderWidth);
 			var fHeaderWidth = (fHeaderWidthDiff < 0.15) ? fOrigHeaderWidth : fMaxHeaderWidth + fHeaderWidthDiff * (1 - 1 / fContentWidth) / Math.E;
-			return fHeaderWidth;
+			return fHeaderWidth + fRequired;
 		};
 	})();
 
@@ -206,12 +227,14 @@ sap.ui.define([
 	 * @param {object} [mSettings] The settings object
 	 * @param {int} [mSettings.minWidth=2] The minimum content width of the field in rem
 	 * @param {int} [mSettings.maxWidth=19] The maximum content width of the field in rem
-	 * @param {int} [mSettings.padding=1] The sum of column padding and border in rem
+	 * @param {int} [mSettings.padding=1.0625] The sum of column padding(1rem) and border(1px) in rem
 	 * @param {float} [mSettings.gap=0] The additional content width in rem
 	 * @param {boolean} [mSettings.headerGap=false] Whether icons in the header should be taken into account
 	 * @param {boolean} [mSettings.truncateLabel=true] Whether the header of the column can be truncated or not
 	 * @param {boolean} [mSettings.verticalArrangement=false] Whether the fields are arranged vertically
+	 * @param {boolean} [mSettings.required=false] Indicates the state of the column header as defined by the <code>required</code> property
 	 * @param {int} [mSettings.defaultWidth=8] The default column content width when type check fails
+	 * @param {int} [mSettings.treeColumn=false] Determines whether the first column of the tree table
 	 * @returns {string} The calculated width of the column
 	 * @private
 	 * @ui5-restricted sap.fe, sap.ui.mdc, sap.ui.comp
@@ -227,15 +250,16 @@ sap.ui.define([
 			maxWidth: 19,
 			defaultWidth: 8,
 			truncateLabel: true,
-			padding: 1,
+			padding: 1.0625,
 			gap: 0
 		}, mSettings);
 
 		var fHeaderWidth = 0;
 		var iMinWidth = Math.max(1, mSettings.minWidth);
 		var iMaxWidth = Math.max(iMinWidth, mSettings.maxWidth);
+		var fTreeColumnGap = mSettings.treeColumn ? 3 : 0;
 
-		var fContentWidth = mSettings.gap + vTypes.reduce(function(fInnerWidth, vType) {
+		var fContentWidth = mSettings.gap + fTreeColumnGap + vTypes.reduce(function(fInnerWidth, vType) {
 			var oType = vType, oTypeSettings = {
 				defaultWidth: mSettings.defaultWidth,
 				maxWidth: mSettings.maxWidth
@@ -253,13 +277,13 @@ sap.ui.define([
 		}, 0);
 
 		if (sHeader) {
-			fHeaderWidth = Util.calcHeaderWidth(sHeader, (mSettings.truncateLabel ? fContentWidth : 0), iMaxWidth, iMinWidth);
+			fHeaderWidth = Util.calcHeaderWidth(sHeader, (mSettings.truncateLabel ? fContentWidth : 0), iMaxWidth, iMinWidth, mSettings.required);
 			fHeaderWidth += mSettings.headerGap ? (8 /* padding */ + 14 /* icon width */) / fBaseFontSize : 0;
 		}
 
 		fContentWidth = Math.max(iMinWidth, fContentWidth, fHeaderWidth);
 		fContentWidth = Math.min(fContentWidth, iMaxWidth);
-		fContentWidth = Math.round(fContentWidth * 100) / 100;
+		fContentWidth = Math.ceil(fContentWidth * 100) / 100;
 
 		return fContentWidth + mSettings.padding + "rem";
 	};
@@ -289,6 +313,155 @@ sap.ui.define([
 		}
 
 		return oIllustratedMessage;
+	};
+
+	/**
+	 * Creates or returns the existing popover
+	 *
+	 * @returns {Promise} A promise that resolves when the popover is created
+	 * @private
+	 * @since 1.109
+	 */
+	Util.getSelectAllPopover = function() {
+		if (pGetSelectAllPopover) {
+			return pGetSelectAllPopover;
+		}
+
+		pGetSelectAllPopover = Promise.all(
+            [new Promise(function(fnResolve) {
+				sap.ui.require([
+					"sap/m/Popover",
+					"sap/m/Bar",
+					"sap/m/HBox",
+					"sap/m/Title",
+					"sap/ui/core/library",
+					"sap/m/Text"
+				], function(Popover, Bar, HBox, Title, coreLib, Text) {
+					fnResolve({
+						Popover: Popover,
+						Bar: Bar,
+						HBox: HBox,
+						Title: Title,
+						coreLib: coreLib,
+						Text: Text
+					});
+				});
+			}),
+            Core.getLibraryResourceBundle('sap.m', true)
+		]).then(function(aResult) {
+			var oModules = aResult[0];
+			var oResourceBundle = aResult[1];
+			var sIconColor = oModules.coreLib.IconColor.Critical,
+			sTitleLevel = oModules.coreLib.TitleLevel.H2;
+
+			oSelectAllNotificationPopover = new oModules.Popover({
+				customHeader: new oModules.Bar({
+					contentMiddle: [
+						new oModules.HBox({
+							items: [
+								new oModules.coreLib.Icon({src: "sap-icon://message-warning", color: sIconColor})
+									.addStyleClass("sapUiTinyMarginEnd"),
+								new oModules.Title({text: oResourceBundle.getText("TABLE_SELECT_LIMIT_TITLE"), level: sTitleLevel})
+							],
+							renderType: "Bare",
+							justifyContent: "Center",
+							alignItems: "Center"
+						})
+					]
+				}),
+				content: [new oModules.Text()]
+			}).addStyleClass("sapUiContentPadding");
+			return {
+				oSelectAllNotificationPopover: oSelectAllNotificationPopover,
+				oResourceBundle: oResourceBundle
+			};
+		});
+		return pGetSelectAllPopover;
+	};
+
+	/**
+	 * Opens the Popover and sets the appropriate message.
+	 *
+	 * @param {int} iLimit The selectable items length
+	 * @param {object} oSelectAllDomRef Control object where the popOver is opened
+	 * @private
+	 * @since 1.109
+	 */
+	Util.showSelectionLimitPopover = function(iLimit, oSelectAllDomRef) {
+		Util.getSelectAllPopover().then(function(oResult) {
+			var oPopover = oResult.oSelectAllNotificationPopover;
+			var oResourceBundle = oResult.oResourceBundle;
+			var sMessage = oResourceBundle.getText("TABLE_SELECT_LIMIT", [iLimit]);
+			oPopover.getContent()[0].setText(sMessage); //Content contains a single text element
+			if (oSelectAllDomRef) {
+				oPopover.openBy(oSelectAllDomRef);
+			}
+		});
+	};
+
+	/**
+	 * Closes the popover if opened
+	 *
+	 * @private
+	 * @since 1.109
+	 */
+	Util.hideSelectionLimitPopover = function() {
+		if (oSelectAllNotificationPopover && oSelectAllNotificationPopover.isOpen()) {
+			oSelectAllNotificationPopover.close();
+		}
+	};
+
+	/**
+	 * Provides an additional announcement for the screen reader to inform the user that the table
+	 * has been updated.
+	 *
+	 * @param {string} sText The header text to be announced
+	 * @param {int|undefined} iRowCount The row count. If not provided, the row count will not be announced
+	 * @private
+	 * @ui5-restricted sap.fe, sap.ui.mdc, sap.ui.comp
+	 * @since 1.114
+	 */
+	Util.announceTableUpdate = function(sText, iRowCount) {
+		var oInvisibleMessage = InvisibleMessage.getInstance();
+
+		if (oInvisibleMessage) {
+			var oResourceBundle = Core.getLibraryResourceBundle("sap.m");
+
+			if (iRowCount == undefined) {
+				oInvisibleMessage.announce(oResourceBundle.getText("table.ANNOUNCEMENT_TABLE_UPDATED", [sText]));
+			} else if (iRowCount > 1) {
+				oInvisibleMessage.announce(oResourceBundle.getText("table.ANNOUNCEMENT_TABLE_UPDATED_MULT", [sText, iRowCount]));
+			} else if (iRowCount === 1) {
+				oInvisibleMessage.announce(oResourceBundle.getText("table.ANNOUNCEMENT_TABLE_UPDATED_SING", [sText, iRowCount]));
+			} else {
+				oInvisibleMessage.announce(oResourceBundle.getText("table.ANNOUNCEMENT_TABLE_UPDATED_NOITEMS", [sText]));
+			}
+		}
+	};
+
+	/**
+	 * Checks whether the table is empty.
+	 *
+	 * @param {sap.ui.model.Binding} oRowBinding The row binding
+	 * @returns {boolean} Whether the table is empty or not
+	 * @private
+	 * @ui5-restricted sap.ui.mdc, sap.ui.comp
+	 * @since 1.114
+	 */
+	Util.isEmpty = function(oRowBinding) {
+		if (!oRowBinding) {
+			return true;
+		}
+
+		var iRowCount = oRowBinding.getLength();
+		if (iRowCount === 1 && oRowBinding.isA('sap.ui.model.analytics.AnalyticalBinding')) {
+			var bHasGrandTotal = oRowBinding ? oRowBinding.providesGrandTotal() && oRowBinding.hasTotaledMeasures() : false;
+
+			if (bHasGrandTotal) {
+				iRowCount = 0;
+			}
+		}
+		return iRowCount <= 0;
 	};
 
 	return Util;

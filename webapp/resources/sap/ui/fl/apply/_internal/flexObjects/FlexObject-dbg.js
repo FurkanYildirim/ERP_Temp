@@ -69,7 +69,7 @@ sap.ui.define([
 	 * @extends sap.ui.base.ManagedObject
 	 * @alias sap.ui.fl.apply._internal.flexObjects.FlexObject
 	 * @since 1.100
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
@@ -77,12 +77,18 @@ sap.ui.define([
 		metadata: {
 			properties: {
 				/**
+				 * AdaptationId of the flex object
+				 */
+				adaptationId: {
+					type: "string"
+				},
+				/**
 				 * Current state of the flex object regarding the persistence.
-				 * See {@link sap.ui.fl.apply._internal.flexObjects.States}.
+				 * See {@link sap.ui.fl.apply._internal.flexObjects.States.LifecycleState}.
 				 */
 				state: {
 					type: "string",
-					defaultValue: States.NEW
+					defaultValue: States.LifecycleState.NEW
 				},
 				/**
 				 * File type of the flex object.
@@ -137,20 +143,14 @@ sap.ui.define([
 			var oFlexObjectMetadata = this.getFlexObjectMetadata();
 			var sReference = oFlexObjectMetadata.reference;
 			if (sReference) {
-				if (!oFlexObjectMetadata.namespace) {
-					oFlexObjectMetadata.namespace = Utils.createNamespace({ reference: sReference }, this.getFileType());
-				}
-
-				if (!oFlexObjectMetadata.projectId) {
-					oFlexObjectMetadata.projectId = sReference.replace(".Component", "");
-				}
+				oFlexObjectMetadata.namespace = oFlexObjectMetadata.namespace || Utils.createNamespace({ reference: sReference }, this.getFileType());
+				oFlexObjectMetadata.projectId = oFlexObjectMetadata.projectId || sReference;
 			}
 			this.setFlexObjectMetadata(oFlexObjectMetadata);
 
 			var oSupportInformation = this.getSupportInformation();
-			if (!oSupportInformation.originalLanguage) {
-				oSupportInformation.originalLanguage = Utils.getCurrentLanguage();
-			}
+			oSupportInformation.originalLanguage = oSupportInformation.originalLanguage || Utils.getCurrentLanguage();
+
 			this.setSupportInformation(oSupportInformation);
 		}
 	});
@@ -160,7 +160,7 @@ sap.ui.define([
 	 * @returns {object} Mapping information
 	 * @static
 	 */
-	FlexObject.getMappingInfo = function () {
+	FlexObject.getMappingInfo = function() {
 		return Object.assign({}, {
 			"flexObjectMetadata.changeType": "changeType",
 			"flexObjectMetadata.reference": "reference",
@@ -180,6 +180,7 @@ sap.ui.define([
 			"supportInformation.command": "support.command",
 			"supportInformation.oDataInformation": "oDataInformation",
 			"supportInformation.originalLanguage": "originalLanguage",
+			adaptationId: "adaptationId",
 			layer: "layer",
 			fileType: "fileType",
 			id: "fileName",
@@ -193,7 +194,7 @@ sap.ui.define([
 	 * Can be overridden to avoid access of static mapping within base methods.
 	 * @returns {object} Mapping information
 	 */
-	FlexObject.prototype.getMappingInfo = function () {
+	FlexObject.prototype.getMappingInfo = function() {
 		return FlexObject.getMappingInfo();
 	};
 
@@ -203,10 +204,10 @@ sap.ui.define([
 	 * @param {boolean} [bSkipStateChange] - If set to true, doesn't set the state to dirty
 	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject} <code>this</code> for chaining
 	 */
-	FlexObject.prototype.setContent = function (oContent, bSkipStateChange) {
+	FlexObject.prototype.setContent = function(oContent, bSkipStateChange) {
 		this.setProperty("content", oContent);
 		if (!bSkipStateChange) {
-			this.setState(States.DIRTY);
+			this.setState(States.LifecycleState.DIRTY);
 		}
 		return this;
 	};
@@ -215,7 +216,7 @@ sap.ui.define([
 	 * Getter for additional flex object metadata.
 	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject.FlexObjectMetadata} Additional metadata
 	 */
-	FlexObject.prototype.getFlexObjectMetadata = function () {
+	FlexObject.prototype.getFlexObjectMetadata = function() {
 		return Object.assign({}, this.getProperty("flexObjectMetadata"));
 	};
 
@@ -223,18 +224,18 @@ sap.ui.define([
 	 * Getter for flex object support information.
 	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject.SupportInformation} Support information
 	 */
-	FlexObject.prototype.getSupportInformation = function () {
+	FlexObject.prototype.getSupportInformation = function() {
 		return Object.assign({}, this.getProperty("supportInformation"));
 	};
 
 	function isValidStateChange(sNewState, sCurrentState) {
-		if (!Object.values(States).includes(sNewState)) {
+		if (!Object.values(States.LifecycleState).includes(sNewState)) {
 			return false;
 		}
 		// flex object state cannot move from NEW to DIRTY directly
 		if (
-			sCurrentState === States.NEW
-			&& sNewState === States.DIRTY
+			sCurrentState === States.LifecycleState.NEW
+			&& sNewState === States.LifecycleState.DIRTY
 		) {
 			return false;
 		}
@@ -243,10 +244,10 @@ sap.ui.define([
 
 	/**
 	 * Validates and sets the state of the flex object.
-	 * @param {sap.ui.fl.States} sState - New state
+	 * @param {sap.ui.fl.apply._internal.flexObjects.States.LifecycleState} sState - New state
 	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject} <code>this</code> for chaining
 	 */
-	FlexObject.prototype.setState = function (sState) {
+	FlexObject.prototype.setState = function(sState) {
 		var sCurrentState = this.getState();
 		if (sCurrentState !== sState && isValidStateChange(sState, sCurrentState)) {
 			this._sPreviousState = sCurrentState;
@@ -255,18 +256,22 @@ sap.ui.define([
 		return this;
 	};
 
+	FlexObject.prototype.isPersisted = function() {
+		return this.getState() === States.LifecycleState.PERSISTED;
+	};
+
 	/**
 	 * Changes the state of the flex object to DELETED.
 	 */
-	FlexObject.prototype.markForDeletion = function () {
-		this.setState(States.DELETED);
+	FlexObject.prototype.markForDeletion = function() {
+		this.setState(States.LifecycleState.DELETED);
 	};
 
 	/**
 	 * Restores the state before the last state change.
 	 * Cannot go back further than the previous state.
 	 */
-	FlexObject.prototype.restorePreviousState = function () {
+	FlexObject.prototype.restorePreviousState = function() {
 		if (this._sPreviousState) {
 			this.setState(this._sPreviousState);
 			delete this._sPreviousState;
@@ -277,7 +282,7 @@ sap.ui.define([
 	 * Checks if flex object is read only because of its source system.
 	 * @returns {boolean} <code>true</code> if the flex object is from another system
 	 */
-	FlexObject.prototype.isChangeFromOtherSystem = function () {
+	FlexObject.prototype.isChangeFromOtherSystem = function() {
 		var sSourceSystem = this.getSupportInformation().sourceSystem;
 		var sSourceClient = this.getSupportInformation().sourceClient;
 		if (!sSourceSystem || !sSourceClient) {
@@ -315,7 +320,7 @@ sap.ui.define([
 	 * Returns <code>true</code> if the flex object is user dependent.
 	 * @returns {boolean} <code>true</code> if the flex object is only relevant for the current user
 	 */
-	FlexObject.prototype.isUserDependent = function () {
+	FlexObject.prototype.isUserDependent = function() {
 		return this.getLayer() === Layer.USER;
 	};
 
@@ -324,7 +329,7 @@ sap.ui.define([
 	 * @param {string} sTextId - Text ID which was used as part of the <code>texts</code> property
 	 * @returns {string} The text for the given text ID
 	 */
-	FlexObject.prototype.getText = function (sTextId) {
+	FlexObject.prototype.getText = function(sTextId) {
 		var oText = this.getTexts()[sTextId] || {};
 		return oText.value || "";
 	};
@@ -337,7 +342,7 @@ sap.ui.define([
 	 * @param {boolean} [bSkipStateChange] - If set to <code>true</code>, doesn't set the state to dirty
 	 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject} <code>this</code> context for chaining
 	 */
-	FlexObject.prototype.setText = function (sTextId, sNewText, sType, bSkipStateChange) {
+	FlexObject.prototype.setText = function(sTextId, sNewText, sType, bSkipStateChange) {
 		var oTexts = Object.assign({}, this.getTexts());
 		var oNewText = {
 			value: sNewText
@@ -348,7 +353,7 @@ sap.ui.define([
 		oTexts[sTextId] = Object.assign({}, oTexts[sTextId], oNewText);
 		this.setTexts(oTexts);
 		if (!bSkipStateChange) {
-			this.setState(States.DIRTY);
+			this.setState(States.LifecycleState.DIRTY);
 		}
 		return this;
 	};
@@ -360,7 +365,7 @@ sap.ui.define([
 	 * Also used by the SmartVariantManagement control.
 	 * @param {string} sRequest - Transport request
 	 */
-	FlexObject.prototype.setRequest = function (sRequest) {
+	FlexObject.prototype.setRequest = function(sRequest) {
 		this._sRequest = sRequest;
 	};
 
@@ -369,7 +374,7 @@ sap.ui.define([
 	 * Also used by the SmartVariantManagement control.
 	 * @returns {string} Transport request
 	 */
-	FlexObject.prototype.getRequest = function () {
+	FlexObject.prototype.getRequest = function() {
 		return this._sRequest || "";
 	};
 
@@ -382,6 +387,7 @@ sap.ui.define([
 	 * calling this function with e.g. Variants
 	 * Should be removed after all consumers are adjusted.
 	 * @returns {object} file content as JSON object
+	 * @deprecated As of version 1.100
 	 */
 	FlexObject.prototype.getDefinition = function() {
 		return this.convertToFileContent();
@@ -406,7 +412,7 @@ sap.ui.define([
 	function getOriginalMutator(sFunctionName) {
 		return typeof this[sFunctionName] === "function"
 			? this[sFunctionName].bind(this)
-			: function () {
+			: function() {
 				throw new Error(sFunctionName + " is not a valid mutator");
 			};
 	}
@@ -418,14 +424,14 @@ sap.ui.define([
 		var fnGetter = getOriginalMutator.call(this, "get" + sFunctionName);
 		var fnSetter = getOriginalMutator.call(this, "set" + sFunctionName);
 		return {
-			getValue: function () {
+			getValue: function() {
 				var vCurrentValue = deepClone(fnGetter());
 				if (aInstanceParts.length > 0) {
 					return ObjectPath.get(aInstanceParts, vCurrentValue);
 				}
 				return vCurrentValue;
 			},
-			setValue: function (vValue) {
+			setValue: function(vValue) {
 				var vPropertyValue = deepClone(fnGetter());
 				if (aInstanceParts.length > 0) {
 					ObjectPath.set(aInstanceParts, vValue, vPropertyValue);
@@ -444,7 +450,7 @@ sap.ui.define([
 	 */
 	FlexObject.prototype.convertToFileContent = function() {
 		var oFileContent = {};
-		Object.entries(this.getMappingInfo()).forEach(function (aProperty) {
+		Object.entries(this.getMappingInfo()).forEach(function(aProperty) {
 			var oValueToSet = getMutators.call(this, aProperty[0]).getValue();
 			if (oValueToSet !== undefined) {
 				ObjectPath.set(aProperty[1], oValueToSet, oFileContent);
@@ -468,11 +474,11 @@ sap.ui.define([
 	 * @returns {object} Properties map to create a new flex object
 	 * @static
 	 */
-	FlexObject.mapFileContent = function (oFileContent, oMappingInfo) {
+	FlexObject.mapFileContent = function(oFileContent, oMappingInfo) {
 		var aValidFileProperties = Object.values(oMappingInfo);
 		var mPropertyMap = {};
 
-		var fnMapProperty = function (sKey, vValue, sPath) {
+		var fnMapProperty = function(sKey, vValue, sPath) {
 			var sNewPath = sPath ? sPath + "." + sKey : sKey;
 			var iIndex = aValidFileProperties.indexOf(sNewPath);
 			if (iIndex >= 0) {
@@ -485,7 +491,7 @@ sap.ui.define([
 			}
 		};
 
-		Object.entries(deepClone(oFileContent)).forEach(function (aEntry) {
+		Object.entries(deepClone(oFileContent, 15)).forEach(function(aEntry) {
 			fnMapProperty(aEntry[0], aEntry[1]);
 		});
 		return mPropertyMap;
@@ -495,11 +501,11 @@ sap.ui.define([
 	 * Updates the flex object with a file content delta.
 	 * @param {object} oFileContent - File content of the flex object
 	 */
-	FlexObject.prototype.update = function (oFileContent) {
+	FlexObject.prototype.update = function(oFileContent) {
 		// filename is mapped to id and this is not updatable
 		var oNewFileContent = _omit(oFileContent, ["fileName"]);
 		var mProperties = FlexObject.mapFileContent(oNewFileContent, this.getMappingInfo());
-		Object.entries(mProperties).forEach(function (aProperty) {
+		Object.entries(mProperties).forEach(function(aProperty) {
 			updateProperty.call(this, aProperty[0], aProperty[1]);
 		}.bind(this));
 	};
@@ -508,13 +514,22 @@ sap.ui.define([
 	 * Sets the response from the back end after the flex object is saved.
 	 * @param {object} oResponse - File content
 	 */
-	FlexObject.prototype.setResponse = function (oResponse) {
+	FlexObject.prototype.setResponse = function(oResponse) {
 		if (!oResponse || isEmptyObject(oResponse)) {
 			return;
 		}
 		this.update(oResponse);
-		this.setState(States.PERSISTED);
+		this.setState(States.LifecycleState.PERSISTED);
 	};
 
+	/**
+	 * Converts properties of the flex object to the file content format and updates the fileName.
+	 * @returns {object} File content of the flex object that contains the new fileName
+	 */
+	FlexObject.prototype.cloneFileContentWithNewId = function() {
+		var mFileContent = this.convertToFileContent();
+		mFileContent.fileName = Utils.createDefaultFileName(mFileContent.fileName.split("_").pop());
+		return mFileContent;
+	};
 	return FlexObject;
 });

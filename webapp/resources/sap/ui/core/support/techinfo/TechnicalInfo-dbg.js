@@ -23,7 +23,9 @@ sap.ui.define([
 	"sap/base/Log",
 	"sap/ui/core/Fragment",
 	"sap/ui/thirdparty/jquery",
-	"sap/ui/core/Configuration"
+	"sap/ui/core/Configuration",
+	"sap/ui/core/Lib",
+	"sap/ui/core/message/MessageManager"
 ], function(
 	moduleTreeHelper,
 	Device,
@@ -43,7 +45,9 @@ sap.ui.define([
 	Log,
 	Fragment,
 	jQuery,
-	Configuration
+	Configuration,
+	Library,
+	MessageManager
 ) {
 	"use strict";
 
@@ -469,7 +473,7 @@ sap.ui.define([
 		 * @returns {string} Locale-dependent text for the key
 		 */
 		_getText: function (sKey, aParameters) {
-			return sap.ui.getCore().getLibraryResourceBundle().getText(sKey, aParameters);
+			return Library.get("sap.ui.core").getResourceBundle().getText(sKey, aParameters);
 		},
 
 		/**
@@ -559,7 +563,7 @@ sap.ui.define([
 				.then(function success() {
 					this.close();
 					var aSettings = [oSettings.support];
-					sap.ui.getCore().loadLibrary("sap.ui.support", { async: true, url: sUrl })
+					Library.load({ name: "sap.ui.support", url: sUrl })
 						.then(function () {
 							if (oSettings.window) {
 								aSettings.push("window");
@@ -598,7 +602,7 @@ sap.ui.define([
 			// create dialog lazily
 			this._pOpenDialog =
 				Promise.all([
-					sap.ui.getCore().loadLibraries(["sap.ui.core", "sap.ui.layout", "sap.m"]),
+					Library._load(["sap.ui.core", "sap.ui.layout", "sap.m"]),
 					this._loadVersionInfo(),
 					this._pDestroyDialog // wait for a pending destroy to finish
 				]).then(function() {
@@ -1011,7 +1015,7 @@ sap.ui.define([
 
 					// register message validation and trigger it once to validate the value coming from local storage
 					var oCustomBootstrapURL =  this._getControl("customBootstrapURL", this._SUPPORT_ASSISTANT_POPOVER_ID);
-					sap.ui.getCore().getMessageManager().registerObject(oCustomBootstrapURL, true);
+					MessageManager.registerObject(oCustomBootstrapURL, true);
 				}.bind(this));
 			}
 			return this._pAssistantPopover;

@@ -7,12 +7,14 @@
 sap.ui.define([
 	"sap/ui/integration/cards/BaseContent",
 	"sap/ui/integration/util/BindingResolver",
+	"sap/m/IllustratedMessageType",
 	"sap/ui/integration/library",
 	"sap/base/Log",
 	"sap/ui/model/Sorter"
 ], function (
 	BaseContent,
 	BindingResolver,
+	IllustratedMessageType,
 	library,
 	Log,
 	Sorter
@@ -31,7 +33,7 @@ sap.ui.define([
 	 * @extends sap.ui.integration.cards.BaseContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -53,6 +55,8 @@ sap.ui.define([
 	BaseListContent.prototype.init = function () {
 		BaseContent.prototype.init.apply(this, arguments);
 		this._oAwaitingPromise = null;
+		this._fMinHeight = 0;
+		this._bIsFirstRendering = true;
 	};
 
 	/**
@@ -64,15 +68,71 @@ sap.ui.define([
 		this._oAwaitingPromise = null;
 	};
 
+	BaseListContent.prototype.onAfterRendering = function () {
+		if (!this._bIsFirstRendering) {
+			this._keepHeight();
+		}
+
+		this._bIsFirstRendering = false;
+	};
+
+	BaseListContent.prototype.onDataChanged = function () {
+		if (this.hasData()) {
+			this.hideNoDataMessage();
+		} else {
+			this.showNoDataMessage({
+				illustrationType: IllustratedMessageType.NoEntries,
+				title: this.getCardInstance().getTranslatedText("CARD_NO_ITEMS_ERROR_LISTS")
+			});
+		}
+	};
+
+	BaseListContent.prototype._keepHeight = function () {
+		if (!this.getDomRef()) {
+			return;
+		}
+
+		var fCurrentHeight = this.getDomRef().getBoundingClientRect().height;
+
+		if (fCurrentHeight > this._fMinHeight) {
+			this._fMinHeight = fCurrentHeight;
+		}
+
+		if (this._fMinHeight) {
+			this.getDomRef().style.minHeight = this._fMinHeight + "px";
+		}
+
+		this._keepPlaceholderMinItems();
+	};
+
+	BaseListContent.prototype._keepPlaceholderMinItems = function () {
+		var oLoadingPlaceholder = this.getAggregation("_loadingPlaceholder"),
+			bContentReady = !!this.getAggregation("_content"),
+			iNumberOfItems,
+			iNewMinItems;
+
+		if (!oLoadingPlaceholder || !oLoadingPlaceholder.getMinItems || !bContentReady) {
+			return;
+		}
+
+		if (this.getInnerList().getItems) {
+			iNumberOfItems = this.getInnerList().getItems().length; // for the List and Table cards
+		} else {
+			iNumberOfItems = this.getInnerList().getContent().length; // for the Timeline card
+		}
+
+		iNewMinItems = Math.max(oLoadingPlaceholder.getMinItems(), iNumberOfItems);
+		oLoadingPlaceholder.setMinItems(iNewMinItems);
+	};
+
 	/**
 	 * @override
 	 */
-	BaseListContent.prototype.setConfiguration = function (oConfiguration, sType) {
-		BaseContent.prototype.setConfiguration.apply(this, arguments);
-		oConfiguration = this.getConfiguration();
+	BaseListContent.prototype.applyConfiguration = function () {
+		var oConfiguration = this.getConfiguration();
 
 		if (!oConfiguration) {
-			return this;
+			return;
 		}
 
 		var oList = this.getInnerList(),
@@ -91,7 +151,7 @@ sap.ui.define([
 			oList.addStyleClass("sapFCardMaxItems");
 		}
 
-		return this;
+		this._fMinHeight = 0;
 	};
 
 	/**
@@ -179,27 +239,18 @@ sap.ui.define([
 			}.bind(this));
 	};
 
-	/**
-	 * Used to show the illustrated message for no data retrieved from server.
-	 *
-	 * @protected
-	 * @param {Object} mItemConfig The item template.
-	 */
-	BaseListContent.prototype._handleNoItemsError = function (mItemConfig) {
-
-		if (!this.getInnerList()) {
-			return;
-		}
-
+	BaseListContent.prototype.hasData = function () {
 		var oInnerList = this.getInnerList(),
 			oBindingInfo = oInnerList.getBinding(oInnerList.getMetadata().getDefaultAggregationName()),
 			oModel = oBindingInfo.getModel(),
 			sPath = oBindingInfo.getPath(),
 			aItems = oModel.getProperty(sPath);
 
-		if (aItems && aItems.length === 0){
-			this.getParent()._handleError("No items available", true);
+		if (aItems && aItems.length) {
+			return true;
 		}
+
+		return false;
 	};
 
 	/**
@@ -222,6 +273,9 @@ sap.ui.define([
 
 	BaseListContent.prototype.sliceData = function (iStartIndex, iEndIndex) {
 		this.getModel().sliceData(iStartIndex, iEndIndex);
+		if (iStartIndex !== 0) {
+			this._keepHeight();
+		}
 	};
 
 	BaseListContent.prototype.getDataLength = function () {

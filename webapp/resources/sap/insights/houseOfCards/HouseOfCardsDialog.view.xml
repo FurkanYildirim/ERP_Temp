@@ -1,0 +1,97 @@
+<mvc:View displayBlock="true"  height="100%" controllerName="sap.insights.houseOfCards.HouseOfCards" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:w="sap.ui.integration.widgets"
+    xmlns:grid="sap.ui.layout.cssgrid">
+   <Page id="insightHouseOfCardPage"  title="{i18n>INT_PREVIEW_POPOVER_BUTTON_TITLE}" titleLevel="H1" showHeader="true" showSubHeader="true" backgroundDesign="List" enableScrolling="false" showNavButton="{= ${configureView>/bCalledInternally} ? true : false}" navButtonPress=".onNavBack(${configureView>/})" >
+        <headerContent>
+          <Button text="{i18n>INT_DIALOG_CardPreview}"
+            press="._callPreview(${hocModel>/oSelected})"  visible="{=  (!${hocModel>/bDesktop} &amp;&amp; !${hocModel>/bShowPreview}) ? true : false}" />
+          <Button text="{i18n>INT_DIALOG_HidePreview}"
+              press="._callClosePreview(${hocModel>/oSelected})" visible="{=  (!${hocModel>/bDesktop} &amp;&amp; ${hocModel>/bShowPreview}) ? true : false}" />
+        </headerContent>
+        <content>
+          <VBox id="hocbox1" height="100%"  width="100%" direction="Row" justifyContent="SpaceBetween">
+            <FlexBox  id="hocflexbox1" height="100%" width="{= (${hocModel>/bShowPreview}  &amp;&amp; ${hocModel>/bDesktop}) ? '62%' : '100%'}"  direction="Column"  justifyContent="Center">
+              <FlexBox id="cardContainerFlex" renderType="Bare" height="{= (!${hocModel>/bDesktop} &amp;&amp; !${hocModel>/bShowPreview}) ? '4rem' : '100%'}" visible="{= ${hocModel>/bDesktop} || (!${hocModel>/bDesktop} &amp;&amp; !${hocModel>/bShowPreview}) ? true : false}" direction="Column">
+                <VBox id="chartSelectVBox" direction="Column"  class="sapUiSmallMarginBegin" visible="{= ${hocModel>/bDesktop} || (!${hocModel>/bDesktop} &amp;&amp; !${hocModel>/bShowPreview}) ? true : false}">
+                  <Title id="previewChartInfoTitle" text="{i18n>INT_CHART_TITLE}" level="H4" class="sapUiSmallMarginTop"/>
+                  <Text id="previewChartInfoSubTitle" text="{i18n>INT_CHART_SUBTITLE}" />
+                </VBox>
+                <FlexBox  id="hocflexbox3" height="calc(100% - 4rem)" width="100%" visible="{= ${hocModel>/bDesktop} ? true : false}" direction="Column" renderType="Bare">
+                  <ComboBox id="hocChartCombo" ariaLabelledBy="previewChartInfoTitle previewChartInfoSubTitle hocChartCombo" items="{path: 'hocModel>/aPreviewCards'}" class="sapUiSmallMarginBegin sapUiTinyMarginTopBottom" maxWidth="33%" selectionChange="selectionChange">
+                    <core:Item id="hocChartComboItem" key="{hocModel>sap.card/content/chartType}" text="{parts: [ {path: 'hocModel>sap.card/content/chartType'}, {value: 'title'}], formatter: '.setChartDetail'}"/>
+                  </ComboBox>
+                  <ScrollContainer id="idHoCScrollContainer" vertical="true" horizontal="false" height="100%" width="100%">
+                    <VBox id="CardContainer" fitContainer="true" alignItems="Start" justifyContent="Start" renderType="Bare" alignContent="Start" wrap="Wrap"  width="100%" direction="Row"  items="{path: 'hocModel>/aPreviewCards'}">
+                      <w:Card id="insightsCard" width="17rem" height="29.5rem" manifest="{= ${hocModel>}}" host="HouseOfCardsHost" class="sapUiSmallMarginBegin sapUiTinyMarginTopBottom" manifestReady="onCardRender"/>
+                    </VBox>
+                  </ScrollContainer>
+                </FlexBox>
+              </FlexBox>
+
+              <FlexBox id="panelFlexCard" width="100%" height="calc(100% - 3rem)" visible="{= !${hocModel>/bDesktop} ? true : false}" direction="Column" renderType="Bare">
+                <FlexBox  height="100%"  width="100%" id="previewPanelCardContainer" visible="{= (!${hocModel>/bDesktop} &amp;&amp; !${hocModel>/bShowPreview}) ? true : false}" direction="Column" renderType="Bare" >
+                  <SearchField id="chartTypeSearch" ariaLabelledBy="previewChartInfoTitle previewChartInfoSubTitle chartTypeSearch" placeholder="{i18n>INT_CHART_SEARCH}" width="90%" class="sapUiSmallMarginBegin"  liveChange=".onChartTypeSearch"/>
+                  <ScrollContainer id="insightsCardsTypeScroll" vertical="true" horizontal="false" height="94%" width="100%" class="sapUiTinyMarginTop">
+                    <Table id="insightsCardsTypeTable" width="90%" fixedLayout="true"	mode="SingleSelectMaster"  itemPress="onChartTypePress" class="sapContrastPlus sapUiSmallMarginBeginEnd" items="{path: 'hocModel>/aPreviewCards'}">
+                      <columns>
+                        <Column id="chartIconColumn" hAlign="Center" width="{= ${hocModel>/bDesktop} ? '10%' : '20%'}"/>
+                        <Column id="chartTypeNameColumn" width="{= ${hocModel>/bDesktop} ? '90%' : '80%'}"/>
+                      </columns>
+                      <items>
+                        <ColumnListItem id="typeListItem"  type="Active" selected="{= ${hocModel>sap.card/content/chartType} ===   ${hocModel>/oSelected/sap.card/content/chartType} ? true : false}">
+                          <cells >
+                            <HBox class="sapUiNoPadding">
+                              <core:Icon id="chartIcon"  src="{parts: [ {path: 'hocModel>sap.card/content/chartType'}, {value: 'icon'}], formatter: '.setChartDetail'}"/>
+                            </HBox>
+                          </cells>
+                          <cells>
+                            <ObjectIdentifier id="chartTypeName" title="{parts: [ {path: 'hocModel>sap.card/content/chartType'}, {value: 'title'}], formatter: '.setChartDetail'}" class="sapUiNoPadding" tooltip="{hocModel>sap.card/content/chartType}"/>
+                          </cells>
+                        </ColumnListItem>
+                      </items>
+                    </Table>
+                  </ScrollContainer>
+                </FlexBox>
+                <FlexBox id="panelFlexHoC" height="100%" width="100%" visible="{= (!${hocModel>/bDesktop} &amp;&amp; ${hocModel>/bShowPreview}) ? true : false}" renderType="Bare" justifyContent="Center">
+                  <ScrollContainer id="hoCCardsScrollSD" vertical="true" horizontal="false" height="100%" >
+                    <VBox height="100%" id="previewCardHoCVBox" width="100%" visible="{= (!${hocModel>/bDesktop} &amp;&amp; ${hocModel>/bShowPreview}) ? true : false}"  alignItems="Center" backgroundDesign="Solid" class="sapUiSmallMarginTop sapUiTinyMarginBottom">
+                      <w:Card id="previewCardHoCSD" manifest="{hocModel>/oSelected}" width="19rem" height="33rem" class="sapUiTinyMarginBeginEnd"/>
+                    </VBox>
+                  </ScrollContainer>
+                </FlexBox>
+              </FlexBox>
+            </FlexBox>
+            <!-- <FlexBox id="hocflexbox2" direction="Column" width="30%" height="100%" visible="{= (${hocModel>/bDesktop}) ? true : false}" class="sapMPageBgStandard">
+              <HBox id="idPreviewTextHBox1"  width="100%" justifyContent="Center" backgroundDesign="Transparent">
+                  <Title id="insightPreviewText1" text="Card Preview" class="sapUiTinyMarginTop" textAlign="Left"/>
+              </HBox>
+              <FlexBox id="panelFlex" height="100%" backgroundDesign="Transparent" justifyContent="Center">
+                <Panel  height="100%" id="previewPanelContainer1" expanded="false"  backgroundDesign="Transparent">
+                  <VBox height="100%" id="idCardsPreviewVBox1" alignItems="Center" backgroundDesign="Transparent" justifyContent="SpaceAround" class="SapUiLargeMarginTop" >
+                    <w:Card id="previewCard" manifest="{ path: 'hocModel>/oSelected', mode: 'TwoWay' }"  width="12.5rem" height="19.5rem" />
+                  </VBox>
+                </Panel>
+              </FlexBox>
+            </FlexBox> -->
+
+            <FlexBox id="hocflexbox2" direction="Column" width="38%" height="100%" visible="{= (${hocModel>/bDesktop}) ? true : false}" class="sapMPageBgStandard" renderType="Bare" fitContainer="true">
+              <ScrollContainer id="hoCCardsScroll" vertical="true" horizontal="false" height="100%">
+                <Panel id="hocPreviewPanelContainer" expanded="false" height="100%"  backgroundDesign="Transparent">
+                  <headerToolbar  >
+                      <Toolbar id="hocPreviewToolBar" width="100%" height="2.7rem" style="Clear" design="Auto" class="sapThemeBaseBG">
+                          <HBox id="hocPreviewCardTextHBox"  width="100%" justifyContent="Start" backgroundDesign="Transparent">
+                            <Title id="hocInsightPreviewCardText" text="{i18n>INT_DIALOG_TITLE_CardPreview}" class="sapUiTinyMarginTop" textAlign="Left" />
+                          </HBox>
+                      </Toolbar>
+                  </headerToolbar>
+                  <VBox height="calc(100% - 2.8rem)" id="hocCardsPreviewVBox1"  alignItems="Center" backgroundDesign="Transparent" justifyContent="SpaceAround"  >
+                    <w:Card id="previewCardHoC" manifest="{ path: 'hocModel>/oSelected', mode: 'TwoWay' }" host="HouseOfCardsHost" width="19rem" height="33rem" />
+                  </VBox>
+                </Panel>
+              </ScrollContainer>
+            </FlexBox>
+          </VBox>
+        </content>
+    </Page>
+</mvc:View>

@@ -1476,12 +1476,12 @@ html .sapUiContainer-Narrow .sapUxAPObjectPageHeaderContent .sapUxAPObjectPageHe
 	scroll-padding-bottom: ~"calc(@{_sap_uxap_ObjectPageLayout_FooterHeight_Compact} +  @{_sap_uxap_ObjectPageLayout_FooterMarginBottom} + 2px)";
 }
 
-.sapUxAPObjectPageLayout:not(.sapUxAPObjectPageLayout-Std-Phone) .sapUxAPObjectPageSubSectionPromoted:not(.sapUxAPObjectPageSectionMultilineContent) .sapUxAPObjectPageSubSectionHeaderActions {
+.sapUxAPObjectPageLayout:not(.sapUxAPObjectPageLayout-Std-Phone):not("sapUxAPObjectPageLayoutIconTabBar") .sapUxAPObjectPageSubSectionPromoted:not(.sapUxAPObjectPageSectionMultilineContent) .sapUxAPObjectPageSubSectionHeaderActions {
 	position: absolute;
 	top: 0;
 	right: 1rem;
 }
-.sapUxAPObjectPageLayout:not(.sapUxAPObjectPageLayout-Std-Phone) .sapUxAPObjectPageSubSectionPromoted:not(.sapUxAPObjectPageSectionMultilineContent) .sapUxAPObjectPageSubSectionHeader {
+.sapUxAPObjectPageLayout:not(.sapUxAPObjectPageLayout-Std-Phone):not("sapUxAPObjectPageLayoutIconTabBar") .sapUxAPObjectPageSubSectionPromoted:not(.sapUxAPObjectPageSectionMultilineContent) .sapUxAPObjectPageSubSectionHeader {
 	height: 0;
 	padding: 0;
 }
@@ -1627,6 +1627,7 @@ html[data-sap-ui-browser^="ie"] .sapUxAPObjectPageWrapperTransform {
 	.sapUxAPObjectPageFloatingFooter {
 		height: @_sap_uxap_ObjectPageLayout_FooterHeight_Compact;
 
+		// Reflection: styles overwritten
 		&.sapMBar-CTX {
 			// BCP: 1870106645
 			// When sap.m.Bar is used as footer (in compact) setting 2.5rem height
@@ -1867,6 +1868,12 @@ html[data-sap-ui-browser^="ie"].sap-desktop {
 	box-sizing: border-box;
 }
 
+.sapUxAPObjectPageSubSection.sapUxAPObjectPageSubSectionStashed .sapUxAPBlockContainer > .sapUiRespGrid:empty,
+/* Blockbase is used */
+.sapUxAPObjectPageSubSection.sapUxAPObjectPageSubSectionStashed .sapUxAPBlockContainer > .sapUiRespGrid > div > div:empty {
+	height: 20vh;
+}
+
 .sapUxAPObjectPageSubSectionHeaderActions > .sapMBtn {
 	margin-left: 0.5rem;
 }
@@ -2030,9 +2037,11 @@ Doing so will result in less generated CSS, as well as less future maintanance i
 	}
 }
 
-.sapUxAPObjectPageSubSectionFitContainer {
-	overflow-y: hidden; // hide content that does not fit the available height to avoid overlap with the next section content
+.sapUxAPObjectPageSubSectionFitContainer .sapUxAPBlockContainer .sapUxAPBlockBase {
+	overflow-y: hidden;
+}
 
+.sapUxAPObjectPageSubSectionFitContainer {
 	.sapUxAPBlockContainer,
 	.sapUxAPBlockContainer > .sapUiRespGrid,
 	.sapUxAPBlockContainer > .sapUiRespGrid > *,

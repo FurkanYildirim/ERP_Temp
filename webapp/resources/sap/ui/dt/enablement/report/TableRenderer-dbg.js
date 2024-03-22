@@ -10,7 +10,7 @@ sap.ui.define(function() {
 
 	/**
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @namespace
 	 */
 	var TableRenderer = {
@@ -26,7 +26,7 @@ sap.ui.define(function() {
 	TableRenderer.render = function(rm, oTable) {
 		rm.openStart("div", oTable);
 		rm.class("sapUiDtTableReport");
-		rm.openEnd(">");
+		rm.openEnd();
 
 		rm.renderControl(oTable._getTable());
 

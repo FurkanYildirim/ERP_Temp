@@ -59,7 +59,7 @@ sap.ui.define([
 	 *
 	 * @extends sap.ui.table.menus.ColumnHeaderMenuAdapter
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @alias sap.ui.table.menus.MobileColumnHeaderMenuAdapter
 	 */
@@ -209,7 +209,7 @@ sap.ui.define([
 				if (sSortOrder === CoreLibrary.SortOrder.None) {
 					this._oColumn._unsort();
 				} else {
-					this._oColumn.sort(sSortOrder === CoreLibrary.SortOrder.Descending, true);
+					this._oColumn._sort(sSortOrder === CoreLibrary.SortOrder.Descending, false);
 				}
 			}, this]
 		});
@@ -364,7 +364,7 @@ sap.ui.define([
 	};
 
 	MobileColumnHeaderMenuAdapter.prototype._prepareQuickResize = function(oColumn) {
-		if (Device.support.touch && oColumn.getResizable()) {
+		if (!Device.system.desktop && oColumn.getResizable()) {
 			if (!this._oQuickResize) {
 				this._oQuickResize = this._createQuickResize(oColumn);
 			}
@@ -375,9 +375,11 @@ sap.ui.define([
 	};
 
 	MobileColumnHeaderMenuAdapter.prototype._createQuickResize = function(oColumn) {
+		var oSapMResourceBundle = oCore.getLibraryResourceBundle("sap.m");
+
 		return new QuickAction({
 			content: new Button({
-				icon: "sap-icon://resize-horizontal",
+				text: oSapMResourceBundle.getText("table.COLUMNMENU_RESIZE"),
 				press: [function(oEvent) {
 					this._startColumnResize(oColumn);
 					this._oMenu.close();

@@ -17,8 +17,8 @@ sap.ui.define([
 	 * Constructor for a new <code>CollectiveSearchSelect</code>.
 	 * @param {string} [sId] - ID for the new control, generated automatically if no ID is given
 	 * @param {object} [mSettings] - Initial settings for the new control
-	 * @class Can be used to manage the <code>CollectiveSearchSelect</code> contro search items.
-	 * @extends sap.ui.core.Control
+	 * @class Can be used to manage the <code>CollectiveSearchSelect</code> control search items.
+	 * @extends sap.m.VariantManagement
 	 * @constructor
 	 * @private
 	 * @ui5-restricted sap.ui.mdc
@@ -118,6 +118,19 @@ sap.ui.define([
 	CollectiveSearchSelect.prototype.exit = function() {
 		VariantManagement.prototype.exit.apply(this); // Call base class
 		this.oRb = undefined;
+	};
+
+	/**
+	 * Required by the {@link sap.m.IOverflowToolbarContent} interface.
+	 * Registers invalidations event which is fired when width of the control is changed.
+	 *
+	 * @protected
+	 * @returns {object} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface.
+	 */
+	CollectiveSearchSelect.prototype.getOverflowToolbarConfig = function() {
+		var oOverflowToolbarConfig = VariantManagement.prototype.getOverflowToolbarConfig.apply(this); // Call base class
+		oOverflowToolbarConfig.canOverflow = true;
+		return oOverflowToolbarConfig;
 	};
 
 	return CollectiveSearchSelect;

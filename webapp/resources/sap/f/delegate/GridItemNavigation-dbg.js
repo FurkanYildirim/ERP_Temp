@@ -4,17 +4,17 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
+	"sap/ui/core/Element",
 	"sap/ui/core/delegate/ItemNavigation",
 	"sap/ui/events/KeyCodes",
 	"sap/base/Log",
-	"sap/f/library",
-	"sap/ui/thirdparty/jquery"
+	"sap/f/library"
 ], function (
+	Element,
 	ItemNavigation,
 	KeyCodes,
 	Log,
-	library,
-	jQuery
+	library
 ) {
 	"use strict";
 
@@ -31,7 +31,7 @@ sap.ui.define([
 	 *
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @extends sap.ui.core.delegate.ItemNavigation
 	 *
@@ -39,17 +39,7 @@ sap.ui.define([
 	 * @constructor
 	 * @alias sap.f.delegate.GridItemNavigation
 	 */
-	var GridItemNavigation = ItemNavigation.extend("sap.f.delegate.GridItemNavigation", /** @lends sap.f.GridItemNavigation.prototype */ {
-		metadata: {
-			library: "sap.f",
-			properties: {
-
-			},
-			events: {
-
-			}
-		}
-	});
+	var GridItemNavigation = ItemNavigation.extend("sap.f.delegate.GridItemNavigation");
 
 	GridItemNavigation.prototype.resetFocusPosition = function () {
 		this._mCurrentPosition = null;
@@ -384,7 +374,7 @@ sap.ui.define([
 	};
 
 	GridItemNavigation.prototype._getGridInstance = function () {
-		return jQuery(this.oDomRef).control(0);
+		return Element.closestTo(this.oDomRef);
 	};
 
 	return GridItemNavigation;

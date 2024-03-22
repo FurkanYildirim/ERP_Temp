@@ -47,7 +47,7 @@ sap.ui.define([
 		 * @extends sap.ui.core.Control
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @since 1.48
 		 *
 		 * @constructor
@@ -156,7 +156,7 @@ sap.ui.define([
 								/**
 								 * The iframe element.
 								 */
-								target : {type: "any", defaultValue: null}
+								target : {type: "any"}
 							}
 						},
 						/**

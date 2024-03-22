@@ -97,12 +97,10 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 		ALL : (5 + 1)
 	};
 
-	var sDefaultComponent,
-
 	/**
 	 * The array that holds the log entries that have been recorded so far
 	 */
-	aLog = [],
+	var aLog = [],
 
 	/**
 	 * Maximum log level to be recorded (per component).
@@ -201,107 +199,144 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 
 	/**
 	 * Creates a new fatal-level entry in the log with the given message, details and calling component.
-	 * @param {string} sMessage Message text to display
-	 * @param {string} [sDetails=''] Details about the message, might be omitted
-	 * @param {string} [sComponent=''] Name of the component that produced the log entry
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
+	 *
+	 * @param {string} sMessage
+	 *   Message text to display
+	 * @param {string|Error} [vDetails='']
+	 *   Optional details about the message, might be omitted. Can be an Error object which will be
+	 *   logged together with its stacktrace.
+	 * @param {string} [sComponent='']
+	 *   Name of the component that produced the log entry
+	 * @param {function} [fnSupportInfo]
+	 *   Callback that returns an additional support object to be logged in support mode.
+	 *   This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
 	 * @public
 	 * @SecSink {0 1 2|SECRET} Could expose secret data in logs
 	 */
-	Log.fatal = function(sMessage, sDetails, sComponent, fnSupportInfo) {
-		log(Log.Level.FATAL, sMessage, sDetails, sComponent, fnSupportInfo);
+	Log.fatal = function(sMessage, vDetails, sComponent, fnSupportInfo) {
+		log(Log.Level.FATAL, sMessage, vDetails, sComponent, fnSupportInfo);
 	};
 
 	/**
 	 * Creates a new error-level entry in the log with the given message, details and calling component.
 	 *
-	 * @param {string} sMessage Message text to display
-	 * @param {string} [sDetails=''] Details about the message, might be omitted
-	 * @param {string} [sComponent=''] Name of the component that produced the log entry
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
+	 * @param {string} sMessage
+	 *   Message text to display
+	 * @param {string|Error} [vDetails='']
+	 *   Optional details about the message, might be omitted. Can be an Error object which will be
+	 *   logged together with its stacktrace.
+	 * @param {string} [sComponent='']
+	 *   Name of the component that produced the log entry
+	 * @param {function} [fnSupportInfo]
+	 *   Callback that returns an additional support object to be logged in support mode.
+	 *   This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
 	 * @public
 	 * @SecSink {0 1 2|SECRET} Could expose secret data in logs
 	 */
-	Log.error = function(sMessage, sDetails, sComponent, fnSupportInfo) {
-		log(Log.Level.ERROR, sMessage, sDetails, sComponent, fnSupportInfo);
+	Log.error = function(sMessage, vDetails, sComponent, fnSupportInfo) {
+		log(Log.Level.ERROR, sMessage, vDetails, sComponent, fnSupportInfo);
 	};
 
 	/**
 	 * Creates a new warning-level entry in the log with the given message, details and calling component.
 	 *
-	 * @param {string} sMessage Message text to display
-	 * @param {string} [sDetails=''] Details about the message, might be omitted
-	 * @param {string} [sComponent=''] Name of the component that produced the log entry
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
+	 * @param {string} sMessage
+	 *   Message text to display
+	 * @param {string|Error} [vDetails='']
+	 *   Optional details about the message, might be omitted. Can be an Error object which will be
+	 *   logged together with its stacktrace.
+	 * @param {string} [sComponent='']
+	 *   Name of the component that produced the log entry
+	 * @param {function} [fnSupportInfo]
+	 *   Callback that returns an additional support object to be logged in support mode.
+	 *   This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
 	 * @public
 	 * @SecSink {0 1 2|SECRET} Could expose secret data in logs
 	 */
-	Log.warning = function(sMessage, sDetails, sComponent, fnSupportInfo) {
-		log(Log.Level.WARNING, sMessage, sDetails, sComponent, fnSupportInfo);
+	Log.warning = function(sMessage, vDetails, sComponent, fnSupportInfo) {
+		log(Log.Level.WARNING, sMessage, vDetails, sComponent, fnSupportInfo);
 	};
 
 	/**
 	 * Creates a new info-level entry in the log with the given message, details and calling component.
 	 *
-	 * @param {string} sMessage Message text to display
-	 * @param {string} [sDetails=''] Details about the message, might be omitted
-	 * @param {string} [sComponent=''] Name of the component that produced the log entry
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
+	 * @param {string} sMessage
+	 *   Message text to display
+	 * @param {string|Error} [vDetails='']
+	 *   Optional details about the message, might be omitted. Can be an Error object which will be
+	 *   logged with the stack.
+	 * @param {string} [sComponent='']
+	 *   Name of the component that produced the log entry
+	 * @param {function} [fnSupportInfo]
+	 *   Callback that returns an additional support object to be logged in support mode.
+	 *   This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
 	 * @public
 	 * @SecSink {0 1 2|SECRET} Could expose secret data in logs
 	 */
-	Log.info = function(sMessage, sDetails, sComponent, fnSupportInfo) {
-		log(Log.Level.INFO, sMessage, sDetails, sComponent, fnSupportInfo);
+	Log.info = function(sMessage, vDetails, sComponent, fnSupportInfo) {
+		log(Log.Level.INFO, sMessage, vDetails, sComponent, fnSupportInfo);
 	};
 
 	/**
 	 * Creates a new debug-level entry in the log with the given message, details and calling component.
 	 *
-	 * @param {string} sMessage Message text to display
-	 * @param {string} [sDetails=''] Details about the message, might be omitted
-	 * @param {string} [sComponent=''] Name of the component that produced the log entry
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
+	 * @param {string} sMessage
+	 *   Message text to display
+	 * @param {string|Error} [vDetails='']
+	 *   Optional details about the message, might be omitted. Can be an Error object which will be
+	 *   logged with the stack.
+	 * @param {string} [sComponent='']
+	 *   Name of the component that produced the log entry
+	 * @param {function} [fnSupportInfo]
+	 *   Callback that returns an additional support object to be logged in support mode.
+	 *   This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
 	 * @public
 	 * @SecSink {0 1 2|SECRET} Could expose secret data in logs
 	 */
-	Log.debug = function(sMessage, sDetails, sComponent, fnSupportInfo) {
-		log(Log.Level.DEBUG, sMessage, sDetails, sComponent, fnSupportInfo);
+	Log.debug = function(sMessage, vDetails, sComponent, fnSupportInfo) {
+		log(Log.Level.DEBUG, sMessage, vDetails, sComponent, fnSupportInfo);
 	};
 
 	/**
 	 * Creates a new trace-level entry in the log with the given message, details and calling component.
 	 *
-	 * @param {string} sMessage Message text to display
-	 * @param {string} [sDetails=''] Details about the message, might be omitted
-	 * @param {string} [sComponent=''] Name of the component that produced the log entry
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
+	 * @param {string} sMessage
+	 *   Message text to display
+	 * @param {string|Error} [vDetails='']
+	 *   Optional details about the message, might be omitted. Can be an Error object which will be
+	 *   logged with the stack.
+	 * @param {string} [sComponent='']
+	 *   Name of the component that produced the log entry
+	 * @param {function} [fnSupportInfo]
+	 *   Callback that returns an additional support object to be logged in support mode.
+	 *   This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
 	 * @public
 	 * @SecSink {0 1 2|SECRET} Could expose secret data in logs
 	 */
-	Log.trace = function(sMessage, sDetails, sComponent, fnSupportInfo) {
-		log(Log.Level.TRACE, sMessage, sDetails, sComponent, fnSupportInfo);
+	Log.trace = function(sMessage, vDetails, sComponent, fnSupportInfo) {
+		log(Log.Level.TRACE, sMessage, vDetails, sComponent, fnSupportInfo);
 	};
 
 	/**
-	 * Defines the maximum <code>sap.base.log.Level</code> of log entries that will be recorded.
+	 * Defines the maximum <code>sap/base/Log.Level</code> of log entries that will be recorded.
 	 * Log entries with a higher (less important) log level will be omitted from the log.
 	 * When a component name is given, the log level will be configured for that component
 	 * only, otherwise the log level for the default component of this logger is set.
@@ -315,7 +350,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	 * @public
 	 */
 	Log.setLevel = function(iLogLevel, sComponent, _bDefault) {
-		sComponent = sComponent || sDefaultComponent || '';
+		sComponent = sComponent || '';
 		if (!_bDefault || mMaxLevel[sComponent] == null) {
 			mMaxLevel[sComponent] = iLogLevel;
 			var sLogLevel;
@@ -338,7 +373,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	 * @public
 	 */
 	Log.getLevel = function(sComponent) {
-		return level(sComponent || sDefaultComponent);
+		return level(sComponent);
 	};
 
 	/**
@@ -353,7 +388,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	 * @public
 	 */
 	Log.isLoggable = function(iLevel, sComponent) {
-		return (iLevel == null ? Log.Level.DEBUG : iLevel) <= level(sComponent || sDefaultComponent);
+		return (iLevel == null ? Log.Level.DEBUG : iLevel) <= level(sComponent);
 	};
 
 	/**
@@ -376,32 +411,38 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	 * (or higher than the global level, if no component is given),
 	 * then no entry is created and <code>undefined</code> is returned.
 	 *
-	 * If an <code>Error</code> is passed via <code>sDetails</code> the stack
+	 * If an <code>Error</code> is passed via <code>vDetails</code> the stack
 	 * of the <code>Error</code> will be logged as a separate parameter in
 	 * the proper <code>console</code> function for the matching log level.
 	 *
-	 * @param {module:sap/base/Log.Level} iLevel One of the log levels FATAL, ERROR, WARNING, INFO, DEBUG, TRACE
-	 * @param {string} sMessage The message to be logged
-	 * @param {string|Error} [sDetails] The optional details for the message; could be an Error which will be logged with the stack to easily find the root cause of the Error
-	 * @param {string} [sComponent] The log component under which the message should be logged
-	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be logged in support mode.
-	 *   This function is only called if support info mode is turned on with <code>logSupportInfo(true)</code>.
-	 *   To avoid negative effects regarding execution times and memory consumption, the returned object should be a simple
-	 *   immutable JSON object with mostly static and stable content.
-	 * @returns {object} The log entry as an object or <code>undefined</code> if no entry was created
+	 * @param {module:sap/base/Log.Level} iLevel
+	 *   One of the log levels FATAL, ERROR, WARNING, INFO, DEBUG, TRACE
+	 * @param {string} sMessage
+	 *   The message to be logged
+	 * @param {string|Error} [vDetails]
+	 *   The optional details for the message; could be an Error which will be logged with the
+	 *   stacktrace, to easily find the root cause of the Error
+	 * @param {string} [sComponent]
+	 *   The log component under which the message should be logged
+	 * @param {function} [fnSupportInfo] Callback that returns an additional support object to be
+	 *   logged in support mode. This function is only called if support info mode is turned on with
+	 *   <code>logSupportInfo(true)</code>. To avoid negative effects regarding execution times and
+	 *   memory consumption, the returned object should be a simple immutable JSON object with mostly
+	 *   static and stable content.
+	 * @returns {module:sap/base/Log.Entry}
+	 *   The log entry as an object or <code>undefined</code> if no entry was created
 	 * @private
 	 */
-	function log(iLevel, sMessage, sDetails, sComponent, fnSupportInfo) {
-		if (!fnSupportInfo && !sComponent && typeof sDetails === "function") {
-			fnSupportInfo = sDetails;
-			sDetails = "";
+	function log(iLevel, sMessage, vDetails, sComponent, fnSupportInfo) {
+		if (!fnSupportInfo && !sComponent && typeof vDetails === "function") {
+			fnSupportInfo = vDetails;
+			vDetails = "";
 		}
 		if (!fnSupportInfo && typeof sComponent === "function") {
 			fnSupportInfo = sComponent;
 			sComponent = "";
 		}
 
-		sComponent = sComponent || sDefaultComponent;
 		if (iLevel <= level(sComponent) ) {
 			var fNow =  now(),
 				oNow = new Date(fNow),
@@ -412,7 +453,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 					timestamp: fNow,
 					level    : iLevel,
 					message  : String(sMessage || ""),
-					details  : String(sDetails || ""),
+					details  : String(vDetails || ""),
 					component: String(sComponent || "")
 				};
 			if (bLogSupportInfo && typeof fnSupportInfo === "function") {
@@ -445,24 +486,24 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 			 */
 			/*eslint-disable no-console */
 			if (console) { // in Firefox, console might not exist or it might even disappear
-				var isDetailsError = sDetails instanceof Error,
+				var isDetailsError = vDetails instanceof Error,
 					logText = oLogEntry.date + " " + oLogEntry.time + " " + oLogEntry.message + " - " + oLogEntry.details + " " + oLogEntry.component;
 				switch (iLevel) {
 					case Log.Level.FATAL:
-					case Log.Level.ERROR: isDetailsError ? console.error(logText, "\n", sDetails) : console.error(logText); break;
-					case Log.Level.WARNING: isDetailsError ? console.warn(logText, "\n", sDetails) : console.warn(logText); break;
+					case Log.Level.ERROR: isDetailsError ? console.error(logText, "\n", vDetails) : console.error(logText); break;
+					case Log.Level.WARNING: isDetailsError ? console.warn(logText, "\n", vDetails) : console.warn(logText); break;
 					case Log.Level.INFO:
 						if (console.info) { // info not available in iOS simulator
-							isDetailsError ? console.info(logText, "\n", sDetails) : console.info(logText);
+							isDetailsError ? console.info(logText, "\n", vDetails) : console.info(logText);
 						} else {
-							isDetailsError ? console.log(logText, "\n", sDetails) : console.log(logText);
+							isDetailsError ? console.log(logText, "\n", vDetails) : console.log(logText);
 						}
 						break;
 					case Log.Level.DEBUG:
-						isDetailsError ? console.debug(logText, "\n", sDetails) : console.debug(logText);
+						isDetailsError ? console.debug(logText, "\n", vDetails) : console.debug(logText);
 						break;
 					case Log.Level.TRACE:
-						isDetailsError ? console.trace(logText, "\n", sDetails) : console.trace(logText);
+						isDetailsError ? console.trace(logText, "\n", vDetails) : console.trace(logText);
 						break;
 				}
 				if (console.info && oLogEntry.supportInfo) {
@@ -484,7 +525,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	 * <li>message {string} message text of the entry
 	 * </ul>
 	 * The default amount of stored log entries is limited to 3000 entries.
-	 * @returns {object[]} an array containing the recorded log entries
+	 * @returns {Array<module:sap/base/Log.Entry>} an array containing the recorded log entries
 	 * @public
 	 * @static
 	 */
@@ -524,11 +565,72 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	};
 
 	/**
-	 * Allows to add a new LogListener that will be notified for new log entries.
+	 * @typedef {object} module:sap/base/Log.Entry
+	 * @property {float} timestamp The number of milliseconds since the epoch
+	 * @property {string} time Time string in format HH:mm:ss:mmmnnn
+	 * @property {string} date Date string in format yyyy-MM-dd
+	 * @property {module:sap/base/Log.Level} level The level of the log entry, see {@link module:sap/base/Log.Level}
+	 * @property {string} message The message of the log entry
+	 * @property {string} details The detailed information of the log entry
+	 * @property {string} component The component that creates the log entry
+	 * @property {function():any} [supportInfo] Callback that returns an additional support object to be
+	 *   logged in support mode.
+	 * @public
+	 */
+
+	/**
+	 * Interface to be implemented by a log listener.
+	 *
+	 * Typically, a listener will at least implement the {@link #.onLogEntry} method,
+	 * but in general, all methods are optional.
+	 *
+	 * @interface
+	 * @name module:sap/base/Log.Listener
+	 * @public
+	 */
+
+	/**
+	 * The function that is called when a new log entry is created
+	 *
+	 * @param {module:sap/base/Log.Entry} oLogEntry The newly created log entry
+	 * @name module:sap/base/Log.Listener.onLogEntry?
+	 * @function
+	 * @public
+	 */
+
+	/**
+	 * The function that is called once the Listener is attached
+	 *
+	 * @param {module:sap/base/Log} oLog The Log instance where the listener is attached
+	 * @name module:sap/base/Log.Listener.onAttachToLog?
+	 * @function
+	 * @public
+	 */
+
+	/**
+	 * The function that is called once the Listener is detached
+	 *
+	 * @param {module:sap/base/Log} oLog The Log instance where the listener is detached
+	 * @name module:sap/base/Log.Listener.onDetachFromLog?
+	 * @function
+	 * @public
+	 */
+
+	/**
+	 * The function that is called once log entries are discarded due to the exceed of total log entry amount
+	 *
+	 * @param {Array<module:sap/base/Log.Entry>} aDiscardedEntries The discarded log entries
+	 * @name module:sap/base/Log.Listener.onDiscardLogEntries?
+	 * @function
+	 * @public
+	 */
+
+	/**
+	 * Allows to add a new listener that will be notified for new log entries.
 	 *
 	 * The given object must provide method <code>onLogEntry</code> and can also be informed
 	 * about <code>onDetachFromLog</code>, <code>onAttachToLog</code> and <code>onDiscardLogEntries</code>.
-	 * @param {object} oListener The new listener object that should be informed
+	 * @param {module:sap/base/Log.Listener} oListener The new listener object that should be informed
 	 * @public
 	 * @static
 	 */
@@ -538,7 +640,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 
 	/**
 	 * Allows to remove a registered LogListener.
-	 * @param {object} oListener The new listener object that should be removed
+	 * @param {module:sap/base/Log.Listener} oListener The listener object that should be removed
 	 * @public
 	 * @static
 	 */
@@ -547,7 +649,30 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	};
 
 	/**
-	 * @private
+	 * The logger comes with a subset of the API of the <code>sap/base/Log</code> module:
+	 * <ul>
+	 * <li><code>#fatal</code> - see:  {@link module:sap/base/Log.fatal}
+	 * <li><code>#error</code> - see:  {@link module:sap/base/Log.error}
+	 * <li><code>#warning</code> - see:  {@link module:sap/base/Log.warning}
+	 * <li><code>#info</code> - see:  {@link module:sap/base/Log.info}
+	 * <li><code>#debug</code> - see:  {@link module:sap/base/Log.debug}
+	 * <li><code>#trace</code> - see:  {@link module:sap/base/Log.trace}
+	 * <li><code>#setLevel</code> - see:  {@link module:sap/base/Log.setLevel}
+	 * <li><code>#getLevel</code> - see:  {@link module:sap/base/Log.getLevel}
+	 * <li><code>#isLoggable</code> - see:  {@link module:sap/base/Log.isLoggable}
+	 * </ul>
+	 * @interface
+	 * @borrows module:sap/base/Log.fatal as #fatal
+	 * @borrows module:sap/base/Log.error as #error
+	 * @borrows module:sap/base/Log.warning as #warning
+	 * @borrows module:sap/base/Log.info as #info
+	 * @borrows module:sap/base/Log.debug as #debug
+	 * @borrows module:sap/base/Log.trace as #trace
+	 * @borrows module:sap/base/Log.setLevel as #setLevel
+	 * @borrows module:sap/base/Log.getLevel as #getLevel
+	 * @borrows module:sap/base/Log.isLoggable as #isLoggable
+	 * @name module:sap/base/Log.Logger
+	 * @public
 	 */
 	function Logger(sComponent) {
 		this.fatal = function(msg,detail,comp,support) { Log.fatal(msg, detail, comp || sComponent, support); return this; };
@@ -562,7 +687,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	}
 
 	/**
-	 * Returns a dedicated logger for a component
+	 * Returns a dedicated logger for a component.
 	 *
 	 * The logger comes with the same API as the <code>sap/base/Log</code> module:
 	 * <ul>
@@ -579,7 +704,7 @@ sap.ui.define(["sap/base/util/now"], function(now) {
 	 *
 	 * @param {string} sComponent Name of the component which should be logged
 	 * @param {module:sap/base/Log.Level} [iDefaultLogLevel] The default log level
-	 * @return {object} A logger with a specified component
+	 * @return {module:sap/base/Log.Logger} A logger with a specified component
 	 * @public
 	 * @static
 	 */

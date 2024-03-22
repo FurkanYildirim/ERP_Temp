@@ -39,15 +39,7 @@ sap.ui.define([
 
 	var MAX_RENDERING_ITERATIONS = 20;
 
-	/**
-	 * The ID of a timer that will execute the next rendering.
-	 *
-	 * A non-falsy value indicates that a timer exists already, or at least that no
-	 * new timer needs to be created as. During the boot phase, this member is set
-	 * to the special value <code>this</code> which is non-falsy and which should never
-	 * represent a valid timer ID (no chance of misinterpretation).
-	 */
-	var _sRerenderTimer = this; //eslint-disable-line consistent-this
+	var _sRerenderTimer;
 
 	var mUIAreas = {};
 
@@ -170,11 +162,40 @@ sap.ui.define([
 		 */
 		renderPendingUIUpdates: function(sCaller, iTimeout) {
 			if (iTimeout !== undefined) {
+				// start async interaction step
+				Rendering.aFnDone.push(Interaction.notifyAsyncStep());
 				_sRerenderTimer = setTimeout(_renderPendingUIUpdates.bind(null, sCaller), iTimeout);
 			} else {
-				Rendering.aFnDone.push(Interaction.notifyAsyncStep());
 				_renderPendingUIUpdates(sCaller);
 			}
+		},
+		/**
+		 * Suspends rendering until it will be resumed by calling <code>sap.ui.core.Rendering.resume</code>
+		 *
+		 * @private
+		 * @ui5-restricted sap.ui.core
+		 */
+		suspend: function() {
+			/**
+			 * The ID of a timer that will execute the next rendering.
+			 *
+			 * A non-falsy value indicates that a timer exists already, or at least that no
+			 * new timer needs to be created as. During the boot phase, this member is set
+			 * to the special value <code>this</code> which is non-falsy and which should never
+			 * represent a valid timer ID (no chance of misinterpretation).
+			 */
+			_sRerenderTimer = this; //eslint-disable-line consistent-this
+		},
+		/**
+		 * Resumes rendering if it was suspended by calling <code>sap.ui.core.Rendering.suspend</code> and
+		 * triggers a rerendering.
+		 *
+		 * @param {string } sReason The resume reason that will be logged when rendering.
+		 * @private
+		 * @ui5-restricted sap.ui.core
+		 */
+		resume: function(sReason) {
+			Rendering.renderPendingUIUpdates(sReason, 0);
 		},
 		/**
 		 * Returns <code>true</code> if there are any pending rendering tasks or when
@@ -227,8 +248,6 @@ sap.ui.define([
 			if ( !_sRerenderTimer ) {
 				// TODO: we should handle xx-waitForTheme here...
 				oRenderLog.debug("Registering timer for delayed re-rendering");
-				// start async interaction step
-				Rendering.aFnDone.push(Interaction.notifyAsyncStep());
 				Rendering.renderPendingUIUpdates('invalidated UIArea', 0); // decoupled for collecting several invalidations into one redraw
 			}
 		}

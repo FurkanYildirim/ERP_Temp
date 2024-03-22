@@ -78,7 +78,7 @@ function(
 	 * @implements sap.ui.core.Label, sap.ui.core.IShrinkable, sap.ui.core.IAccessKeySupport
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -202,7 +202,7 @@ function(
 	 *
 	 * @protected
 	 *
-	 * @returns {object} AccessibilityInfo of the <code>sap.m.Label</code>
+	 * @returns {sap.ui.core.AccessibilityInfo} AccessibilityInfo of the <code>sap.m.Label</code>
 	 */
 	Label.prototype.getAccessibilityInfo = function() {
 		var sDescription = this.getText();
@@ -228,7 +228,7 @@ function(
 		var oLabeledControl = Core.byId(sLabelForId);
 
 		if (oLabeledControl && oLabeledControl.isA("sap.m.Input") && oLabeledControl.getProperty("highlightAccKeysRef")) {
-			Core.byId(sLabelForId).setProperty("accesskey", (sText[0].toLowerCase()), true);
+			Core.byId(sLabelForId).setProperty("accesskey", (sText[0].toLowerCase()));
 		}
 	};
 
@@ -237,7 +237,7 @@ function(
 	 * Required by the {@link sap.m.IOverflowToolbarContent} interface.
 	 *
 	 * @public
-	 * @returns {object} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface.
+	 * @returns {sap.m.OverflowToolbarConfig} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface.
 	 */
 	Label.prototype.getOverflowToolbarConfig = function() {
 		var oConfig = {

@@ -30,7 +30,7 @@ sap.ui.define([
 		action: "manage"
 	}, {
 		semanticObject: "CustomLogic",
-		action: "maintain"
+		action: "develop"
 	}];
 	var aTextKeys = [
 		"BTN_FREP_CCF",
@@ -43,7 +43,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.write._internal.fieldExtensibility.SingleTenantABAPExtensibilityVariant
 	 * @since 1.87
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 */
 

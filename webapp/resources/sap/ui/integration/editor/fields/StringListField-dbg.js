@@ -11,7 +11,6 @@ sap.ui.define([
 	"sap/base/util/restricted/_debounce",
 	"sap/base/util/restricted/_isEqual",
 	"sap/base/util/ObjectPath",
-	"sap/base/util/includes",
 	"sap/base/util/merge",
 	"sap/ui/core/SeparatorItem",
 	"sap/ui/model/Sorter",
@@ -28,7 +27,6 @@ sap.ui.define([
 	_debounce,
 	_isEqual,
 	ObjectPath,
-	includes,
 	merge,
 	SeparatorItem,
 	Sorter,
@@ -46,7 +44,7 @@ sap.ui.define([
 	 * @alias sap.ui.integration.editor.fields.StringListField
 	 * @author SAP SE
 	 * @since 1.83.0
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @experimental since 1.83.0
 	 * @ui5-restricted
@@ -211,7 +209,7 @@ sap.ui.define([
 				var oModel = new JSONModel();
 				oModel.setData(oValueItem);
 				var sKey = BindingResolver.resolveValue(oConfig.values.item.key, oModel);
-				if (includes(oConfig.value, sKey)) {
+				if (oConfig.value.includes(sKey)) {
 					var sText = BindingResolver.resolveValue(oConfig.values.item.text, oModel);
 					var oItem = {
 						key: sKey,
@@ -286,7 +284,7 @@ sap.ui.define([
 			//get the items which are in selectedItems list
 			var oItemsNotInSelectedItemsList = oData.filter(function (item) {
 				var sItemKey = this.getKeyFromItem(item);
-				return !includes(aSelectedItemKeys, sItemKey);
+				return !aSelectedItemKeys.includes(sItemKey);
 			}.bind(this));
 			//get the items which are selected and not in selectedItems list, for example, the selected items defined in manifest value
 			var oSelectedItemsMissedInSelectedItemsList = oItemsNotInSelectedItemsList.filter(function (item) {
@@ -432,7 +430,7 @@ sap.ui.define([
 					break;
 				case Tokenizer.TokenChangeType.Added:
 					// add the selected item into value
-					if (!includes(aValue, sItemKey)) {
+					if (!aValue.includes(sItemKey)) {
 						aValue = aValue.concat([sItemKey]);
 						oConfig.value = aValue;
 					}
@@ -440,7 +438,7 @@ sap.ui.define([
 					var aTokenKeys = oConfig.valueTokens.map(function (oValueToken) {
 						return oValueToken.key;
 					});
-					if (!includes(aTokenKeys, sItemKey)) {
+					if (!aTokenKeys.includes(sItemKey)) {
 						oConfig.valueTokens = oConfig.valueTokens.concat([{
 							"key": sItemKey,
 							"text": oToken.getText()
@@ -476,7 +474,7 @@ sap.ui.define([
 				oConfig.valueItems = [];
 				oResult.forEach(function (oItem) {
 					var sItemKey = oField.getKeyFromItem(oItem);
-					if (includes(oConfig.value, sItemKey)) {
+					if (oConfig.value.includes(sItemKey)) {
 						oItem.Selected = oResourceBundle.getText("EDITOR_ITEM_SELECTED");
 						oConfig.valueItems.push(oItem);
 					} else {
@@ -572,7 +570,7 @@ sap.ui.define([
 		if (oData) {
 			oConfig.valueItems = oData.filter(function (oItem) {
 				var sItemKey = oField.getKeyFromItem(oItem);
-				return includes(aSelectedItemKeys, sItemKey);
+				return aSelectedItemKeys.includes(sItemKey);
 			});
 		}
 

@@ -4,8 +4,8 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/core/Control", 	"sap/ui/fl/variants/VariantManagement", "sap/ui/fl/Utils", "sap/m/p13n/enum/PersistenceMode", "sap/ui/layout/VerticalLayout"
-], function(CoreControl, VariantManagement, Utils, mode, VerticalLayout) {
+	"sap/ui/core/Control", 	"sap/ui/fl/variants/VariantManagement", "sap/ui/fl/apply/api/ControlVariantApplyAPI", "sap/m/p13n/enum/PersistenceMode", "sap/ui/layout/VerticalLayout", "sap/ui/core/UIArea", "sap/ui/core/Core"
+], function(CoreControl, VariantManagement, ControlVariantApplyAPI, mode, VerticalLayout, UIArea, Core) {
 	"use strict";
 
 	/**
@@ -14,15 +14,16 @@ sap.ui.define([
 	 * since any control that is a direct or indirect descendant of the provided <code>for</code> association is affected by this configuration.
 	 * For example, this controller can be used for <code>sap.ui.mdc</code> controls.
 	 *
+	 * @class
 	 * @private
+	 * @ui5-restricted sap.ui.mdc, sap.fe
 	 *
-	 * @experimental
 	 * @since 1.104
 	*/
 	var PersistenceProvider = CoreControl.extend("sap.m.p13n.PersistenceProvider", /** @lends sap.ui.mdc.p13n.PersistenceProvider.prototype */ {
 		metadata: {
 			library: "sap.m",
-			designtime: "sap/ui/mdc/designtime/p13n/PersistenceProvider.designtime",
+			designtime: "sap/m/designtime/PersistenceProvider.designtime",
 			properties:  {
 				/**
 				 * Provides the mode setting for the <code>PersistenceProvider</code>.
@@ -65,8 +66,9 @@ sap.ui.define([
 
 	PersistenceProvider.prototype._setModel = function () {
 
-		var oModel = this.getModel(Utils.VARIANT_MODEL_NAME);
+		var oModel = this.getModel(ControlVariantApplyAPI.getVariantModelName());
 		if (oModel) {
+			this.reinitialize();
 			this._fnResolveModel(oModel);
 		}
 	};
@@ -78,7 +80,7 @@ sap.ui.define([
 		if (this.getMode() === mode.Transient) {
 			var oVM = new VariantManagement(this.getId() + "--vm", {"for": this.getAssociation("for")});
 			this._oModelPromise.then(function (oModel) {
-				oVM.setModel(oModel, Utils.VARIANT_MODEL_NAME);
+				oVM.setModel(oModel, ControlVariantApplyAPI.getVariantModelName());
 			});
 			this._oWrapper = new VerticalLayout(this.getId() + "--accWrapper", {
 				visible: true,
@@ -92,8 +94,10 @@ sap.ui.define([
 				this.getDomRef().setAttribute("aria-hidden", true);
 			};
 
-			var oStatic = sap.ui.getCore().getUIArea(sap.ui.getCore().getStaticAreaRef());
-			oStatic.addContent(this._oWrapper);
+			var oStaticAreaRef = Core.getStaticAreaRef();
+			var oStatic = UIArea.registry.get(oStaticAreaRef.id);
+			oStatic.addContent(this._oWrapper, true);
+			Core.createRenderManager().render(this._oWrapper, oStaticAreaRef);
 		}
 
 		return this;
@@ -102,7 +106,7 @@ sap.ui.define([
 	PersistenceProvider.prototype.addFor = function (sControlId) {
 		this.addAssociation("for", sControlId);
 
-		var oVM = sap.ui.getCore().byId(this.getId() + "--vm");
+		var oVM = Core.byId(this.getId() + "--vm");
 		if (this.getMode() === mode.Transient && oVM) {
 			oVM.addFor(sControlId);
 		}
@@ -113,7 +117,7 @@ sap.ui.define([
 	PersistenceProvider.prototype.removeFor = function (sControlId) {
 		this.removeAssociation("for", sControlId);
 
-		var oVM = sap.ui.getCore().byId(this.getId() + "--vm");
+		var oVM = Core.byId(this.getId() + "--vm");
 		if (this.getMode() === mode.Transient && oVM) {
 			oVM.removeFor(sControlId);
 		}
@@ -140,9 +144,25 @@ sap.ui.define([
 		return this;
 	};
 
+	/**
+	 * This method reinitializes the inner <code>VariantManagement</code> control be providing the
+	 * variant model and triggering a reinitialize on the inner VM in the static area
+	 *
+	 * @ui5-restricted sap.m.p13n
+	 */
+	PersistenceProvider.prototype.reinitialize = function () {
+		var oVM = Core.byId(this.getId() + "--vm");
+		if (this.getMode() === mode.Transient && oVM) {
+			var oVariantModel = this.getModel(ControlVariantApplyAPI.getVariantModelName());
+			oVM.setModel(oVariantModel, ControlVariantApplyAPI.getVariantModelName());
+			oVM.reinitialize();
+		}
+	};
+
 	PersistenceProvider.prototype.exit = function () {
 		if (this._oWrapper) {
-			var oStatic = sap.ui.getCore().getUIArea(sap.ui.getCore().getStaticAreaRef());
+			var oStaticAreaRef = Core.getStaticAreaRef();
+			var oStatic = UIArea.registry.get(oStaticAreaRef.id);
 			oStatic.removeContent(this._oWrapper);
 
 			this._oWrapper.destroy();

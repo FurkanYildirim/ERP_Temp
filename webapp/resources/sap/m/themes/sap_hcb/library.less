@@ -1154,24 +1154,14 @@ div.sapMInputSuggestionPopup {
 /* High Contrast Black theme   */
 /* =========================== */
 
-.sapMLnk {
-	text-decoration: underline;
-}
-
 .sapMLnkDsbl, .sapMLnkDsbl:visited {
 	outline: none;
 	cursor: default;
 	color: @sapUiContentDisabledTextColor;
-	text-decoration: underline;
 }
 
 html.sap-desktop .sapMLnk:focus:not(.sapMLnkDsbl) {
-	text-decoration: none;
 	outline: 0.125rem dotted @sapUiContentFocusColor;
-}
-
-html.sap-desktop .sapMLnk:hover:not(.sapMLnkDsbl) {
-	text-decoration: none;
 }
 
 .sapMLnk:hover.sapMLnkDsbl, .sapMLnk:focus.sapMLnkDsbl {
@@ -2627,10 +2617,10 @@ html.sap-desktop {
 	background: transparent;
 	border: 0.125rem solid @sapUiFieldBorderColor;
 	&:focus:before {
-		top: -5px;
-		bottom: -5px;
-		left: -5px;
-		right: -5px;
+		top: -0.3125rem;
+		bottom: -0.3125rem;
+		left: -0.3125rem;
+		right: -0.3125rem;
 	}
 }
 

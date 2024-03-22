@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "AddIFrame.less",
-			"size": 3192,
+			"size": 3375,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -56,13 +56,13 @@
 		},
 		{
 			"name": "Toolbar.adaptation.less",
-			"size": 8972,
+			"size": 8637,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "Toolbar.base.less",
-			"size": 1653,
+			"size": 1656,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -86,7 +86,7 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 10297,
+			"size": 10468,
 			"theme": "base"
 		},
 		{
@@ -97,29 +97,29 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 125372,
+			"size": 149221,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 30255,
+			"size": 30157,
 			"theme": "base"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/rta/themes/base/library-parameters.json",
-			"size": 4050,
+			"size": 4108,
 			"theme": "base"
 		},
 		{
 			"name": "library.css",
-			"size": 30236,
+			"size": 30133,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 33397,
+			"size": 33248,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -131,12 +131,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 27795,
+			"size": 27538,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 27788,
+			"size": 27526,
 			"theme": "base"
 		},
 		{

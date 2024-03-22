@@ -157,13 +157,13 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 114441,
+			"size": 137926,
 			"designtime": true,
 			"theme": "sap_fiori_3_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 114065,
+			"size": 137550,
 			"designtime": true,
 			"theme": "sap_fiori_3_hcb"
 		},

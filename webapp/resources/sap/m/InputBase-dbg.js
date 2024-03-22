@@ -64,7 +64,7 @@ function(
 	 * @implements sap.ui.core.IFormContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -188,7 +188,7 @@ function(
 				 * @experimental Since 1.78. This aggregation is experimental and provides only limited functionality. Also the API might be changed in future.
 				 * @since 1.78
 				 */
-				formattedValueStateText: { type: "sap.m.FormattedText", multiple: false, defaultValue: null },
+				formattedValueStateText: { type: "sap.m.FormattedText", multiple: false },
 
 				/**
 				 * Clone of the <code>formattedValueStateText</code> aggregation created for the accessibility elements used
@@ -196,7 +196,7 @@ function(
 				 * @experimental Since 1.84. This aggregation is experimental and provides only limited functionality. Also the API might be changed in future.
 				 * @since 1.84
 				 */
-				_invisibleFormattedValueStateText: { type: "sap.m.FormattedText", multiple: false, visibility: "hidden", defaultValue: null },
+				_invisibleFormattedValueStateText: { type: "sap.m.FormattedText", multiple: false, visibility: "hidden" },
 
 				/**
 				 * Icons that will be placed after the input field
@@ -540,7 +540,7 @@ function(
 	 * Handles the change event.
 	 *
 	 * @protected
-	 * @param {object} oEvent
+	 * @param {jQuery.Event} oEvent The event
 	 * @param {object} [mParameters] Additional event parameters to be passed in to the change event handler if the
 	 * value has changed
 	 * @param {string} sNewValue Passed value on change
@@ -769,7 +769,7 @@ function(
 	 * Returns an object representing the serialized focus information.
 	 * To be overwritten by subclasses.
 	 *
-	 * @returns {object} An object representing the serialized focus information.
+	 * @returns {sap.ui.core.FocusInfo} An object representing the serialized focus information.
 	 * @protected
 	 */
 	InputBase.prototype.getFocusInfo = function() {
@@ -801,7 +801,7 @@ function(
 	 * Applies the focus info.
 	 * To be overwritten by subclasses.
 	 *
-	 * @param {object} oFocusInfo
+	 * @param {sap.ui.core.FocusInfo} oFocusInfo An object representing the serialized focus information.
 	 * @returns {this} Returns <code>this</code> to allow method chaining
 	 * @protected
 	 */
@@ -1150,7 +1150,7 @@ function(
 
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
-	 * @returns {object} The accessibility information for this <code>InputBase</code>
+	 * @returns {sap.ui.core.AccessibilityInfo} The accessibility information for this <code>InputBase</code>
 	 * @protected
 	 */
 	InputBase.prototype.getAccessibilityInfo = function() {

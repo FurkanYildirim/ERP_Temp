@@ -14,12 +14,16 @@ sap.ui.define([
 	"sap/m/ResponsivePopover",
 	"sap/m/p13n/Container",
 	"sap/m/p13n/AbstractContainerItem",
-	"sap/m/library"
-], function(Control, Button, Bar, Title, MessageBox, Device, Dialog, ResponsivePopover, Container, AbstractContainerItem, mLibrary) {
+	"sap/m/library",
+	"sap/ui/core/library"
+], function(Control, Button, Bar, Title, MessageBox, Device, Dialog, ResponsivePopover, Container, AbstractContainerItem, mLibrary, coreLibrary) {
 	"use strict";
 
 	//Shortcut to sap.m.P13nPopupMode
 	var P13nPopupMode = mLibrary.P13nPopupMode;
+
+	//Shortcut to sap.ui.core.TitleLevel
+	var TitleLevel = coreLibrary.TitleLevel;
 
 	/**
 	 * Constructor for a new <code>Popup</code>.
@@ -30,14 +34,12 @@ sap.ui.define([
 	 * @class
 	 * This control can be used to show personalization-related content in different popup controls.
 	 *
-	 * @class
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
-	 * @experimental Since 1.97.
 	 * @since 1.97
 	 * @alias sap.m.p13n.Popup
 	 */
@@ -94,11 +96,13 @@ sap.ui.define([
 				 * This event is fired after the dialog has been closed.
 				 */
 				close: {
-					/**
-					 * The corresponding reason for closing the dialog (Ok & Cancel).
-					 */
-					reason: {
-						type: "string"
+					parameters: {
+						/**
+						 * The corresponding reason for closing the dialog (Ok & Cancel).
+						 */
+						reason: {
+							type: "string"
+						}
 					}
 				}
 			}
@@ -158,6 +162,12 @@ sap.ui.define([
 	 */
 	Popup.prototype.setReset = function(fnReset) {
 		if (this._oPopup) {
+			var oCustomHeader = this._oPopup.getCustomHeader();
+
+			if (oCustomHeader) {
+				oCustomHeader.destroy();
+			}
+
 			this._oPopup.setCustomHeader(this._createTitle());
 			this._oPopup.invalidate();
 		}
@@ -176,7 +186,7 @@ sap.ui.define([
 	 */
 	Popup.prototype.open = function(oSource, mSettings) {
 
-		if (!oSource) {
+		if (!oSource && this.getMode() === "Popover") {
 			throw new Error("Please provide a source control!");
 		}
 
@@ -242,7 +252,7 @@ sap.ui.define([
 	};
 
 	/**
-	 * Removes the current panels in the <code>panels</code> aggregation.
+	 * Returns the current panels in the <code>panels</code> aggregation.
 	 * @public
 	 * @returns {sap.m.p13n.IContent[]} An array of panel instances
 	 */
@@ -287,7 +297,19 @@ sap.ui.define([
 		var aPanels = this.getPanels();
 		var bUseContainer = aPanels.length > 1;
 		var oResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
+
+		var oInitialFocusedControl;
+		if (aPanels.length > 0) {
+			var oContent = aPanels[0];
+			oInitialFocusedControl = oContent.getInitialFocusedControl && oContent.getInitialFocusedControl();
+			if (!oInitialFocusedControl && bUseContainer) {
+				// focus at least the iconTabBar first item
+				oInitialFocusedControl = this._getContainer()._getTabBar().getItems()[0];
+			}
+		}
+
 		var oContainer = new Dialog(this.getId() + "-dialog", {
+			initialFocus: oInitialFocusedControl,
 			title: this.getTitle(),
 			horizontalScrolling: mDialogSettings.hasOwnProperty("horizontalScrolling") ? mDialogSettings.horizontalScrolling : false,
 			verticalScrolling: !bUseContainer,
@@ -301,14 +323,14 @@ sap.ui.define([
 				this._onClose(oContainer, "Escape");
 			}.bind(this),
 			buttons: [
-				new Button(this.getId() + "-confirmBtn", {
+				new Button(this.getId() + this._getIdPrefix() + "-confirmBtn", {
 					text:  mDialogSettings.confirm && mDialogSettings.confirm.text ?  mDialogSettings.confirm.text : oResourceBundle.getText("p13n.POPUP_OK"),
 					type: "Emphasized",
 					press: function() {
 						this._onClose(oContainer, "Ok");
 					}.bind(this)
 
-				}), new Button(this.getId() + "-cancelBtn", {
+				}), new Button(this.getId() + this._getIdPrefix() + "-cancelBtn", {
 					text: oResourceBundle.getText("p13n.POPUP_CANCEL"),
 					press: function () {
 						this._onClose(oContainer, "Cancel");
@@ -326,6 +348,10 @@ sap.ui.define([
 		return oContainer;
 	};
 
+	Popup.prototype._getIdPrefix = function() {
+		return "";
+	};
+
 	Popup.prototype._createTitle = function() {
 
 		var fnReset = this.getReset();
@@ -339,7 +365,8 @@ sap.ui.define([
 			oBar = new Bar({
 				contentLeft: [
 					new Title({
-						text: sTitle
+						text: sTitle,
+						level: TitleLevel.H1
 					})
 				]
 			});
@@ -396,6 +423,7 @@ sap.ui.define([
 	};
 
 	Popup.prototype.exit = function() {
+		Control.prototype.exit.apply(this, arguments);
 		if (this._oPopup) {
 			this._oPopup.destroy();
 		}

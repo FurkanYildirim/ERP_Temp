@@ -58,7 +58,7 @@ sap.ui.define([], function () {
 
 		oRM.openEnd();
 
-		this.renderDummyArea(oRM, sId, "before", -1);
+		this.renderDummyArea(oRM, sId, "before", aItems.length > 0 ? 0 : -1);
 
 		aItems.forEach(function (oItem, iIndex) {
 			this.renderItem(oRM, oItem, oControl, iIndex);
@@ -93,15 +93,14 @@ sap.ui.define([], function () {
 			mStyles = mStylesInfo.styles,
 			aClasses = mStylesInfo.classes,
 			mAccState = {
-				role: "listitem",
-				labelledby: oItem.getId()
+				role: "listitem"
 			};
 
 		if (oItem.getAriaRoleDescription) {
 			mAccState.roledescription = oItem.getAriaRoleDescription();
 		}
 
-		oRM.openStart("div", oControl.getId() + "-item-" + iIndex)
+		oRM.openStart("div", this.generateWrapperId(oItem, oControl))
 			.attr("tabindex", "0")
 			.accessibilityState(oControl, mAccState);
 
@@ -167,6 +166,10 @@ sap.ui.define([], function () {
 		};
 	};
 
+	GridContainerRenderer.generateWrapperId = function (oItem, oGridContainer) {
+		return oGridContainer.getId() + "-item-" + oItem.getId();
+	};
+
 	/**
 	 * Renders a dummy area for keyboard handling purposes
 	 * @param {sap.ui.core.RenderManager} oRM The RenderManager that can be used for writing to the render output buffer
@@ -178,6 +181,7 @@ sap.ui.define([], function () {
 		oRM.openStart("div", sControlId + "-" + sAreaId)
 			.class("sapFGridContainerDummyArea")
 			.attr("tabindex", iTabIndex)
+			.attr("role", "none")
 			.openEnd()
 			.close("div");
 	};

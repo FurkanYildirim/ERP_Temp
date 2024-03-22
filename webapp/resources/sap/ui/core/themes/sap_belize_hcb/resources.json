@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".theme",
-			"size": 661,
+			"size": 660,
 			"theme": "sap_belize_hcb"
 		},
 		{
@@ -14,6 +14,12 @@
 		{
 			"name": "BrowserScrollbar.less",
 			"size": 431,
+			"designtime": true,
+			"theme": "sap_belize_hcb"
+		},
+		{
+			"name": "Icon.less",
+			"size": 276,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
@@ -31,24 +37,24 @@
 		},
 		{
 			"name": "base.less",
-			"size": 70351,
+			"size": 100306,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 204702,
+			"size": 246361,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 228265,
+			"size": 275202,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 227891,
+			"size": 274828,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
@@ -104,55 +110,55 @@
 		},
 		{
 			"name": "global.less",
-			"size": 64352,
+			"size": 75899,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 125495,
+			"size": 145169,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/core/themes/sap_belize_hcb/library-parameters.json",
-			"size": 73743,
+			"size": 88023,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library.css",
-			"size": 125482,
+			"size": 145156,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library.less",
-			"size": 8880,
+			"size": 9107,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library.source.less",
-			"size": 350,
+			"size": 371,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 27632,
+			"size": 28761,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 27620,
+			"size": 28749,
 			"theme": "sap_belize_hcb"
 		},
 		{
 			"name": "resources.json",
-			"size": 2908
+			"size": 3010
 		},
 		{
 			"name": "shared.less",
-			"size": 7003,
+			"size": 6906,
 			"designtime": true,
 			"theme": "sap_belize_hcb"
 		}

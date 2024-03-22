@@ -29,7 +29,7 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 	 * </ul>
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @alias sap.ui.mdc.mixin.PropertyHelperMixin
 	 * @namespace
 	 * @since 1.100.0
@@ -47,6 +47,7 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 			this._oApplySettingsDeferred = new Deferred();
 
 			this._bPropertyHelperFinal = false;
+			this._oPropertiesFinalizedDeferred = new Deferred();
 			this._bPropertyHelperInitializing = false;
 			this._sPropertyInfoStore = null;
 
@@ -119,6 +120,16 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 	};
 
 	/**
+	 * Returns a promise for the finalized state of the property infos.
+	 *
+	 * @protected
+	 * @returns {Promise<sap.ui.mdc.util.PropertyInfo[]>} Returns a <code>Promise</code> that resolves when the properties are final
+	 */
+	PropertyHelperMixin.propertiesFinalized = function() {
+		return this._oPropertiesFinalizedDeferred.promise;
+	};
+
+	/**
 	 * Indicates if the control's propertyHelper already contains all available properties
 	 *
 	 * @protected
@@ -135,7 +146,11 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 	 * @returns {Promise<sap.ui.mdc.util.PropertyHelper>} Returns a <code>Promise</code> that resolves with the property helper
 	 */
 	 PropertyHelperMixin.awaitPropertyHelper = function() {
-		return this._oPropertyHelperDeferred.promise;
+		if (this._oPropertyHelperDeferred){
+			return this._oPropertyHelperDeferred.promise;
+		} else {
+			return Promise.resolve();
+		}
 	};
 
 	/**
@@ -261,81 +276,6 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 			if (this.bIsDestroyed) {
 				return [];
 			}
-			if (oDelegate && typeof oDelegate.fetchPropertyExtensions === "function") {
-				return Promise.all([
-					oDelegate.fetchPropertyExtensions(this, aProperties),
-					oDelegate.fetchPropertiesForBinding ? oDelegate.fetchPropertiesForBinding(this) : aProperties
-				]).then(function(aResult) {
-					return oDelegate.fetchPropertyExtensionsForBinding
-						? oDelegate.fetchPropertyExtensionsForBinding(this, aResult[1]).then(function(mExtensionsForBinding) {
-							return aResult.concat(mExtensionsForBinding);
-						})
-						: aResult.concat(aResult[0]);
-				}).then(function(aResult) {
-					var mExtensions = aResult[0];
-					var aPropertiesForBinding = aResult[1];
-					var mExtensionsForBinding = aResult[2];
-
-					aProperties.forEach(function(oProperty) {
-						if (oProperty.name.startsWith("$ui5.")) {
-							return;
-						}
-
-						var oExtension = mExtensions && mExtensions[oProperty.name];
-						var oPropertyForBinding = aPropertiesForBinding.find(function(oPropertyForBinding) {
-							return oPropertyForBinding.name === oProperty.name;
-						});
-						var oExtensionForBinding = mExtensionsForBinding && mExtensionsForBinding[oProperty.name];
-
-						oProperty.aggregatable = !!(oExtension && oExtension.defaultAggregate);
-						oProperty.extension = {};
-
-						if (oPropertyForBinding) {
-							oProperty.extension.technicallyGroupable = oPropertyForBinding.groupable;
-
-							if (oPropertyForBinding.propertyInfos) {
-								oPropertyForBinding.propertyInfos.forEach(function(sReferencedPropertyName) {
-									if (!oProperty.propertyInfos.includes(sReferencedPropertyName)) {
-										var oReferencedPropertyForBinding = aPropertiesForBinding.find(function(oPropertyForBinding) {
-											return oPropertyForBinding.name === sReferencedPropertyName;
-										});
-										var oReferencedExtensionForBinding = mExtensionsForBinding && mExtensionsForBinding[sReferencedPropertyName];
-										if (!aProperties.some(function(oProperty) {
-											return "$ui5." + sReferencedPropertyName === oProperty.name;
-										})) {
-											aProperties.push(Object.assign({}, oReferencedPropertyForBinding, {
-												name: "$ui5." + sReferencedPropertyName,
-												visible: false,
-												sortable: false,
-												filterable: false,
-												aggregatable: false,
-												groupable: false,
-												exportSettings: null,
-												extension: {
-													technicallyGroupable: oReferencedPropertyForBinding.groupable,
-													technicallyAggregatable: !!(oReferencedExtensionForBinding && oReferencedExtensionForBinding.defaultAggregate)
-												}
-											}));
-											oProperty.propertyInfos.push("$ui5." + sReferencedPropertyName);
-										}
-									}
-								});
-							}
-						}
-
-						if (oExtensionForBinding) {
-							oProperty.extension.technicallyAggregatable = !!(oExtensionForBinding && oExtensionForBinding.defaultAggregate);
-							oProperty.extension.customAggregate = oExtensionForBinding && oExtensionForBinding.defaultAggregate;
-						}
-					});
-					return aProperties;
-				});
-			}
-			return aProperties;
-		}.bind(this)).then(function(aProperties) {
-			if (this.bIsDestroyed) {
-				return [];
-			}
 			return fetchPropertyHelperClass(this, oDelegate).then(function(PropertyHelper) {
 				return [aProperties, PropertyHelper];
 			});
@@ -350,6 +290,7 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 			this._bPropertyHelperInitializing = false;
 			if (bFinal) {
 				this._bPropertyHelperFinal = true;
+				this._oPropertiesFinalizedDeferred.resolve();
 			}
 			return this._oPropertyHelperDeferred.resolve(this._oPropertyHelper);
 		}.bind(this)).catch(function (oError) {
@@ -363,15 +304,26 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 		}
 		this._oPropertyHelper.setProperties(aProperties);
 		this._bPropertyHelperFinal = bFinal || this._bPropertyHelperFinal;
+
+		if (this._bPropertyHelperFinal) {
+			this._oPropertiesFinalizedDeferred.resolve();
+		}
+
 		return this._oPropertyHelper;
 	}
 
 	// use delegate for final properties
 	function _getDelegateProperties (oControl) {
 		return oControl.initControlDelegate().then(function () {
-			return oControl.getControlDelegate(oControl).fetchProperties(oControl); // not using arg as some unit tests override "getControlDelegate"
+			// not using arg as some unit tests override "getControlDelegate"
+			var oDelegate = oControl.getControlDelegate(oControl);
 
-
+			return oDelegate.fetchProperties(oControl).then(function(aProperties) {
+				if (oControl.isDestroyed()) {
+					return [];
+				}
+				return aProperties;
+			});
 		});
 	}
 
@@ -407,6 +359,7 @@ sap.ui.define(["sap/base/util/Deferred", "sap/ui/mdc/util/loadModules", "sap/bas
 
 		this.finalizePropertyHelper = PropertyHelperMixin.finalizePropertyHelper;
 		this.isPropertyHelperFinal = PropertyHelperMixin.isPropertyHelperFinal;
+		this.propertiesFinalized = PropertyHelperMixin.propertiesFinalized;
 
 		this._getPropertyByName = PropertyHelperMixin._getPropertyByName;
 		this._getPropertyByNameAsync = PropertyHelperMixin._getPropertyByNameAsync;

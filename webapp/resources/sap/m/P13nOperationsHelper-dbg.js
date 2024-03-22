@@ -16,6 +16,7 @@ sap.ui.define([
 	 * @ui5-restricted sap.m.P13nFilterPanel
 	 * @since 1.74
 	 * @alias sap.m.P13nOperationsHelper
+	 * @class
 	 */
 	var P13nOperationsHelper = function () {
 		this.init();

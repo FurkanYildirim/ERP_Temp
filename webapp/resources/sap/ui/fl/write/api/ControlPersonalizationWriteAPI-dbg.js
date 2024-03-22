@@ -7,26 +7,28 @@
 sap.ui.define([
 	"sap/base/Log",
 	"sap/ui/core/util/reflection/JsControlTreeModifier",
-	"sap/ui/core/Core",
 	"sap/ui/core/Element",
 	"sap/ui/fl/apply/_internal/flexState/FlexState",
 	"sap/ui/fl/apply/_internal/controlVariants/Utils",
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI",
 	"sap/ui/fl/apply/api/FlexRuntimeInfoAPI",
 	"sap/ui/fl/initial/_internal/changeHandlers/ChangeHandlerStorage",
 	"sap/ui/fl/registry/Settings",
+	"sap/ui/fl/write/api/ChangesWriteAPI",
 	"sap/ui/fl/FlexControllerFactory",
 	"sap/ui/fl/Layer",
 	"sap/ui/fl/Utils"
 ], function(
 	Log,
 	JsControlTreeModifier,
-	Core,
 	Element,
 	FlexState,
 	VariantUtils,
+	ControlVariantApplyAPI,
 	FlexRuntimeInfoAPI,
 	ChangeHandlerStorage,
 	Settings,
+	ChangesWriteAPI,
 	FlexControllerFactory,
 	Layer,
 	Utils
@@ -72,18 +74,6 @@ sap.ui.define([
 		return JsControlTreeModifier.getSelector(sVMControlId, oAppComponent).id;
 	}
 
-	function getAllVariantManagementReferences(oAppComponent) {
-		var aVMControlIds = VariantUtils.getAllVariantManagementControlIds(oAppComponent);
-		return aVMControlIds.reduce(function(aValidIds, sVMControlId) {
-			var oForControls = Core.byId(sVMControlId).getFor();
-			// without any referenced controls the VM control is not active and should be ignored
-			if (oForControls.length) {
-				aValidIds.push(JsControlTreeModifier.getSelector(sVMControlId, oAppComponent).id);
-			}
-			return aValidIds;
-		}, []);
-	}
-
 	function logAndReject(sMessage) {
 		Log.error(sMessage);
 		return Promise.reject(sMessage);
@@ -96,7 +86,8 @@ sap.ui.define([
 	 * @property {sap.ui.core.Element} selectorElement - Control object to be used as the selector for the change
 	 * @property {object} changeSpecificData - Map of change-specific data to perform a flex change
 	 * @property {string} changeSpecificData.changeType - Change type for which a change handler is registered
-	 * @property {object} changeSpecificData.content - Content for the change, see {@link sap.ui.fl.Change#createInitialFileContent}
+	 * @property {object} changeSpecificData.content - Content for the change
+	 * @property {boolean} [transient=false] - Transient changes are not persisted
 	 * @since 1.69
 	 * @private
 	 * @ui5-restricted UI5 controls that allow personalization
@@ -111,7 +102,7 @@ sap.ui.define([
 		 * @param {boolean} [mPropertyBag.ignoreVariantManagement=false] - If flag is set to <code>true</code>, the changes will not belong to any variant, otherwise it will be detected if the changes are done in the context of variant mangement
 		 * @param {boolean} [mPropertyBag.useStaticArea=false] - If flag is set to true then the static area is used to determine the variant management control
 		 *
-		 * @returns {Promise} Promise resolving to an array of successfully applied changes, after the changes have been written to the map of dirty changes and applied to the control
+		 * @returns {Promise} Promise resolving to an array of successfully applied changes, after the changes have been written to the map of dirty changes (except transient changes) and applied to the control
 		 * @private
 		 * @ui5-restricted
 		 */
@@ -126,12 +117,12 @@ sap.ui.define([
 			var oAppComponent = Utils.getAppComponentForControl(oReferenceControl);
 			var sFlexReference = FlexRuntimeInfoAPI.getFlexReference({element: oReferenceControl});
 			var oFlexController = FlexControllerFactory.createForControl(oAppComponent);
-			var oVariantModel = oAppComponent.getModel(Utils.VARIANT_MODEL_NAME);
+			var oVariantModel = oAppComponent.getModel(ControlVariantApplyAPI.getVariantModelName());
 			var sLayer = Layer.USER;
 			var aSuccessfulChanges = [];
 
 			function createChanges() {
-				var aAddedChanges = [];
+				var aChanges = [];
 				return mPropertyBag.changes.reduce(function(pPromise, oPersonalizationChange) {
 					return pPromise
 						.then(function() {
@@ -139,7 +130,8 @@ sap.ui.define([
 							return checkChangeSpecificData(oPersonalizationChange, sLayer);
 						})
 						.then(function() {
-							if (!mPropertyBag.ignoreVariantManagement) {
+							// Transient changes are always VM-independent
+							if (!oPersonalizationChange.transient && !mPropertyBag.ignoreVariantManagement) {
 								// check for preset variantReference
 								if (!oPersonalizationChange.changeSpecificData.variantReference) {
 									var sVariantManagementReference = getRelevantVariantManagementReference(oAppComponent, oPersonalizationChange.selectorControl, mPropertyBag.useStaticArea);
@@ -154,11 +146,18 @@ sap.ui.define([
 							}
 
 							oPersonalizationChange.changeSpecificData = Object.assign(oPersonalizationChange.changeSpecificData, {developerMode: false, layer: sLayer});
-							return oFlexController.addChange(oPersonalizationChange.changeSpecificData, oPersonalizationChange.selectorControl);
+							return ChangesWriteAPI.create({
+								changeSpecificData: oPersonalizationChange.changeSpecificData,
+								selector: oPersonalizationChange.selectorControl
+							});
 						})
-						.then(function(oAddedChange) {
-							aAddedChanges.push({
-								changeInstance: oAddedChange,
+						.then(function(oCreatedChange) {
+							if (!oPersonalizationChange.transient) {
+								oCreatedChange = oFlexController.addPreparedChange(oCreatedChange, oAppComponent);
+							}
+
+							aChanges.push({
+								changeInstance: oCreatedChange,
 								selectorControl: oPersonalizationChange.selectorControl
 							});
 						})
@@ -167,21 +166,30 @@ sap.ui.define([
 						});
 				}, Promise.resolve())
 					.then(function() {
-						return aAddedChanges;
+						return aChanges;
 					});
 			}
 
-			function applyChanges(aAddedChanges) {
-				return aAddedChanges.reduce(function(pPromise, oAddedChange) {
+			function applyChanges(aChanges) {
+				return aChanges.reduce(function(pPromise, oChange) {
 					return pPromise
 						.then(function() {
-							return oFlexController.applyChange(oAddedChange.changeInstance, oAddedChange.selectorControl);
+							oChange.changeInstance.setQueuedForApply();
+							return ChangesWriteAPI.apply({
+								change: oChange.changeInstance,
+								element: oChange.selectorControl
+							});
 						})
-						.then(function(oAppliedChange) {
-							aSuccessfulChanges.push(oAppliedChange);
+						.then(function(oResult) {
+							if (oResult.success) {
+								aSuccessfulChanges.push(oChange.changeInstance);
+							} else {
+								throw oResult.error || new Error("ChangesWriteAPI.apply failed with unspecified error");
+							}
 						})
 						.catch(function(oError) {
-							Log.error("A Change was not applied successfully. Reason:", oError.message);
+							oFlexController.deleteChange(oChange.changeInstance, oAppComponent);
+							Log.error("A Change was not applied successfully. Reason: ", oError.message);
 						});
 				}, Promise.resolve());
 			}
@@ -289,17 +297,9 @@ sap.ui.define([
 				return logAndReject("App Component could not be determined");
 			}
 			var oFlexController = FlexControllerFactory.createForControl(oAppComponent);
-			var oVariantModel = oAppComponent.getModel(Utils.VARIANT_MODEL_NAME);
-			var aVariantManagementReferences = getAllVariantManagementReferences(oAppComponent);
 
 			if (FlexState.isInitialized({control: oAppComponent})) {
-				return oFlexController.saveSequenceOfDirtyChanges(mPropertyBag.changes, oAppComponent)
-					.then(function(oResponse) {
-						if (oVariantModel) {
-							oVariantModel.checkDirtyStateForControlModels(aVariantManagementReferences);
-						}
-						return oResponse;
-					});
+				return oFlexController.saveSequenceOfDirtyChanges(mPropertyBag.changes, oAppComponent);
 			}
 			return Promise.resolve();
 		},

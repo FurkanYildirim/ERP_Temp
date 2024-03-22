@@ -73,7 +73,7 @@ sap.ui.define([
 	 * @implements sap.ui.core.IShrinkable
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.27.0
 	 *
 	 * @constructor
@@ -264,7 +264,7 @@ sap.ui.define([
 	/**
 	 * Gets the accessibility information for the <code>sap.m.Title</code> control.
 	 *
-	 * @returns {object} The accessibility info
+	 * @returns {sap.ui.core.AccessibilityInfo} The accessibility info
 	 * @protected
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 */

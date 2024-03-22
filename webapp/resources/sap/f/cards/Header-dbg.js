@@ -46,7 +46,7 @@ sap.ui.define([
 	 * @implements sap.f.cards.IHeader
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -180,7 +180,7 @@ sap.ui.define([
 	Header.prototype._getTitle = function () {
 		var oTitle = this.getAggregation("_title");
 		if (!oTitle) {
-			oTitle = new Text().addStyleClass("sapFCardTitle");
+			oTitle = new Text(this.getId() + "-title").addStyleClass("sapFCardTitle");
 			this.setAggregation("_title", oTitle);
 		}
 		return oTitle;
@@ -245,7 +245,7 @@ sap.ui.define([
 	 * those controls.
 	 *
 	 * @param {sap.ui.core.Control} oElement - The Control that gets rendered by the RenderManager
-	 * @param {object} mAriaProps - The mapping of "aria-" prefixed attributes
+	 * @param {{role: string, level: string}} mAriaProps - The mapping of "aria-" prefixed attributes
 	 * @protected
 	 */
 	 Header.prototype.enhanceAccessibilityState = function (oElement, mAriaProps) {

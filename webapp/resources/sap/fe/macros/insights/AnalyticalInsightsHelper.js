@@ -1,0 +1,6 @@
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ *      (c) Copyright 2009-2023 SAP SE. All rights reserved
+ */
+sap.ui.define([],function(){"use strict";var e={};function t(e){let t=[];t=e.getMeasures().map(e=>({name:e.getLabel(),value:"{"+e.getName()+"}"}));return t}e.getMeasures=t;function r(e){let t=[];t=e.getDimensions().map(e=>{if(e.getTextProperty()){return{name:e.getLabel(),value:"{"+e.getTextProperty()+"}"}}else{return{name:e.getLabel(),value:"{"+e.getName()+"}"}}});return t}e.getDimensions=r;function n(e){const t=e.getAggregation("_vizFrame").getFeeds();const r=t.map(t=>t.getProperty("values").map(r=>{const n=a(e,r.getProperty("name"),r.getProperty("type"));const g={type:t.getProperty("type"),uid:t.getProperty("uid"),values:[n]};return g}));return r.flat()}e.getFeeds=n;function a(e,t,r){let n;const a=e.getMeasures();const g=e.getDimensions();if(r==="Dimension"){n=g.filter(e=>e.getName()===t)[0].getLabel()||t}else{n=a.filter(e=>e.getName()===t)[0].getLabel()||t}return n}e.getLabel=a;function g(e){return e.getAggregation("_vizFrame").getVizProperties()}e.getChartProperties=g;return e},false);
+//# sourceMappingURL=AnalyticalInsightsHelper.js.map

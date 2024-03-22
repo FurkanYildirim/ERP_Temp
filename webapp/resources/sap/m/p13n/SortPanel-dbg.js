@@ -21,10 +21,9 @@ sap.ui.define([
 	 * @extends sap.m.p13n.QueryPanel
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
-	 * @experimental Since 1.96.
 	 * @since 1.96
 	 * @alias sap.m.p13n.SortPanel
 	 */
@@ -54,7 +53,6 @@ sap.ui.define([
 	/**
 	 * P13n <code>SortItem</code> object type.
 	 *
-	 * @type {sap.m.p13n.SortItem}
 	 * @static
 	 * @constant
 	 * @typedef {object} sap.m.p13n.SortItem

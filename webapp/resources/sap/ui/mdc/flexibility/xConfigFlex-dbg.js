@@ -5,9 +5,10 @@
  */
 
 sap.ui.define([
-    'sap/ui/mdc/p13n/Engine',
-    'sap/ui/mdc/flexibility/Util'
-], function(Engine, Util) {
+    'sap/m/p13n/Engine',
+    'sap/ui/mdc/flexibility/Util',
+	'sap/ui/fl/changeHandler/condenser/Classification'
+], function(Engine, Util, CondenserClassification) {
 	"use strict";
 
 	/**
@@ -81,9 +82,9 @@ sap.ui.define([
 
                     return Engine.getInstance().enhanceXConfig(oControl, {
                         controlMeta: {
-                            aggregation: sAffectedAggregation,
-                            property: sAffectedProperty
+                            aggregation: sAffectedAggregation
                         },
+                        property: sAffectedProperty,
                         name: oChange.getContent().name,
                         value: oChange.getContent().value,
                         propertyBag: mPropertyBag
@@ -96,9 +97,9 @@ sap.ui.define([
         var fRevert = function (oChange, oControl, mPropertyBag) {
             return Engine.getInstance().enhanceXConfig(oControl, {
                 controlMeta: {
-                    aggregation: sAffectedAggregation,
-                    property: sAffectedProperty
+                    aggregation: sAffectedAggregation
                 },
+                property: sAffectedProperty,
                 name: oChange.getRevertData().name,
                 value: oChange.getRevertData().value,
                 propertyBag: mPropertyBag
@@ -110,7 +111,14 @@ sap.ui.define([
 
         return Util.createChangeHandler({
             apply: fApply,
-            revert: fRevert
+            revert: fRevert,
+            getCondenserInfo: function(oChange, mPropertyBag) {
+                return {
+                    classification: CondenserClassification.LastOneWins,
+                    affectedControl: oChange.getSelector(),
+                    uniqueKey: oChange.getContent().name + "_" + mMetaConfig.aggregation + "_" + mMetaConfig.property
+                };
+            }
         });
 
     };

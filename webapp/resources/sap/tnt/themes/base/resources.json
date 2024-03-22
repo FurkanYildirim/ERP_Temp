@@ -14,31 +14,31 @@
 		},
 		{
 			"name": "NavigationList.less",
-			"size": 6336,
+			"size": 9006,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "SideNavigation.less",
-			"size": 3522,
+			"size": 4164,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "ToolHeader.less",
-			"size": 2243,
+			"size": 2838,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "ToolPage.less",
-			"size": 4471,
+			"size": 4848,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 4647,
+			"size": 8508,
 			"theme": "base"
 		},
 		{
@@ -49,19 +49,24 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 119272,
+			"size": 147550,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "fonts/SAP-icons-TNT.json",
 			"module": "sap/tnt/themes/base/fonts/SAP-icons-TNT.json",
-			"size": 6484,
+			"size": 6857,
 			"theme": "base"
 		},
 		{
 			"name": "fonts/SAP-icons-TNT.woff2",
-			"size": 29168,
+			"size": 35228,
+			"theme": "base"
+		},
+		{
+			"name": "fonts/horizon/SAP-icons-TNT.woff2",
+			"size": 34468,
 			"theme": "base"
 		},
 		{
@@ -597,23 +602,23 @@
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 14170,
+			"size": 17482,
 			"theme": "base"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/tnt/themes/base/library-parameters.json",
-			"size": 1896,
+			"size": 3621,
 			"theme": "base"
 		},
 		{
 			"name": "library.css",
-			"size": 14167,
+			"size": 17481,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 21352,
+			"size": 25636,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -625,17 +630,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 14323,
+			"size": 16940,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 14320,
+			"size": 16939,
 			"theme": "base"
 		},
 		{
 			"name": "resources.json",
-			"size": 12243
+			"size": 12337
 		}
 	]
 }

@@ -5,14 +5,16 @@
  */
 
 sap.ui.define([
+	"sap/base/util/ObjectPath",
+	"sap/base/Log",
 	"sap/ui/fl/apply/_internal/flexState/FlexState",
-	"sap/ui/fl/Utils",
-	"sap/base/Log"
+	"sap/ui/fl/apply/api/ControlVariantApplyAPI"
 ],
 function(
+	ObjectPath,
+	Log,
 	FlexState,
-	Utils,
-	Log
+	ControlVariantApplyAPI
 ) {
 	"use strict";
 
@@ -24,23 +26,41 @@ function(
 	 * @alias sap.ui.fl.Cache
 	 * @experimental Since 1.25.0
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 */
 	var Cache = function() {};
 
-	function _getArray(sComponentName, oChange) {
-		var mStorageResponse = FlexState.getFlexObjectsFromStorageResponse(sComponentName);
+	function getChangeCategory(oChangeDefinition) {
+		switch (oChangeDefinition.fileType) {
+			case "change":
+				if (oChangeDefinition.selector && oChangeDefinition.selector.persistencyKey) {
+					return ["comp", "changes"];
+				}
+				if (oChangeDefinition.variantReference) {
+					return "variantDependentControlChanges";
+				}
+				return "changes";
+			case "ctrl_variant":
+				return "variants";
+			case "ctrl_variant_change":
+				return "variantChanges";
+			case "ctrl_variant_management_change":
+				return "variantManagementChanges";
+			case "variant":
+				return ["comp", "variants"];
+			default:
+				return undefined;
+		}
+	}
 
-		if (oChange.fileType === "variant") {
-			return mStorageResponse.comp.variants;
-		}
-		if (oChange.selector && oChange.selector.persistencyKey) {
-			return mStorageResponse.comp.changes;
-		}
-		return mStorageResponse.changes;
+	function _getArray(sComponentName, oChange) {
+		// FIXME Don't mutate the storage response
+		var mStorageResponse = FlexState.getFlexObjectsFromStorageResponse(sComponentName);
+		var vPath = getChangeCategory(oChange);
+		return ObjectPath.get(vPath, mStorageResponse);
 	}
 
 	function _concatControlVariantIdWithCacheKey(sCacheKey, sControlVariantIds) {
@@ -77,6 +97,7 @@ function(
 	 * @param {string} mComponent.name - Name of the component
 	 * @param {object} [mPropertyBag] - Contains additional data needed for reading changes
 	 * @param {string} [mPropertyBag.componentId] - ID of the current component, needed if bInvalidataCache is set
+	 * @param {string} [mPropertyBag.version] - Number of the version being processed
 	 * @param {boolean} bInvalidateCache - should the cache be invalidated
 	 * @returns {Promise} resolves with the change file for the given component, either from cache or back end
 	 */
@@ -121,8 +142,21 @@ function(
 			})
 			.then(function(sCacheKey) {
 				// concat current control variant ids to cachekey if available
-				var oVariantModel = oAppComponent.getModel(Utils.VARIANT_MODEL_NAME);
-				var aCurrentControlVariantIds = oVariantModel ? oVariantModel.getCurrentControlVariantIds() : [];
+				var oVariantModel = oAppComponent.getModel(ControlVariantApplyAPI.getVariantModelName());
+				if (!oVariantModel) {
+					return sCacheKey;
+				}
+				// If there are no changes, the standard variant is created after the variant management control is instantiated
+				// When the cache key is calculated before this happens, the standard variant id is unknown
+				// To avoid inconsistencies between page load and navigation scenarios, all standard variants are filtered
+				var aVariantManagementControlIds = oVariantModel.getVariantManagementControlIds();
+				var aCurrentControlVariantIds = oVariantModel.getCurrentControlVariantIds()
+					.filter(function(sVariantId) {
+						// FIXME: The standard variant flag should be part of the variant instance
+						// This can be changed once the variant data selector is ready
+						// For now rely on the fact that standard variants have the same name as the vm control
+						return !aVariantManagementControlIds.includes(sVariantId);
+					});
 				return _concatControlVariantIdWithCacheKey(sCacheKey, aCurrentControlVariantIds.join("-"));
 			});
 	};
@@ -141,6 +175,8 @@ function(
 			return;
 		}
 		aChanges.push(oChange);
+
+		FlexState.getFlexObjectsDataSelector().checkUpdate({ reference: oComponent.name });
 	};
 
 	/**
@@ -163,6 +199,8 @@ function(
 				break;
 			}
 		}
+
+		FlexState.getFlexObjectsDataSelector().checkUpdate({ reference: oComponent.name });
 	};
 
 	/**
@@ -185,6 +223,8 @@ function(
 				break;
 			}
 		}
+
+		FlexState.getFlexObjectsDataSelector().checkUpdate({ reference: oComponent.name });
 	};
 
 	/**
@@ -205,14 +245,7 @@ function(
 			return aChangeNames.indexOf(oChange.fileName) === -1;
 		});
 
-		var oVariantsState = FlexState.getVariantsState(oComponent.name);
-		Object.keys(oVariantsState).forEach(function(sId) {
-			oVariantsState[sId].variants.forEach(function(oVariant) {
-				oVariant.controlChanges = oVariant.controlChanges.filter(function(oChange) {
-					return aChangeNames.indexOf(oChange.getId()) === -1;
-				});
-			});
-		});
+		FlexState.getFlexObjectsDataSelector().checkUpdate({ reference: oComponent.name });
 	};
 
 	return Cache;

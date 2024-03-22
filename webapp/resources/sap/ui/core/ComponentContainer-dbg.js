@@ -61,7 +61,7 @@ sap.ui.define([
 	 * See also {@link module:sap/ui/core/ComponentSupport}.
 	 *
 	 * @extends sap.ui.core.Control
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
 	 * @alias sap.ui.core.ComponentContainer
@@ -276,7 +276,7 @@ sap.ui.define([
 	 * @return {Promise} Promise that resolves with the placeholder
 	 *
 	 * @private
-	 * @ui5-restricted SAPUI5 Distribution libraries only
+	 * @ui5-restricted SAPUI5 Distribution Layer Libraries
 	 * @since 1.91
 	 */
 	ComponentContainer.prototype.showPlaceholder = function(mSettings) {

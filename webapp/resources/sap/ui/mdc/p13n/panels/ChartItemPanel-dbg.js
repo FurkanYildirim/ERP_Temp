@@ -10,7 +10,6 @@ sap.ui.define([
 	"sap/m/Select",
 	"sap/m/Text",
 	"sap/ui/core/Item",
-	"sap/ui/mdc/library",
 	"sap/m/Button",
 	'sap/m/Column',
 	"sap/m/Table",
@@ -26,8 +25,10 @@ sap.ui.define([
 	"sap/ui/core/ResizeHandler",
 	"sap/ui/core/CustomData",
 	"sap/ui/thirdparty/jquery",
-	"sap/ui/core/library"
-], function (BasePanel, Label, ColumnListItem, Select, Text, Item, MDCLib, Button, Column, Table, Filter, FilterOperator, VBox, HBox, ComboBox, Sorter, Log, mLibrary, Device, ResizeHandler, CustomData, jQuery, coreLibrary) {
+	"sap/ui/core/library",
+	"sap/ui/events/KeyCodes",
+	"sap/ui/mdc/enums/ChartItemRoleType"
+], function (BasePanel, Label, ColumnListItem, Select, Text, Item, Button, Column, Table, Filter, FilterOperator, VBox, HBox, ComboBox, Sorter, Log, mLibrary, Device, ResizeHandler, CustomData, jQuery, coreLibrary, KeyCode, ChartItemRoleType) {
 	"use strict";
 
 	// shortcut for sap.ui.core.ValueState
@@ -89,7 +90,9 @@ sap.ui.define([
 			this._bindListItems();
 
 		},
-		renderer: {}
+		renderer: {
+			apiVersion: 2
+		}
 	});
 
 	ChartItemPanel.prototype._setInnerLayout = function() {
@@ -175,9 +178,15 @@ sap.ui.define([
 
 	ChartItemPanel.prototype._onAfterTableRender = function(){
 
-		if (this._oFocusInfo && this._oFocusInfo.tableItem){
-			//Focus table item directly
-			this._oFocusInfo.tableItem.focus();
+		if (this._oFocusInfo){
+
+			if (this._oFocusInfo.oMoveButton){
+				//Focus move button directly
+				this._oFocusInfo.oMoveButton.focus();
+			}
+
+			//Reset focus info
+			this._oFocusInfo = null;
 		}
 
 		//Restore invalid selections
@@ -188,8 +197,6 @@ sap.ui.define([
 			}
 		}.bind(this));
 
-		//Reset focus info
-		this._oFocusInfo = null;
 	};
 
 	ChartItemPanel.prototype._bindListItems = function(mBindingInfo) {
@@ -241,19 +248,24 @@ sap.ui.define([
 				oFactoryFunction = this._createListItem;
 			}
 
-			this._oListControl.bindItems(Object.assign({
-				path: this.P13N_MODEL + ">/items",
-				key: "name", //TODO: Bind with combined key (name + kind)?
-				filters: [new Filter({
-					filters: [
-						new Filter("visible", FilterOperator.EQ, true),
-						new Filter("template", FilterOperator.EQ, true)
-					],
-					and: false
-				  })],
-				  factory: oFactoryFunction.bind(this),
-				sorter : oSorter
-			}, mBindingInfo));
+			this._oListControl.bindItems(
+				Object.assign(
+					{
+						path: this.P13N_MODEL + ">/items",
+						key: "name", //TODO: Bind with combined key (name + kind)?
+						filters: [new Filter({
+							filters: [
+								new Filter("visible", FilterOperator.EQ, true),
+								new Filter("template", FilterOperator.EQ, true)
+							],
+							and: false
+						})],
+						factory: oFactoryFunction.bind(this),
+						sorter : oSorter
+					},
+					mBindingInfo
+				)
+			);
 	};
 
 	ChartItemPanel.prototype._getTemplateComboBox = function(sKind){
@@ -320,7 +332,7 @@ sap.ui.define([
 		});
 	};
 
-	ChartItemPanel.prototype._getNameComboBox = function(sKind, sName) {
+	ChartItemPanel.prototype._getNameComboBox = function(sId, sKind, sName) {
 		var oCollator = new window.Intl.Collator();
 		var fnSorter = function(a,b) {
 			return oCollator.compare(a,b);
@@ -336,7 +348,7 @@ sap.ui.define([
 			and: false
 		});
 
-		return new ComboBox({
+		return new ComboBox(sId + "-combo", {
 			width: "100%",
 			items: {
 				path: this.P13N_MODEL + ">/items",
@@ -372,7 +384,7 @@ sap.ui.define([
 				oObject.getObject().tempName = oObject.getObject().name;
 			}
 
-			oNameComboBox = this._getNameComboBox(oObject.getObject().kind, oObject.getObject().name);
+			oNameComboBox = this._getNameComboBox(sId, oObject.getObject().kind, oObject.getObject().name);
 			aCells.push(oNameComboBox);
 			aCells.push(this._getRoleSelect());
 			sRemoveBtnId = this.getId() + oObject.getObject().kind + "-RemoveBtn-" + oObject.getObject().name;
@@ -417,7 +429,7 @@ sap.ui.define([
 		oListItem.addEventDelegate({
 			onmouseover: this._hoverHandler.bind(this),
 			onfocusin: this._focusHandler.bind(this),
-			onkeydown: this._handleOnKeyDown.bind(this)
+			onkeydown: this._keydownHandler.bind(this)
 		});
 
 		return oListItem;
@@ -433,7 +445,7 @@ sap.ui.define([
 
 			var oVBox = new VBox({
 				items: [
-					this._getNameComboBox(oObject.getObject().kind, oObject.getObject().name),
+					this._getNameComboBox(sId, oObject.getObject().kind, oObject.getObject().name),
 					this._getRoleSelect()
 				]
 			});
@@ -484,31 +496,16 @@ sap.ui.define([
 		oListItem.addEventDelegate({
 			onmouseover: this._hoverHandler.bind(this),
 			onfocusin: this._focusHandler.bind(this),
-			onkeydown: this._handleOnKeyDown.bind(this)
+			onkeydown: this._keydownHandler.bind(this)
 		});
 
 		return oListItem;
 	};
 
 	//ACC realted stuff
-	ChartItemPanel.prototype._handleOnKeyDown = function(oEvent){
-		if (oEvent.keyCode === 38 && oEvent.ctrlKey){
-			//Ctrl+Arrow Up
-			//Move Up
-			//Disabled for now until further clarification
-			/*
-			if (this._oMoveUpButton && this._oMoveUpButton.getEnabled() && this._getMoveButtonContainer()){
-				this._onPressButtonMoveUp(oEvent, core.byId(oEvent.currentTarget.id));
-			}*/
-		} else if (oEvent.keyCode === 40 && oEvent.ctrlKey){
-			//Ctrl+Arrow Down
-			//Move Down
-			//Disabled for now until further clarification
-			/*
-			if (this._oMoveUpButton && this._oMoveDownButton.getEnabled() && this._getMoveButtonContainer()){
-				this._onPressButtonMoveDown(oEvent, core.byId(oEvent.currentTarget.id));
-			}*/
-		} else if (oEvent.keyCode === 68 && oEvent.ctrlKey){
+	ChartItemPanel.prototype._keydownHandler = function(oEvent){
+
+		if ((oEvent.metaKey || oEvent.ctrlKey) && oEvent.keyCode === KeyCode.D){
 			//Ctrl+D
 			//Remove
 			var oRemoveBtn, oListItem = core.byId(oEvent.currentTarget.id);
@@ -524,6 +521,8 @@ sap.ui.define([
 				oEvent.preventDefault();
 			}
 
+		} else {
+			BasePanel.prototype._keydownHandler.apply(this, arguments);
 		}
 
 	};
@@ -571,7 +570,7 @@ sap.ui.define([
 			oPrevItem.tempName = oPrevItem.name;
 
 			oNewItem.role = oPrevItem.role;
-			this._moveItemsByIndex(this._getItemIndex(oNewItem), this._getItemIndex(oPrevItem));
+			this._moveItemsByIndex(this._getItemIndex(oNewItem), this._getItemIndex(oPrevItem), true);
 
 			this._refreshP13nModel();
 
@@ -954,9 +953,9 @@ sap.ui.define([
 		this._getMoveDownButton().setEnabled(bDownEnabled);
 		this._getMoveBottomButton().setEnabled(bDownEnabled);
 
-		if (bFocus) {
+		if (bFocus && (!bDownEnabled || !bUpEnabled)) {
 			//Table re-renders after reorder; this is used in onAfterRendering
-			this._oFocusInfo = {tableItem : oTableItem};
+			this._oFocusInfo = { oMoveButton : !bDownEnabled ? this._getMoveUpButton() : this._getMoveDownButton()};
 		}
 	};
 
@@ -1183,8 +1182,8 @@ sap.ui.define([
 
 	ChartItemPanel.prototype._getMoveTopButton = function() {
 
-		if (this._oMoveTopBtn && this._oMoveTopBtn.isDestroyed()) {
-			this._oMoveTopBtn = null;
+		if (this._oMoveTopButton && this._oMoveTopButton.isDestroyed()) {
+			this._oMoveTopButton = null;
 		}
 
 		return BasePanel.prototype._getMoveTopButton.apply(this, arguments);
@@ -1222,25 +1221,25 @@ sap.ui.define([
 		var oAvailableRoles = {
 			Dimension: [
 				{
-					key: MDCLib.ChartItemRoleType.category,
+					key: ChartItemRoleType.category,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_CATEGORY')
 				}, {
-					key: MDCLib.ChartItemRoleType.category2,
+					key: ChartItemRoleType.category2,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_CATEGORY2')
 				}, {
-					key: MDCLib.ChartItemRoleType.series,
+					key: ChartItemRoleType.series,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_SERIES')
 				}
 			],
 			Measure: [
 				{
-					key: MDCLib.ChartItemRoleType.axis1,
+					key: ChartItemRoleType.axis1,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_AXIS1')
 				}, {
-					key: MDCLib.ChartItemRoleType.axis2,
+					key: ChartItemRoleType.axis2,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_AXIS2')
 				}, {
-					key: MDCLib.ChartItemRoleType.axis3,
+					key: ChartItemRoleType.axis3,
 					text: MDCRb.getText('chart.PERSONALIZATION_DIALOG_CHARTROLE_AXIS3')
 				}
 			]

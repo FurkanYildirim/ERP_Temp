@@ -21,10 +21,9 @@ sap.ui.define([
 	 * @extends sap.m.p13n.QueryPanel
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @public
-	 * @experimental Since 1.104. Please note that the API of this control is not yet finalized!
 	 * @alias sap.m.p13n.GroupPanel
 	 */
 	var GroupPanel = QueryPanel.extend("sap.m.p13n.GroupPanel", {
@@ -59,7 +58,6 @@ sap.ui.define([
 	/**
 	 * P13n <code>GroupItem</code> object type.
 	 *
-	 * @type {sap.m.p13n.GroupItem}
 	 * @static
 	 * @constant
 	 * @typedef {object} sap.m.p13n.GroupItem

@@ -56,35 +56,35 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 10977,
+			"size": 11148,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 111803,
+			"size": 133480,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 111503,
+			"size": 133180,
 			"designtime": true,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 33330,
+			"size": 33238,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/rta/themes/sap_hcb/library-parameters.json",
-			"size": 4294,
+			"size": 4352,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "library.css",
-			"size": 33309,
+			"size": 33212,
 			"theme": "sap_hcb"
 		},
 		{
@@ -101,12 +101,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 30969,
+			"size": 30712,
 			"theme": "sap_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 30960,
+			"size": 30698,
 			"theme": "sap_hcb"
 		},
 		{

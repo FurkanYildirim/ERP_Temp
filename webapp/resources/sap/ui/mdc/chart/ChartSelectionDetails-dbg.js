@@ -5,40 +5,30 @@
  */
 
 sap.ui.define([
-        "sap/ui/core/Core",
-        "sap/ui/mdc/library",
         "sap/m/SelectionDetails",
         "sap/m/SelectionDetailsItem",
         "sap/m/SelectionDetailsItemLine",
-        "sap/m/SelectionDetailsRenderer",
-        "./SelectionDetailsActions"
+        "sap/m/SelectionDetailsRenderer"
     ],
     function (
-        Core,
-        Control,
         SelectionDetails,
         SelectionDetailsItem,
         SelectionDetailsItemLine,
-        SelectionDetailsRenderer,
-        SelectionDetailsActions
+        SelectionDetailsRenderer
     ) {
         "use strict";
 
         /**
-         /**
          * Constructor for a new ChartSelectionDetails.
          *
-         * @param {string} [sId] id for the new control, generated automatically if no id is given
-         * @param {object} [mSettings] initial settings for the new control
-         * @class The ChartSelectionDetails control creates a sap.m.SelectionDetails popover based on metadata and the configuration specified.
+         * @param {string} [sId] ID for the new control, generated automatically if no id is given
+         * @param {object} [mSettings] Initial settings for the new control
+         * @class The <code>ChartSelectionDetails</code> control creates a <code>sap.m.SelectionDetails</code> popover based on metadata and the configuration specified.
          * @extends sap.m.SelectionDetails
          * @author SAP SE
-         * @version 1.108.14
+         * @version 1.115.1
          * @constructor
-         * @experimental As of version ...
-         * @private
-         * @ui5-restricted sap.fe
-         * @MDC_PUBLIC_CANDIDATE
+         * @public
          * @since 1.88
          * @alias sap.ui.mdc.chart.ChartSelectionDetails
          */
@@ -68,7 +58,6 @@ sap.ui.define([
         /**
          * Initialises the MDC Chart Selection Details
          *
-         * @experimental
          * @private
          * @ui5-restricted sap.ui.mdc
          */
@@ -121,20 +110,20 @@ sap.ui.define([
                     oEvent.getParameter("content").destroy();
                 } else {
                     // Forward navigation to semantic objects
-                    oMDCChart._navigateToSemanticObjectDetails(oEvent);
+                    oChart._navigateToSemanticObjectDetails(oEvent);
                 }
 
             });*/
 
             this.attachActionPress(function(oEvent) {
-                var oMDCChart = this.getParent().getParent();
+                var oChart = this.getParent().getParent();
                 // extract binding information of each item
                 var aItemContexts = [];
                 oEvent.getParameter("items").forEach(function(oItem) {
                     aItemContexts.push(oItem.getBindingContext());
                 });
                 // Re-arrange event object and navigate to outer press handler
-                oMDCChart.fireSelectionDetailsActionPressed({
+                oChart.fireSelectionDetailsActionPressed({
                     id: oEvent.getParameter("id"),
                     action: oEvent.getParameter("action"),
                     itemContexts: aItemContexts,

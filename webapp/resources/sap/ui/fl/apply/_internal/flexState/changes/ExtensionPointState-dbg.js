@@ -28,7 +28,7 @@ sap.ui.define([
 	 * @namespace sap.ui.fl.apply._internal.flexState.changes.ExtensionPointState
 	 * @experimental Since 1.79
 	 * @since 1.79
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted
 	 */
@@ -67,7 +67,7 @@ sap.ui.define([
 			if (bOriginalSelectorNeedsToBeAdjusted) {
 				oChange.originalSelectorToBeAdjusted = mOriginalSelector;
 			} else {
-				oChange.setDependentSelector({originalSelector: mOriginalSelector});
+				oChange.setDependentSelectors({originalSelector: mOriginalSelector});
 			}
 			oChange.setContent({boundAggregation: oExtensionPoint.closestAggregationBinding});
 		} else {
@@ -158,7 +158,9 @@ sap.ui.define([
 								//Set correct selector from extension point targetControl's ID
 								replaceChangeSelector(oRuntimeOnlyChange, mExtensionPointInfo, true);
 								oRuntimeOnlyChange.setExtensionPointInfo(mExtensionPointInfo);
-								oRuntimeOnlyChange.setModuleName(oChange.getModuleName());
+								var oFlexObjectMetadata = oRuntimeOnlyChange.getFlexObjectMetadata();
+								oFlexObjectMetadata.moduleName = oChange.getFlexObjectMetadata().moduleName;
+								oRuntimeOnlyChange.setFlexObjectMetadata(oFlexObjectMetadata);
 								oRuntimeOnlyChange.setCreation(oChange.getCreation());
 								oChangePersistence.addChangeAndUpdateDependencies(mPropertyBag.appComponent, oRuntimeOnlyChange, oChange);
 							})

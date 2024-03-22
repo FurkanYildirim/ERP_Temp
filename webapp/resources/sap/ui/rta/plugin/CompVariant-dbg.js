@@ -27,7 +27,6 @@ sap.ui.define([
 ) {
 	"use strict";
 
-
 	var CompVariant = Plugin.extend("sap.ui.rta.plugin.CompVariant", /** @lends sap.ui.rta.plugin.CompVariant.prototype */ {
 		metadata: {
 			library: "sap.ui.rta",
@@ -40,12 +39,34 @@ sap.ui.define([
 		}
 	});
 
-	function createCommandAndFireEvent(oOverlay, sName, mProperties, oElement) {
+	function createCommandAndFireEvent(oOverlay, aCommandNames, mProperties, oElement) {
 		var oDesignTimeMetadata = oOverlay.getDesignTimeMetadata();
 		var oTargetElement = oElement || oOverlay.getElement();
-
-		return this.getCommandFactory().getCommandFor(oTargetElement, sName, mProperties, oDesignTimeMetadata)
-
+		return Promise.resolve()
+		.then(function() {
+			if (aCommandNames.length === 1) {
+				return this.getCommandFactory().getCommandFor(oTargetElement, aCommandNames[0], mProperties, oDesignTimeMetadata);
+			}
+			var oCompositeCommand;
+			return this.getCommandFactory().getCommandFor(oTargetElement, "composite")
+			.then(function(_oCompositeCommand) {
+				oCompositeCommand = _oCompositeCommand;
+				var aCommandPromises = [];
+				aCommandNames.forEach(function(sCommandName) {
+					aCommandPromises.push(this.getCommandFactory().getCommandFor(
+						oTargetElement,
+						sCommandName,
+						mProperties[sCommandName],
+						oDesignTimeMetadata
+					));
+				}.bind(this));
+				return Promise.all(aCommandPromises)
+				.then(function(aCommands) {
+					aCommands.forEach(oCompositeCommand.addCommand.bind(oCompositeCommand));
+					return oCompositeCommand;
+				});
+			}.bind(this));
+		}.bind(this))
 		.then(function(oCommand) {
 			this.fireElementModified({
 				command: oCommand
@@ -53,7 +74,7 @@ sap.ui.define([
 		}.bind(this))
 
 		.catch(function(oMessage) {
-			throw DtUtil.createError(sName, oMessage, "sap.ui.rta.plugin.CompVariant");
+			throw DtUtil.createError(aCommandNames[0], oMessage, "sap.ui.rta.plugin.CompVariant");
 		});
 	}
 
@@ -89,21 +110,22 @@ sap.ui.define([
 		mPropertyBag.newVariantProperties[sVariantId] = {
 			name: sText
 		};
-		createCommandAndFireEvent.call(this, oOverlay, "compVariantUpdate", mPropertyBag);
+		createCommandAndFireEvent.call(this, oOverlay, ["compVariantUpdate"], mPropertyBag);
 	};
 
 	// ------ configure ------
 	function configureVariants(aOverlays) {
 		var oVariantManagementControl = aOverlays[0].getElement();
-		var mSettings = Object.assign({isComp: true}, this.getCommandFactory().getFlexSettings());
+		var mComponentPropertyBag = this.getCommandFactory().getFlexSettings();
+		mComponentPropertyBag.variantManagementControl = oVariantManagementControl;
 		var mPropertyBag = {
 			layer: this.getCommandFactory().getFlexSettings().layer,
-			contextSharingComponentContainer: ContextSharingAPI.createComponent(mSettings),
+			contextSharingComponentContainer: ContextSharingAPI.createComponent(mComponentPropertyBag),
 			rtaStyleClass: Utils.getRtaStyleClassName()
 		};
 		oVariantManagementControl.openManageViewsDialogForKeyUser(mPropertyBag, function(oData) {
 			if (!isEmptyObject(oData)) {
-				createCommandAndFireEvent.call(this, aOverlays[0], "compVariantUpdate", {
+				createCommandAndFireEvent.call(this, aOverlays[0], ["compVariantUpdate"], {
 					newVariantProperties: _omit(oData, ["default"]),
 					newDefaultVariantId: oData.default,
 					oldDefaultVariantId: oVariantManagementControl.getDefaultVariantId()
@@ -113,23 +135,71 @@ sap.ui.define([
 	}
 
 	// ------ switch ------
+	function onDirtySwitchWarningClose(oVariantManagementOverlay, sTargetVariantId, sAction) {
+		if (sAction === MessageBox.Action.CANCEL) {
+			return;
+		}
+
+		var oLibraryBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.rta");
+		var oVariantManagementControl = oVariantManagementOverlay.getElement();
+		var mProperties;
+
+		if (sAction === oLibraryBundle.getText("BTN_MODIFIED_VARIANT_SAVE")) {
+			// Create composite command for compVariantUpdate + compVariantSwitch
+			getCompVariantUpdateProperties(oVariantManagementControl)
+			.then(function(oCompVariantUpdateProperties) {
+				mProperties = {
+					compVariantSwitch: {
+						targetVariantId: sTargetVariantId,
+						sourceVariantId: oVariantManagementControl.getPresentVariantId()
+					},
+					compVariantUpdate: oCompVariantUpdateProperties
+				};
+				createCommandAndFireEvent.call(this, oVariantManagementOverlay, ["compVariantUpdate", "compVariantSwitch"], mProperties);
+			}.bind(this));
+		}
+		if (sAction === oLibraryBundle.getText("BTN_MODIFIED_VARIANT_DISCARD")) {
+			createCommandAndFireEvent.call(this, oVariantManagementOverlay, ["compVariantSwitch"], {
+				targetVariantId: sTargetVariantId,
+				sourceVariantId: oVariantManagementControl.getPresentVariantId(),
+				discardVariantContent: true
+			});
+		}
+	}
+
 	function isSwitchEnabled(aOverlays) {
 		return getAllVariants(aOverlays[0]).length > 1;
 	}
 
 	function switchVariant(aOverlays, mPropertyBag) {
-		var oVariantManagementControl = aOverlays[0].getElement();
+		var oVariantManagementOverlay = aOverlays[0];
+		var oVariantManagementControl = oVariantManagementOverlay.getElement();
 
-		createCommandAndFireEvent.call(this, aOverlays[0], "compVariantSwitch", {
-			targetVariantId: mPropertyBag.eventItem.getParameters().item.getProperty("key"),
-			sourceVariantId: oVariantManagementControl.getPresentVariantId()
-		});
+		// If the variant was modified, user must choose whether to save changes before switching
+		if (oVariantManagementControl.getModified()) {
+			var oLibraryBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.rta");
+			var sTargetVariantId = mPropertyBag.eventItem.getParameters().item.getProperty("key");
+			MessageBox.warning(oLibraryBundle.getText("MSG_CHANGE_MODIFIED_VARIANT"), {
+				onClose: onDirtySwitchWarningClose.bind(this, oVariantManagementOverlay, sTargetVariantId),
+				actions: [
+					oLibraryBundle.getText("BTN_MODIFIED_VARIANT_SAVE"),
+					oLibraryBundle.getText("BTN_MODIFIED_VARIANT_DISCARD"),
+					MessageBox.Action.CANCEL
+				],
+				emphasizedAction: oLibraryBundle.getText("BTN_MODIFIED_VARIANT_SAVE"),
+				styleClass: Utils.getRtaStyleClassName()
+			});
+		} else {
+			createCommandAndFireEvent.call(this, oVariantManagementOverlay, ["compVariantSwitch"], {
+				targetVariantId: mPropertyBag.eventItem.getParameters().item.getProperty("key"),
+				sourceVariantId: oVariantManagementControl.getPresentVariantId()
+			});
+		}
 	}
 
 	// ------ save ------
-	function saveVariant(aOverlays) {
-		var oVariantManagementControl = aOverlays[0].getElement();
-		oVariantManagementControl.getPresentVariantContent().then(function(oContent) {
+	function getCompVariantUpdateProperties(oVariantManagementControl) {
+		return oVariantManagementControl.getPresentVariantContent().then(function(oContent) {
 			var oPropertyBag = {
 				onlySave: true,
 				newVariantProperties: {}
@@ -137,7 +207,15 @@ sap.ui.define([
 			oPropertyBag.newVariantProperties[oVariantManagementControl.getPresentVariantId()] = {
 				content: oContent
 			};
-			createCommandAndFireEvent.call(this, aOverlays[0], "compVariantUpdate", oPropertyBag);
+			return oPropertyBag;
+		});
+	}
+
+	function saveVariant(aOverlays) {
+		var oVariantManagementControl = aOverlays[0].getElement();
+		getCompVariantUpdateProperties(oVariantManagementControl)
+		.then(function(oPropertyBag) {
+			createCommandAndFireEvent.call(this, aOverlays[0], ["compVariantUpdate"], oPropertyBag);
 		}.bind(this));
 	}
 
@@ -148,12 +226,13 @@ sap.ui.define([
 	// ------ save as ------
 	function saveAsNewVariant(aOverlays, bImplicitSaveAs) {
 		var oVariantManagementControl = aOverlays[0].getElement();
-		var mSettings = Object.assign({isComp: true}, this.getCommandFactory().getFlexSettings());
-		var oContextSharingComponentContainer = ContextSharingAPI.createComponent(mSettings);
+		var mComponentPropertyBag = this.getCommandFactory().getFlexSettings();
+		mComponentPropertyBag.variantManagementControl = oVariantManagementControl;
+		var oContextSharingComponentContainer = ContextSharingAPI.createComponent(mComponentPropertyBag);
 		return new Promise(function(resolve) {
 			oVariantManagementControl.openSaveAsDialogForKeyUser(Utils.getRtaStyleClassName(), function(oReturn) {
 				if (oReturn) {
-					createCommandAndFireEvent.call(this, aOverlays[0], "compVariantSaveAs", {
+					createCommandAndFireEvent.call(this, aOverlays[0], ["compVariantSaveAs"], {
 						newVariantProperties: {
 							"default": oReturn.default,
 							executeOnSelection: oReturn.executeOnSelection,
@@ -192,13 +271,15 @@ sap.ui.define([
 	function changeContent(aOverlays) {
 		var oLibraryBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.rta");
 		var oElementOverlay = aOverlays[0];
-		var oControl = oElementOverlay.getElementInstance();
+		var oControl = oElementOverlay.getElement();
 		var oAction = this.getAction(oElementOverlay);
+		var oVariantManagementControl = oControl.getVariantManagement();
+		// the modified flag might be changed before the dialog is closed, so it has to be saved here already
+		var bIsModified = oVariantManagementControl.getModified();
 
 		return oAction.handler(oControl, {styleClass: Utils.getRtaStyleClassName()}).then(function(aChangeContentData) {
 			if (aChangeContentData && aChangeContentData.length) {
 				var sPersistencyKey = aChangeContentData[0].changeSpecificData.content.persistencyKey;
-				var oVariantManagementControl = oControl.getVariantManagement();
 				var aVariants = oVariantManagementControl.getAllVariants();
 				var oCurrentVariant = aVariants.find(function(oVariant) {
 					return oVariant.getVariantId() === oVariantManagementControl.getPresentVariantId();
@@ -207,11 +288,12 @@ sap.ui.define([
 				// a variant that can't be overwritten must never get dirty,
 				// instead the user needs to save the changes to a new variant
 				if (oCurrentVariant.isEditEnabled(this.getCommandFactory().getFlexSettings().layer)) {
-					createCommandAndFireEvent.call(this, oElementOverlay, "compVariantContent", {
+					createCommandAndFireEvent.call(this, oElementOverlay, ["compVariantContent"], {
 						variantId: aChangeContentData[0].changeSpecificData.content.key,
 						newContent: aChangeContentData[0].changeSpecificData.content.content,
-						persistencyKey: sPersistencyKey
-					}, oControl.getVariantManagement());
+						persistencyKey: sPersistencyKey,
+						isModifiedBefore: bIsModified
+					}, oVariantManagementControl);
 				} else {
 					MessageBox.warning(oLibraryBundle.getText("MSG_CHANGE_READONLY_VARIANT"), {
 						onClose: onWarningClose.bind(this, oVariantManagementControl, oCurrentVariant.getVariantId()),

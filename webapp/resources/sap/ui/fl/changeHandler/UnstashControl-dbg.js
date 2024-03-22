@@ -15,7 +15,7 @@ sap.ui.define([
 	 * Change handler for unstashing of a control.
 	 * @alias sap.ui.fl.changeHandler.UnstashControl
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @experimental Since 1.27.0
 	 */
 	var UnstashControl = {};
@@ -23,7 +23,7 @@ sap.ui.define([
 	/**
 	 * Unstashes and shows a control.
 	 *
-	 * @param {sap.ui.fl.Change} oChange - Change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object with instructions to be applied on the control map
 	 * @param {sap.ui.core.Control} oControl - Control that matches the change selector for applying the change
 	 * @param {object} mPropertyBag - Map of properties
 	 * @param {sap.ui.core.util.reflection.BaseTreeModifier} mPropertyBag.modifier - Modifier for the controls
@@ -62,7 +62,7 @@ sap.ui.define([
 	/**
 	 * Reverts previously applied change
 	 *
-	 * @param {sap.ui.fl.Change} oChange - Change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object with instructions to be applied on the control map
 	 * @param {sap.ui.core.Control} oControl - Control that matches the change selector for applying the change
 	 * @param {object} mPropertyBag - Map of properties
 	 * @param {sap.ui.core.util.reflection.BaseTreeModifier} mPropertyBag.modifier - Modifier for the controls
@@ -77,7 +77,7 @@ sap.ui.define([
 	/**
 	 * Completes the change by adding change handler specific content
 	 *
-	 * @param {sap.ui.fl.Change} oChange - Change object to be completed
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object to be completed
 	 * @param {object} oSpecificChangeInfo - As an empty object since no additional attributes are required for this operation
 	 * @public
 	 */
@@ -91,7 +91,7 @@ sap.ui.define([
 	/**
 	 * Retrieves the condenser-specific information.
 	 *
-	 * @param {sap.ui.fl.Change} oChange - Change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object with instructions to be applied on the control map
 	 * @returns {object} - Condenser specific information
 	 * @public
 	 */

@@ -10,16 +10,18 @@ sap.ui.define([
 	"../utils/TableUtils",
 	"../library",
 	"sap/ui/Device",
+	"sap/ui/core/Element",
 	"sap/ui/core/Popup",
 	"sap/base/Log",
 	"sap/ui/thirdparty/jquery",
 	"sap/ui/dom/jquery/scrollLeftRTL",
 	"sap/ui/dom/jquery/control"
-], function(ExtensionBase, TableUtils, library, Device, Popup, Log, jQuery) {
+], function(ExtensionBase, TableUtils, library, Device, Element, Popup, Log, jQuery) {
 	"use strict";
 
 	// shortcuts
 	var SelectionMode = library.SelectionMode;
+	var SelectionBehavior = library.SelectionBehavior;
 
 	var KNOWNCLICKABLECONTROLS = [
 		"sapMBtnBase", "sapMInputBase", "sapMLnk", "sapMSlt",
@@ -77,7 +79,7 @@ sap.ui.define([
 			}
 
 			// Special handling for known clickable controls
-			var oClickedControl = $Target.control(0);
+			var oClickedControl = Element.closestTo($Target[0]);
 			if (oClickedControl) {
 				var $ClickedControl = oClickedControl.$();
 				if ($ClickedControl.length) {
@@ -96,42 +98,16 @@ sap.ui.define([
 		 * Changes the selection based on the given click event on the given row selector, data cell or row action cell.
 		 */
 		_handleClickSelection: function(oEvent, $Cell, oTable) {
-			TableUtils.toggleRowSelection(oTable, $Cell, null, function(iRowIndex) {
+			TableUtils.toggleRowSelection(oTable, $Cell, null, function(oRow) {
 				var oSelectionPlugin = oTable._getSelectionPlugin();
-				var oSelMode = oTable.getSelectionMode();
 
-				// Single selection
-				if (oSelMode === SelectionMode.Single) {
-					if (!oSelectionPlugin.isIndexSelected(iRowIndex)) {
-						oSelectionPlugin.setSelectedIndex(iRowIndex);
-					} else {
-						oSelectionPlugin.clearSelection();
-					}
-
-				// Multi selection (range)
-				} else if (oEvent.shiftKey) {
-					// If no row is selected, getSelectedIndex returns -1. Then we simply select the clicked row.
-					var iSelectedIndex = oSelectionPlugin.getSelectedIndex();
-					if (iSelectedIndex >= 0) {
-						oSelectionPlugin.addSelectionInterval(iSelectedIndex, iRowIndex);
-					} else if (oSelectionPlugin.getSelectedCount() === 0) {
-						oSelectionPlugin.setSelectedIndex(iRowIndex);
-					}
-
-				// Multi selection (toggle)
-				} else if (!oTable._legacyMultiSelection) {
-					if (!oSelectionPlugin.isIndexSelected(iRowIndex)) {
-						oSelectionPlugin.addSelectionInterval(iRowIndex, iRowIndex);
-					} else {
-						oSelectionPlugin.removeSelectionInterval(iRowIndex, iRowIndex);
-					}
-
-				// Multi selection (legacy)
+				if (oEvent.shiftKey) { // Range
+					oSelectionPlugin.setSelected(oRow, true, {range: true});
+				} else if (oTable._legacyMultiSelection) {
+					oTable._legacyMultiSelection(oRow.getIndex(), oEvent);
 				} else {
-					oTable._legacyMultiSelection(iRowIndex, oEvent);
+					oSelectionPlugin.setSelected(oRow, !oSelectionPlugin.isSelected(oRow));
 				}
-
-				return true;
 			});
 		}
 	};
@@ -174,9 +150,11 @@ sap.ui.define([
 			var iLocationX = ExtensionHelper._getEventPosition(oEvent, this).x;
 			var oColumn = this._getVisibleColumns()[this._iLastHoveredVisibleColumnIndex];
 			var $RelevantColumnElement = this.$().find("th[data-sap-ui-colid=\"" + oColumn.getId() + "\"]"); // Consider span and multi-header
-			var iColumnWidth = $RelevantColumnElement[0].offsetWidth;
+			var iColumnWidth = $RelevantColumnElement[0].offsetWidth; // the width of the column with padding and border
+			var iInnerWidth = $RelevantColumnElement.width(); // the content width of the column without padding and border
+			var iPaddingAndBorder = iColumnWidth - iInnerWidth;
 			var iDeltaX = iLocationX - ($RelevantColumnElement.offset().left + (this._bRtlMode ? 0 : iColumnWidth));
-			var iCalculatedColumnWidth = Math.round(iColumnWidth + iDeltaX * (this._bRtlMode ? -1 : 1));
+			var iCalculatedColumnWidth = Math.round(iColumnWidth + iDeltaX * (this._bRtlMode ? -1 : 1)) - iPaddingAndBorder;
 			var iNewColumnWidth = Math.max(iCalculatedColumnWidth, TableUtils.Column.getMinColumnWidth());
 
 			ColumnResizeHelper._resizeColumn(this, this._iLastHoveredVisibleColumnIndex, this._bColumnResizerMoved ? iNewColumnWidth : null);
@@ -573,9 +551,9 @@ sap.ui.define([
 
 		initRowHovering: function(oTable) {
 			var $Table = oTable.$();
-			for (var i = 0; i < RowHoverHandler.ROWAREAS.length; i++) {
-				RowHoverHandler._initRowHoveringForArea(oTable, $Table, RowHoverHandler.ROWAREAS[i]);
-			}
+			RowHoverHandler.ROWAREAS.forEach(function(sRowArea) {
+				RowHoverHandler._initRowHoveringForArea(oTable, $Table, sRowArea);
+			});
 		},
 
 		_initRowHoveringForArea: function(oTable, $Table, sArea) {
@@ -587,11 +565,13 @@ sap.ui.define([
 		},
 
 		_onHover: function(oTable, $Table, sArea, oElem) {
-			var iIndex = $Table.find(sArea).index(oElem);
-			var oRow = oTable.getRows()[iIndex];
+			if ((oTable.getSelectionMode() !== SelectionMode.None && oTable.getSelectionBehavior() !== SelectionBehavior.RowSelector) || oTable.hasListeners("cellClick")) {
+				var iIndex = $Table.find(sArea).index(oElem);
+				var oRow = oTable.getRows()[iIndex];
 
-			if (oRow) {
-				oRow._setHovered(true);
+				if (oRow) {
+					oRow._setHovered(true);
+				}
 			}
 		},
 
@@ -723,12 +703,13 @@ sap.ui.define([
 
 			if (oCellInfo.isOfType(TableUtils.CELLTYPE.COLUMNHEADER)) {
 				var oPointerExtension = this._getPointerExtension();
-				var oColumn = this.getColumns()[oCellInfo.columnIndex];
 
-				if (oPointerExtension._bShowMenu && !oColumn._isMenuOpen()) {
+				if (oPointerExtension._bShowMenu) {
 					TableUtils.Menu.openContextMenu(this, oEvent.target);
 					delete oPointerExtension._bShowMenu;
 				}
+			} else if (oCellInfo.isOfType(TableUtils.CELLTYPE.COLUMNROWHEADER)) {
+				this._getSelectionPlugin().onHeaderSelectorPress();
 			} else if (oRow && oRow.isSummary()) {
 				// Sum row cannot be selected
 				oEvent.preventDefault();
@@ -743,23 +724,14 @@ sap.ui.define([
 					return;
 				}
 
-				if (oCellInfo.isOfType(TableUtils.CELLTYPE.COLUMNROWHEADER)) {
-					window.getSelection().empty();
-				}
-
 				var sSelectedText = window.getSelection().toString();
 				if (!oEvent.shiftKey && sSelectedText.length > 0 && sSelectedText !== "\n") {
 					Log.debug("DOM Selection detected -> Click event on table skipped, Target: " + oEvent.target);
 					return;
 				}
 
-				// forward the event
 				if (!this._findAndfireCellEvent(this.fireCellClick, oEvent)) {
-					if (oCellInfo.isOfType(TableUtils.CELLTYPE.COLUMNROWHEADER)) {
-						this._getSelectionPlugin().onHeaderSelectorPress();
-					} else {
-						ExtensionHelper._handleClickSelection(oEvent, $Cell, this);
-					}
+					ExtensionHelper._handleClickSelection(oEvent, $Cell, this);
 				} else {
 					oEvent.preventDefault();
 				}
@@ -770,7 +742,7 @@ sap.ui.define([
 			var oPointerExtension = this._getPointerExtension();
 
 			if (oPointerExtension._bShowDefaultMenu) {
-				oEvent.setMarked("handledByPointerExtension");
+				oEvent.setMarked("sapUiTableHandledByPointerExtension");
 				delete oPointerExtension._bShowDefaultMenu;
 
 			} else if (oPointerExtension._bShowMenu) {
@@ -779,11 +751,11 @@ sap.ui.define([
 				if (bContextMenuOpened) {
 					oEvent.preventDefault(); // To prevent opening the default browser context menu.
 				}
-				oEvent.setMarked("handledByPointerExtension");
+				oEvent.setMarked("sapUiTableHandledByPointerExtension");
 				delete oPointerExtension._bShowMenu;
 
 			} else if (oPointerExtension._bHideMenu) {
-				oEvent.setMarked("handledByPointerExtension");
+				oEvent.setMarked("sapUiTableHandledByPointerExtension");
 				oEvent.preventDefault(); // To prevent opening the default browser context menu.
 				delete oPointerExtension._bHideMenu;
 			}
@@ -798,7 +770,7 @@ sap.ui.define([
 	 * @class Extension for sap.ui.table.Table which handles mouse and touch related things.
 	 * @extends sap.ui.table.extensions.ExtensionBase
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @alias sap.ui.table.extensions.Pointer

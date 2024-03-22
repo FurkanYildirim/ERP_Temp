@@ -38,13 +38,13 @@
 		},
 		{
 			"name": "Icon.less",
-			"size": 2825,
+			"size": 3275,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "LocalBusyIndicator.less",
-			"size": 6524,
+			"size": 6562,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -85,13 +85,13 @@
 		},
 		{
 			"name": "base.less",
-			"size": 242309,
+			"size": 386922,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 200958,
+			"size": 242623,
 			"theme": "base"
 		},
 		{
@@ -102,18 +102,23 @@
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 227859,
+			"size": 274796,
 			"designtime": true,
 			"theme": "base"
 		},
 		{
+			"name": "fonts/SAP-icons.ttf",
+			"size": 328480,
+			"theme": "base"
+		},
+		{
 			"name": "fonts/SAP-icons.woff2",
-			"size": 84504,
+			"size": 110240,
 			"theme": "base"
 		},
 		{
 			"name": "global.less",
-			"size": 78477,
+			"size": 90024,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -174,23 +179,23 @@
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 120647,
+			"size": 139785,
 			"theme": "base"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/core/themes/base/library-parameters.json",
-			"size": 73522,
+			"size": 87808,
 			"theme": "base"
 		},
 		{
 			"name": "library.css",
-			"size": 120634,
+			"size": 139772,
 			"theme": "base"
 		},
 		{
 			"name": "library.less",
-			"size": 31334,
+			"size": 31822,
 			"designtime": true,
 			"theme": "base"
 		},
@@ -202,12 +207,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 22912,
+			"size": 23437,
 			"theme": "base"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 22900,
+			"size": 23425,
 			"theme": "base"
 		},
 		{
@@ -224,7 +229,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 3961
+			"size": 4043
 		},
 		{
 			"name": "shared.less",

@@ -44,7 +44,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Element
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -103,7 +103,8 @@ sap.ui.define([
 				 */
 				children: {
 					type: "sap.ui.dt.Overlay",
-					multiple: true
+					multiple: true,
+					defaultValue: []
 				},
 
 				/**
@@ -508,17 +509,6 @@ sap.ui.define([
 	 */
 	Overlay.prototype.getAssociatedDomRef = function() {
 		throw new Error("This method is abstract and needs to be implemented");
-	};
-
-	/**
-	 * FIXME: backwards compatibility, remove when possible
-	 * Returns an instance of the Element, which is associated with this Overlay
-	 * @return {sap.ui.core.Element} associated Element
-	 * @public
-	 * @deprecated
-	 */
-	Overlay.prototype.getElementInstance = function() {
-		return this.getElement();
 	};
 
 	/**

@@ -17,19 +17,9 @@ sap.ui.define([
 	 *
 	 * @author SAP SE
 	 * @private
-	 * @alias sap.m.flexibility.xConfigHandler
+	 * @alias sap.m.p13n.handler.xConfigHandler
 	 */
     var xConfigHandler = {};
-
-    var fConfigModified = function(oControl) {
-        if (!oControl._bWaitForModificationChanges && oControl.isA) {
-            oControl._bWaitForModificationChanges = true;
-            sap.m.p13n.Engine.getInstance().waitForChanges(oControl).then(function() {
-                delete oControl._bWaitForModificationChanges;
-                sap.m.p13n.Engine.getInstance().fireStateChange(oControl);
-            });
-        }
-	};
 
     var fnQueueChange = function(oControl, fTask) {
 		var fCleanupPromiseQueue = function(pOriginalPromise) {
@@ -43,6 +33,27 @@ sap.ui.define([
 
 		return oControl._pQueue;
 	};
+
+	function fConfigModified(oControl, oChange) {
+
+		if (oControl.isA) {
+			Engine.getInstance().trace(oControl, {
+				selectorElement: oControl,
+				changeSpecificData: {
+					changeType: oChange.getChangeType(),
+					content: oChange.getContent()
+				}
+			});
+
+			if (!oControl._pPendingModification) {
+				oControl._pPendingModification = Engine.getInstance().waitForChanges(oControl).then(function() {
+                    Engine.getInstance().fireStateChange(oControl);
+					Engine.getInstance().clearTrace(oControl);
+					delete oControl._pPendingModification;
+				});
+			}
+		}
+	}
 
     /**
      * Creates a changehandler specific to the provided aggregation and property name,
@@ -71,7 +82,7 @@ sap.ui.define([
                 applyChange: function (oChange, oControl, mPropertyBag) {
 
                     return fnQueueChange(oControl, function(){
-                        return sap.m.p13n.Engine.getInstance().readXConfig(oControl, {
+                        return Engine.getInstance().readXConfig(oControl, {
                             propertyBag: mPropertyBag
                         })
                         .then(function(oPriorAggregationConfig) {
@@ -82,6 +93,20 @@ sap.ui.define([
                             sAffectedAggregation = oChange.getContent().targetAggregation;
 
                             var sOldValue = sOperation !== "add";
+
+                            if (sOperation === "move") {
+                                var aCurrentState = Engine.getInstance().getController(oControl, oChange.getChangeType()).getCurrentState();
+                                var oFound = aCurrentState.find(function(oItem, iIndex){
+                                    if (oItem.key === oChange.getContent().key) {
+                                        return oItem;
+                                    }
+                                });
+                                sOldValue = {
+                                    key: oChange.getContent().key,
+                                    index: aCurrentState.indexOf(oFound),
+                                    targetAggregation: oChange.getContent().targetAggregation
+                                };
+                            }
 
                             if (oPriorAggregationConfig
                                 && oPriorAggregationConfig.aggregations
@@ -111,10 +136,10 @@ sap.ui.define([
                                 };
                             }
 
-                            return sap.m.p13n.Engine.getInstance().enhanceXConfig(oControl, oConfig);
+                            return Engine.getInstance().enhanceXConfig(oControl, oConfig);
                         })
                         .then(function() {
-                            fConfigModified(oControl);
+                            fConfigModified(oControl, oChange);
                         });
 
                     });
@@ -138,7 +163,7 @@ sap.ui.define([
                         property: sAffectedProperty,
                         operation: sOperation,
                         key: oChange.getRevertData().key,
-                        value: oChange.getRevertData(),
+                        value: oChange.getRevertData().value,
                         propertyBag: mPropertyBag
                     };
 
@@ -148,10 +173,10 @@ sap.ui.define([
                         };
                     }
 
-                    return sap.m.p13n.Engine.getInstance().enhanceXConfig(oControl, oConfig)
+                    return Engine.getInstance().enhanceXConfig(oControl, oConfig)
                     .then(function() {
                         oChange.resetRevertData();
-                        fConfigModified(oControl);
+                        fConfigModified(oControl, oChange);
                     });
                 }
             },

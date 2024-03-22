@@ -10,6 +10,7 @@ sap.ui.define([
 	"sap/ui/core/Core",
 	"./library",
 	"sap/ui/core/Control",
+	"sap/ui/core/Element",
 	"sap/m/ToggleButton",
 	"sap/ui/core/InvisibleText",
 	"sap/m/Toolbar",
@@ -21,13 +22,13 @@ sap.ui.define([
 	"sap/ui/Device",
 	"./OverflowToolbarRenderer",
 	"sap/base/Log",
-	"sap/ui/thirdparty/jquery",
 	"sap/ui/dom/jquery/Focusable" // jQuery Plugin "lastFocusableDomRef"
 ], function(
 	coreLibrary,
 	oCore,
 	library,
 	Control,
+	Element,
 	ToggleButton,
 	InvisibleText,
 	Toolbar,
@@ -38,8 +39,7 @@ sap.ui.define([
 	IconPool,
 	Device,
 	OverflowToolbarRenderer,
-	Log,
-	jQuery
+	Log
 ) {
 	"use strict";
 
@@ -129,7 +129,7 @@ sap.ui.define([
 	 * @implements sap.ui.core.Toolbar,sap.m.IBar
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -265,6 +265,7 @@ sap.ui.define([
 	 * @protected
 	 */
 	OverflowToolbar.prototype.enhanceAccessibilityState = function (oElement, mAriaProps) {
+		Toolbar.prototype.enhanceAccessibilityState.apply(this, arguments);
 		if (oElement === this.getAggregation("_overflowButton")) {
 			this._enhanceOverflowButtonAccessibility(mAriaProps);
 		}
@@ -303,6 +304,14 @@ sap.ui.define([
 		return this.setProperty("asyncMode", bValue, true);
 	};
 
+	/**
+	 * Called before the control is rendered
+	 */
+	OverflowToolbar.prototype.onBeforeRendering = function () {
+		if (!this.getDomRef()) {
+			this._bControlsInfoCached = false;
+		}
+	};
 
 	/**
 	 * Called after the control is rendered
@@ -1134,7 +1143,7 @@ sap.ui.define([
 	 */
 	OverflowToolbar.prototype._popOverClosedHandler = function () {
 		this._getOverflowButton().setPressed(false); // Turn off the toggle button
-		if (jQuery(document.activeElement).control(0)) {
+		if (Element.closestTo(document.activeElement)) {
 			return;
 		}
 		this._getOverflowButton().focus();
@@ -1333,7 +1342,7 @@ sap.ui.define([
 			oControl.attachEvent("_change", this._onContentPropertyChangedOverflowToolbar, this);
 
 			// Check if the control implements sap.m.IOverflowToolbarContent interface
-			if (oControl.getMetadata().getInterfaces().indexOf("sap.m.IOverflowToolbarContent") > -1) {
+			if (oControl.isA("sap.m.IOverflowToolbarContent")) {
 				aInvalidationEvents = oControl.getOverflowToolbarConfig().invalidationEvents;
 
 				if (aInvalidationEvents && Array.isArray(aInvalidationEvents)) {
@@ -1358,7 +1367,7 @@ sap.ui.define([
 			oControl.detachEvent("_change", this._onContentPropertyChangedOverflowToolbar, this);
 
 			// Check if the control implements sap.m.IOverflowToolbarContent interface
-			if (oControl.getMetadata().getInterfaces().indexOf("sap.m.IOverflowToolbarContent") > -1) {
+			if (oControl.isA("sap.m.IOverflowToolbarContent")) {
 				aInvalidationEvents = oControl.getOverflowToolbarConfig().invalidationEvents;
 
 				if (aInvalidationEvents && Array.isArray(aInvalidationEvents)) {

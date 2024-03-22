@@ -7,14 +7,14 @@
 sap.ui.define([
 	"sap/ui/mdc/valuehelp/base/ListContent",
 	"sap/ui/mdc/util/loadModules",
-	"sap/ui/mdc/enum/ConditionValidated",
-	"sap/ui/mdc/enum/SelectType",
+	"sap/ui/mdc/enums/ConditionValidated",
+	"sap/ui/mdc/enums/ValueHelpSelectionType",
 	"sap/ui/model/ParseException"
 ], function(
 	ListContent,
 	loadModules,
 	ConditionValidated,
-	SelectType,
+	ValueHelpSelectionType,
 	ParseException
 ) {
 	"use strict";
@@ -26,13 +26,11 @@ sap.ui.define([
 	 * @param {object} [mSettings] Initial settings for the new element
 	 * @class Content for the {@link sap.ui.mdc.valuehelp.base.Container Container} element showing a list with fix values.
 	 * @extends sap.ui.mdc.valuehelp.base.ListContent
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @abstract
-	 * @private
-	 * @ui5-restricted sap.ui.mdc
+	 * @public
 	 * @since 1.95.0
-	 * @experimental As of version 1.95
 	 * @alias sap.ui.mdc.valuehelp.content.FixedList
 	 */
 	var FixedList = ListContent.extend("sap.ui.mdc.valuehelp.content.FixedList", /** @lends sap.ui.mdc.valuehelp.content.FixedList.prototype */
@@ -79,7 +77,7 @@ sap.ui.define([
 				 *
 				 */
 				items: {
-					type: "sap.ui.mdc.field.ListFieldHelpItem",
+					type: "sap.ui.mdc.valuehelp.content.FixedListItem",
 					multiple: true,
 					singularName : "item"
 				}
@@ -184,7 +182,7 @@ sap.ui.define([
 //			this.fireRemoveConditions({conditions: this.getConditions()});
 			_setConditions.call(this, vKey, oItem.getLabel());
 //			this.fireAddConditions({conditions: this.getConditions()});
-			this.fireSelect({type: SelectType.Set, conditions: this.getConditions()});
+			this.fireSelect({type: ValueHelpSelectionType.Set, conditions: this.getConditions()});
 			this.fireConfirm();
 		}
 
@@ -192,7 +190,7 @@ sap.ui.define([
 
 	function _setConditions(vKey, sValue) {
 
-		var oCondition = this._createCondition(vKey, sValue);
+		var oCondition = this.createCondition(vKey, sValue);
 		this.setProperty("conditions", [oCondition], true);
 
 		return oCondition;
@@ -220,9 +218,10 @@ sap.ui.define([
 			this._iNavigateIndex = -1;
 		}
 		var oList = _getList.call(this);
+		var oListBinding = this.getListBinding();
+
 		if (oList) {
-			var oBinding = oList.getBinding("items");
-			oBinding.update();
+			oListBinding.update();
 			oList.updateItems();
 			oList.invalidate();
 			_updateSelection.call(this); // to update selection
@@ -278,7 +277,7 @@ sap.ui.define([
 		}
 	}
 
-	// returns ListFieldHelp item for inner list item
+	// returns FixedList item for inner list item
 	function _getOriginalItem(oItem) {
 
 		var sPath = oItem.getBindingContextPath();
@@ -355,12 +354,13 @@ sap.ui.define([
 		return true;
 	};
 
-	FixedList.prototype._handleConditionsUpdate = function(oChanges) {
+	FixedList.prototype.handleConditionsUpdate = function(oChanges) {
 		_updateSelection.call(this);
 	};
 
-	FixedList.prototype._handleFilterValueUpdate = function(oChanges) {
+	FixedList.prototype.handleFilterValueUpdate = function(oChanges) {
 		_updateFilter.call(this);
+		ListContent.prototype.handleFilterValueUpdate.apply(this, arguments);
 	};
 
 	FixedList.prototype.removeFocus = function() {
@@ -550,7 +550,7 @@ sap.ui.define([
 
 	};
 
-	FixedList.prototype._isSingleSelect = function (oEvent) {
+	FixedList.prototype.isSingleSelect = function (oEvent) {
 
 		return true;
 
@@ -558,7 +558,7 @@ sap.ui.define([
 
 	FixedList.prototype.shouldOpenOnNavigate = function() {
 
-		return !ListContent.prototype._isSingleSelect.apply(this);
+		return !ListContent.prototype.isSingleSelect.apply(this);
 
 	};
 
@@ -572,6 +572,11 @@ sap.ui.define([
 
 		this._iNavigateIndex = -1; // initially nothing is navigated
 
+	};
+
+	FixedList.prototype.getListBinding = function () {
+		var oList = _getList.call(this);
+		return oList && oList.getBinding("items");
 	};
 
 	return FixedList;

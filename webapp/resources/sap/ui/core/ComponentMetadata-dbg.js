@@ -25,11 +25,13 @@ sap.ui.define([
 	 *
 	 * @param {string} sClassName Fully qualified name of the class that is described by this metadata object
 	 * @param {object} oClassInfo Static info to construct the metadata from
+	 * @param {sap.ui.core.Component.MetadataOptions} [oClassInfo.metadata]
+	 *  The metadata object describing the class
 	 *
 	 * @public
 	 * @class
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.9.2
 	 * @alias sap.ui.core.ComponentMetadata
 	 * @extends sap.ui.base.ManagedObjectMetadata

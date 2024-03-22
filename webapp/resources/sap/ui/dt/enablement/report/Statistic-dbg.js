@@ -33,7 +33,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -90,6 +90,7 @@ sap.ui.define([
 		_createForm: function() {
 			var oForm = new SimpleForm(this.getId() + "--form", {
 				editable: false,
+				layout: "ResponsiveGridLayout",
 				title: "Statistics",
 				content: [
 					new Label(this.getId() + "--form-supported-label", {text: "Supported"}),

@@ -12,10 +12,13 @@ sap.ui.define([
 	"./library",
 	"./dnd/GridKeyboardDragAndDrop",
 	"sap/base/strings/capitalize",
+	'sap/ui/core/delegate/ItemNavigation',
 	"sap/ui/base/ManagedObjectObserver",
 	"sap/ui/core/Control",
 	"sap/ui/core/Core",
+	"sap/ui/core/Element",
 	"sap/ui/core/ResizeHandler",
+	"sap/ui/core/InvisibleMessage",
 	"sap/ui/Device",
 	"sap/ui/events/KeyCodes",
 	"sap/ui/thirdparty/jquery"
@@ -28,10 +31,13 @@ sap.ui.define([
 	library,
 	GridKeyboardDragAndDrop,
 	capitalize,
+	ItemNavigation,
 	ManagedObjectObserver,
 	Control,
 	Core,
+	Element,
 	ResizeHandler,
+	InvisibleMessage,
 	Device,
 	KeyCodes,
 	jQuery
@@ -165,7 +171,7 @@ sap.ui.define([
 	 * @see {@link sap.f.dnd.GridDropInfo}
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @extends sap.ui.core.Control
 	 *
@@ -407,18 +413,27 @@ sap.ui.define([
 		oContainer._setItemNavigationItems();
 
 		oContainer._applyItemAutoRows(this);
+	};
 
-		if (this.getAriaRoleDescription) {
-			var oListItemDomRef = this.getDomRef().parentElement,
-				sAriaRoleDesc = this.getAriaRoleDescription();
+	GridContainer.prototype._onItemWrapperFocusIn = function (oEvent) {
+		var oFocusedDomRef = this._oItemNavigation.getFocusedDomRef(),
+			oControl,
+			sAccText;
 
-			if (oListItemDomRef.classList.contains("sapFGridContainerItemWrapper")) {
-				if (sAriaRoleDesc) {
-					oListItemDomRef.setAttribute("aria-roledescription", sAriaRoleDesc);
-				} else {
-					oListItemDomRef.removeAttribute("aria-roledescription");
-				}
-			}
+		if (!oFocusedDomRef || !oFocusedDomRef.firstChild) {
+			return;
+		}
+
+		oControl = Element.closestTo(oFocusedDomRef.firstChild);
+
+		if (!oControl || !oControl.getAriaRoleDescription) {
+			return;
+		}
+
+		// announce the aria role description text, if any
+		sAccText = oControl.getAriaRoleDescription();
+		if (sAccText) {
+			InvisibleMessage.getInstance().announce(sAccText);
 		}
 	};
 
@@ -499,7 +514,9 @@ sap.ui.define([
 					sapnext : ["alt", "meta", "ctrl"],
 					sapprevious : ["alt", "meta", "ctrl"]
 				})
-				.setFocusedIndex(0);
+				.setTableMode(true, true)
+				.setFocusedIndex(0)
+				.attachEvent(ItemNavigation.Events.AfterFocus, this._onItemWrapperFocusIn.bind(this));
 
 			that.addDelegate(this._oItemNavigation);
 		}
@@ -633,7 +650,7 @@ sap.ui.define([
 	/**
 	 * Inserts an item into the aggregation named <code>items</code>.
 	 *
-	 * @param {sap.ui.core.Item} oItem The item to be inserted; if empty, nothing is inserted.
+	 * @param {sap.ui.core.Control} oItem The item to be inserted; if empty, nothing is inserted.
 	 * @param {int} iIndex The <code>0</code>-based index the item should be inserted at; for
 	 *             a negative value of <code>iIndex</code>, the item is inserted at position 0; for a value
 	 *             greater than the current size of the aggregation, the item is inserted at the last position.
@@ -669,7 +686,7 @@ sap.ui.define([
 	/**
 	 * Removes an item from the aggregation named <code>items</code>.
 	 *
-	 * @param {int | string | sap.ui.core.Item} vItem The item to remove or its index or ID.
+	 * @param {int | string | sap.ui.core.Control} vItem The item to remove or its index or ID.
 	 * @returns {sap.ui.core.Control|null} The removed item or <code>null</code>.
 	 * @public
 	 */
@@ -700,6 +717,9 @@ sap.ui.define([
 		if (resizeListenerId) {
 			ResizeHandler.deregister(resizeListenerId);
 		}
+
+		// init the InvisibleMessage
+		InvisibleMessage.getInstance();
 
 		this._isRenderingFinished = false;
 		this._lastGridWidth = null;
@@ -946,6 +966,7 @@ sap.ui.define([
 			mStyles = mStylesInfo.styles,
 			aClasses = mStylesInfo.classes,
 			oWrapper = document.createElement("div");
+			oWrapper.setAttribute("id", GridContainerRenderer.generateWrapperId(oItem, this));
 			oWrapper.setAttribute("tabindex", "0");
 
 		mStyles.forEach(function (sValue, sKey) {
@@ -984,11 +1005,11 @@ sap.ui.define([
 				oEvent.preventDefault();
 			}
 
-			var oItem = jQuery(oEvent.target.firstChild).control()[0];
+			var oItem = Element.closestTo(oEvent.target.firstChild);
 
 			if (oItem) {
 				var oFocusDomRef = oItem.getFocusDomRef(),
-				oFocusControl = jQuery(oFocusDomRef).control()[0];
+				oFocusControl = Element.closestTo(oFocusDomRef);
 
 				if (oFocusControl && oFocusControl[sName]) {
 					oFocusControl[sName].call(oFocusControl, oEvent);
@@ -1008,9 +1029,12 @@ sap.ui.define([
 
 		if (mOwnVisualFocusControls[sName] && mOwnVisualFocusControls[sName](oControl)) {
 			oFocusDomRef = oControl.getFocusDomRef();
+
 			// remove the focus DOM ref from the tab chain
-			oFocusDomRef.setAttribute("tabindex", -1);
-			oFocusDomRef.tabIndex = -1;
+			if (oFocusDomRef.getAttribute("tabindex") === "0") {
+				oFocusDomRef.setAttribute("tabindex", -1);
+				oFocusDomRef.tabIndex = -1;
+			}
 			GridContainerUtils.getItemWrapper(oControl).classList.add("sapFGridContainerItemWrapperNoVisualFocus");
 		}
 	};
@@ -1029,7 +1053,7 @@ sap.ui.define([
 			return;
 		}
 
-		var oItem = jQuery(oEvent.target.firstElementChild).control(0),
+		var oItem = Element.closestTo(oEvent.target.firstElementChild),
 			iLength = this.getItems().length,
 			iItemIndex = this.indexOfItem(oItem),
 			iInsertAt = -1,

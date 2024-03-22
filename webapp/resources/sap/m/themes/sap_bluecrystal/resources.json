@@ -230,7 +230,7 @@
 		},
 		{
 			"name": "Panel.less",
-			"size": 897,
+			"size": 918,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
@@ -428,7 +428,7 @@
 		},
 		{
 			"name": "Toolbar.less",
-			"size": 436,
+			"size": 444,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
@@ -470,18 +470,18 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 47596,
+			"size": 48669,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 190355,
+			"size": 217942,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 189985,
+			"size": 217572,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
@@ -497,23 +497,23 @@
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 701768,
+			"size": 714319,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/m/themes/sap_bluecrystal/library-parameters.json",
-			"size": 20069,
+			"size": 20568,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library.css",
-			"size": 701757,
+			"size": 714310,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library.less",
-			"size": 85320,
+			"size": 85349,
 			"designtime": true,
 			"theme": "sap_bluecrystal"
 		},
@@ -525,12 +525,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 749348,
+			"size": 763040,
 			"theme": "sap_bluecrystal"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 749337,
+			"size": 763031,
 			"theme": "sap_bluecrystal"
 		},
 		{

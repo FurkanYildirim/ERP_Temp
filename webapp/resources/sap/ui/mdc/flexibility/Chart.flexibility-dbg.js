@@ -12,7 +12,7 @@ sap.ui.define([
 	 *
 	 * @alias sap.ui.mdc.flexibility.Chart
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	return {
 		addItem: ChartItemFlex.addItem,

@@ -12,7 +12,6 @@ sap.ui.define([
 	"sap/base/util/restricted/_merge",
 	"sap/base/util/restricted/_omit",
 	"sap/base/util/isPlainObject",
-	"sap/base/util/includes",
 	"sap/base/strings/formatMessage"
 ], function (
 	BasePropertyEditor,
@@ -23,7 +22,6 @@ sap.ui.define([
 	_merge,
 	_omit,
 	isPlainObject,
-	includes,
 	formatMessage
 ) {
 	"use strict";
@@ -96,7 +94,7 @@ sap.ui.define([
 	 * @alias sap.ui.integration.designtime.baseEditor.propertyEditor.mapEditor.MapEditor
 	 * @author SAP SE
 	 * @since 1.74
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @experimental 1.74
@@ -212,7 +210,7 @@ sap.ui.define([
 		 */
 		_isValidItem: function(oItem) {
 			var sType = oItem.value.type;
-			return sType && includes(this._getAllowedTypes(), sType);
+			return sType && this._getAllowedTypes().includes(sType);
 		},
 
 		_getDefaultType: function (vValue) {
@@ -223,8 +221,8 @@ sap.ui.define([
 
 			var aAllowedTypes = this._getAllowedTypes();
 			var sType = typeof vValue;
-			var sChosenType = includes(aAllowedTypes, sType) ? sType : undefined;
-			if (!sChosenType && includes(aAllowedTypes, "string")) {
+			var sChosenType = aAllowedTypes.includes(sType) ? sType : undefined;
+			if (!sChosenType && aAllowedTypes.includes("string")) {
 				sChosenType = "string";
 			}
 			return sChosenType;
@@ -319,7 +317,7 @@ sap.ui.define([
 					label: this.getI18nProperty("BASE_EDITOR.MAP.VALUE"),
 					path: "value",
 					value: vValue,
-					type: sType && includes(this._getAllowedTypes(), sType) ? sType : this._getDefaultType(vValue),
+					type: sType && this._getAllowedTypes().includes(sType) ? sType : this._getDefaultType(vValue),
 					visible: sType !== "group" && sType !== "separator",
 					itemKey: sKey,
 					designtime: (oDesigntime || {}).value

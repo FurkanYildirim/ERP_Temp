@@ -4,19 +4,21 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
+	"sap/ui/core/Core",
+	"sap/ui/core/util/reflection/JsControlTreeModifier",
+	"sap/ui/fl/Utils",
+	"sap/ui/fl/write/api/ContextSharingAPI",
 	"sap/ui/rta/command/BaseCommand",
 	"sap/ui/rta/library",
-	"sap/ui/core/util/reflection/JsControlTreeModifier",
-	"sap/ui/rta/Utils",
-	"sap/ui/fl/Utils",
-	"sap/ui/fl/write/api/ContextSharingAPI"
+	"sap/ui/rta/Utils"
 ], function(
+	Core,
+	JsControlTreeModifier,
+	flUtils,
+	ContextSharingAPI,
 	BaseCommand,
 	rtaLibrary,
-	JsControlTreeModifier,
-	rtaUtils,
-	flUtils,
-	ContextSharingAPI
+	rtaUtils
 ) {
 	"use strict";
 
@@ -26,7 +28,7 @@ sap.ui.define([
 	 * @class
 	 * @extends sap.ui.rta.command.BaseCommand
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.86
@@ -64,6 +66,8 @@ sap.ui.define([
 		this.oModel = this.getModel();
 		this.setSourceDefaultVariant(this.oModel.getData()[this.sVariantManagementReference].defaultVariant);
 		this.sLayer = mFlexSettings.layer;
+		var mComponentPropertyBag = mFlexSettings;
+		mComponentPropertyBag.variantManagementControl = this.oVariantManagementControl;
 
 		function storeEventParameters(oEvent, oArgs) {
 			var mParameters = oEvent.getParameters();
@@ -82,7 +86,7 @@ sap.ui.define([
 			this.oVariantManagementControl.attachSave({resolve: resolve}, storeEventParameters, this);
 			this.oVariantManagementControl.attachCancel({resolve: resolve}, handleCancel, this);
 			this.oVariantManagementControl.openSaveAsDialogForKeyUser(rtaUtils.getRtaStyleClassName(),
-				ContextSharingAPI.createComponent(mFlexSettings));
+				ContextSharingAPI.createComponent(mComponentPropertyBag));
 		}.bind(this))
 			.then(function(bState) {
 				return bState;
@@ -115,12 +119,10 @@ sap.ui.define([
 				this.sNewVariantReference = this._oVariantChange.getId();
 				this._aPreparedChanges.forEach(function(oChange) {
 					if (oChange.getFileType() === "change") {
-						oChange.assignedToVariant = true;
+						oChange.setSavedToVariant(true);
 					}
 				});
-				// Assigning changes to the variant might have an impact on the modified state
-				// Call the check again to make sure it is up to date
-				this.getModel().checkDirtyStateForControlModels([this.sVariantManagementReference]);
+				this.getModel().invalidateMap();
 			}.bind(this));
 	};
 
@@ -133,7 +135,7 @@ sap.ui.define([
 		if (this._oVariantChange) {
 			this._aPreparedChanges.forEach(function(oChange) {
 				if (oChange.getFileType() === "ctrl_variant_management_change") {
-					this.oModel.oFlexController.deleteChange(oChange, this.oAppComponent);
+					this.oModel.oFlexController.deleteChange(oChange);
 				}
 			}.bind(this));
 
@@ -146,16 +148,11 @@ sap.ui.define([
 
 			return this.oModel.removeVariant(mPropertyBag, true)
 				.then(function() {
-					this._aControlChanges.forEach(function(oChange) {
-						this.oModel.oFlexController.addPreparedChange(oChange, this.oAppComponent);
-						var oControl = sap.ui.getCore().byId(JsControlTreeModifier.getControlIdBySelector(oChange.getSelector(), this.oAppComponent));
-						this.oModel.oFlexController.applyChange(oChange, oControl);
-					}.bind(this));
-					this.oModel.getData()[this.sVariantManagementReference].defaultVariant = this.getSourceDefaultVariant();
-					this.oModel.getData()[this.sVariantManagementReference].originalDefaultVariant = this.getSourceDefaultVariant();
+					return this.oModel.addAndApplyChangesOnVariant(this._aControlChanges);
+				}.bind(this))
+				.then(function() {
 					this._aPreparedChanges = null;
 					this._oVariantChange = null;
-					this.getModel().checkUpdate(true);
 				}.bind(this));
 		}
 		return Promise.resolve();

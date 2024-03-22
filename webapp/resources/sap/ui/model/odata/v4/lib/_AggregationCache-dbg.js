@@ -41,6 +41,8 @@ sap.ui.define([
 	 *   Whether a grand total is needed
 	 *
 	 * @alias sap.ui.model.odata.v4.lib._AggregationCache
+	 * @borrows sap.ui.model.odata.v4.lib._CollectionCache#addKeptElement as #addKeptElement
+	 * @borrows sap.ui.model.odata.v4.lib._CollectionCache#requestSideEffects as #requestSideEffects
 	 * @constructor
 	 * @extends sap.ui.model.odata.v4.lib._Cache
 	 * @private
@@ -49,30 +51,38 @@ sap.ui.define([
 			bHasGrandTotal) {
 		var fnCount = function () {}, // no specific handling needed for "UI5__count" here
 			fnLeaves = null,
+			fnResolve,
 			that = this;
 
 		_Cache.call(this, oRequestor, sResourcePath, mQueryOptions, true);
 
 		this.oAggregation = oAggregation;
-		this.sDownloadUrl = oAggregation.hierarchyQualifier
-			? "n/a"
-			: _Cache.prototype.getDownloadUrl.call(this, "");
+		this.sDownloadUrl = _Cache.prototype.getDownloadUrl.call(this, "");
 		this.aElements = [];
 		this.aElements.$byPredicate = {};
 		this.aElements.$count = undefined;
 		this.aElements.$created = 0; // required for _Cache#drillDown (see _Cache.from$skip)
-		this.oLeavesPromise = undefined;
-		if (mQueryOptions.$count && oAggregation.groupLevels.length) {
-			mQueryOptions.$$leaves = true; // do this after #getDownloadUrl
-			this.oLeavesPromise = new SyncPromise(function (resolve) {
-				fnLeaves = function (oLeaves) {
-					// Note: count is of type Edm.Int64, represented as a string in OData responses;
-					// $count should be a number and the loss of precision is acceptable
-					resolve(parseInt(oLeaves.UI5__leaves));
-				};
-			});
+		this.oCountPromise = undefined;
+		if (mQueryOptions.$count) {
+			if (oAggregation.hierarchyQualifier) {
+				this.oCountPromise = new SyncPromise(function (resolve) {
+					fnResolve = resolve;
+				});
+				this.oCountPromise.$resolve = fnResolve;
+			} else if (oAggregation.groupLevels.length) {
+				mQueryOptions.$$leaves = true; // do this after #getDownloadUrl
+				this.oCountPromise = new SyncPromise(function (resolve) {
+					fnLeaves = function (oLeaves) {
+						// Note: count has type Edm.Int64, represented as string in OData responses;
+						// $count should be a number and the loss of precision is acceptable
+						resolve(parseInt(oLeaves.UI5__leaves));
+					};
+				});
+			}
 		}
 		this.oFirstLevel = this.createGroupLevelCache(null, bHasGrandTotal || !!fnLeaves);
+		this.addKeptElement = this.oFirstLevel.addKeptElement; // @borrows ...
+		this.requestSideEffects = this.oFirstLevel.requestSideEffects; // @borrows ...
 		this.oGrandTotalPromise = undefined;
 		if (bHasGrandTotal) {
 			this.oGrandTotalPromise = new SyncPromise(function (resolve) {
@@ -123,40 +133,54 @@ sap.ui.define([
 	 *   level cache is given
 	 * @throws {Error}
 	 *   In case an unexpected element or placeholder would be overwritten, if the given offset is
-	 *   negative, if a resulting array index is out of bounds, or in case of a duplicate predicate
+	 *   negative, if a resulting array index is out of bounds, in case of a duplicate predicate, or
+	 *   if a kept-alive element has been modified on both client and server
 	 *
 	 * @private
 	 */
 	_AggregationCache.prototype.addElements = function (vReadElements, iOffset, oCache, iStart) {
-		var aElements = this.aElements;
+		var aElements = this.aElements,
+			sHierarchyQualifier = this.oAggregation.hierarchyQualifier,
+			sNodeProperty = this.oAggregation.$NodeProperty,
+			that = this;
 
 		function addElement(oElement, i) {
 			var oOldElement = aElements[iOffset + i],
-				oParent,
+				oKeptElement,
 				sPredicate = _Helper.getPrivateAnnotation(oElement, "predicate");
 
 			if (oOldElement) { // check before overwriting
 				if (oOldElement === oElement) {
 					return;
 				}
-				oParent = _Helper.getPrivateAnnotation(oOldElement, "parent");
-				if (!oParent) {
-					throw new Error("Unexpected element");
-				}
-				if (oParent !== oCache
-						|| _Helper.getPrivateAnnotation(oOldElement, "index") !== iStart + i) {
-					throw new Error("Wrong placeholder");
-				}
+				_AggregationHelper.beforeOverwritePlaceholder(oOldElement, oElement, oCache,
+					iStart + i, sNodeProperty);
 			} else if (iOffset + i >= aElements.length) {
 				throw new Error("Array index out of bounds: " + (iOffset + i));
 			}
-			if (sPredicate in aElements.$byPredicate
-					&& aElements.$byPredicate[sPredicate] !== oElement) {
-				throw new Error("Duplicate predicate: " + sPredicate);
+			oKeptElement = aElements.$byPredicate[sPredicate];
+			if (oKeptElement && oKeptElement !== oElement
+					&& !(oKeptElement instanceof SyncPromise)) {
+				if (!sHierarchyQualifier) {
+					throw new Error("Duplicate predicate: " + sPredicate);
+				}
+				if (!oKeptElement["@odata.etag"]
+						|| oElement["@odata.etag"] === oKeptElement["@odata.etag"]) {
+					// no ETag used or known yet, or ETag unchanged
+					_Helper.updateNonExisting(oElement, oKeptElement);
+				} else if (that.hasPendingChangesForPath(sPredicate)) {
+					throw new Error("Modified on client and on server: "
+						+ that.sResourcePath + sPredicate);
+				} // else: ETag changed, ignore kept element!
 			}
 
-			aElements[iOffset + i] = oElement;
-			aElements.$byPredicate[sPredicate] = oElement;
+			aElements.$byPredicate[sPredicate] = aElements[iOffset + i] = oElement;
+
+			if (oCache) {
+				// remember index & parent for #requestSideEffects
+				_Helper.setPrivateAnnotation(oElement, "index", iStart + i);
+				_Helper.setPrivateAnnotation(oElement, "parent", oCache);
+			}
 		}
 
 		if (iOffset < 0) {
@@ -167,6 +191,43 @@ sap.ui.define([
 		} else {
 			addElement(vReadElements, 0);
 		}
+	};
+
+	/**
+	 * Deletes the "$apply" system query option before side effects are requested and adds the
+	 * NodeProperty path to the "$select" system query option (if not already present).
+	 *
+	 * @param {object} mQueryOptions
+	 *   A modifiable map of key-value pairs representing the query string
+	 * @throws {Error}
+	 *   If no recursive hierarchy is used
+	 *
+	 * @see sap.ui.model.odata.v4.lib._CollectionCache#requestSideEffects
+	 */
+	_AggregationCache.prototype.beforeRequestSideEffects = function (mQueryOptions) {
+		if (!this.oAggregation.hierarchyQualifier) {
+			throw new Error("Missing recursive hierarchy");
+		}
+		delete mQueryOptions.$apply;
+		if (!mQueryOptions.$select.includes(this.oAggregation.$NodeProperty)) {
+			mQueryOptions.$select.push(this.oAggregation.$NodeProperty);
+		}
+	};
+
+	/**
+	 * Before trying to update the element with the given key predicate with the given new value
+	 * via {@link sap.ui.model.odata.v4.lib._Helper.updateSelected} (which might fail due to key
+	 * predicate checks), checks that the NodeProperty ("the hierarchy node value") has not changed.
+	 *
+	 * @param {string} sPredicate - A key predicate
+	 * @param {object} oNewValue - The new value, which usually just contains parts of the old
+	 * @throws {Error} In case of a structural change
+	 *
+	 * @see sap.ui.model.odata.v4.lib._CollectionCache#requestSideEffects
+	 */
+	_AggregationCache.prototype.beforeUpdateSelected = function (sPredicate, oNewValue) {
+		_AggregationHelper.checkNodeProperty(this.aElements.$byPredicate[sPredicate], oNewValue,
+			this.oAggregation.$NodeProperty, true);
 	};
 
 	/**
@@ -195,20 +256,26 @@ sap.ui.define([
 			iCount += 1;
 		}
 
-		oCollapsed = _Helper.getPrivateAnnotation(oGroupNode, "collapsed");
+		oCollapsed = _AggregationHelper.getCollapsedObject(oGroupNode);
 		_Helper.updateAll(this.mChangeListeners, sGroupNodePath, oGroupNode, oCollapsed);
 
 		iDescendants = _Helper.getPrivateAnnotation(oGroupNode, "descendants");
 		if (iDescendants) { // => this.oAggregation.expandTo > 1
+			// Note: "descendants" refers to LimitedDescendantCountProperty and counts descendants
+			// within "top pyramid" only!
 			iGroupNodeLevel = this.oAggregation.expandTo;
 		}
 		while (i < aElements.length) {
 			if (aElements[i]["@$ui5.node.level"] <= iGroupNodeLevel) {
-				// Note: level 1 is used for placeholders of 1st level cache!
+				// Note: level 0 or 1 is used for initial placeholders of 1st level cache!
 				if (!iDescendants) {
 					break; // we've reached a sibling of the collapsed node
 				}
 				iDescendants -= 1;
+				if (aElements[i]["@$ui5.node.isExpanded"] === false) {
+					// skip descendants of manually collapsed node
+					iDescendants -= _Helper.getPrivateAnnotation(aElements[i], "descendants") || 0;
+				}
 			}
 			collapse(i);
 			i += 1;
@@ -275,7 +342,7 @@ sap.ui.define([
 		mQueryOptions.$count = true;
 		oCache = _Cache.create(this.oRequestor, this.sResourcePath, mQueryOptions, true);
 		oCache.calculateKeyPredicate = oAggregation.hierarchyQualifier
-			? _AggregationCache.calculateKeyPredicateRH.bind(null, oGroupNode)
+			? _AggregationCache.calculateKeyPredicateRH.bind(null, oGroupNode, oAggregation)
 			: _AggregationCache.calculateKeyPredicate.bind(null, oGroupNode, aGroupBy,
 				aAllProperties, bLeaf, bTotal);
 
@@ -290,13 +357,16 @@ sap.ui.define([
 	 * @param {object|string} vGroupNodeOrPath
 	 *   The group node or its path relative to the cache; a group node instance (instead of a path)
 	 *   MUST only be given in case of "expanding" continued
+	 * @param {function} [fnDataRequested]
+	 *   The function is called just before the back-end request is sent.
+	 *   If no back-end request is needed, the function is not called.
 	 * @returns {sap.ui.base.SyncPromise<number>}
 	 *   A promise that is resolved with the number of nodes at the next level
 	 *
 	 * @public
 	 * @see #collapse
 	 */
-	_AggregationCache.prototype.expand = function (oGroupLock, vGroupNodeOrPath) {
+	_AggregationCache.prototype.expand = function (oGroupLock, vGroupNodeOrPath, fnDataRequested) {
 		var oCache,
 			iCount,
 			aElements = this.aElements,
@@ -305,6 +375,7 @@ sap.ui.define([
 				: vGroupNodeOrPath,
 			iIndex,
 			aSpliced = _Helper.getPrivateAnnotation(oGroupNode, "spliced"),
+			bStale,
 			that = this;
 
 		if (vGroupNodeOrPath !== oGroupNode) {
@@ -315,6 +386,7 @@ sap.ui.define([
 
 		if (aSpliced) {
 			_Helper.deletePrivateAnnotation(oGroupNode, "spliced");
+			bStale = aSpliced.$stale;
 
 			iIndex = aElements.indexOf(oGroupNode) + 1;
 			// insert aSpliced at iIndex
@@ -326,17 +398,18 @@ sap.ui.define([
 			aSpliced.forEach(function (oElement) {
 				var sPredicate = _Helper.getPrivateAnnotation(oElement, "predicate");
 
-				if (sPredicate) {
-					that.aElements.$byPredicate[sPredicate] = oElement;
-					if (_Helper.hasPrivateAnnotation(oElement, "expanding")) {
-						_Helper.deletePrivateAnnotation(oElement, "expanding");
-						iCount += that.expand(_GroupLock.$cached, oElement).getResult();
+				if (!_Helper.hasPrivateAnnotation(oElement, "placeholder")) {
+					if (bStale) {
+						that.turnIntoPlaceholder(oElement, sPredicate);
+					} else {
+						that.aElements.$byPredicate[sPredicate] = oElement;
+						if (_Helper.hasPrivateAnnotation(oElement, "expanding")) {
+							_Helper.deletePrivateAnnotation(oElement, "expanding");
+							iCount += that.expand(_GroupLock.$cached, oElement).getResult();
+						}
 					}
 				}
 			});
-			_Helper.updateAll(that.mChangeListeners, vGroupNodeOrPath, oGroupNode,
-				{"@$ui5.node.groupLevelCount" :
-					_Helper.getPrivateAnnotation(oGroupNode, "groupLevelCount")});
 			return SyncPromise.resolve(iCount);
 		}
 
@@ -347,10 +420,12 @@ sap.ui.define([
 		}
 
 		// prefetch from the group level cache
-		return oCache.read(0, this.iReadLength, 0, oGroupLock).then(function (oResult) {
+		return oCache.read(
+			0, this.iReadLength, 0, oGroupLock, fnDataRequested
+		).then(function (oResult) {
 			var iIndex = that.aElements.indexOf(oGroupNode) + 1,
 				iLevel = oGroupNode["@$ui5.node.level"],
-				oSubtotals = _Helper.getPrivateAnnotation(oGroupNode, "collapsed"),
+				oSubtotals = _AggregationHelper.getCollapsedObject(oGroupNode),
 				// Note: there is at least one key for "@$ui5.node.isExpanded"; there are more keys
 				// if and only if subtotals are actually being requested and only or also shown at
 				// bottom
@@ -369,6 +444,10 @@ sap.ui.define([
 			}
 
 			iCount = oResult.value.$count;
+			if (_Helper.hasPrivateAnnotation(oGroupNode, "groupLevelCount")
+				&& _Helper.getPrivateAnnotation(oGroupNode, "groupLevelCount") !== iCount) {
+				throw new Error("Unexpected structural change: groupLevelCount");
+			}
 			_Helper.setPrivateAnnotation(oGroupNode, "groupLevelCount", iCount);
 			_Helper.updateAll(that.mChangeListeners, vGroupNodeOrPath, oGroupNode,
 				{"@$ui5.node.groupLevelCount" : iCount});
@@ -406,7 +485,7 @@ sap.ui.define([
 		}, function (oError) {
 			// Note: typeof vGroupNodeOrPath === "string"
 			_Helper.updateAll(that.mChangeListeners, vGroupNodeOrPath, oGroupNode,
-				_Helper.getPrivateAnnotation(oGroupNode, "collapsed"));
+				_AggregationHelper.getCollapsedObject(oGroupNode));
 
 			throw oError;
 		});
@@ -437,9 +516,11 @@ sap.ui.define([
 	 */
 	_AggregationCache.prototype.fetchValue = function (oGroupLock, sPath, fnDataRequested,
 			oListener) {
+		var that = this;
+
 		if (sPath === "$count") {
-			if (this.oLeavesPromise) {
-				return this.oLeavesPromise;
+			if (this.oCountPromise) {
+				return this.oCountPromise;
 			}
 			if (this.oAggregation.hierarchyQualifier || this.oAggregation.groupLevels.length) {
 				Log.error("Failed to drill-down into $count, invalid segment: $count",
@@ -451,9 +532,12 @@ sap.ui.define([
 			return this.oFirstLevel.fetchValue(oGroupLock, sPath, fnDataRequested, oListener);
 		}
 
-		this.registerChangeListener(sPath, oListener);
+		return SyncPromise.resolve(this.aElements.$byPredicate[sPath.split("/")[0]])
+			.then(function () {
+				that.registerChangeListener(sPath, oListener);
 
-		return this.drillDown(this.aElements, sPath, oGroupLock);
+				return that.drillDown(that.aElements, sPath, oGroupLock);
+			});
 	};
 
 	/**
@@ -476,7 +560,7 @@ sap.ui.define([
 		}
 
 		aAllElements = this.aElements.map(function (oElement) {
-			return _Helper.hasPrivateAnnotation(oElement, "parent") ? undefined : oElement;
+			return _Helper.hasPrivateAnnotation(oElement, "placeholder") ? undefined : oElement;
 		});
 		aAllElements.$count = this.aElements.$count;
 
@@ -503,9 +587,16 @@ sap.ui.define([
 	 * @see sap.ui.model.odata.v4.lib._Cache#getDownloadQueryOptions
 	 */
 	_AggregationCache.prototype.getDownloadQueryOptions = function (mQueryOptions) {
-		return _AggregationHelper.buildApply(this.oAggregation,
-			_AggregationHelper.filterOrderby(mQueryOptions, this.oAggregation),
-			0, true);
+		if (this.oAggregation.hierarchyQualifier) {
+			if ("$count" in mQueryOptions) {
+				mQueryOptions = Object.assign({}, mQueryOptions); // shallow clone
+				delete mQueryOptions.$count;
+			}
+		} else {
+			mQueryOptions = _AggregationHelper.filterOrderby(mQueryOptions, this.oAggregation);
+		}
+
+		return _AggregationHelper.buildApply(this.oAggregation, mQueryOptions, 0, true);
 	};
 
 	/**
@@ -517,6 +608,61 @@ sap.ui.define([
 	};
 
 	/**
+	 * @override
+	 * @see sap.ui.model.odata.v4.lib._Cache#getValue
+	 */
+	_AggregationCache.prototype.getValue = function (sPath) {
+		var oSyncPromise;
+
+		oSyncPromise = this.fetchValue(_GroupLock.$cached, sPath);
+		if (oSyncPromise.isFulfilled()) {
+			return oSyncPromise.getResult();
+		}
+		oSyncPromise.caught();
+	};
+
+	/**
+	 * @override
+	 * @see sap.ui.model.odata.v4.lib._Cache#isDeletingInOtherGroup
+	 */
+	_AggregationCache.prototype.isDeletingInOtherGroup = function (_sGroupId) {
+		return false;
+	};
+
+	/**
+	 * Determines the list of elements determined by the given predicates. All other elements are
+	 * turned into placeholders (lazily).
+	 *
+	 * @param {string[]} aPredicates
+	 *   The key predicates of the elements to request side effects for
+	 * @returns {object[]}
+	 *   The list of elements for the given predicates
+	 *
+	 * @private
+	 * @see sap.ui.model.odata.v4.lib._CollectionCache#keepOnlyGivenElements
+	 * @see sap.ui.model.odata.v4.lib._CollectionCache#requestSideEffects
+	 */
+	_AggregationCache.prototype.keepOnlyGivenElements = function (aPredicates) {
+		var mPredicates = {}, // a set of the predicates (as map to true) to speed up the search
+			that = this;
+
+		aPredicates.forEach(function (sPredicate) {
+			mPredicates[sPredicate] = true;
+		});
+
+		return this.aElements.filter(function (oElement) {
+			var sPredicate = _Helper.getPrivateAnnotation(oElement, "predicate");
+
+			if (mPredicates[sPredicate]) {
+				_AggregationHelper.markSplicedStale(oElement);
+				return true; // keep and request
+			}
+
+			that.turnIntoPlaceholder(oElement, sPredicate);
+		});
+	};
+
+	/**
 	 * Returns a promise to be resolved with an OData object for a range of the requested data.
 	 *
 	 * @param {number} iIndex
@@ -525,11 +671,7 @@ sap.ui.define([
 	 *   The length of the range; <code>Infinity</code> is supported
 	 * @param {number} iPrefetchLength
 	 *   The number of rows to read before and after the given range; with this it is possible to
-	 *   prefetch data for a paged access. The cache ensures that at least half the prefetch length
-	 *   is available left and right of the requested range without a further request. If data is
-	 *   missing on one side, the full prefetch length is added at this side.
-	 *   <code>Infinity</code> is supported. In case server-driven paging (@odata.nextLink) has been
-	 *   encountered before, this parameter is ignored.
+	 *   prefetch data for a paged access. <code>Infinity</code> is supported.
 	 * @param {sap.ui.model.odata.v4.lib._GroupLock} oGroupLock
 	 *   A lock for the group to associate the requests with
 	 * @param {function} [fnDataRequested]
@@ -540,8 +682,7 @@ sap.ui.define([
 	 *   "@odata.context" and the rows as an array in the property <code>value</code>, enhanced
 	 *   with a number property <code>$count</code> representing the element count on server-side;
 	 *   <code>$count</code> may be <code>undefined</code>, but not <code>Infinity</code>). If an
-	 *   HTTP request fails, the error from the _Requestor is returned and the requested range is
-	 *   reset to <code>undefined</code>.
+	 *   HTTP request fails, the error from the _Requestor is returned.
 	 *   The promise is rejected if a conflicting {@link #collapse} happens before the response
 	 *   arrives, in this case the error has the property <code>canceled</code> with value
 	 *   <code>true</code>.
@@ -554,12 +695,12 @@ sap.ui.define([
 	_AggregationCache.prototype.read = function (iIndex, iLength, iPrefetchLength, oGroupLock,
 			fnDataRequested) {
 		var oCurrentParent,
+			oElement,
 			iFirstLevelIndex = iIndex,
 			iFirstLevelLength = iLength,
 			oGapParent,
 			iGapStart,
-			bHasGrandTotal = !!this.oGrandTotalPromise,
-			bHasGrandTotalAtTop = bHasGrandTotal
+			bHasGrandTotalAtTop = this.oGrandTotalPromise
 				&& this.oAggregation.grandTotalAtBottomOnly !== true,
 			aReadPromises = [],
 			i, n,
@@ -573,47 +714,9 @@ sap.ui.define([
 		 * @param {number} iGapEnd end of gap, exclusive
 		 */
 		function readGap(iGapStart, iGapEnd) {
-			var oCache = oGapParent,
-				mQueryOptions = oGapParent.getQueryOptions(),
-				iStart = _Helper.getPrivateAnnotation(that.aElements[iGapStart], "index"),
-				oStartElement = that.aElements[iGapStart];
-
-			if (mQueryOptions.$count) { // $count not needed anymore, 1st read was done by #expand
-				delete mQueryOptions.$count;
-				oGapParent.setQueryOptions(mQueryOptions, true);
-			}
-
 			aReadPromises.push(
-				oGapParent.read(iStart, iGapEnd - iGapStart, 0, oGroupLock.getUnlockedCopy(),
-						fnDataRequested)
-					.then(function (oResult) {
-						var bGapHasMoved = false,
-							oError;
-
-						// Note: aElements[iGapStart] may have changed by a parallel operation
-						if (oStartElement !== that.aElements[iGapStart]
-								&& oResult.value[0] !== that.aElements[iGapStart]) {
-							// start of the gap has moved meanwhile
-							bGapHasMoved = true;
-							iGapStart = that.aElements.indexOf(oStartElement);
-							if (iGapStart < 0) {
-								iGapStart = that.aElements.indexOf(oResult.value[0]);
-								if (iGapStart < 0) {
-									oError = new Error("Collapse before read has finished");
-									oError.canceled = true;
-									throw oError;
-								}
-							}
-						}
-
-						that.addElements(oResult.value, iGapStart, oCache, iStart);
-
-						if (bGapHasMoved) {
-							oError = new Error("Collapse or expand before read has finished");
-							oError.canceled = true;
-							throw oError;
-						}
-					}));
+				that.readGap(oGapParent, iGapStart, iGapEnd, oGroupLock.getUnlockedCopy(),
+					fnDataRequested));
 		}
 
 		if (bHasGrandTotalAtTop && !iIndex && iLength === 1) {
@@ -625,7 +728,9 @@ sap.ui.define([
 			return this.oGrandTotalPromise.then(function (oGrandTotal) {
 				return {value : [oGrandTotal]};
 			});
-		} else if (this.aElements.$count === undefined) {
+		}
+
+		if (this.aElements.$count === undefined) {
 			this.iReadLength = iLength + iPrefetchLength;
 			if (bHasGrandTotalAtTop) { // account for grand total row at top
 				if (iFirstLevelIndex) {
@@ -634,57 +739,16 @@ sap.ui.define([
 					iFirstLevelLength -= 1;
 				}
 			}
-
 			aReadPromises.push(
-				this.oFirstLevel.read(iFirstLevelIndex, iFirstLevelLength, iPrefetchLength,
-						oGroupLock, fnDataRequested)
-					.then(function (oResult) {
-						// Note: this code must be idempotent, it might well run twice!
-						var oGrandTotal,
-							oGrandTotalCopy,
-							iOffset = 0, // offset for 1st level data rows
-							j;
-
-						that.aElements.length = that.aElements.$count = oResult.value.$count;
-
-						if (bHasGrandTotal) {
-							that.aElements.$count += 1;
-							that.aElements.length += 1;
-							oGrandTotal = that.oGrandTotalPromise.getResult();
-
-							switch (that.oAggregation.grandTotalAtBottomOnly) {
-								case false: // top & bottom
-									iOffset = 1;
-									that.aElements.$count += 1;
-									that.aElements.length += 1;
-									that.addElements(oGrandTotal, 0);
-									oGrandTotalCopy
-										= _Helper.getPrivateAnnotation(oGrandTotal, "copy");
-									that.addElements(oGrandTotalCopy, that.aElements.length - 1);
-									break;
-
-								case true: // bottom
-									that.addElements(oGrandTotal, that.aElements.length - 1);
-									break;
-
-								default: // top
-									iOffset = 1;
-									that.addElements(oGrandTotal, 0);
-							}
-						}
-
-						that.addElements(oResult.value, iFirstLevelIndex + iOffset,
-							that.oFirstLevel, iFirstLevelIndex);
-						for (j = 0; j < that.aElements.$count; j += 1) {
-							if (!that.aElements[j]) {
-								that.aElements[j] = _AggregationHelper.createPlaceholder(1,
-									j - iOffset, that.oFirstLevel);
-							}
-						}
-					}));
+				this.readCount(oGroupLock),
+				this.readFirst(iFirstLevelIndex, iFirstLevelLength, iPrefetchLength,
+					oGroupLock, fnDataRequested));
 		} else {
 			for (i = iIndex, n = Math.min(iIndex + iLength, this.aElements.length); i < n; i += 1) {
-				oCurrentParent = _Helper.getPrivateAnnotation(this.aElements[i], "parent");
+				oElement = this.aElements[i];
+				oCurrentParent = _Helper.hasPrivateAnnotation(oElement, "placeholder")
+					? _Helper.getPrivateAnnotation(oElement, "parent")
+					: undefined;
 				if (oCurrentParent !== oGapParent) {
 					if (iGapStart !== undefined) { // end of gap
 						readGap(iGapStart, i);
@@ -694,6 +758,12 @@ sap.ui.define([
 						iGapStart = i;
 						oGapParent = oCurrentParent;
 					}
+				} else if (iGapStart !== undefined
+						&& _Helper.getPrivateAnnotation(oElement, "index")
+							!== _Helper.getPrivateAnnotation(this.aElements[i - 1], "index") + 1) {
+					// Note: w/ side effect, indices might not be consecutive => split gap
+					readGap(iGapStart, i);
+					iGapStart = i;
 				}
 			}
 			if (iGapStart !== undefined) { // gap at end
@@ -703,7 +773,12 @@ sap.ui.define([
 		}
 
 		return SyncPromise.all(aReadPromises).then(function () {
-			var aElements = that.aElements.slice(iIndex, iIndex + iLength);
+			var aElements = that.aElements.slice(iIndex, iIndex + iLength)
+					.map(function (oElement) {
+						return _Helper.hasPrivateAnnotation(oElement, "placeholder")
+							? undefined
+							: oElement;
+					});
 
 			aElements.$count = that.aElements.$count;
 
@@ -712,12 +787,266 @@ sap.ui.define([
 	};
 
 	/**
-	 * Refreshes the kept-alive elements. Nothing to do here, we have no kept-alive elements.
+	 * Reads the count of data (in case of a recursive hierarchy), taking the current filter and
+	 * search into account.
 	 *
-	 * @public
+	 * @param {sap.ui.model.odata.v4.lib._GroupLock} oGroupLock
+	 *   A lock for the group to associate the requests with;
+	 *   {@link sap.ui.model.odata.v4.lib._GroupLock#getUnlockedCopy} still needs to be called!
+	 * @returns {Promise|undefined}
+	 *   A promise resolving without a defined result when the read is finished, or rejecting in
+	 *   case of an error; <code>undefined</code> in case no count needs to be read
+	 * @throws {Error}
+	 *   If group ID is '$cached'. The error has a property <code>$cached = true</code>
+	 *
+	 * @private
+	 */
+	_AggregationCache.prototype.readCount = function (oGroupLock) {
+		var mQueryOptions,
+			fnResolve = this.oCountPromise && this.oCountPromise.$resolve,
+			sResourcePath;
+
+		if (fnResolve) {
+			delete this.oCountPromise.$resolve;
+
+			mQueryOptions = Object.assign({}, this.mQueryOptions);
+			// // drop collection related system query options (except $filter,$search)
+			delete mQueryOptions.$apply;
+			delete mQueryOptions.$count;
+			// keep mQueryOptions.$filter;
+			delete mQueryOptions.$expand;
+			delete mQueryOptions.$orderby;
+			if (this.oAggregation.search) {
+				// Note: A recursive hierarchy cannot be combined with "$search"
+				mQueryOptions.$search = this.oAggregation.search;
+			}
+			delete mQueryOptions.$select;
+			// Note: sMetaPath only needed for $filter by V42, but V42 cannot work here!
+			sResourcePath = this.sResourcePath + "/$count"
+				+ this.oRequestor.buildQueryString(/*sMetaPath*/null, mQueryOptions);
+
+			return this.oRequestor.request("GET", sResourcePath, oGroupLock.getUnlockedCopy())
+				.then(fnResolve); // Note: $count is already of type number here
+		}
+	};
+
+	/**
+	 * Reads the first range of data being requested.
+	 *
+	 * @param {number} iStart
+	 *   The start index of the range
+	 * @param {number} iLength
+	 *   The length of the range; <code>Infinity</code> is supported
+	 * @param {number} iPrefetchLength
+	 *   The number of rows to read before and after the given range; with this it is possible to
+	 *   prefetch data for a paged access. code>Infinity</code> is supported.
+	 * @param {sap.ui.model.odata.v4.lib._GroupLock} oGroupLock
+	 *   A lock for the group to associate the requests with
+	 * @param {function} [fnDataRequested]
+	 *   The function is called just before a back-end request is sent.
+	 *   If no back-end request is needed, the function is not called.
+	 * @returns {sap.ui.base.SyncPromise}
+	 *   A promise resolving without a defined result when the read is finished, or rejecting in
+	 *   case of an error
+	 * @throws {Error} If given index or length is less than 0
+	 *
+	 * @private
+	 */
+	_AggregationCache.prototype.readFirst = function (iStart, iLength, iPrefetchLength, oGroupLock,
+			fnDataRequested) {
+		var that = this;
+
+		return this.oFirstLevel.read(iStart, iLength, iPrefetchLength, oGroupLock, fnDataRequested)
+			.then(function (oResult) {
+				// Note: this code must be idempotent, it might well run twice!
+				var oGrandTotal,
+					oGrandTotalCopy,
+					iOffset = 0, // offset for 1st level data rows
+					j;
+
+				that.aElements.length = that.aElements.$count = oResult.value.$count;
+
+				if (that.oGrandTotalPromise) {
+					that.aElements.$count += 1;
+					that.aElements.length += 1;
+					oGrandTotal = that.oGrandTotalPromise.getResult();
+
+					switch (that.oAggregation.grandTotalAtBottomOnly) {
+						case false: // top & bottom
+							iOffset = 1;
+							that.aElements.$count += 1;
+							that.aElements.length += 1;
+							that.addElements(oGrandTotal, 0);
+							oGrandTotalCopy
+								= _Helper.getPrivateAnnotation(oGrandTotal, "copy");
+							that.addElements(oGrandTotalCopy, that.aElements.length - 1);
+							break;
+
+						case true: // bottom
+							that.addElements(oGrandTotal, that.aElements.length - 1);
+							break;
+
+						default: // top
+							iOffset = 1;
+							that.addElements(oGrandTotal, 0);
+					}
+				}
+
+				that.addElements(oResult.value, iStart + iOffset, that.oFirstLevel, iStart);
+				for (j = 0; j < that.aElements.$count; j += 1) {
+					if (!that.aElements[j]) {
+						that.aElements[j] = _AggregationHelper.createPlaceholder(
+							that.oAggregation.expandTo > 1 ? /*don't know*/0 : 1,
+							j - iOffset, that.oFirstLevel);
+					}
+				}
+			});
+	};
+
+	/**
+	 * Reads the given gap from the given cache and replaces the gap with the read's result.
+	 *
+	 * @param {sap.ui.model.odata.v4.lib._CollectionCache} oCache
+	 *   The collection cache to read data from
+	 * @param {number} iStart
+	 *   Start of gap, inclusive
+	 * @param {number} iEnd
+	 *   End of gap, exclusive
+	 * @param {sap.ui.model.odata.v4.lib._GroupLock} oGroupLock
+	 *   A lock for the group to associate the requests with
+	 * @param {function} [fnDataRequested]
+	 *   The function is called just before a back-end request is sent.
+	 *   If no back-end request is needed, the function is not called.
+	 * @returns {sap.ui.base.SyncPromise}
+	 *   A promise resolving without a defined result when the read is finished, or rejecting in
+	 *   case of an error
+	 * @throws {Error} If index of placeholder at start of gap is less than 0, or if end of gap is
+	 *   before start
+	 *
+	 * @private
+	 */
+	_AggregationCache.prototype.readGap = function (oCache, iStart, iEnd, oGroupLock,
+			fnDataRequested) {
+		var sPredicate,
+			oPromise,
+			mQueryOptions = oCache.getQueryOptions(),
+			iIndex = _Helper.getPrivateAnnotation(this.aElements[iStart], "index"),
+			oStartElement = this.aElements[iStart],
+			i,
+			that = this;
+
+		if (mQueryOptions.$count) { // $count not needed anymore, 1st read was done by #expand
+			delete mQueryOptions.$count;
+			oCache.setQueryOptions(mQueryOptions, true);
+		}
+
+		oPromise = oCache.read(iIndex, iEnd - iStart, 0, oGroupLock, fnDataRequested)
+			.then(function (oResult) {
+				// Note: this code must be idempotent, it might well run twice!
+				var bGapHasMoved = false,
+					oError;
+
+				// Note: aElements[iGapStart] may have changed by a parallel operation
+				if (oStartElement !== that.aElements[iStart]
+						&& oResult.value[0] !== that.aElements[iStart]) {
+					// start of the gap has moved meanwhile
+					bGapHasMoved = true;
+					iStart = that.aElements.indexOf(oStartElement);
+					if (iStart < 0) {
+						iStart = that.aElements.indexOf(oResult.value[0]);
+						if (iStart < 0) {
+							oError = new Error("Collapse before read has finished");
+							oError.canceled = true;
+							throw oError;
+						}
+					}
+				}
+
+				that.addElements(oResult.value, iStart, oCache, iIndex);
+
+				if (bGapHasMoved) {
+					oError = new Error("Collapse or expand before read has finished");
+					oError.canceled = true;
+					throw oError;
+				}
+			});
+		if (oPromise.isPending()) {
+			for (i = iStart; i < iEnd; i += 1) {
+				sPredicate = _Helper.getPrivateAnnotation(this.aElements[i], "predicate");
+
+				if (sPredicate) {
+					this.aElements.$byPredicate[sPredicate] = oPromise;
+				}
+			}
+		}
+
+		return oPromise;
+	};
+
+	/**
+	 * @override
 	 * @see sap.ui.model.odata.v4.lib._CollectionCache#refreshKeptElements
 	 */
-	_AggregationCache.prototype.refreshKeptElements = function () {};
+	_AggregationCache.prototype.refreshKeptElements = function (oGroupLock, fnOnRemove) {
+		// "super" call (like @borrows ...)
+		return this.oFirstLevel.refreshKeptElements.call(this, oGroupLock, fnOnRemove, true);
+	};
+
+	/**
+	 * @override
+	 * @see sap.ui.model.odata.v4.lib._CollectionCache#reset
+	 */
+	_AggregationCache.prototype.reset = function (aKeptElementPredicates, sGroupId, mQueryOptions,
+			oAggregation, bIsGrouped) {
+		var fnResolve,
+			that = this;
+
+		if (bIsGrouped) {
+			throw new Error("Unsupported grouping via sorter");
+		}
+
+		aKeptElementPredicates.forEach(function (sPredicate) {
+			var oKeptElement = that.aElements.$byPredicate[sPredicate];
+
+			if (_Helper.hasPrivateAnnotation(oKeptElement, "placeholder")) {
+				throw new Error("Unexpected placeholder");
+			}
+			delete oKeptElement["@$ui5.node.isExpanded"];
+			delete oKeptElement["@$ui5.node.level"];
+			delete oKeptElement["@$ui5._"];
+			_Helper.setPrivateAnnotation(oKeptElement, "predicate", sPredicate);
+		});
+
+		this.oAggregation = oAggregation;
+		this.sDownloadUrl = _Cache.prototype.getDownloadUrl.call(this, "");
+		// "super" call (like @borrows ...)
+		this.oFirstLevel.reset.call(this, aKeptElementPredicates, sGroupId, mQueryOptions);
+		if (sGroupId) {
+			this.oBackup.oCountPromise = this.oCountPromise;
+			this.oBackup.oFirstLevel = this.oFirstLevel;
+		}
+		this.oCountPromise = undefined;
+		if (mQueryOptions.$count) {
+			this.oCountPromise = new SyncPromise(function (resolve) {
+				fnResolve = resolve;
+			});
+			this.oCountPromise.$resolve = fnResolve;
+		}
+		this.oFirstLevel = this.createGroupLevelCache();
+	};
+
+	/**
+	 * @override
+	 * @see sap.ui.model.odata.v4.lib._CollectionCache#restore
+	 */
+	_AggregationCache.prototype.restore = function (bReally) {
+		if (bReally) {
+			this.oCountPromise = this.oBackup.oCountPromise;
+			this.oFirstLevel = this.oBackup.oFirstLevel;
+		}
+		// "super" call (like @borrows ...)
+		this.oFirstLevel.restore.call(this, bReally);
+	};
 
 	/**
 	 * Returns the cache's URL.
@@ -730,6 +1059,29 @@ sap.ui.define([
 	// @override sap.ui.model.odata.v4.lib._Cache#toString
 	_AggregationCache.prototype.toString = function () {
 		return this.sDownloadUrl;
+	};
+
+	/**
+	 * Turns the given element, which has the given predicate, into a placeholder which keeps all
+	 * private annotations plus the hierarchy node value. The original element is removed from its
+	 * corresponding cache and must not be used any longer.
+	 *
+	 * @param {object} oElement - An element
+	 * @param {string} sPredicate - Its predicate
+	 *
+	 * @private
+	 */
+	_AggregationCache.prototype.turnIntoPlaceholder = function (oElement, sPredicate) {
+		if (_Helper.hasPrivateAnnotation(oElement, "placeholder")) {
+			return;
+		}
+
+		_Helper.setPrivateAnnotation(oElement, "placeholder", 1); // not an initial placeholder
+		_AggregationHelper.markSplicedStale(oElement);
+		delete this.aElements.$byPredicate[sPredicate];
+		// drop original element from its cache's collection
+		_Helper.getPrivateAnnotation(oElement, "parent")
+			.drop(_Helper.getPrivateAnnotation(oElement, "index"), sPredicate);
 	};
 
 	//*********************************************************************************************
@@ -805,6 +1157,9 @@ sap.ui.define([
 	 *
 	 * @param {object} [oGroupNode]
 	 *   The group node or <code>undefined</code> for an element of the first level cache
+	 * @param {object} oAggregation
+	 *   An object holding the information needed for a recursive hierarchy; must already be
+	 *   normalized by {@link _AggregationHelper.buildApply4Hierarchy}
 	 * @param {object} oElement
 	 *   The element for which to calculate the key predicate
 	 * @param {object} mTypeForMetaPath
@@ -817,17 +1172,27 @@ sap.ui.define([
 	 * @public
 	 */
 	// @override sap.ui.model.odata.v4.lib._Cache#calculateKeyPredicate
-	_AggregationCache.calculateKeyPredicateRH = function (oGroupNode, oElement, mTypeForMetaPath,
-			sMetaPath) {
-		var iLevel = 1,
+	_AggregationCache.calculateKeyPredicateRH = function (oGroupNode, oAggregation, oElement,
+			mTypeForMetaPath, sMetaPath) {
+		var sDistanceFromRoot,
 			bIsExpanded,
-			sPredicate = _Helper.getKeyPredicate(oElement, sMetaPath, mTypeForMetaPath);
+			iLevel = 1,
+			sLimitedDescendantCount,
+			sPredicate;
 
+		if (!(sMetaPath in mTypeForMetaPath)) {
+			return undefined; // nested object
+		}
+
+		sPredicate = _Helper.getKeyPredicate(oElement, sMetaPath, mTypeForMetaPath);
 		_Helper.setPrivateAnnotation(oElement, "predicate", sPredicate);
-		switch (oElement.DrillState) {
+		if (sMetaPath !== oAggregation.$metaPath) { // related entity (via navigation property)
+			return sPredicate;
+		}
+
+		switch (_Helper.drillDown(oElement, oAggregation.$DrillStateProperty)) {
 			case "expanded":
 				bIsExpanded = true;
-				_AggregationHelper.getOrCreateExpandedObject({/*oAggregation*/}, oElement);
 				break;
 
 			case "collapsed":
@@ -839,19 +1204,30 @@ sap.ui.define([
 			default: // "leaf"
 				// bIsExpanded = undefined;
 		}
+		_Helper.deleteProperty(oElement, oAggregation.$DrillStateProperty);
 		if (oGroupNode) {
 			iLevel = oGroupNode["@$ui5.node.level"] + 1;
-		} else if (oElement.DistanceFromRoot) {
-			iLevel = oElement.DistanceFromRoot + 1;
+		} else {
+			sDistanceFromRoot = _Helper.drillDown(oElement, oAggregation.$DistanceFromRootProperty);
+			if (sDistanceFromRoot) { // Edm.Int64
+				_Helper.deleteProperty(oElement, oAggregation.$DistanceFromRootProperty);
+				iLevel = parseInt(sDistanceFromRoot) + 1;
+			}
 		}
 		// set the node values
 		_AggregationHelper.setAnnotations(oElement, bIsExpanded, /*bIsTotal*/undefined, iLevel);
-		if (oElement.DescendantCount) {
-			_Helper.setPrivateAnnotation(oElement, "descendants", oElement.DescendantCount);
+
+		if (oAggregation.$LimitedDescendantCountProperty) {
+			sLimitedDescendantCount
+				= _Helper.drillDown(oElement, oAggregation.$LimitedDescendantCountProperty);
+			if (sLimitedDescendantCount) {
+				_Helper.deleteProperty(oElement, oAggregation.$LimitedDescendantCountProperty);
+				if (sLimitedDescendantCount !== "0") { // Edm.Int64
+					_Helper.setPrivateAnnotation(oElement, "descendants",
+						parseInt(sLimitedDescendantCount));
+				}
+			}
 		}
-		delete oElement.DescendantCount;
-		delete oElement.DistanceFromRoot;
-		delete oElement.DrillState;
 
 		return sPredicate;
 	};
@@ -863,21 +1239,23 @@ sap.ui.define([
 	 * @param {sap.ui.model.odata.v4.lib._Requestor} oRequestor
 	 *   The requestor
 	 * @param {string} sResourcePath
-	 *   A resource path relative to the service URL; it must not contain a query string<br>
+	 *   A resource path relative to the service URL; it must not contain a query string
+	 *   <br>
 	 *   Example: Products
 	 * @param {string} sDeepResourcePath
 	 *   The deep resource path to be used to build the target path for bound messages
+	 * @param {object} mQueryOptions
+	 *   A map of key-value pairs representing the query string, the value in this pair has to
+	 *   be a string or an array of strings; if it is an array, the resulting query string
+	 *   repeats the key for each array value.
+	 *   <br>
+	 *   Examples:
+	 *   {foo : "bar", "bar" : "baz"} results in the query string "foo=bar&bar=baz"
+	 *   {foo : ["bar", "baz"]} results in the query string "foo=bar&foo=baz"
 	 * @param {object} [oAggregation]
 	 *   An object holding the information needed for data aggregation; see also "OData Extension
 	 *   for Data Aggregation Version 4.0"; must already be normalized by
 	 *   {@link _AggregationHelper.buildApply}
-	 * @param {object} mQueryOptions
-	 *   A map of key-value pairs representing the query string, the value in this pair has to
-	 *   be a string or an array of strings; if it is an array, the resulting query string
-	 *   repeats the key for each array value.<br>
-	 *   Examples:
-	 *   {foo : "bar", "bar" : "baz"} results in the query string "foo=bar&bar=baz"
-	 *   {foo : ["bar", "baz"]} results in the query string "foo=bar&foo=baz"
 	 * @param {boolean} [bSortExpandSelect]
 	 *   Whether the paths in $expand and $select shall be sorted in the cache's query string. When
 	 *   using min, max, grand total, or data aggregation they will always be sorted.
@@ -900,8 +1278,8 @@ sap.ui.define([
 	 *
 	 * @public
 	 */
-	_AggregationCache.create = function (oRequestor, sResourcePath, sDeepResourcePath, oAggregation,
-			mQueryOptions, bSortExpandSelect, bSharedRequest, bIsGrouped) {
+	_AggregationCache.create = function (oRequestor, sResourcePath, sDeepResourcePath,
+			mQueryOptions, oAggregation, bSortExpandSelect, bSharedRequest, bIsGrouped) {
 		var bHasGrandTotal, bHasGroupLevels;
 
 		function checkExpandSelect() {

@@ -91,7 +91,7 @@ function(
 	 * @implements sap.ui.core.IFormContent
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -450,7 +450,7 @@ function(
 	/**
 	 * @see sap.ui.core.Control#getAccessibilityInfo
 	 * @protected
-	 * @returns {object} The <code>sap.m.RadioButton</code> accessibility information
+	 * @returns {sap.ui.core.AccessibilityInfo} The <code>sap.m.RadioButton</code> accessibility information
 	 */
 	RadioButton.prototype.getAccessibilityInfo = function() {
 		var oBundle = Core.getLibraryResourceBundle("sap.m");
@@ -509,11 +509,10 @@ function(
 	// #############################################################################
 	/**
 	* Pseudo event for pseudo 'select' event... space, enter, ... without modifiers (Ctrl, Alt or Shift)
-	* @param {object} oEvent - provides information for the event
+	* @param {jQuery.Event} oEvent - provides information for the event
 	* @public
 	*/
 	RadioButton.prototype.onsapselect = function(oEvent) {
-
 		oEvent.preventDefault();
 		this.ontap(oEvent);
 	};

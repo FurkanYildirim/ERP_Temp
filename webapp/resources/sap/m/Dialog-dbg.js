@@ -14,6 +14,7 @@ sap.ui.define([
 	"./library",
 	"sap/m/Image",
 	"sap/ui/core/Control",
+	"sap/ui/core/Element",
 	"sap/ui/core/IconPool",
 	"sap/ui/core/Popup",
 	"sap/ui/core/delegate/ScrollEnablement",
@@ -32,8 +33,6 @@ sap.ui.define([
 	"sap/ui/core/Core",
 	"sap/ui/core/Configuration",
 	"sap/ui/dom/units/Rem",
-	// jQuery Plugin "control"
-	"sap/ui/dom/jquery/control",
 	// jQuery Plugin "firstFocusableDomRef", "lastFocusableDomRef"
 	"sap/ui/dom/jquery/Focusable"
 ],
@@ -46,6 +45,7 @@ function(
 	library,
 	Image,
 	Control,
+	Element,
 	IconPool,
 	Popup,
 	ScrollEnablement,
@@ -167,7 +167,7 @@ function(
 		*
 		* @implements sap.ui.core.PopupInterface
 		* @author SAP SE
-		* @version 1.108.14
+		* @version 1.115.1
 		*
 		* @constructor
 		* @public
@@ -189,11 +189,12 @@ function(
 
 					/**
 					 * Title text appears in the Dialog header.
+					 * <br/><b>Note:</b> The heading level of the Dialog is <code>H1</code>. Headings in the Dialog content should start with <code>H2</code> heading level.
 					 */
 					title: {type: "string", group: "Appearance", defaultValue: null},
 
 					/**
-					 * Determines whether the header is shown inside the Dialog. If this property is set to <code>true</code>, the <code>text</code> and <code>icon</code> properties are ignored. This property has a default value <code>true</code>.
+					 * Determines whether the header is shown inside the Dialog. If this property is set to <code>false</code>, the <code>text</code> and <code>icon</code> properties are ignored. This property has a default value <code>true</code>.
 					 * @since 1.15.1
 					 */
 					showHeader: {type: "boolean", group: "Appearance", defaultValue: true},
@@ -311,6 +312,7 @@ function(
 
 					/**
 					 * When it is set, the <code>icon</code>, <code>title</code> and <code>showHeader</code> properties are ignored. Only the <code>customHeader</code> is shown as the header of the Dialog.
+					 * <br/><b>Note:</b> To improve accessibility, titles with heading level <code>H1</code> should be used inside the custom header.
 					 * @since 1.15.1
 					 */
 					customHeader: {type: "sap.m.IBar", multiple: false},
@@ -339,9 +341,16 @@ function(
 
 					/**
 					 * Buttons can be added to the footer area of the Dialog through this aggregation. When this aggregation is set, any change to the <code>beginButton</code> and <code>endButton</code> has no effect anymore. Buttons which are inside this aggregation are aligned at the right side (left side in RTL mode) of the footer instead of in the middle of the footer.
+					 * The buttons aggregation can not be used together with the footer aggregation.
 					 * @since 1.21.1
 					 */
 					buttons: {type: "sap.m.Button", multiple: true, singularName: "button"},
+
+					/**
+					 * The footer of this dialog. It is always located at the bottom of the dialog. The footer aggregation can not  be used together with the buttons aggregation.
+					 * @since 1.110
+					 */
+					footer: {type: "sap.m.Toolbar", multiple: false},
 
 					/**
 					 * The hidden aggregation for internal maintained <code>header</code>.
@@ -443,11 +452,38 @@ function(
 			renderer: DialogRenderer
 		});
 
+		/**
+		 * Sets a new value for property {@link #setEscapeHandler escapeHandler}.
+		 *
+		 * This property expects a function with one parameter of type Promise. In the function, you should call either <code>resolve()</code> or <code>reject()</code> on the Promise object.
+		 * The function allows you to define custom behavior which will be executed when the Escape key is pressed. By default, when the Escape key is pressed, the dialog is immediately closed.
+		 *
+		 * When called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.
+		 *
+		 * @method
+		 * @param {function({resolve: function, reject: function})} [fnEscapeHandler] New value for property <code>escapeHandler</code>
+		 * @public
+		 * @name sap.m.Dialog#setEscapeHandler
+		 * @returns {this} Reference to <code>this</code> in order to allow method chaining
+		 */
+
+		/**
+		 * Gets current value of property {@link #getEscapeHandler escapeHandler}.
+		 *
+		 * This property expects a function with one parameter of type Promise. In the function, you should call either <code>resolve()</code> or <code>reject()</code> on the Promise object.
+		 * The function allows you to define custom behavior which will be executed when the Escape key is pressed. By default, when the Escape key is pressed, the dialog is immediately closed.
+		 *
+		 * @method
+		 * @returns {function({resolve: function, reject: function})|null} Value of property <code>escapeHandler</code>
+		 * @public
+		 * @name sap.m.Dialog#getEscapeHandler
+		 */
+
 		ResponsivePaddingsEnablement.call(Dialog.prototype, {
 			header: {suffix: "header"},
 			subHeader: {selector: ".sapMDialogSubHeader .sapMIBar"},
 			content: {selector: ".sapMDialogScrollCont"},
-			footer: {suffix: "footer"}
+			footer: {selector: ".sapMDialogFooter .sapMIBar"}
 		});
 
 		// Add title propagation support
@@ -467,6 +503,42 @@ function(
 			Dialog._mIcons[ValueState.Warning] = IconPool.getIconURI("alert");
 			Dialog._mIcons[ValueState.Error] = IconPool.getIconURI("error");
 			Dialog._mIcons[ValueState.Information] = IconPool.getIconURI("information");
+		};
+
+		/**
+		 * Returns an invisible text control that can be used to label the header toolbar of
+		 * the dialog for accessibility purposes.
+		 *
+		 * @param {string} sId - The ID to use for the invisible text control.
+		 * @returns {sap.ui.core.InvisibleText} The invisible text control for the header toolbar.
+		 * @private
+		 */
+		Dialog._getHeaderToolbarAriaLabelledByText = function() {
+			if (!Dialog._oHeaderToolbarInvisibleText) {
+				Dialog._oHeaderToolbarInvisibleText = new InvisibleText("__headerActionsToolbar-invisibleText", {
+					text: Core.getLibraryResourceBundle("sap.m").getText("ARIA_LABEL_TOOLBAR_HEADER_ACTIONS")
+				}).toStatic();
+			}
+
+			return Dialog._oHeaderToolbarInvisibleText;
+		};
+
+		/**
+		 * Returns an invisible text control that can be used to label the footer toolbar of
+		 * the dialog for accessibility purposes.
+		 *
+		 * @param {string} sId - The ID to use for the invisible text control.
+		 * @returns {sap.ui.core.InvisibleText} The invisible text control for the header toolbar.
+		 * @private
+		 */
+		Dialog._getFooterToolbarAriaLabelledByText = function() {
+			if (!Dialog._oFooterToolbarInvisibleText) {
+				Dialog._oFooterToolbarInvisibleText = new InvisibleText("__footerActionsToolbar-invisibleText", {
+					text: Core.getLibraryResourceBundle("sap.m").getText("ARIA_LABEL_TOOLBAR_FOOTER_ACTIONS")
+				}).toStatic();
+			}
+
+			return Dialog._oFooterToolbarInvisibleText;
 		};
 
 		/* =========================================================== */
@@ -568,7 +640,7 @@ function(
 
 			// title alignment
 			if (oHeader && oHeader.setTitleAlignment) {
-				oHeader.setProperty("titleAlignment", this.getTitleAlignment(), true);
+				oHeader.setTitleAlignment(this.getTitleAlignment());
 			}
 
 			if (oHeader && this._getTitles(oHeader).length === 0) {
@@ -955,7 +1027,15 @@ function(
 		 * @private
 		 */
 		 Dialog.prototype._findFirstPositiveButton = function () {
-			var aButtons = this.getButtons();
+			var aButtons;
+
+			if (this.getFooter()) {
+				aButtons = this.getFooter().getContent().filter(function (oItem) {
+					return oItem.isA("sap.m.Button");
+				});
+			} else {
+				aButtons = this.getButtons();
+			}
 
 			for (var i = 0; i < aButtons.length; i++) {
 				var oButton = aButtons[i];
@@ -1206,6 +1286,10 @@ function(
 						$dialogContent.css({"padding-right" : ""});
 						this._iLastWidthAndHeightWithScroll = null;
 					}
+				} else if (!this._hasVerticalScrollbar() || !bMinWidth) {
+					$dialog.removeClass("sapMDialogVerticalScrollIncluded");
+					$dialogContent.css({"padding-right" : ""});
+					this._iLastWidthAndHeightWithScroll = null;
 				}
 			}
 
@@ -1348,7 +1432,8 @@ function(
 			if (!this._header) {
 				// set parent of header to detect changes on title
 				this._header = new Bar(this.getId() + "-header", {
-					titleAlignment: this.getTitleAlignment()
+					titleAlignment: this.getTitleAlignment(),
+					ariaLabelledBy: Dialog._getHeaderToolbarAriaLabelledByText()
 				});
 
 				this.setAggregation("_header", this._header);
@@ -1366,7 +1451,7 @@ function(
 			} else {
 				this._headerTitle = new Title(this.getId() + "-title", {
 					text: sTitle,
-					level: TitleLevel.H2
+					level: TitleLevel.H1
 				}).addStyleClass("sapMDialogTitle");
 
 				this._header.addContentMiddle(this._headerTitle);
@@ -1656,6 +1741,9 @@ function(
 		};
 
 		Dialog.prototype._createToolbarButtons = function () {
+			if (this.getFooter()) {
+				return;
+			}
 			var toolbar = this._getToolbar();
 			var buttons = this.getButtons();
 			var beginButton = this.getBeginButton();
@@ -1703,7 +1791,10 @@ function(
 		 */
 		Dialog.prototype._getToolbar = function () {
 			if (!this._oToolbar) {
-				this._oToolbar = new AssociativeOverflowToolbar(this.getId() + "-footer").addStyleClass("sapMTBNoBorders");
+				this._oToolbar = new AssociativeOverflowToolbar(this.getId() + "-footer", {
+					ariaLabelledBy: Dialog._getFooterToolbarAriaLabelledByText()
+				}).addStyleClass("sapMTBNoBorders");
+
 				this._oToolbar.addDelegate({
 					onAfterRendering: function () {
 						if (this.getType() === DialogType.Message) {
@@ -1962,14 +2053,14 @@ function(
 		 */
 		function isHeaderClicked(eventTarget) {
 			var $target = jQuery(eventTarget);
-			var oControl = $target.control(0);
+			var oControl = Element.closestTo(eventTarget);
 
 			// target is inside the content section
 			if ($target.parents('.sapMDialogSection').length) {
 				return false;
 			}
 
-			if (!oControl || oControl.getMetadata().getInterfaces().indexOf("sap.m.IBar") > -1) {
+			if (!oControl || oControl.isA("sap.m.IBar")) {
 				return true;
 			}
 

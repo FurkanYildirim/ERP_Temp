@@ -46,7 +46,7 @@ function(
 		 * @class
 		 * The FormattedText control allows the usage of a limited set of tags for inline display of formatted text in HTML format.
 		 * @extends sap.ui.core.Control
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -88,8 +88,9 @@ function(
 					 *	<li><code>ol</code></li>
 					 *	<li><code>li</code></li>
 					 * </ul>
-					 * <p><code>class, style, dir,</code> and <code>target</code> attributes are allowed.
-					 * If <code>target</code> is not set, links open in a new window by default.
+					 * <p><code>style, dir</code> and <code>target</code> attributes are allowed.
+					 * <p>The <code>class</code> attribute is allowed, but its value is sanitized to contain only supported CSS classes, see {@link topic:91a4946b0dcf4356aaaedc4e502864f4 List of Supported CSS Classes}.
+					 * <p>If <code>target</code> is not set, links open in a new window by default.
 					 * <p>Only safe <code>href</code> attributes can be used. See {@link module:sap/base/security/URLListValidator URLListValidator}.
 					 *
 					 * <b>Note:</b> Keep in mind that not supported HTML tags and
@@ -250,7 +251,6 @@ function(
 					if (normProp == "position") {
 						return;
 					}
-
 					sanitizedDeclarations.push(property + ': ' + tokens.join(' '));
 				}
 			});
@@ -379,6 +379,17 @@ function(
 
 		FormattedText.prototype.onAfterRendering = function () {
 			this.$().find('a').on("click", openLink);
+			var aLinks = this.getControls(),
+				oTemplate;
+
+			aLinks.forEach(function(oLink, iCurrentIndex) {
+				oTemplate = this.getDomRef("$" + iCurrentIndex);
+				if (oTemplate) {
+					oTemplate.replaceWith(oLink.getDomRef());
+				} else {
+					oLink.getDomRef().style.display = "none";
+				}
+			}.bind(this));
 		};
 
 		FormattedText.prototype.onBeforeRendering = function () {

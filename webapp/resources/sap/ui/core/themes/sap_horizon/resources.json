@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".theme",
-			"size": 636,
+			"size": 635,
 			"theme": "sap_horizon"
 		},
 		{
@@ -31,24 +31,24 @@
 		},
 		{
 			"name": "base.less",
-			"size": 69515,
+			"size": 102099,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "css_variables.css",
-			"size": 207340,
+			"size": 251040,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 230624,
+			"size": 280474,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 230256,
+			"size": 280106,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
@@ -123,35 +123,40 @@
 			"theme": "sap_horizon"
 		},
 		{
+			"name": "fonts/SAP-icons.ttf",
+			"size": 315752,
+			"theme": "sap_horizon"
+		},
+		{
 			"name": "fonts/SAP-icons.woff2",
-			"size": 91644,
+			"size": 102260,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "global.less",
-			"size": 64656,
+			"size": 76199,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 134821,
+			"size": 156626,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/core/themes/sap_horizon/library-parameters.json",
-			"size": 77951,
+			"size": 93737,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library.css",
-			"size": 134808,
+			"size": 156613,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library.less",
-			"size": 14290,
+			"size": 14345,
 			"designtime": true,
 			"theme": "sap_horizon"
 		},
@@ -163,21 +168,21 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 31908,
+			"size": 33054,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 31896,
+			"size": 33042,
 			"theme": "sap_horizon"
 		},
 		{
 			"name": "resources.json",
-			"size": 3296
+			"size": 3386
 		},
 		{
 			"name": "shared.less",
-			"size": 12101,
+			"size": 12156,
 			"designtime": true,
 			"theme": "sap_horizon"
 		}

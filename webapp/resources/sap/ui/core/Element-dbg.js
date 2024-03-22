@@ -18,7 +18,8 @@ sap.ui.define([
 	"sap/ui/thirdparty/jquery",
 	"sap/ui/events/F6Navigation",
 	"./RenderManager",
-	"sap/ui/core/Configuration"
+	"./Configuration",
+	"./EnabledPropagator"
 ],
 	function(
 		DataType,
@@ -33,7 +34,8 @@ sap.ui.define([
 		jQuery,
 		F6Navigation,
 		RenderManager,
-		Configuration
+		Configuration,
+		EnabledPropagator
 	) {
 	"use strict";
 
@@ -128,7 +130,7 @@ sap.ui.define([
 	 *
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @public
 	 * @alias sap.ui.core.Element
 	 */
@@ -167,25 +169,25 @@ sap.ui.define([
 				 * See the section {@link https://experience.sap.com/fiori-design-web/using-tooltips/ Using Tooltips}
 				 * in the Fiori Design Guideline.
 				 */
-				tooltip : {name : "tooltip", type : "sap.ui.core.TooltipBase", altTypes : ["string"], multiple : false},
+				tooltip : {type : "sap.ui.core.TooltipBase", altTypes : ["string"], multiple : false},
 
 				/**
 				 * Custom Data, a data structure like a map containing arbitrary key value pairs.
 				 */
-				customData : {name : "customData", type : "sap.ui.core.CustomData", multiple : true, singularName : "customData"},
+				customData : {type : "sap.ui.core.CustomData", multiple : true, singularName : "customData"},
 
 				/**
 				 * Defines the layout constraints for this control when it is used inside a Layout.
 				 * LayoutData classes are typed classes and must match the embedding Layout.
 				 * See VariantLayoutData for aggregating multiple alternative LayoutData instances to a single Element.
 				 */
-				layoutData : {name : "layoutData", type : "sap.ui.core.LayoutData", multiple : false, singularName : "layoutData"},
+				layoutData : {type : "sap.ui.core.LayoutData", multiple : false, singularName : "layoutData"},
 
 				/**
 				 * Dependents are not rendered, but their databinding context and lifecycle are bound to the aggregating Element.
 				 * @since 1.19
 				 */
-				dependents : {name : "dependents", type : "sap.ui.core.Element", multiple : true},
+				dependents : {type : "sap.ui.core.Element", multiple : true},
 
 				/**
 				 * Defines the drag-and-drop configuration.
@@ -193,12 +195,13 @@ sap.ui.define([
 				 *
 				 * @since 1.56
 				 */
-				dragDropConfig : {name : "dragDropConfig", type : "sap.ui.core.dnd.DragDropBase", multiple : true, singularName : "dragDropConfig"}
+				dragDropConfig : {type : "sap.ui.core.dnd.DragDropBase", multiple : true, singularName : "dragDropConfig"}
 			}
 		},
 
 		constructor : function(sId, mSettings) {
 			ManagedObject.apply(this, arguments);
+			this._iRenderingDelegateCount = 0;
 		},
 
 		renderer : null // Element has no renderer
@@ -252,11 +255,41 @@ sap.ui.define([
 	};
 
 	/**
+	 * @typedef {sap.ui.base.ManagedObject.MetadataOptions} sap.ui.core.Element.MetadataOptions
+	 *
+	 * The structure of the "metadata" object which is passed when inheriting from sap.ui.core.Element using its static "extend" method.
+	 * See {@link sap.ui.core.Element.extend} for details on its usage.
+	 *
+	 * @property {boolean | sap.ui.core.Element.MetadataOptions.DnD} [dnd=false]
+	 *     Defines draggable and droppable configuration of the element.
+	 *     The following boolean properties can be provided in the given object literal to configure drag-and-drop behavior of the element
+	 *     (see {@link sap.ui.core.Element.MetadataOptions.DnD DnD} for details): draggable, droppable
+	 *     If the <code>dnd</code> property is of type Boolean, then the <code>draggable</code> and <code>droppable</code> configuration are both set to this Boolean value.
+	 *
+	 * @public
+	 */
+
+	/**
+	 * @typedef {object} sap.ui.core.Element.MetadataOptions.DnD
+	 *
+	 * An object literal configuring the drag&drop capabilities of a class derived from sap.ui.core.Element.
+	 * See {@link sap.ui.core.Element.MetadataOptions MetadataOptions} for details on its usage.
+	 *
+	 * @property {boolean} [draggable=false] Defines whether the element is draggable or not. The default value is <code>false</code>.
+	 * @property {boolean} [droppable=false] Defines whether the element is droppable (it allows being dropped on by a draggable element) or not. The default value is <code>false</code>.
+	 *
+	 * @public
+	 */
+
+	/**
 	 * Defines a new subclass of Element with the name <code>sClassName</code> and enriches it with
 	 * the information contained in <code>oClassInfo</code>.
 	 *
 	 * <code>oClassInfo</code> can contain the same information that {@link sap.ui.base.ManagedObject.extend} already accepts,
-	 * plus the following <code>dnd</code> property to configure drag-and-drop behavior in the metadata object literal:
+	 * plus the <code>dnd</code> property in the metadata object literal to configure drag-and-drop behavior
+	 * (see {@link sap.ui.core.Element.MetadataOptions MetadataOptions} for details). Objects describing aggregations can also
+	 * have a <code>dnd</code> property when used for a class extending <code>Element</code>
+	 * (see {@link sap.ui.base.ManagedObject.MetadataOptions.AggregationDnD AggregationDnD}).
 	 *
 	 * Example:
 	 * <pre>
@@ -269,34 +302,16 @@ sap.ui.define([
 	 *     },
 	 *     dnd : { draggable: true, droppable: false },
 	 *     aggregations : {
-	 *       items : { type: 'sap.ui.core.Control', multiple : true, dnd : {draggable: false, dropppable: true, layout: "Horizontal" } },
+	 *       items : { type: 'sap.ui.core.Control', multiple : true, dnd : {draggable: false, droppable: true, layout: "Horizontal" } },
 	 *       header : {type : "sap.ui.core.Control", multiple : false, dnd : true },
 	 *     }
 	 *   }
 	 * });
 	 * </pre>
 	 *
-	 * <h3><code>dnd</code> key as a metadata property</h3>
-	 *
-	 * <b>dnd</b>: <i>object|boolean</i><br>
-	 * Defines draggable and droppable configuration of the element.
-	 * The following keys can be provided via <code>dnd</code> object literal to configure drag-and-drop behavior of the element:
-	 * <ul>
-	 *  <li><code>[draggable=false]: <i>boolean</i></code> Defines whether the element is draggable or not. The default value is <code>false</code>.</li>
-	 *  <li><code>[droppable=false]: <i>boolean</i></code> Defines whether the element is droppable (it allows being dropped on by a draggable element) or not. The default value is <code>false</code>.</li>
-	 * </ul>
-	 * If <code>dnd</code> property is of type Boolean, then the <code>draggable</code> and <code>droppable</code> configuration are set to this Boolean value.
-	 *
-	 * <h3><code>dnd</code> key as an aggregation metadata property</h3>
-	 *
-	 * <b>dnd</b>: <i>object|boolean</i><br>
-	 * In addition to draggable and droppable configuration, the layout of the aggregation can be defined as a hint at the drop position indicator.
-	 * <ul>
-	 *  <li><code>[layout="Vertical"]: </code> The arrangement of the items in this aggregation. This setting is recommended for the aggregation with multiplicity 0..n (<code>multiple: true</code>). Possible values are <code>Vertical</code> (e.g. rows in a table) and <code>Horizontal</code> (e.g. columns in a table). It is recommended to use <code>Horizontal</code> layout if the arrangement is multidimensional.</li>
-	 * </ul>
-	 *
 	 * @param {string} sClassName Name of the class to be created
 	 * @param {object} [oClassInfo] Object literal with information about the class
+	 * @param {sap.ui.core.Element.MetadataOptions} [oClassInfo.metadata] the metadata object describing the class: properties, aggregations, events etc.
 	 * @param {function} [FNMetaImpl] Constructor function for the metadata object. If not given, it defaults to <code>sap.ui.core.ElementMetadata</code>.
 	 * @returns {function} Created class / constructor function
 	 *
@@ -497,6 +512,29 @@ sap.ui.define([
 		}
 	};
 
+	/*
+	 * Intercept any changes for properties named "enabled".
+	 *
+	 * If such a change is detected, inform all descendants that use the `EnabledPropagator`
+	 * so that they can recalculate their own, derived enabled state.
+	 * This is required in the context of rendering V4 to make the state of controls/elements
+	 * self-contained again when they're using the `EnabledPropagator` mixin.
+	 */
+	Element.prototype.setProperty = function(sPropertyName, vValue, bSuppressInvalidate) {
+		if (sPropertyName != "enabled" || bSuppressInvalidate) {
+			return ManagedObject.prototype.setProperty.apply(this, arguments);
+		}
+
+		var bOldEnabled = this.mProperties.enabled;
+		ManagedObject.prototype.setProperty.apply(this, arguments);
+		if (bOldEnabled != this.mProperties.enabled) {
+			// the EnabledPropagator knows better which descendants to update
+			EnabledPropagator.updateDescendants(this);
+		}
+
+		return this;
+	};
+
 	Element.prototype.insertDependent = function(oElement, iIndex) {
 		this.insertAggregation("dependents", oElement, iIndex, true);
 		return this; // explicitly return 'this' to fix controls that override insertAggregation wrongly
@@ -643,6 +681,39 @@ sap.ui.define([
 	Element._interceptEvent = undefined;
 
 	/**
+	 * Updates the count of rendering-related delegates and if the given threshold is reached,
+	 * informs the RenderManager` to enable/disable rendering V4 for the element.
+	 *
+	 * @param {sap.ui.core.Element} oElement The element instance
+	 * @param {object} oDelegate The delegate instance
+	 * @param {iThresholdCount} iThresholdCount Whether the delegate has been added=1 or removed=0.
+	 *    At the same time serves as threshold when to inform the `RenderManager`.
+	 * @private
+	 */
+	function updateRenderingDelegate(oElement, oDelegate, iThresholdCount) {
+		if (oDelegate.canSkipRendering || !(oDelegate.onAfterRendering || oDelegate.onBeforeRendering)) {
+			return;
+		}
+
+		oElement._iRenderingDelegateCount += (iThresholdCount || -1);
+
+		if (oElement.bOutput === true && oElement._iRenderingDelegateCount == iThresholdCount) {
+			RenderManager.canSkipRendering(oElement, 1 /* update skip-the-rendering DOM marker, only if the apiVersion is 4 */);
+		}
+	}
+
+	/**
+	 * Returns whether the element has rendering-related delegates that might prevent skipping the rendering.
+	 *
+	 * @returns {boolean}
+	 * @private
+	 * @ui5-restricted sap.ui.core.RenderManager
+	 */
+	Element.prototype.hasRenderingDelegate = function() {
+		return Boolean(this._iRenderingDelegateCount);
+	};
+
+	/**
 	 * Adds a delegate that listens to the events of this element.
 	 *
 	 * Note that the default behavior (delegate attachments are not cloned when a control is cloned) is usually the desired behavior in control development
@@ -680,6 +751,8 @@ sap.ui.define([
 		}
 
 		(bCallBefore ? this.aBeforeDelegates : this.aDelegates).push({oDelegate:oDelegate, bClone: !!bClone, vThis: ((oThis === this) ? true : oThis)}); // special case: if this element is the given context, set a flag, so this also works after cloning (it should be the cloned element then, not the given one)
+		updateRenderingDelegate(this, oDelegate, 1);
+
 		return this;
 	};
 
@@ -698,12 +771,14 @@ sap.ui.define([
 		for (i = 0; i < this.aDelegates.length; i++) {
 			if (this.aDelegates[i].oDelegate == oDelegate) {
 				this.aDelegates.splice(i, 1);
+				updateRenderingDelegate(this, oDelegate, 0);
 				i--; // One element removed means the next element now has the index of the current one
 			}
 		}
 		for (i = 0; i < this.aBeforeDelegates.length; i++) {
 			if (this.aBeforeDelegates[i].oDelegate == oDelegate) {
 				this.aBeforeDelegates.splice(i, 1);
+				updateRenderingDelegate(this, oDelegate, 0);
 				i--; // One element removed means the next element now has the index of the current one
 			}
 		}
@@ -740,6 +815,11 @@ sap.ui.define([
 	 * See {@link topic:bdf3e9818cd84d37a18ee5680e97e1c1 Event Handler Methods} for a general explanation of
 	 * event handling in controls.
 	 *
+	 * <b>Note:</b> Setting the special <code>canSkipRendering</code> property to <code>true</code> for the event delegate
+	 * object itself lets the framework know that the <code>onBeforeRendering</code> and <code>onAfterRendering</code>
+	 * event handlers of the delegate are compatible with the contract of {@link sap.ui.core.RenderManager Renderer.apiVersion 4}.
+	 * See example "Adding a rendering delegate...".
+	 *
 	 * @example <caption>Adding a delegate for the keydown and afterRendering event</caption>
 	 * <pre>
 	 * var oDelegate = {
@@ -748,6 +828,22 @@ sap.ui.define([
 	 *   },
 	 *   onAfterRendering: function(){
 	 *     // Act when the afterRendering event is fired on the element
+	 *   }
+	 * };
+	 * oElement.addEventDelegate(oDelegate);
+	 * </pre>
+	 *
+	 * @example <caption>Adding a rendering delegate that is compatible with the rendering optimization</caption>
+	 * <pre>
+	 * var oDelegate = {
+	 *   canSkipRendering: true,
+	 *   onBeforeRendering: function() {
+	 *     // Act when the beforeRendering event is fired on the element
+	 *     // The code here only accesses HTML elements inside the root node of the control
+	 *   },
+	 *   onAfterRendering: function(){
+	 *     // Act when the afterRendering event is fired on the element
+	 *     // The code here only accesses HTML elements inside the root node of the control
 	 *   }
 	 * };
 	 * oElement.addEventDelegate(oDelegate);
@@ -799,6 +895,75 @@ sap.ui.define([
 	 */
 	Element.prototype.getFocusDomRef = function () {
 		return this.getDomRef() || null;
+	};
+
+	/**
+	 * Checks whether an element is able to get the focus after {@link #focus} is called.
+	 *
+	 * An element is treated as 'focusable' when all of the following conditions are met:
+	 * <ul>
+	 *   <li>The element and all of its parents are not 'busy' or 'blocked',</li>
+	 *   <li>the element is rendered at the top layer on the UI and not covered by any other DOM elements, such as an
+	 *   opened modal popup or the global <code>BusyIndicator</code>,</li>
+	 *   <li>the element matches the browser's prerequisites for being focusable: if it's a natively focusable element,
+	 *   for example <code>input</code>, <code>select</code>, <code>textarea</code>, <code>button</code>, and so on, no
+	 *   'tabindex' attribute is needed. Otherwise, 'tabindex' must be set. In any case, the element must be visible in
+	 *   order to be focusable.</li>
+	 * </ul>
+	 *
+	 * @returns {boolean} Whether the element can get the focus after calling {@link #focus}
+	 * @since 1.110
+	 * @public
+	 */
+	Element.prototype.isFocusable = function() {
+		var oFocusDomRef = this.getFocusDomRef();
+
+		if (!oFocusDomRef) {
+			return false;
+		}
+
+		var oCurrentDomRef = oFocusDomRef;
+		var oRect = oCurrentDomRef.getBoundingClientRect();
+
+		// find the first parent element whose position is within the current view port
+		// because document.elementsFromPoint can return meaningful DOM elements only when the given coordinate is
+		// within the current view port
+		while ((oRect.x < 0 || oRect.x > window.innerWidth ||
+			oRect.y < 0 || oRect.y > window.innerHeight)) {
+
+			if (oCurrentDomRef.assignedSlot) {
+				// assigned slot's bounding client rect has all properties set to 0
+				// therefore we jump to the slot's parentElement directly in the next "if...else if...else"
+				oCurrentDomRef = oCurrentDomRef.assignedSlot;
+			}
+
+			if (oCurrentDomRef.parentElement) {
+				oCurrentDomRef = oCurrentDomRef.parentElement;
+			} else if (oCurrentDomRef.parentNode && oCurrentDomRef.parentNode.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+				oCurrentDomRef = oCurrentDomRef.parentNode.host;
+			} else {
+				break;
+			}
+
+			oRect = oCurrentDomRef.getBoundingClientRect();
+		}
+
+		var aElements = document.elementsFromPoint(oRect.x, oRect.y);
+
+		var iFocusDomRefIndex = aElements.findIndex(function(oElement) {
+			return oElement.contains(oFocusDomRef);
+		});
+
+		var iBlockLayerIndex = aElements.findIndex(function(oElement) {
+			return oElement.classList.contains("sapUiBLy") || oElement.classList.contains("sapUiBlockLayer");
+		});
+
+		if (iBlockLayerIndex !== -1 && iFocusDomRefIndex > iBlockLayerIndex) {
+			// when block layer is visible and it's displayed over the Element's DOM
+			return false;
+		}
+
+		return jQuery(oFocusDomRef).is(":sapFocusable");
 	};
 
 	function getAncestorScrollPositions(oDomRef) {
@@ -1399,6 +1564,17 @@ sap.ui.define([
 	 * {@link sap.ui.core.RenderManager#accessibilityState accessibilityState} and
 	 * {@link sap.ui.core.RenderManager#writeAccessibilityState writeAccessibilityState} methods
 	 * for the parent of the currently rendered control - if the parent implements it.
+	 *
+	 * <b>Note:</b> Setting the special <code>canSkipRendering</code> property of the <code>mAriaProps</code> parameter to <code>true</code> lets the <code>RenderManager</code> know
+	 * that the accessibility enhancement is static and does not interfere with the child control's {@link sap.ui.core.RenderManager Renderer.apiVersion 4} rendering optimization.
+	 *
+	 * @example <caption>Setting an accessibility state that is compatible with the rendering optimization</caption>
+	 * <pre>
+	 * MyControl.prototype.enhanceAccessibilityState = function(oElement, mAriaProps) {
+	 *     mAriaProps.label = "An appropriate label from the parent";
+	 *     mAriaProps.canSkipRendering = true;
+	 * };
+	 * </pre>
 	 *
 	 * @function
 	 * @name sap.ui.core.Element.prototype.enhanceAccessibilityState

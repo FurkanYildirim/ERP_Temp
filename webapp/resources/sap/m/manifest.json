@@ -5,7 +5,7 @@
     "type": "library",
     "embeds": [],
     "applicationVersion": {
-      "version": "1.108.14"
+      "version": "1.115.1"
     },
     "title": "The main UI5 control library, with responsive controls that can be used in touch devices as well as desktop browsers.",
     "description": "The main UI5 control library, with responsive controls that can be used in touch devices as well as desktop browsers.",
@@ -29,17 +29,17 @@
   },
   "sap.ui5": {
     "dependencies": {
-      "minUI5Version": "1.108",
+      "minUI5Version": "1.115",
       "libs": {
         "sap.ui.core": {
-          "minVersion": "1.108.14"
+          "minVersion": "1.115.1"
         },
         "sap.ui.layout": {
-          "minVersion": "1.108.14",
+          "minVersion": "1.115.1",
           "lazy": true
         },
         "sap.ui.unified": {
-          "minVersion": "1.108.14",
+          "minVersion": "1.115.1",
           "lazy": true
         }
       }
@@ -196,6 +196,7 @@
           "sap.m.OverflowToolbar",
           "sap.m.OverflowToolbarButton",
           "sap.m.OverflowToolbarToggleButton",
+          "sap.m.OverflowToolbarMenuButton",
           "sap.m.P13nColumnsPanel",
           "sap.m.P13nGroupPanel",
           "sap.m.P13nSelectionPanel",
@@ -298,18 +299,19 @@
         ],
         "elements": [
           "sap.m.BadgeCustomData",
+          "sap.m.CarouselLayout",
           "sap.m.Column",
           "sap.m.ColumnPopoverActionItem",
           "sap.m.ColumnPopoverCustomItem",
           "sap.m.ColumnPopoverItem",
           "sap.m.ColumnPopoverSortItem",
-          "sap.m.CustomDynamicDateOption",
           "sap.m.DynamicDateOption",
           "sap.m.DynamicDateValueHelpUIType",
           "sap.m.FlexItemData",
           "sap.m.FeedListItemAction",
           "sap.m.IconTabFilter",
           "sap.m.IconTabSeparator",
+          "sap.m.ImageCustomData",
           "sap.m.LightBoxItem",
           "sap.m.OverflowToolbarLayoutData",
           "sap.m.MaskInputRule",
@@ -352,6 +354,7 @@
           "sap.m.ViewSettingsItem",
           "sap.m.plugins.CellSelector",
           "sap.m.plugins.ColumnResizer",
+          "sap.m.plugins.CopyProvider",
           "sap.m.plugins.DataStateIndicator",
           "sap.m.plugins.PasteProvider",
           "sap.m.plugins.PluginBase",
@@ -386,6 +389,7 @@
           "sap.m.semantic.SortAction",
           "sap.m.semantic.SortSelect",
           "sap.m.table.columnmenu.Entry",
+          "sap.m.table.columnmenu.ActionItem",
           "sap.m.table.columnmenu.Item",
           "sap.m.table.columnmenu.ItemBase",
           "sap.m.table.columnmenu.QuickAction",
@@ -401,7 +405,9 @@
           "sap.m.BadgeState",
           "sap.m.BadgeAnimationType",
           "sap.m.BarDesign",
+          "sap.m.BorderDesign",
           "sap.m.BreadcrumbsSeparatorStyle",
+          "sap.m.ButtonAccessibleRole",
           "sap.m.ButtonType",
           "sap.m.CarouselArrowsPlacement",
           "sap.m.DateTimeInputType",

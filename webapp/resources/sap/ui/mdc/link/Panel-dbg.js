@@ -22,7 +22,7 @@ sap.ui.define([
 	"sap/ui/model/BindingMode",
 	"sap/ui/base/ManagedObjectObserver",
 	"sap/ui/mdc/p13n/subcontroller/LinkPanelController",
-	"sap/ui/mdc/p13n/Engine",
+	"sap/m/p13n/Engine",
 	"sap/ui/mdc/mixin/AdaptationMixin",
 	"sap/ui/mdc/link/PanelItem",
 	"sap/ui/core/CustomData"
@@ -38,7 +38,7 @@ sap.ui.define([
 	 * supposed that the properties of the item structure is not changed.
 	 * @extends sap.ui.core.Control
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.54.0
@@ -116,9 +116,9 @@ sap.ui.define([
 	Panel.prototype.init = function() {
 		Control.prototype.init.call(this);
 
-		Engine.getInstance().registerAdaptation(this, {
+		Engine.getInstance().register(this, {
 			controller: {
-				LinkItems: LinkPanelController
+				LinkItems: new LinkPanelController({control: this})
 			}
 		});
 
@@ -322,9 +322,10 @@ sap.ui.define([
 
 	Panel.prototype.onPressLink = function(oEvent) {
 		var oLink = oEvent.getSource();
-		if (this.getBeforeNavigationCallback() && oLink && oLink.getTarget() !== "_blank") {
+		var bCtrlKeyPressed = oEvent.getParameters().ctrlKey || oEvent.getParameters().metaKey;
+		if (this.getBeforeNavigationCallback() && oLink && oLink.getTarget() !== "_blank" && !bCtrlKeyPressed) {
 			// Fall back to using href property when there is no internalHref
-			var bUseInternalHref = oLink && oLink.getCustomData() && oLink.getCustomData()[0].getValue();
+			var bUseInternalHref = oLink && oLink.getCustomData() && oLink.getCustomData()[0] && oLink.getCustomData()[0].getValue();
 			var sHref = bUseInternalHref ? oLink.getCustomData()[0].getValue() : oLink.getHref();
 			oEvent.preventDefault();
 			this.getBeforeNavigationCallback()(oEvent).then(function(bNavigate) {
@@ -392,7 +393,15 @@ sap.ui.define([
 				if (oParent.isA("sap.m.Popover")) {
 					oParent.setModal(true);
 				}
-				Engine.getInstance().uimanager.show(this, "LinkItems").then(function(oDialog) {
+				Engine.getInstance().uimanager.show(this, "LinkItems", {
+					contentWidth: "28rem",
+					contentHeight: "35rem",
+					close: function() {
+						if (oParent.isA("sap.m.Popover")) {
+							oParent.setModal(false);
+						}
+					}
+				}).then(function(oDialog) {
 					var oResetButton = oDialog.getCustomHeader().getContentRight()[0];
 					var oSelectionPanel = oDialog.getContent()[0];
 					oResetButton.setModel(oModel, "$sapuimdclinkPanel");
@@ -402,12 +411,15 @@ sap.ui.define([
 					fnUpdateResetButton.call(this, oSelectionPanel);
 					oSelectionPanel.attachChange(function(oEvent) {
 						fnUpdateResetButton.call(this, oSelectionPanel);
+						oSelectionPanel.attachChange(function(oEvent) {
+							fnUpdateResetButton.call(this, oSelectionPanel);
+						}.bind(this));
+						oDialog.attachAfterClose(function() {
+							if (oParent.isA("sap.m.Popover")) {
+								oParent.setModal(false);
+							}
+						});
 					}.bind(this));
-					oDialog.attachAfterClose(function() {
-						if (oParent.isA("sap.m.Popover")) {
-							oParent.setModal(false);
-						}
-					});
 					resolve(oDialog);
 				}.bind(this));
 			}.bind(this));

@@ -11,8 +11,9 @@ sap.ui.define([
 	"sap/ui/support/supportRules/ui/models/SharedModel",
 	"sap/ui/core/util/File",
 	"sap/base/util/extend",
-	"sap/ui/support/library"
-], function (Storage, constants, SelectionUtils, SharedModel, File, extend, library) {
+	"sap/ui/support/library",
+	"sap/ui/core/date/UI5Date"
+], function (Storage, constants, SelectionUtils, SharedModel, File, extend, library, UI5Date) {
 	"use strict";
 
 	var PresetsUtils = {
@@ -123,7 +124,7 @@ sap.ui.define([
 				id: sId,
 				title: sTitle,
 				description: sDescription,
-				dateExported: (new Date()).toISOString(),
+				dateExported: (UI5Date.getInstance()).toISOString(),
 				version: "1.0",
 				selections: aSelections
 			};

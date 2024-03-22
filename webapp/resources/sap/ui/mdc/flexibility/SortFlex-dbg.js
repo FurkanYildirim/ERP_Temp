@@ -4,28 +4,12 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/mdc/p13n/Engine",
-	"sap/ui/mdc/flexibility/Util"
-], function(Engine, Util) {
+	"sap/m/p13n/Engine",
+	"sap/ui/mdc/flexibility/Util",
+	"sap/ui/fl/changeHandler/Base",
+	"sap/ui/fl/changeHandler/condenser/Classification"
+], function(Engine, Util, FLChangeHandlerBase, CondenserClassification) {
 	"use strict";
-	var fRebindControl = function(oControl) {
-		var bExecuteRebindForTable = oControl && oControl.isA && oControl.isA("sap.ui.mdc.Table") && oControl.isTableBound();
-		var bExecuteRebindForChart = oControl && oControl.isA && (oControl.isA("sap.ui.mdc.Chart"));
-		if (bExecuteRebindForTable || bExecuteRebindForChart) {
-			if (!oControl._bWaitForBindChanges) {
-				oControl._bWaitForBindChanges = true;
-				Engine.getInstance().waitForChanges(oControl).then(function() {
-					if (bExecuteRebindForTable) {
-						oControl.rebind();
-					} else if (bExecuteRebindForChart) {
-						oControl.rebind();
-					}
-					delete oControl._bWaitForBindChanges;
-				});
-
-			}
-		}
-	};
 
 	var fFinalizeSortChange = function(oChange, oControl, oSortContent, bIsRevert) {
 		if (bIsRevert) {
@@ -35,8 +19,6 @@ sap.ui.define([
 			// Set revert data on the change
 			oChange.setRevertData(oSortContent);
 		}
-		// Rebind Table if needed
-		fRebindControl(oControl);
 	};
 
 	var fAddSort = function(oChange, oControl, mPropertyBag, sChangeReason) {
@@ -50,7 +32,7 @@ sap.ui.define([
 					var aValue = oSortConditions ? oSortConditions.sorters : [];
 
 					var oSortContent = {
-						name: oChangeContent.name,
+						name: oChangeContent.key || oChangeContent.name,
 						descending: oChangeContent.descending
 					};
 
@@ -90,7 +72,12 @@ sap.ui.define([
 					});
 					var iIndex = aValue.indexOf(aFoundValue[0]);
 
-					aValue.splice(iIndex, 1);
+					if (iIndex > -1) {
+						aValue.splice(iIndex, 1);
+					} else {
+						// In case the specified change is already existing (e.g. nothing to be removed) we need to ignore the change gracefully and mark it as not applicable
+						return FLChangeHandlerBase.markAsNotApplicable("The specified change is already existing - change appliance ignored", true);
+					}
 
 					oSortConditions = {
 						sorters: aValue
@@ -140,19 +127,76 @@ sap.ui.define([
 	};
 
 	var Sort = {};
-	Sort.removeSort = Util.createChangeHandler({
-		apply: fRemoveSort,
-		revert: fAddSort
-	});
-
 	Sort.addSort = Util.createChangeHandler({
 		apply: fAddSort,
-		revert: fRemoveSort
+		revert: fRemoveSort,
+		getCondenserInfo: function(oChange, mPropertyBag) {
+			return {
+				affectedControl: {id: oChange.getContent().name},
+				affectedControlIdProperty: "name",
+				targetContainer: oChange.getSelector(),
+				targetAggregation: "sorters",
+				customAggregation: mPropertyBag.modifier.bySelector(oChange.getSelector(), mPropertyBag.appComponent).getSortConditions().sorters,
+				classification: CondenserClassification.Create,
+				setTargetIndex: function(oChange, iNewTargetIndex) {
+					oChange.getContent().index = iNewTargetIndex;
+				},
+				getTargetIndex: function(oChange) {
+					return oChange.getContent().index;
+				}
+			};
+		}
+	});
+
+	Sort.removeSort = Util.createChangeHandler({
+		apply: fRemoveSort,
+		revert: fAddSort,
+		getCondenserInfo: function(oChange, mPropertyBag) {
+			return {
+				affectedControl: {id: oChange.getContent().name},
+				affectedControlIdProperty: "name",
+				targetContainer: oChange.getSelector(),
+				targetAggregation: "sorters",
+				customAggregation: mPropertyBag.modifier.bySelector(oChange.getSelector(), mPropertyBag.appComponent).getSortConditions().sorters,
+				classification: CondenserClassification.Destroy,
+				sourceIndex: oChange.getRevertData().index,
+				setIndexInRevertData: function(oChange, iIndex) {
+					var oRevertData = oChange.getRevertData();
+					oRevertData.index = iIndex;
+					oChange.setRevertData(oRevertData);
+				}
+			};
+		}
 	});
 
 	Sort.moveSort = Util.createChangeHandler({
 		apply: fMoveSort,
-		revert: fMoveSort
+		revert: fMoveSort,
+		getCondenserInfo: function(oChange, mPropertyBag) {
+			return {
+				affectedControl: {id: oChange.getContent().name},
+				affectedControlIdProperty: "name",
+				targetContainer: oChange.getSelector(),
+				targetAggregation: "sorters",
+				classification: CondenserClassification.Move,
+				//sourceIndex: oChange.getContent().index,
+				sourceIndex: oChange.getRevertData().index,
+				customAggregation: mPropertyBag.modifier.bySelector(oChange.getSelector(), mPropertyBag.appComponent).getSortConditions().sorters,
+				sourceContainer: oChange.getSelector(),
+				sourceAggregation: "sorters",
+				setTargetIndex: function(oChange, iNewTargetIndex) {
+					oChange.getContent().index = iNewTargetIndex;
+				},
+				getTargetIndex: function(oChange) {
+					return oChange.getContent().index;
+				},
+				setIndexInRevertData: function(oChange, iIndex) {
+					var oRevertData = oChange.getRevertData();
+					oRevertData.index = iIndex;
+					oChange.setRevertData(oRevertData);
+				}
+			};
+		}
 	});
 
 	return Sort;

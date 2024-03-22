@@ -5,7 +5,7 @@
     "type": "library",
     "embeds": [],
     "applicationVersion": {
-      "version": "1.108.14"
+      "version": "1.115.1"
     },
     "title": "SAPUI5 library with integration-related controls.",
     "description": "SAPUI5 library with integration-related controls.",
@@ -54,13 +54,22 @@
   },
   "sap.ui5": {
     "dependencies": {
-      "minUI5Version": "1.108",
+      "minUI5Version": "1.115",
       "libs": {
         "sap.ui.core": {
-          "minVersion": "1.108.14"
+          "minVersion": "1.115.1"
         },
         "sap.f": {
-          "minVersion": "1.108.14"
+          "minVersion": "1.115.1"
+        },
+        "sap.m": {
+          "minVersion": "1.115.1"
+        },
+        "sap.ui.unified": {
+          "minVersion": "1.115.1"
+        },
+        "sap.ui.layout": {
+          "minVersion": "1.115.1"
         }
       }
     },
@@ -125,16 +134,20 @@
           "sap.ui.integration.cards.filters.FilterBar",
           "sap.ui.integration.cards.Header",
           "sap.ui.integration.cards.NumericHeader",
-          "sap.ui.integration.controls.ListContentItem"
+          "sap.ui.integration.controls.ListContentItem",
+          "sap.ui.integration.controls.BlockingMessage"
         ],
         "elements": [
           "sap.ui.integration.ActionDefinition",
-          "sap.ui.integration.Host"
+          "sap.ui.integration.Host",
+          "sap.ui.integration.Extension"
         ],
         "types": [
           "sap.ui.integration.CardActionType",
           "sap.ui.integration.CardDataMode",
-          "sap.ui.integration.CardMenuAction"
+          "sap.ui.integration.CardMenuAction",
+          "sap.ui.integration.CardDesign",
+          "sap.ui.integration.CardBlockingMessageType"
         ],
         "interfaces": []
       }

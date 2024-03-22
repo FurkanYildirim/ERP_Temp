@@ -1,0 +1,3 @@
+// Copyright (c) 2009-2023 SAP SE, All Rights Reserved
+sap.ui.define(["sap/ui/model/json/JSONListBinding"],function(t){"use strict";return t.extend("sap.ushell.components.contentFinder.model.GraphQLListBinding",{getLength:function(){if(this.aFilters&&this.aFilters.length>0&&this.aFilters[0].getFilters().length>0){return this.iLength}return this.getModel().getProperty("/appSearch/totalCount")||0},isLengthFinal:function(){return this.oList.length>=this.getLength()}})});
+//# sourceMappingURL=GraphQLListBinding.js.map

@@ -44,7 +44,7 @@ sap.ui.define([
 	 * @author SAP SE
 	 * @experimental Since 1.56
 	 * @since 1.56
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted
 	 */
@@ -331,6 +331,9 @@ sap.ui.define([
 				editable: oOverlay.getEditable(),
 				bIsView: oOverlay.getElement() instanceof View
 			};
+			if (oElement.isA("sap.ui.core.Component")) {
+				oData.component = true;
+			}
 			if (typeof oOverlay.isVisible() === "boolean") {
 				oData.visible = oOverlay.isVisible();
 			}

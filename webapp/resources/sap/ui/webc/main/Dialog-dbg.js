@@ -46,7 +46,7 @@ sap.ui.define([
 	 * <b>Note:</b> We don't recommend nesting popup-like components (<code>sap.ui.webc.main.Dialog</code>, <code>sap.ui.webc.main.Popover</code>) inside other components containing z-index. This might break z-index management.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public

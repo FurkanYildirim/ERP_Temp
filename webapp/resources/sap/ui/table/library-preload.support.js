@@ -46,7 +46,7 @@ sap.ui.predefine("sap/ui/table/rules/Accessibility.support", [
 	var MessageType = CoreLibrary.MessageType;
 
 	/*
-	 * Validates whether title or aria-labelledby is correctly set
+	 * Validates whether aria-labelledby is correctly set
 	 */
 	var oAccessibleLabel = SupportHelper.normalizeRule({
 		id: "AccessibleLabel",
@@ -54,7 +54,7 @@ sap.ui.predefine("sap/ui/table/rules/Accessibility.support", [
 		categories: [Categories.Accessibility],
 		title: "Accessible Label",
 		description: "Checks whether 'sap.ui.table.Table' controls have an accessible label.",
-		resolution: "Use the 'title' aggregation or the 'ariaLabelledBy' association of the 'sap.ui.table.Table' control "
+		resolution: "Use the 'ariaLabelledBy' association of the 'sap.ui.table.Table' control "
 					+ "to define a proper accessible labeling.",
 		check: function(oIssueManager, oCoreFacade, oScope) {
 			var aTables = SupportHelper.find(oScope, true, "sap.ui.table.Table");
@@ -280,9 +280,9 @@ sap.ui.predefine("sap/ui/table/rules/Plugins.support", [
 		minversion: "1.64",
 		categories: [Categories.Usage],
 		title: "Plugins validation",
-		description: "Checks the number and type of plugins which are applied to the table. Only one MultiSelectionPlugin can be applied. "
+		description: "Checks the number and type of plugins which are applied to the table. Only one selection plugin can be applied. "
 					 + "No other plugins are allowed.",
-		resolution: "Check if multiple MultiSelectionPlugins are applied, or a plugin of another type is applied to the table.",
+		resolution: "Check if multiple selection plugins are applied, or a plugin of another type is applied to the table.",
 		check: function(oIssueManager, oCoreFacade, oScope) {
 			var aTables = SupportHelper.find(oScope, true, "sap.ui.table.Table");
 
@@ -295,9 +295,9 @@ sap.ui.predefine("sap/ui/table/rules/Plugins.support", [
 						Severity.High, oTable.getId());
 				} else if (aPlugins.length == 1) {
 					var oPlugin = aPlugins[0];
-					if (!oPlugin.isA("sap.ui.table.plugins.MultiSelectionPlugin")) {
+					if (!oPlugin.isA("sap.ui.table.plugins.SelectionPlugin")) {
 						SupportHelper.reportIssue(oIssueManager,
-							"Only one MultiSelectionPlugin can be applied to the table",
+							"Only a selection plugin can be applied to the table",
 							Severity.High, oTable.getId());
 					}
 				}

@@ -16,7 +16,7 @@ sap.ui.define([
 	 * @since 1.67.0
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @alias sap.m.HeaderContainerItemNavigator

@@ -33,7 +33,7 @@ function(
 	 * @extends sap.ui.dt.plugin.ControlDragDrop
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -121,7 +121,7 @@ function(
 			oOverlay.setSelected(false);
 		});
 
-		oOverlay.$().addClass("sapUiRtaOverlayPlaceholder");
+		oOverlay.getDomRef().classList.add("sapUiRtaOverlayPlaceholder");
 	};
 
 	/**
@@ -138,7 +138,7 @@ function(
 				command: oCommand
 			});
 
-			oOverlay.$().removeClass("sapUiRtaOverlayPlaceholder");
+			oOverlay.getDomRef().classList.remove("sapUiRtaOverlayPlaceholder");
 			oOverlay.setSelected(true);
 			oOverlay.focus();
 

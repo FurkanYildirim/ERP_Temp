@@ -35,7 +35,7 @@ sap.ui.define([
 	 * @ui5-restricted sap.ui.mdc
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	var AutoRowMode = RowMode.extend("sap.ui.table.rowmodes.AutoRowMode", /** @lends sap.ui.table.rowmodes.AutoRowMode.prototype */ {
 		metadata: {

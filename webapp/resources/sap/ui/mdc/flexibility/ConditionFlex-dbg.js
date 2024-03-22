@@ -7,8 +7,10 @@ sap.ui.define([
 	'sap/base/util/merge',
 	'sap/base/Log',
 	'sap/ui/mdc/condition/FilterOperatorUtil',
-	'sap/ui/mdc/flexibility/Util'
-], function(merge, Log, FilterOperatorUtil, Util) {
+	'sap/ui/mdc/flexibility/Util',
+	"sap/ui/fl/changeHandler/condenser/Classification",
+	"sap/ui/mdc/util/mapVersions"
+], function(merge, Log, FilterOperatorUtil, Util, Classification, mapVersions) {
 	"use strict";
 
 	/**
@@ -34,23 +36,17 @@ sap.ui.define([
 			sap.ui.require([
 				sDelegatePath
 			], fResolveLoad, fRejectLoad);
+		})
+		.then(function(Delegate){
+			mapVersions(Delegate);
+			return Delegate;
 		});
-	};
-
-	var fDetermineFilterControl = function(oControl) {
-		var oController = oControl && oControl.getEngine ? oControl.getEngine().getController(oControl, "Filter") : null;
-		return oController ? oController.getFilterControl() : null;
 	};
 
 	var fAddCondition = function(oChange, oControl, mPropertyBag, sChangeReason) {
 
-		var oFilterControl = fDetermineFilterControl(oControl);
 		var bIsRevert = (sChangeReason === Util.REVERT);
 		var oChangeContent = bIsRevert ? oChange.getRevertData() : oChange.getContent();
-
-		if (oFilterControl && oFilterControl.applyConditionsAfterChangesApplied) {
-			oFilterControl.applyConditionsAfterChangesApplied(oControl);
-		}
 
 		var mConditionsData, aConditions = null, oModifier = mPropertyBag.modifier;
 
@@ -94,9 +90,9 @@ sap.ui.define([
 						return fnGetDelegate(oDelegate.name);
 					})
 					.then(function(Delegate){
-						var fnDelegateAddCondition = Delegate && (Delegate.getFilterDelegate ? Delegate.getFilterDelegate().addCondition : Delegate.addCondition);
+						var fnDelegateAddCondition = Delegate && (Delegate.getFilterDelegate ? mapVersions(Delegate.getFilterDelegate()).addCondition : Delegate.addCondition);
 						if (fnDelegateAddCondition) {
-							return fnDelegateAddCondition(oChangeContent.name, oControl, mPropertyBag)
+							return fnDelegateAddCondition(oControl, oChangeContent.name, mPropertyBag)
 							.catch(function(oEx) {
 								Log.error("Error during Delegate.addCondition call: " + oEx);
 							});
@@ -115,13 +111,8 @@ sap.ui.define([
 
 	var fRemoveCondition = function(oChange, oControl, mPropertyBag, sChangeReason) {
 
-		var oFilterControl = fDetermineFilterControl(oControl);
 		var bIsRevert = (sChangeReason === Util.REVERT);
 		var oChangeContent = bIsRevert ? oChange.getRevertData() : oChange.getContent();
-
-		if (oFilterControl && oFilterControl.applyConditionsAfterChangesApplied) {
-			oFilterControl.applyConditionsAfterChangesApplied(oControl);
-		}
 
 		var mConditionsData, aConditions, nDelIndex = -1, oModifier = mPropertyBag.modifier;
 
@@ -164,9 +155,9 @@ sap.ui.define([
 							return fnGetDelegate(oDelegate.name);
 						})
 						.then(function(Delegate){
-							var fnDelegateRemoveCondition = Delegate && (Delegate.getFilterDelegate ? Delegate.getFilterDelegate().removeCondition : Delegate.removeCondition);
+							var fnDelegateRemoveCondition = Delegate && (Delegate.getFilterDelegate ? mapVersions(Delegate.getFilterDelegate()).removeCondition : Delegate.removeCondition);
 							if (fnDelegateRemoveCondition) {
-								return fnDelegateRemoveCondition(oChangeContent.name, oControl, mPropertyBag)
+								return fnDelegateRemoveCondition(oControl, oChangeContent.name, mPropertyBag)
 								.catch(function(oEx) {
 									Log.error("Error during Delegate.removeCondition call: " + oEx);
 								});
@@ -183,16 +174,27 @@ sap.ui.define([
 		});
 	};
 
+	var fGetCondenserInfoCondition = function(oChange, mPropertyBag) {
+		var oContent = oChange.getContent();
+		return {
+			classification: Classification.Reverse,
+			affectedControl: oChange.getSelector(),
+			uniqueKey: oContent.name + '_' + JSON.stringify(oContent.condition)
+		};
+	};
+
 	var ConditionFlex = {};
 
 	ConditionFlex.addCondition = Util.createChangeHandler({
 		apply: fAddCondition,
-		revert: fRemoveCondition
+		revert: fRemoveCondition,
+		getCondenserInfo: fGetCondenserInfoCondition
 	});
 
 	ConditionFlex.removeCondition = Util.createChangeHandler({
 		apply: fRemoveCondition,
-		revert: fAddCondition
+		revert: fAddCondition,
+		getCondenserInfo: fGetCondenserInfoCondition
 	});
 
 	return ConditionFlex;

@@ -6,7 +6,7 @@
 
 sap.ui.define(
     [
-        "sap/ui/mdc/p13n/Engine"
+        "sap/m/p13n/Engine"
 ],
     function (Engine) {
         "use strict";
@@ -32,7 +32,7 @@ sap.ui.define(
          *
          *
          * @author SAP SE
-         * @version 1.108.14
+         * @version 1.115.1
          * @alias sap.ui.mdc.mixin.AdaptationMixin
          * @namespace
          * @since 1.82.0
@@ -63,10 +63,10 @@ sap.ui.define(
         /**
          * Returns a promise after the Control#_onModifications hook has been fulfilled which may return a promise.
          *
-         * @returns {Promise} Resolves after all control updates have been considered
+         * @returns {Promise} Resolves with a list of changes (may be empty list) after all control updates have been considered
          */
         AdaptationMixin.awaitPendingModification = function() {
-			var pPendingModification = this._pPendingModification || Promise.resolve();
+            var pPendingModification = this._pPendingModification || Promise.resolve();
             var aChangesProcessed = Engine.getInstance().getTrace(this);
 
             return pPendingModification.then(function(){

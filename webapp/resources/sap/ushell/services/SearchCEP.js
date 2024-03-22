@@ -1,0 +1,3 @@
+// Copyright (c) 2009-2023 SAP SE, All Rights Reserved
+sap.ui.define(["sap/base/Log"],function(e){"use strict";var r="sap.ushell.services.SearchCEP";var t={count:0,data:[]};function a(e,r,t,a){this.oAdapter=e}a.prototype.execSearch=function(t){var a=this;return new Promise(function(o){a.oAdapter.execSearch(t).then(o,function(t){e.error("execSearch of the adapter failed",t,r);o({})})})};a.prototype.suggest=function(e){return this.search(e)};a.prototype.search=function(e){if(typeof this.oAdapter.search==="function"){return this.oAdapter.search(e)}return Promise.resolve(t)};a.hasNoAdapter=false;return a},true);
+//# sourceMappingURL=SearchCEP.js.map

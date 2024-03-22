@@ -31,7 +31,7 @@ sap.ui.define([
 	 * Clicking or tapping on a <code>sap.ui.webc.main.SegmentedButtonItem</code> changes its state to <code>pressed</code>. The item returns to its initial state when the user clicks or taps on it again. By applying additional custom CSS-styling classes, apps can give a different style to any <code>sap.ui.webc.main.SegmentedButtonItem</code>.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public

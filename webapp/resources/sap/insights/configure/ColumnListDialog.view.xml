@@ -1,0 +1,32 @@
+<mvc:View displayBlock="true" controllerName="sap.insights.configure.ColumnList" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc">
+  <Dialog id="insightsColumnListDialog"   contentHeight="42.8rem" contentWidth="65.6rem"  verticalScrolling="false" horizontalScrolling="false" class="sapContrastPlus" resizable="false" draggable="true" showHeader="false" afterClose="afterCloseDialog">
+    <content>
+
+      <Page id="insightCardDialogPage" title="{i18n>INT_PREVIEW_POPOVER_BUTTON_TITLE}" titleLevel="H1" showHeader="false" showSubHeader="true" backgroundDesign="List" enableScrolling="false" showNavButton="{= ${configureView>/bCalledInternally} ? true : false}" navButtonPress=".onNavBack(${configureView>/})" >
+        <content>
+          <NavContainer id="navCon" initialPage="insightCardColumnPage">
+            <core:Fragment  fragmentName="sap.insights.configure.ColumnList" type="XML" />
+            <core:Fragment fragmentName="sap.insights.configure.PreviewCard" type="XML" />
+            <!-- <mvc:XMLView viewName="sap.insights.houseOfCards.HouseOfCardsDialog" id="insightsHoCView" /> -->
+          </NavContainer>
+        </content>
+
+
+        <footer>
+            <OverflowToolbar>
+
+            <ToolbarSpacer/>
+            <Button id="backButton" text="{i18n>INT_DIALOG_BACK}" visible="{= !${configureView>/bPreview} ? true : false}" press=".onNavBack"/>
+
+            <Button id="addButton" text="{i18n>INT_DIALOG_Ok}"  press=".save(${configureView>/oConfCard})" visible="{= (!${configureView>/bPreview} || !${configureView>/bTransform}) ? true : false}"  type="Emphasized" enabled="{= ((${configureView>/visibleColumnCount} &gt; 0) || ${configureView>/bShowHoCPage} || ${configureView>/oConfCard/sap.card/type} === 'Analytical') ? true : false}"/>
+            <!-- <Button id="addButton" text="Add"  press=".save(${configureView>/oConfCard})" visible="{= (!${configureView>/bPreview}) ? true : false}"  type="Emphasized" enabled="{= ((${configureView>/visibleColumnCount} &gt; 0) || ${configureView>/bShowHoCPage} || ${configureView>/oConfCard/sap.card/type} === 'Analytical') ? true : false}"/> -->
+            <!-- <Button id="nextButton" text="Next"  press="._callNextPage(${configureView>/oConfCard})" visible="{= ${configureView>/bPreview} ? true : false}" enabled="{= (${configureView>/visibleColumnCount} &gt; 0) || ${configureView>/bShowHoCPage} ? true : false}"/> -->
+            <Button id="nextButton" text="{i18n>INT_DIALOG_NEXT}"  press="._callNextPage(${configureView>/oConfCard})" visible="{= (${configureView>/bPreview})? true : false}" type="Emphasized"/>
+
+            <Button id="cancelButton" text="{i18n>INT_DIALOG_CANCEL}" press=".closeDialog"/>
+          </OverflowToolbar>
+        </footer>
+      </Page>
+    </content>
+    </Dialog>
+  </mvc:View>

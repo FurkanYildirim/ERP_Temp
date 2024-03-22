@@ -6,7 +6,6 @@
 
 // Provides class sap.ui.dt.AggregationOverlay.
 sap.ui.define([
-	"sap/ui/thirdparty/jquery",
 	"sap/ui/dt/Overlay",
 	"sap/ui/dt/ElementUtil",
 	"sap/ui/dt/OverlayUtil",
@@ -14,7 +13,6 @@ sap.ui.define([
 	"sap/base/util/merge"
 ],
 function(
-	jQuery,
 	Overlay,
 	ElementUtil,
 	OverlayUtil,
@@ -35,7 +33,7 @@ function(
 	 * @extends sap.ui.dt.Overlay
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -145,24 +143,31 @@ function(
 			if (this.isRendered()) {
 				var iPositionInDom = this._getChildIndex(oChild);
 				var bChildRendered = oChild.isRendered();
-				var $Child = bChildRendered ? oChild.$() : oChild.render(true);
-				var $Children = jQuery(this.getChildrenDomRef());
-				var iCurrentPosition = $Children.find('>').index($Child);
+
+				if (!bChildRendered) {
+					var oRenderResult = oChild.render(true);
+					//TODO: change when renderer does not return jquery object any more!
+					oRenderResult = oRenderResult.jquery ? oRenderResult.get(0) : oRenderResult;
+				}
+
+				var oChildDOM = bChildRendered ? oChild.getDomRef() : oRenderResult;
+				var aChildren = this.getChildrenDomRef().children;
+				var iCurrentPosition = [].indexOf.call(aChildren, oChildDOM);
 				var iInsertIndex;
 
 				if (iCurrentPosition !== iPositionInDom) {
 					if (iPositionInDom > 0) {
 						iInsertIndex = iCurrentPosition > -1 && iCurrentPosition < iPositionInDom ? iPositionInDom : iPositionInDom - 1;
-						$Children.find('>').eq(iInsertIndex).after($Child);
+						aChildren[iInsertIndex].after(oChildDOM);
 					} else {
 						iInsertIndex = iPositionInDom; // === 0
-						$Children.prepend($Child);
+						this.getChildrenDomRef().prepend(oChildDOM);
 					}
 				}
 
 				if (!bChildRendered) {
 					oChild.fireAfterRendering({
-						domRef: $Child.get(0)
+						domRef: oChildDOM
 					});
 				}
 			}

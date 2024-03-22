@@ -11,6 +11,7 @@ sap.ui.define([
 	'sap/m/library',
 	'sap/ui/model/ChangeReason',
 	'sap/ui/base/ManagedObjectMetadata',
+	'sap/ui/base/ManagedObjectObserver',
 	'sap/ui/core/HTML',
 	'sap/m/CustomListItem',
 	'sap/base/security/encodeXML',
@@ -23,6 +24,7 @@ sap.ui.define([
 		library,
 		ChangeReason,
 		ManagedObjectMetadata,
+		ManagedObjectObserver,
 		HTML,
 		CustomListItem,
 		encodeXML,
@@ -90,6 +92,10 @@ sap.ui.define([
 			if (this._oRM) {
 				this._oRM.destroy();
 				this._oRM = null;
+			}
+			if (this._oObserver) {
+				this._oObserver.disconnect();
+				this._oObserver = null;
 			}
 
 			this.clearItemsPool();
@@ -164,6 +170,12 @@ sap.ui.define([
 				return;
 			}
 
+			// destroy the observer on rebind
+			if (this._oObserver) {
+				this._oObserver.disconnect();
+				this._oObserver = null;
+			}
+
 			// if the template invalidates, then also clear the itemsPool
 			this.clearItemsPool();
 
@@ -198,9 +210,7 @@ sap.ui.define([
 		},
 
 		onScrollToLoad: function() {
-			var oTriggerButton = this._oControl.getDomRef("triggerList");
-
-			if (this._bLoading || !oTriggerButton || oTriggerButton.style.display != "none") {
+			if (this._bLoading) {
 				return;
 			}
 
@@ -291,8 +301,17 @@ sap.ui.define([
 					oEvent.preventDefault();
 				},
 				onsapspace : function(oEvent) {
-					this.requestNewPage();
+					this._bSpaceKeyPressed = true;
+					this._oTrigger.setActive(true);
 					oEvent.preventDefault();
+				},
+				onkeydown : function(oEvent) {
+					this._bSpaceKeyCancelled = this._bSpaceKeyCancelled || (oEvent.shiftKey || oEvent.which == 27 /** KeyCodes.ESCAPE */);
+				},
+				onkeyup: function(oEvent) {
+					this._bSpaceKeyPressed && !this._bSpaceKeyCancelled && this.requestNewPage();
+					this._bSpaceKeyPressed = this._bSpaceKeyCancelled = false;
+					this._oTrigger.setActive(false);
 				},
 				onAfterRendering : function(oEvent) {
 					var $oTrigger = this._oTrigger.$();
@@ -359,7 +378,7 @@ sap.ui.define([
 			}
 
 			// after growing-button gets hidden scroll container should still be scrollable
-			return this._oScrollDelegate.getMaxScrollTop() > this._oControl.getDomRef("triggerList").clientHeight;
+			return this._oScrollDelegate.getMaxScrollTop() > this._oControl.getDomRef("triggerList").offsetHeight;
 		},
 
 		// destroy all items in the list and cleanup
@@ -436,13 +455,21 @@ sap.ui.define([
 				return;
 			}
 
-			var oBindingInfo = this._oControl.getBindingInfo("items"),
-				// limit the number of items in the pool to 100, since have too many items in the pool is also not performant
-				iLimit = this._iLimit <= 100 ? this._iLimit : 100;
-			if (oBindingInfo && oBindingInfo.template) {
-				for (var i = 0; i < iLimit; i++) {
-					this._aItemsPool.push(oBindingInfo.factory());
-				}
+			var oBindingInfo = this._oControl.getBindingInfo("items");
+			var oTemplate = oBindingInfo.template;
+			if (!oTemplate) {
+				return;
+			}
+
+			// limit the number of items in the pool to 100, since have too many items in the pool is also not performant
+			for (var i = 0, iLimit = Math.min(this._iLimit, 100); i < iLimit; i++) {
+				this._aItemsPool.push(oBindingInfo.factory());
+			}
+
+			if (oTemplate.getCells) {
+				// items pool is not usable when the template is changed e.g. p13n removes/insert cells instead of rebind
+				this._oObserver = new ManagedObjectObserver(this.clearItemsPool.bind(this));
+				this._oObserver.observe(oTemplate, { aggregations: ["cells"] });
 			}
 		},
 
@@ -516,9 +543,12 @@ sap.ui.define([
 				this._oRM.renderControl(this._aChunk[i]);
 			}
 
-			var bHasFocus = (vInsert == false) && oDomRef.contains(document.activeElement);
+			this._bHadFocus = (vInsert == false) && oDomRef.contains(document.activeElement);
 			this._oRM.flush(oDomRef, false, this._getDomIndex(vInsert));
-			bHasFocus && this._oControl.focus();
+			this._bHadFocus && this._oControl.focus();
+			if (!this._oControl.getBusy()) {
+				this._bHadFocus = false;
+			}
 			this._aChunk = [];
 		},
 
@@ -752,8 +782,8 @@ sap.ui.define([
 
 		_updateTriggerDelayed: function(bLoading) {
 			if (this._oControl.getGrowingScrollToLoad()) {
-				this._iTriggerTimer && window.cancelAnimationFrame(this._iTriggerTimer);
-				this._iTriggerTimer = window.requestAnimationFrame(this._updateTrigger.bind(this, bLoading));
+				this._iTriggerTimer && clearTimeout(this._iTriggerTimer);
+				this._iTriggerTimer = setTimeout(this._updateTrigger.bind(this, bLoading));
 			} else {
 				this._updateTrigger(bLoading);
 			}
@@ -763,15 +793,12 @@ sap.ui.define([
 		_updateTrigger : function(bLoading) {
 			var oTrigger = this._oTrigger,
 				oControl = this._oControl,
-				bVisibleItems = oControl && oControl.getVisibleItems().length > 0;
+				bVisibleItems = oControl && oControl.getVisibleItems().length > 0,
+				oBinding = oControl && oControl.getBinding("items");
 
 			// If there are no visible columns or items then also hide the trigger.
-			if (!oTrigger || !oControl || !bVisibleItems || !oControl.shouldRenderItems() || !oControl.getDomRef()) {
-				return;
-			}
-
-			var oBinding = oControl.getBinding("items");
-			if (!oBinding) {
+			if (!oTrigger || !oControl || !bVisibleItems || !oBinding || !oControl.shouldRenderItems() || !oControl.getDomRef()) {
+				this._bHadFocus = false;
 				return;
 			}
 
@@ -791,8 +818,14 @@ sap.ui.define([
 					oTriggerDomRef = oTrigger.getDomRef();
 
 				// put the focus to the newly added item if growing button is pressed
-				if (oTriggerDomRef && oTriggerDomRef.contains(document.activeElement)) {
-					(aItems[this._iLastItemsCount] || oControl).focus();
+				// or to the item if the focus was on the items container
+
+				if (this._bHadFocus) {
+					this._bHadFocus = false;
+					jQuery(this._oControl.getNavigationRoot()).trigger("focus");
+				} else if (oTriggerDomRef && oTriggerDomRef.contains(document.activeElement)) {
+					var oFocusTarget = aItems[this._iLastItemsCount] || aItems[iItemsLength - 1] || oControl;
+					oFocusTarget && setTimeout(oFocusTarget.focus.bind(oFocusTarget));
 				}
 
 				// show, update or hide the growing button
@@ -802,12 +835,13 @@ sap.ui.define([
 					oControl.$("triggerList").css("display", "none");
 					oControl.$("listUl").removeClass("sapMListHasGrowing");
 				} else {
+					var oBundle = Core.getLibraryResourceBundle("sap.m");
 					if (bLengthFinal) {
 						oControl.$("triggerInfo").css("display", "block").text(this._getListItemInfo());
 						var aCounts = this._getItemCounts();
-						oControl.$("triggerMessage").text(Core.getLibraryResourceBundle("sap.m").getText("LOAD_MORE_DATA_ACC_WITH_COUNT", aCounts));
+						oControl.$("triggerMessage").text(oBundle.getText(oControl.isA("sap.m.Table") ? "LOAD_MORE_ROWS_ACC_WITH_COUNT" : "LOAD_MORE_DATA_ACC_WITH_COUNT", aCounts));
 					} else {
-						oControl.$("triggerMessage").text(Core.getLibraryResourceBundle("sap.m").getText("LOAD_MORE_DATA_ACC"));
+						oControl.$("triggerMessage").text(oBundle.getText("LOAD_MORE_DATA_ACC"));
 					}
 
 					oControl.$("triggerList").css("display", "");

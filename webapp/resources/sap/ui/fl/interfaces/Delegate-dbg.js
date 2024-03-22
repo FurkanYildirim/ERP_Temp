@@ -108,7 +108,7 @@ sap.ui.define([
 	 * @private
 	 * @ui5-restricted
 	 * @since 1.78
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @private
 	 * @ui5-restricted

@@ -10,7 +10,6 @@ sap.ui.define([
 		"sap/ui/core/Element",
 		"./WebComponentMetadata",
 		"./WebComponentRenderer",
-		"sap/ui/core/Core",
 		"sap/base/strings/hyphenate",
 		"sap/base/strings/camelize",
 		"sap/ui/core/library",
@@ -21,7 +20,6 @@ sap.ui.define([
 		Element,
 		WebComponentMetadata,
 		WebComponentRenderer,
-		Core,
 		hyphenate,
 		camelize,
 		coreLibrary,
@@ -39,8 +37,8 @@ sap.ui.define([
 		 * @returns {sap.ui.core.Element|undefined}
 		 */
 		var fnGetControlFor = function(obj) {
-			if (obj.id && Core.byId(obj.id)) {
-				return Core.byId(obj.id);
+			if (obj.id && Element.registry.get(obj.id)) {
+				return Element.registry.get(obj.id);
 			}
 		};
 
@@ -106,7 +104,7 @@ sap.ui.define([
 		 *
 		 * @extends sap.ui.core.Control
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 * @public
 		 * @since 1.92.0
 		 * @alias sap.ui.webc.common.WebComponent

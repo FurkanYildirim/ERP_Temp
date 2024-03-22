@@ -25,7 +25,7 @@ sap.ui.define(['./FlexBox', './library', './HBoxRenderer'],
 	 * @extends sap.m.FlexBox
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public

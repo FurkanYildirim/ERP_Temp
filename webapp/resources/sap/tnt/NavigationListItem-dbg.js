@@ -32,7 +32,7 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 		 * @extends sap.ui.core.Item
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -108,7 +108,7 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 
 		NavigationListItem.expandIcon = 'sap-icon://navigation-right-arrow';
 		NavigationListItem.collapseIcon = 'sap-icon://navigation-down-arrow';
-
+		NavigationListItem.selectionIndicatorIcon = 'sap-icon://circle-task-2';
 
 		NavigationListItem._getInvisibleText = function() {
 			if (!this._invisibleText) {
@@ -211,6 +211,22 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 			}
 
 			return parent;
+		};
+
+		/**
+		 * Returns the DOM Element that should get the focus.
+		 *
+		 * @return {Element} Returns the DOM Element that should get the focus
+		 * @protected
+		 */
+		NavigationListItem.prototype.getFocusDomRef = function () {
+			var oFocusRef = this.getDomRef("focusable");
+
+			if (oFocusRef) {
+				return oFocusRef;
+			}
+
+			return this.getDomRef();
 		};
 
 		/**
@@ -523,9 +539,14 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 					role: 'treeitem',
 					selected: false,
 					roledescription: this._resourceBundleTNTLib.getText("NAVIGATION_LIST_ITEM_ROLE_DESCRIPTION_TREE_ITEM")
-				};
+				},
+				expanderVisible = this.getItems().length > 0 && this.getHasExpander();
 
-			rm.openStart("div");
+			if (isListExpanded) {
+				rm.openStart("div", this.getId() + "-focusable");
+			} else {
+				rm.openStart("div");
+			}
 
 			rm.class("sapTntNavLIItem");
 			rm.class("sapTntNavLIGroup");
@@ -542,6 +563,10 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 
 			if (!isListExpanded && this._hasSelectedChild(control._selectedItem)) {
 				rm.class("sapTntNavLIItemSelected");
+			}
+
+			if (expanderVisible) {
+				rm.class("sapTntNavLIItemWithExpander");
 			}
 
 			// checking if there are items level 2 in the NavigationListItem
@@ -590,10 +615,11 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 
 			if (control.getExpanded()) {
 				var expandIconControl = this._getExpandIconControl();
-				expandIconControl.setVisible(this.getItems().length > 0 && this.getHasExpander());
+				expandIconControl.setVisible(expanderVisible);
 				expandIconControl.setSrc(this.getExpanded() ? NavigationListItem.collapseIcon : NavigationListItem.expandIcon);
 				expandIconControl.setTooltip(this._getExpandIconTooltip(!this.getExpanded()));
 				this._renderText(rm);
+				rm.icon(NavigationListItem.selectionIndicatorIcon, ["sapTntNavLISelectionIndicator"]);
 				rm.renderControl(expandIconControl);
 			}
 
@@ -738,8 +764,8 @@ sap.ui.define(["sap/ui/thirdparty/jquery", "./library", 'sap/ui/core/Core', "sap
 
 			rm.openEnd();
 
-
 			this._renderText(rm);
+			rm.icon("sap-icon://circle-task-2", ["sapTntNavLISelectionIndicator"]);
 
 			rm.close('a');
 

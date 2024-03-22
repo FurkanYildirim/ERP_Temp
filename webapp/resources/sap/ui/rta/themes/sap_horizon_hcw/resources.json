@@ -44,7 +44,7 @@
 		},
 		{
 			"name": "Toolbar.adaptation.less",
-			"size": 1553,
+			"size": 1914,
 			"designtime": true,
 			"theme": "sap_horizon_hcw"
 		},
@@ -62,40 +62,40 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 11733,
+			"size": 11938,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 125823,
+			"size": 149621,
 			"designtime": true,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 125447,
+			"size": 149245,
 			"designtime": true,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 36737,
+			"size": 36645,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/ui/rta/themes/sap_horizon_hcw/library-parameters.json",
-			"size": 4592,
+			"size": 4661,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "library.css",
-			"size": 36718,
+			"size": 36621,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "library.less",
-			"size": 11724,
+			"size": 12085,
 			"designtime": true,
 			"theme": "sap_horizon_hcw"
 		},
@@ -107,12 +107,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 34595,
+			"size": 34338,
 			"theme": "sap_horizon_hcw"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 34588,
+			"size": 34326,
 			"theme": "sap_horizon_hcw"
 		},
 		{

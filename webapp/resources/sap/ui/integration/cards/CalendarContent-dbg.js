@@ -10,6 +10,7 @@ sap.ui.define([
 		"sap/ui/integration/cards/BaseContent",
 		"sap/ui/integration/util/BindingHelper",
 		"sap/ui/integration/util/BindingResolver",
+		"sap/f/cards/loading/CalendarPlaceholder",
 		"sap/f/CalendarAppointmentInCard",
 		"sap/f/CalendarInCard",
 		"sap/f/PlanningCalendarInCardLegend",
@@ -26,14 +27,18 @@ sap.ui.define([
 		"sap/ui/unified/DateTypeRange",
 		"sap/ui/core/date/UniversalDate",
 		"sap/ui/unified/CalendarLegendItem",
-		"sap/ui/core/Configuration"
-	],
+		"sap/ui/core/Configuration",
+		"sap/ui/core/date/UI5Date",
+		"sap/ui/unified/DateRange",
+		"sap/ui/core/Core"
+],
 	function (CalendarContentRenderer,
 		ResizeHandler,
 		library,
 		BaseContent,
 		BindingHelper,
 		BindingResolver,
+		CalendarPlaceholder,
 		CalendarAppointmentInCard,
 		CalendarInCard,
 		PlanningCalendarInCardLegend,
@@ -50,7 +55,11 @@ sap.ui.define([
 		DateTypeRange,
 		UniversalDate,
 		CalendarLegendItem,
-		Configuration) {
+		Configuration,
+		UI5Date,
+		DateRange,
+		Core
+		) {
 		"use strict";
 
 		var ActionArea = library.CardActionArea;
@@ -70,7 +79,7 @@ sap.ui.define([
 		 * @extends sap.ui.integration.cards.BaseContent
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @private
@@ -100,6 +109,49 @@ sap.ui.define([
 				}
 			}
 		});
+
+		/**
+		 * Changes the calendar view to the specified month.
+		 *
+		 * @ui5-restricted
+		 * @private
+		 * @param {int} iMonth The selected month, which month the calendar should display.
+		 */
+		CalendarContent.prototype.changeMonth = function (iMonth) {
+			this._oCalendar._getMonthPicker().setMonth(iMonth);
+			this._oCalendar._selectMonth();
+			this.invalidate();
+			this.getCardInstance().fireStateChanged();
+		};
+
+		/**
+		 * Changes the calendar date to the passed date.
+		 *
+		 * @ui5-restricted
+		 * @private
+		 * @param {Date} oDate The selected date, the month and year of which the calendar should display.
+		 */
+		CalendarContent.prototype.changeDate = function (oDate) {
+			var oCardActions = this.getActions(),
+				oDateRange = new DateRange(),
+				oCal = this._oCalendar;
+
+			oDateRange.setStartDate(oDate);
+			oCal.destroySelectedDates();
+			oCal.addAggregation('selectedDates', oDateRange);
+			this._oFocusedDate = oCal.getSelectedDates()[0] ? oCal.getSelectedDates()[0] : null;
+			oCal.addSelectedDate(oDateRange);
+
+			oCal._getYearPicker().setYear(oDate.getFullYear());
+			oCal._getYearPicker().fireSelect();
+			oCal._selectYear();
+
+			this.changeMonth(oDate.getMonth());
+
+			oCardActions.fireAction(this, "DateChange", {
+				"selectedDate": oDate
+			});
+		};
 
 		/**
 		 * Creates the internal structure of the card.
@@ -196,6 +248,8 @@ sap.ui.define([
 		};
 
 		CalendarContent.prototype.onBeforeRendering = function () {
+			BaseContent.prototype.onBeforeRendering.apply(this, arguments);
+
 			var oInitiallySelectedDate = this._oCalendar.getSelectedDates().length ? this._oCalendar.getSelectedDates()[0].getStartDate() : this._oCalendar.getStartDate();
 
 			this._setParameters();
@@ -221,21 +275,31 @@ sap.ui.define([
 		};
 
 		/**
-		 * Setter for configuring a <code>sap.ui.integration.cards.CalendarContent</code>.
-		 *
-		 * @public
-		 * @param {Object} oConfiguration Configuration object used to create the internal calendar.
-		 * @returns {this} Pointer to the control instance to allow method chaining.
+		 * @override
 		 */
-		CalendarContent.prototype.setConfiguration = function (oConfiguration) {
-			BaseContent.prototype.setConfiguration.apply(this, arguments);
-			oConfiguration = this.getParsedConfiguration();
+		CalendarContent.prototype.createLoadingPlaceholder = function (oConfiguration) {
+			var oCard = this.getCardInstance(),
+				iContentMinItems = oCard.getContentMinItems(oConfiguration);
+
+			return new CalendarPlaceholder({
+				minItems: iContentMinItems !== null ? iContentMinItems : 2,
+				maxLegendItems: oConfiguration.maxLegendItems ? parseInt(oConfiguration.maxLegendItems) : 2,
+				item: oConfiguration.item ? oConfiguration.item.template : {},
+				legendItem: oConfiguration.legendItem ? oConfiguration.legendItem.template : {}
+			});
+		};
+
+		/**
+		 * @override
+		 */
+		CalendarContent.prototype.applyConfiguration = function () {
+			var oConfiguration = this.getParsedConfiguration();
 
 			//workaround until actions refactor
 			this.fireEvent("_actionContentReady"); // todo
 
 			if (!oConfiguration) {
-				return this;
+				return;
 			}
 
 			if (oConfiguration.item) {
@@ -273,8 +337,141 @@ sap.ui.define([
 					control: this._getMoreButton()
 				});
 			}
+		};
 
-			return this;
+		/**
+		 * @override
+		 */
+		 CalendarContent.prototype.getStaticConfiguration = function () {
+			var oConfiguration = this.getParsedConfiguration(),
+				aAppointments = this.getAppointments(),
+				aSpecialDates = this._oCalendar.getSpecialDates(),
+				sLegendId = this._oCalendar.getLegend(),
+				oLegend = Core.byId(sLegendId),
+				aLegendItems = oLegend.getItems(),
+				aLegendAppointmentItems = oLegend.getAppointmentItems(),
+				oFocusedDate = this._oCalendar.getSelectedDates()[0] ?
+					this._oCalendar.getSelectedDates()[0].getStartDate() :
+					null,
+				oSelectededDate = this._oCalendar.getSelectedDates()[0] ? this._oCalendar.getSelectedDates()[0] : null,
+				oSelectedDateEnd = oSelectededDate.getStartDate ? oSelectededDate.getStartDate().getTime() + 86400000 : null,
+				oSelectedJsStartDate = oSelectededDate.getStartDate(),
+				iMaxItems = oConfiguration.maxItems,
+				iMaxLegendItems = oConfiguration.maxLegendItems,
+				sNoItemsText = oConfiguration.noItemsText,
+				aResolvedItems = [],
+				aResolvedSpecialDates = [],
+				aResolvedLegendItems = [],
+				bMoreItems = false,
+				sFocusedDateISO;
+
+			sFocusedDateISO = oFocusedDate ? oFocusedDate.toISOString() : null;
+			sFocusedDateISO = sFocusedDateISO ? sFocusedDateISO : oConfiguration.date;
+
+			aAppointments.forEach(function (oItem, i) {
+				var oStartDate = oItem.getStartDate(),
+					oEndDate = oItem.getEndDate(),
+					aTemplateKeys,
+					singleAssembledItem,
+					bAppInDaY = oStartDate >= oSelectedJsStartDate && oStartDate <= oSelectedDateEnd,
+					bAppEndsInDay = oEndDate >= oSelectedJsStartDate && oEndDate <= oSelectedDateEnd,
+					bDayInApp = oStartDate <= oSelectedJsStartDate &&  oEndDate > oSelectedDateEnd,
+					bIncludeAppointment = bAppInDaY || bAppEndsInDay || bDayInApp;
+
+				if (bIncludeAppointment) {
+					aTemplateKeys = Object.keys(oConfiguration.item.template);
+					singleAssembledItem = {};
+
+					aTemplateKeys.forEach(function(sKey) {
+						var oBindingInfo = BindingHelper.prependRelativePaths(oConfiguration.item.template[sKey], this.getBindingPath("appointments") + "/" + i);
+
+						singleAssembledItem[sKey] = BindingResolver.resolveValue(oBindingInfo, this);
+					}.bind(this));
+					singleAssembledItem.startDate = new Date(singleAssembledItem.startDate).toISOString();
+					if (singleAssembledItem.endDate) {
+						singleAssembledItem.endDate = new Date(singleAssembledItem.endDate).toISOString();
+					}
+					aResolvedItems.push(singleAssembledItem);
+					if (aResolvedItems.length > oConfiguration.maxItems) {
+						bMoreItems = true;
+					}
+				}
+			}.bind(this));
+
+			aSpecialDates.forEach(function (oItem, i) {
+				var oCal = this._oCalendar,
+					oStartDate = oItem.getStartDate(),
+					oEndDate = oItem.getEndDate(),
+					oViewedMonth = oCal._getMonthPicker().getMonth() ?
+						oCal._getMonthPicker().getMonth() :
+						oCal._getFocusedDate().getMonth(),
+					oViewedYear = Number(oCal._getYearString()),
+					bStartsWithinMonth = oStartDate.getMonth() === oViewedMonth,
+					bEndsWithinMonth = oEndDate ? oEndDate.getMonth() === oViewedMonth : false,
+					bStartsWithinYear = oStartDate.getFullYear() === oViewedYear,
+					bEndsWithinYear = oItem.getEndDate() ?
+						oItem.getEndDate().getFullYear() === oViewedYear :
+						bStartsWithinYear,
+					bIncludeSpecialDate = (bStartsWithinMonth || bEndsWithinMonth) && (bStartsWithinYear || bEndsWithinYear),
+					aTemplateKeys,
+					oResolvedDate;
+
+				if (bIncludeSpecialDate) {
+					aTemplateKeys = Object.keys(oConfiguration.specialDate.template);
+					var oBindingInfo = {};
+
+					aTemplateKeys.forEach(function(sKey) {
+						oBindingInfo[sKey] = BindingHelper.prependRelativePaths(oConfiguration.specialDate.template[sKey], this._oCalendar.getBindingPath("specialDates") + "/" + i);
+					}.bind(this));
+
+					oResolvedDate = BindingResolver.resolveValue(oBindingInfo, this);
+					oResolvedDate.startDate = new Date(oResolvedDate.startDate).toISOString();
+					if (oResolvedDate.endDate) {
+						oResolvedDate.endDate = new Date(oResolvedDate.endDate).toISOString();
+					}
+
+					aResolvedSpecialDates.push(oResolvedDate);
+				}
+			}.bind(this));
+
+			aLegendItems.forEach(function (oItem, i) {
+				var aTemplateKeys = Object.keys(oConfiguration.legendItem.template),
+					singleAssembledItem = {};
+
+				aTemplateKeys.forEach(function(sKey) {
+					var oBindingInfo = BindingHelper.prependRelativePaths(oConfiguration.legendItem.template[sKey], oLegend.getBindingPath("items") + "/" + i);
+
+					singleAssembledItem[sKey] = BindingResolver.resolveValue(oBindingInfo, this);
+				}.bind(this));
+				aResolvedLegendItems.push(singleAssembledItem);
+			}.bind(this));
+
+			aLegendAppointmentItems.forEach(function (oItem, i) {
+				var aTemplateKeys  = Object.keys(oConfiguration.legendItem.template),
+					singleAssembledItem = {};
+
+				aTemplateKeys.forEach(function(sKey) {
+					var oBindingInfo = BindingHelper.prependRelativePaths(oConfiguration.legendItem.template[sKey], oLegend.getBindingPath("items") + "/" + i);
+
+					singleAssembledItem[sKey] = BindingResolver.resolveValue(oBindingInfo, this);
+				}.bind(this));
+				aResolvedLegendItems.push(singleAssembledItem);
+			}.bind(this));
+
+			var oStaticConfiguration = {};
+
+			oStaticConfiguration.items = aResolvedItems;
+			oStaticConfiguration.specialDates = aResolvedSpecialDates;
+			oStaticConfiguration.legendItems = aResolvedLegendItems;
+			oStaticConfiguration.date = sFocusedDateISO;
+			oStaticConfiguration.maxItems = iMaxItems;
+			oStaticConfiguration.maxLegendItems = iMaxLegendItems;
+			oStaticConfiguration.noItemsText = sNoItemsText;
+			if (bMoreItems) {
+				oStaticConfiguration.moreItems = BindingResolver.resolveValue(oConfiguration.moreItems, this);
+			}
+
+			return oStaticConfiguration;
 		};
 
 		/**
@@ -299,8 +496,8 @@ sap.ui.define([
 				oCurrentDate = this._oCalendar.getStartDate();
 			}
 
-			iStartOfDay = new Date(oCurrentDate.getFullYear(), oCurrentDate.getMonth(), oCurrentDate.getDate()).getTime();
-			iEndOfDay = new Date(oCurrentDate.getFullYear(), oCurrentDate.getMonth(), oCurrentDate.getDate() + 1).getTime();
+			iStartOfDay = UI5Date.getInstance(oCurrentDate.getFullYear(), oCurrentDate.getMonth(), oCurrentDate.getDate()).getTime();
+			iEndOfDay = UI5Date.getInstance(oCurrentDate.getFullYear(), oCurrentDate.getMonth(), oCurrentDate.getDate() + 1).getTime();
 
 			aBoundAppointments = this.getAppointments();
 			if (aBoundAppointments) {
@@ -349,7 +546,7 @@ sap.ui.define([
 			var fnIsVisiblePredicate = this._isAppointmentInSelectedDate(oSelectedDate);
 			var fnTodayFilter = function(oApp, iIndex) {
 				var oEndDate = oApp.getEndDate(),
-					oNow = new Date();
+					oNow = UI5Date.getInstance();
 
 				// today
 				if (oSelectedDate.getDate() === oNow.getDate()
@@ -397,14 +594,14 @@ sap.ui.define([
 				var iAppStartTime = oAppointment.getStartDate().getTime(),
 					iAppEndTime = oAppointment.getEndDate().getTime(),
 					iSelectedStartTime = oSelectedDate.getTime(),
-					oSelectedEnd = UniversalDate.getInstance(new Date(oSelectedDate.getTime())),
+					oSelectedEnd = UniversalDate.getInstance(UI5Date.getInstance(oSelectedDate.getTime())),
 					iSelectedEndTime,
 					bBiggerThanVisibleHours,
 					bStartHourBetweenStartAndEnd,
 					bEndHourBetweenStartAndEnd;
 
 				oSelectedEnd.setDate(oSelectedEnd.getDate() + 1);
-				iSelectedEndTime = oSelectedEnd.getTime();
+				iSelectedEndTime = oSelectedEnd.getTime() - 1000;
 
 				bBiggerThanVisibleHours = iAppStartTime < iSelectedStartTime && iAppEndTime > iSelectedEndTime;
 				bStartHourBetweenStartAndEnd = iAppStartTime >= iSelectedStartTime && iAppStartTime < iSelectedEndTime;
@@ -558,7 +755,7 @@ sap.ui.define([
 		 * @param {Object} sTime The date template of the configuration object.
 		 */
 		CalendarContent.prototype._addDate = function (sTime) {
-			if (BindingResolver.isBindingInfo(sTime)) {
+			if (BindingHelper.isBindingInfo(sTime)) {
 				if (!sTime) {
 					return;
 				}
@@ -583,7 +780,7 @@ sap.ui.define([
 		 * @param {Object} mMaxItems The mMaxItems template of the configuration object.
 		 */
 		CalendarContent.prototype._addMaxItems = function (mMaxItems) {
-			if (BindingResolver.isBindingInfo(mMaxItems)) {
+			if (BindingHelper.isBindingInfo(mMaxItems)) {
 				mMaxItems && this.bindProperty("visibleAppointmentsCount", mMaxItems);
 			} else {
 				this.setVisibleAppointmentsCount(mMaxItems);
@@ -597,7 +794,7 @@ sap.ui.define([
 		 * @param {Object} mMaxLegendItems The maxLegendItems template of the configuration object.
 		 */
 		CalendarContent.prototype._addMaxLegendItems = function (mMaxLegendItems) {
-			if (BindingResolver.isBindingInfo(mMaxLegendItems)) {
+			if (BindingHelper.isBindingInfo(mMaxLegendItems)) {
 				mMaxLegendItems && this._oLegend.bindProperty("visibleLegendItemsCount", mMaxLegendItems);
 			} else {
 				this._oLegend.setVisibleLegendItemsCount(mMaxLegendItems);
@@ -611,7 +808,7 @@ sap.ui.define([
 		 * @param {Object} mNoItemsText The noItemsText template of the configuration object.
 		 */
 		CalendarContent.prototype._addNoItemsText = function (mNoItemsText) {
-			if (BindingResolver.isBindingInfo(mNoItemsText)) {
+			if (BindingHelper.isBindingInfo(mNoItemsText)) {
 				mNoItemsText && this.bindProperty("noAppointmentsText", mNoItemsText);
 			} else {
 				this.setNoAppointmentsText(mNoItemsText);
@@ -642,7 +839,7 @@ sap.ui.define([
 		// priority for the later started.
 		CalendarContent.prototype._getCurrentAppointment = function() {
 			var aAppointments = this._getVisibleAppointments(),
-				oNow = new Date(),
+				oNow = UI5Date.getInstance(),
 				oApp,
 				iStart,
 				iEnd,

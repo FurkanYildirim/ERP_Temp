@@ -16,7 +16,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.write._internal.connectors.Utils
 	 * @since 1.70
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.write._internal.connectors, sap.ui.fl.write._internal.transport
 	 */

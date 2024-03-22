@@ -43,7 +43,7 @@ sap.ui.define([
 	 *
 	 * @author SAP SE
 	 *
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @experimental Since 1.51.0 This class is experimental and provides only limited functionality.
 	 * Also the API might be changed in future.
@@ -82,7 +82,7 @@ sap.ui.define([
 			var oChange = mPropertyBag.change;
 			var oRevertData = oChange.getRevertData();
 			var oChangeContent = oChange.getContent();
-			var oChangeODataInformation = oChange.getODataInformation();
+			var oChangeODataInformation = oChange.getSupportInformation().oDataInformation;
 			var iIndex = oChangeContent.newFieldIndex;
 			var mFieldSelector = oChangeContent.newFieldSelector;
 

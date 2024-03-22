@@ -41,7 +41,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.LayerUtils
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 */
 	var LayerUtils = {
 		_mLayersIndex: mLayersIndex,
@@ -220,9 +220,9 @@ sap.ui.define([
 		/**
 		 * Filters the passed Changes or change definitions and returns only the ones in the current layer
 		 *
-		 * @param {sap.ui.fl.Change|object[]} aChanges Array of Changes or ChangeDefinitions
+		 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject|object[]} aChanges Array of Changes or ChangeDefinitions
 		 * @param {string} sCurrentLayer Current Layer
-		 * @returns {sap.ui.fl.Change|object[]} Array of filtered Changes
+		 * @returns {sap.ui.fl.apply._internal.flexObjects.FlexObject|object[]} Array of filtered Changes
 		 */
 		filterChangeOrChangeDefinitionsByCurrentLayer: function(aChanges, sCurrentLayer) {
 			if (!sCurrentLayer) {

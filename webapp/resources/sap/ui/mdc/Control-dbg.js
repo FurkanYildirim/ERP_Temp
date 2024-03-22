@@ -20,13 +20,14 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 * @abstract
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @alias sap.ui.mdc.Control
 	 *
 	 * @borrows sap.ui.mdc.mixin.DelegateMixin.awaitControlDelegate as awaitControlDelegate
 	 * @borrows sap.ui.mdc.mixin.DelegateMixin.getControlDelegate as getControlDelegate
 	 * @borrows sap.ui.mdc.mixin.DelegateMixin.getPayload as getPayload
 	 * @borrows sap.ui.mdc.mixin.DelegateMixin.getTypeUtil as getTypeUtil
+ 	 * @borrows sap.ui.mdc.mixin.DelegateMixin.getTypeMap as getTypeMap
 	 * @borrows sap.ui.mdc.mixin.DelegateMixin.initControlDelegate as initControlDelegate
 	 *
 	 * @borrows sap.ui.mdc.mixin.PropertyHelperMixin.initPropertyHelper as initPropertyHelper
@@ -39,10 +40,9 @@ sap.ui.define([
 	 * @borrows sap.ui.mdc.mixin.AdaptationMixin.retrieveInbuiltFilter as retrieveInbuiltFilter
  	 * @borrows sap.ui.mdc.mixin.AdaptationMixin.getInbuiltFilter as getInbuiltFilter
 	 *
-	 * @private
 	 * @since 1.61
-	 * @experimental As of version 1.61
-	 * @ui5-restricted sap.ui.mdc
+	 * @public
+ 	 * @experimental As of version 1.61
 	 */
 	var Control = CoreControl.extend("sap.ui.mdc.Control", /** @lends sap.ui.mdc.Control.prototype */ {
 		metadata: {

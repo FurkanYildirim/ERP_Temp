@@ -1,0 +1,112 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:dnd="sap.ui.core.dnd"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:w="sap.ui.integration.widgets"
+    xmlns:grid="sap.ui.layout.cssgrid">
+    <Page id="insightCardColumnPage" title="{i18n>INT_PREVIEW_POPOVER_BUTTON_TITLE}" titleLevel="H1" showHeader="true" showSubHeader="true" backgroundDesign="List" enableScrolling="false" showNavButton="{= ${configureView>/bCalledInternally} ? true : false}" navButtonPress=".onNavBack(${configureView>/})" >
+        <headerContent>
+            <Button text="{i18n>INT_DIALOG_CardPreview}"
+                press="._callPreview(${configureView>/oConfCard})" visible="{=  (!${configureView>/bDesktop} &amp;&amp; !${configureView>/bShowPreview}) ? true : false}" enabled="true"/>
+            <Button
+                text="{i18n>INT_DIALOG_HidePreview}"
+                press="._callClosePreview(${configureView>/oConfCard})" visible="{= (${configureView>/bShowPreview} &amp;&amp; !${configureView>/bDesktop})  ? true : false}" enabled="true"/>
+        </headerContent>
+        <content>
+            <VBox id="flexContainerColumnContent" height="100%"  width="100%" direction="Row" justifyContent="SpaceBetween">
+                <FlexBox  id="editColumnInsightsCardsFlex" height="100%" width="{= ( ${configureView>/bDesktop}) ? '62%' : '100%'}"  direction="Column">
+                    <VBox id="insightsColumnEditVBox" direction="Column" class="sapUiSmallMarginBegin sapUiSmallMarginTop sapUiTinyMarginBottom" visible="{= (${configureView>/bDesktop} ||  (!${configureView>/bDesktop} &amp;&amp; !${configureView>/bShowPreview})) ? true : false}">
+                        <Title text="{i18n>INT_COLUMN_TITLE}" level="H4"/>
+                        <Text text="{i18n>INT_COLUMN_SUBTITLE}" />
+                    </VBox>
+
+                    <FlexBox  id="insightsColumnEditFlexBox" height="92%" width="95%" class="sapUiSmallMarginBegin sapUiSmallMarginEnd" visible="{= (${configureView>/bDesktop} ||  (!${configureView>/bDesktop} &amp;&amp; !${configureView>/bShowPreview})) ? true : false}" direction="Column" renderType="Bare">
+                        <VBox renderType="Bare">
+                            <SearchField id="columnSearch" placeholder="{i18n>INT_COL_SEARCH}" width="{= !${configureView>/bDesktop} ? '90%' : '100%'}" liveChange=".onColumnSearch" class="sapUiTinyMarginBottom"/>
+                        </VBox>
+                        <ScrollContainer id="idEditColumnsScrollContainer" vertical="true" horizontal="false" height="90%" width="100%">
+                            <Table id="insightsCardsEditColumnsListTable" fixedLayout="true" class="sapContrastPlus" items="{path: 'configureView>/cardColumn'}">
+                                <columns>
+                                    <Column id="editColumnsTableCheckBox" hAlign="Center" width="{= ${configureView>/bDesktop} ? '10%' : '20%'}"/>
+                                    <Column id="editColumnsName"  width="{= ${configureView>/bDesktop} ? '90%' : '80%'}"/>
+                                </columns>
+                                <dragDropConfig>
+                                    <dnd:DragInfo
+                                        id="idColumnDrag"
+                                        groupName="editColumns"
+                                        sourceAggregation="items" />
+                                    <dnd:DropInfo
+                                        id="idColumnDrop"
+                                        groupName="editColumns"
+                                        targetAggregation="items"
+                                        dropPosition="On"
+                                        drop="._onColumnDrop" />
+                                </dragDropConfig>
+                                <items>
+                                    <ColumnListItem id="editColumnsListItem">
+                                        <cells >
+                                            <HBox class="sapUiNoPadding">
+                                                <core:Icon id="columnSelectDnDIcon" src="sap-icon://BusinessSuiteInAppSymbols/icon-grip" class="insightsDndIcon" />
+                                                <CheckBox id="editColumnsSelecttest" selected="{= ${configureView>visible} ? true : false}"  enabled="{= !(!${configureView>visible} &amp;&amp; (${configureView>/visibleColumnCount} &gt; 2)) ? true : false}" select=".handleColumnVisibilityToggle" />
+                                            </HBox>
+                                        </cells>
+                                        <cells>
+                                            <ObjectIdentifier id="editColumnsTitleName" title="{configureView>title}" class="sapUiNoPadding" tooltip="{configureView>title}"/>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </ScrollContainer>
+                    </FlexBox>
+                    <FlexBox id="previewColCardFlex"  direction="Column" height="100%" width="100%" visible="{= (!${configureView>/bDesktop} &amp;&amp; ${configureView>/bShowPreview}) ? true : false}">
+                        <VBox id="previewVBoxSD" direction="Column" class="sapUiSmallMarginBegin sapUiTinyMarginTop" backgroundDesign="Solid" >
+                            <Label id="labelColLayout" text="{i18n>INT_COL_LAYOUT}"/>
+                            <SegmentedButton id="sdColumnSegButton" width="3.75rem" selectionChange="onSegmentedSelectionChange"  tooltip="{i18n>INT_LAYOUT_TOOLTIP}" >
+                                <items>
+                                    <SegmentedButtonItem icon="sap-icon://list" key="list" />
+                                    <SegmentedButtonItem icon="sap-icon://table-view" key="table"/>
+                                </items>
+                            </SegmentedButton>
+                        </VBox>
+                        <VBox id="previewColCardVBox" width="100%" height="100%" visible="{= (!${configureView>/bDesktop} &amp;&amp; ${configureView>/bShowPreview}) ? true : false}"  alignItems="Center"  backgroundDesign="Solid" justifyContent="SpaceAround">
+                            <ScrollContainer id="colCardsScrollSD" vertical="true" horizontal="false" height="100%" >
+                                <w:Card id="previewColCardSD" manifest="{configureView>/oConfCard}" host="transactionalCardHost" width="19rem" height="32rem" previewMode="{= ${configureView>/visibleColumnCount} &gt; 0 ? 'Off' : 'Abstract'}" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTopBottom"/>
+                                <HBox id="insightsColCardLayerSD" class="sapMFlexBoxJustifyCenter" height="0" visible="{= ${configureView>/oConfCard/sap.card/type}  === 'Analytical' ? false : true}">
+                                    <HBox id="insightsColOverflowInnerHBoxSD" class="insightsCardOverflowLayer insightsPreviewCardOverLay insightsColOverLayPositionSD"/>
+                                </HBox>
+                            </ScrollContainer>
+                        </VBox>
+                    </FlexBox>
+                </FlexBox>
+
+                <FlexBox id="columnPreviewCardFlexbox" direction="Column" width="38%" height="100%" visible="{= (${configureView>/bDesktop} ) ? true : false}" class="sapMPageBgStandard" renderType="Bare">
+                    <ScrollContainer id="colCardsScroll" vertical="true" horizontal="false" height="100%">
+                        <Panel id="previewPanelContainer" expanded="false" height="100%"   backgroundDesign="Transparent">
+                            <headerToolbar  >
+                                <Toolbar style="Clear"  design="Auto" class="sapThemeBaseBG">
+                                    <HBox id="idPreviewTextHBox"  width="100%" justifyContent="Start" backgroundDesign="Transparent" renderType="Bare" >
+                                        <Title id="insightPreviewText" text="{i18n>INT_DIALOG_TITLE_CardPreview}" class="sapUiTinyMarginTop sapUiSmallMarginEnd" textAlign="Left"/>
+                                        <!-- <Button id="previewRefresh" icon="sap-icon://synchronize" press=".refreshCardData(${configureView>/oConfCard})" width="2rem" enabled="{= (${configureView>/bRefresh} ) ? true : false}" tooltip="Refresh Preview"/> -->
+                                        <SegmentedButton  id="columnSegButton" width="3.75rem"  selectionChange="onSegmentedSelectionChange" tooltip="{i18n>INT_LAYOUT_TOOLTIP}">
+                                            <items>
+                                                <SegmentedButtonItem icon="sap-icon://list" key="list" />
+                                                <SegmentedButtonItem icon="sap-icon://table-view" key="table"/>
+                                            </items>
+                                        </SegmentedButton>
+                                    </HBox>
+                                </Toolbar>
+                            </headerToolbar>
+                            <VBox id="idCardsPreviewVBox"  height="100%" alignItems="Center" backgroundDesign="Transparent" justifyContent="SpaceAround" >
+                                <w:Card id="previewCard" manifest="{configureView>/oConfCard}" host="transactionalCardHost" width="19rem" height="33rem" previewMode="{= ${configureView>/visibleColumnCount} &gt; 0 ? 'Off' : 'Abstract'}"/>
+                                <HBox id="insightsColCardLayer" class="sapMFlexBoxJustifyCenter" height="0" visible="{= ${configureView>/oConfCard/sap.card/type}  === 'Analytical' ? false : true}" >
+                                    <HBox id="insightsColOverflowInnerHBox" class="insightsCardOverflowLayer insightsPreviewCardOverLay insightsColOverLayPositionLS"/>
+                                </HBox>
+                            </VBox>
+                        </Panel>
+                    </ScrollContainer>
+                </FlexBox>
+            </VBox>
+        </content>
+    </Page>
+</core:FragmentDefinition>

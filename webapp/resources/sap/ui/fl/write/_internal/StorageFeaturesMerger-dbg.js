@@ -16,7 +16,7 @@ sap.ui.define([
 	 *
 	 * @namespace sap.ui.fl.write._internal.StorageFeaturesMerger
 	 * @since 1.70
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.write._internal.Storage
 	 */
@@ -28,7 +28,6 @@ sap.ui.define([
 		isPublicFlVariantEnabled: false,
 		isVariantPersonalizationEnabled: true,
 		isContextSharingEnabled: true,
-		isContextSharingEnabledForComp: true,
 		isAtoAvailable: false,
 		isAtoEnabled: false,
 		versioning: {},
@@ -71,9 +70,8 @@ sap.ui.define([
 					}
 				});
 				oResult.versioning = merge(oResult.versioning, _getVersioningFromResponse(oResponse));
-				if (oResponse.isContextSharingEnabled !== undefined && oResponse.isContextSharingEnabledForComp === undefined) {
+				if (oResponse.isContextSharingEnabled !== undefined) {
 					oResult.isContextSharingEnabled = oResponse.isContextSharingEnabled;
-					oResult.isContextSharingEnabledForComp = oResponse.isContextSharingEnabled;
 				}
 			});
 			return oResult;

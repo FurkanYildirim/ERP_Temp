@@ -22,7 +22,7 @@ sap.ui.define([
 	 *
 	 * @alias sap.ui.fl.changeHandler.BaseAddXml
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.75
 	 * @private
 	 * @experimental Since 1.75. This class is experimental and provides only limited functionality. Also the API might be changed in future.
@@ -32,18 +32,18 @@ sap.ui.define([
 	/**
 	 * Adds the content of the XML fragment to the given aggregation of the control, if valid.
 	 *
-	 * @param {object} oChange Change object with instructions to be applied on the control
-	 * @param {object} oControl Control which has been determined by the selector id
-	 * @param {object} mPropertyBag Property bag
-	 * @param {object} mPropertyBag.modifier Modifier for the controls
-	 * @param {object} mPropertyBag.view Root view
-	 * @param {object} mChangeInfo Change Informantion map
-	 * @param {number} mChangeInfo.index Index defines the position at witch the xml fragment is added
-	 * @param {string} mChangeInfo.aggregationName Aggregation name of the control to be extended by the xml fragment
-	 * @param {boolean} [mChangeInfo.skipAdjustIndex] true in case of inserting an XML node or element at an extension point, needed only in XML case
-	 * @returns {array} an array of new created controls
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object with instructions to be applied on the control
+	 * @param {object} oControl - Control which has been determined by the selector id
+	 * @param {object} mPropertyBag - Property bag
+	 * @param {object} mPropertyBag.modifier - Modifier for the controls
+	 * @param {object} mPropertyBag.view - Root view
+	 * @param {object} mChangeInfo - Change Informantion map
+	 * @param {number} mChangeInfo.index - Index defines the position at witch the xml fragment is added
+	 * @param {string} mChangeInfo.aggregationName - Aggregation name of the control to be extended by the xml fragment
+	 * @param {boolean} [mChangeInfo.skipAdjustIndex] - True in case of inserting an XML node or element at an extension point, needed only in XML case
+	 * @returns {array} Array of new created controls
 	 * @private
-	 * @ui5-restricted sap.ui.fl.apply.changes.Applyer
+	 * @ui5-restricted sap.ui.fl.apply.changes.Applier
 	 * @name sap.ui.fl.changeHandler.BaseAddXml#applyChange
 	 */
 	BaseAddXml.applyChange = function(oChange, oControl, mPropertyBag, mChangeInfo) {
@@ -53,7 +53,7 @@ sap.ui.define([
 		var oAggregationDefinition;
 		var iIndex = mChangeInfo.index;
 		var aRevertData = [];
-		var sModuleName = oChange.getModuleName();
+		var sModuleName = oChange.getFlexObjectMetadata().moduleName;
 		var sFragment;
 		var aNewControls;
 
@@ -148,9 +148,9 @@ sap.ui.define([
 	/**
 	 * Completes the change by adding change handler specific content
 	 *
-	 * @param {object} oChange Change object to be completed
-	 * @param {object} oSpecificChangeInfo Additional information needed to complete the change
-	 * @param {object} [oContent] Already prepared definition of the change
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object to be completed
+	 * @param {object} oSpecificChangeInfo - Additional information needed to complete the change
+	 * @param {object} [oContent] - Already prepared definition of the change
 	 * @private
 	 * @ui5-restricted sap.ui.fl.write._internal
 	 * @name sap.ui.fl.changeHandler.BaseAddXml#completeChangeContent
@@ -165,10 +165,12 @@ sap.ui.define([
 		oChange.setContent(oContent);
 
 		//Calculate the moduleName for the fragment
-		var sModuleName = oChange.getComponent().replace(/\.Component/g, "").replace(/\./g, "/");
+		var sModuleName = oChange.getFlexObjectMetadata().reference.replace(/\.Component/g, "").replace(/\./g, "/");
 		sModuleName += "/changes/";
 		sModuleName += oContent.fragmentPath;
-		oChange.setModuleName(sModuleName);
+		var oFlexObjectMetadata = oChange.getFlexObjectMetadata();
+		oFlexObjectMetadata.moduleName = sModuleName;
+		oChange.setFlexObjectMetadata(oFlexObjectMetadata);
 	};
 
 	return BaseAddXml;

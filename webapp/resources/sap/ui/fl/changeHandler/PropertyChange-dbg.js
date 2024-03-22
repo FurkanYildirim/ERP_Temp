@@ -22,7 +22,7 @@ sap.ui.define([
 	 *
 	 * @alias sap.ui.fl.changeHandler.PropertyChange
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.36
 	 * @private
 	 * @experimental Since 1.36. This class is experimental and provides only limited functionality. Also the API might be changed in future.
@@ -131,7 +131,7 @@ sap.ui.define([
 	/**
 	 * Retrieves the condenser-specific information.
 	 *
-	 * @param {sap.ui.fl.Change} oChange - Change object with instructions to be applied on the control map
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Change object with instructions to be applied on the control map
 	 * @returns {object} - Condenser-specific information
 	 * @public
 	 */

@@ -8,14 +8,12 @@ sap.ui.define([
 	"sap/base/util/each",
 	"sap/base/Log",
 	"sap/ui/fl/Layer",
-	"sap/ui/fl/initial/_internal/changeHandlers/ChangeRegistryItem",
 	"sap/ui/fl/registry/Settings",
 	"sap/ui/fl/requireAsync"
 ], function(
 	each,
 	Log,
 	Layer,
-	ChangeRegistryItem,
 	Settings,
 	requireAsync
 ) {
@@ -27,7 +25,7 @@ sap.ui.define([
 	 * @alias sap.ui.fl.registry.ChangeHandlerStorage
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl
 	 *
@@ -37,6 +35,24 @@ sap.ui.define([
 	var mRegisteredItems = {};
 	var mActiveForAllItems = {};
 	var mPredefinedChangeHandlers = {};
+
+	function checkPreconditions(oChangeHandlerEntry) {
+		if (!oChangeHandlerEntry.changeHandler) {
+			Log.error("sap.ui.fl.registry.ChangeRegistryStorage: changeHandler required");
+			return false;
+		}
+		return true;
+	}
+
+	function resolveChangeHandlerIfNecessary(oChangeHandlerEntry) {
+		if (typeof oChangeHandlerEntry.changeHandler === "string") {
+			return requireAsync(oChangeHandlerEntry.changeHandler.replace(/\./g, "/")).then(function(oChangeHandlerImpl) {
+				oChangeHandlerEntry.changeHandler = oChangeHandlerImpl;
+				return oChangeHandlerEntry.changeHandler;
+			});
+		}
+		return oChangeHandlerEntry.changeHandler;
+	}
 
 	function replaceDefault(sChangeType, vChangeHandler) {
 		var oResult = {};
@@ -57,12 +73,12 @@ sap.ui.define([
 	function createDeveloperChangeRegistryItems(mDeveloperModeHandlers) {
 		mActiveForAllItems = {};
 		each(mDeveloperModeHandlers, function(sChangeType, oChangeHandler) {
-			var oChangeRegistryItem = new ChangeRegistryItem({
+			var oChangeRegistryItem = {
 				controlType: "defaultActiveForAll",
 				changeHandler: oChangeHandler,
 				layers: Settings.getDeveloperModeLayerPermissions(),
 				changeType: sChangeType
-			});
+			};
 			mActiveForAllItems[sChangeType] = oChangeRegistryItem;
 		});
 	}
@@ -80,21 +96,23 @@ sap.ui.define([
 			});
 		}
 
-		var mParam = {
+		var oChangeHandlerEntry = {
 			controlType: sControlType,
 			changeHandler: oChangeHandler.changeHandler,
 			layers: mLayerPermissions,
 			changeType: sChangeType
 		};
 
-		return new ChangeRegistryItem(mParam);
+		return checkPreconditions(oChangeHandlerEntry) ? oChangeHandlerEntry : undefined;
 	}
 
 	function createAndAddChangeRegistryItem(sControlType, sChangeType, oChangeHandler) {
 		var oRegistryItem = createChangeRegistryItem(sControlType, sChangeType, oChangeHandler);
 
-		mRegisteredItems[sControlType] = mRegisteredItems[sControlType] || {};
-		mRegisteredItems[sControlType][sChangeType] = oRegistryItem;
+		if (oRegistryItem) {
+			mRegisteredItems[sControlType] = mRegisteredItems[sControlType] || {};
+			mRegisteredItems[sControlType][sChangeType] = oRegistryItem;
+		}
 	}
 
 	function registerChangeHandlersForControl(sControlType, mChangeHandlers) {
@@ -130,7 +148,7 @@ sap.ui.define([
 		// all USER layer changes are also enabled in the PUBLIC layer
 		sLayer = sLayer === Layer.PUBLIC ? Layer.USER : sLayer;
 
-		if (!oRegistryItem.getLayers()[sLayer]) {
+		if (!oRegistryItem.layers[sLayer]) {
 			throw Error("Change type " + sChangeType + " not enabled for layer " + sLayer);
 		}
 
@@ -157,7 +175,7 @@ sap.ui.define([
 	 * Retrieves the change handler for a certain change type and control. Also checks for instance specific change handlers.
 	 * If the passed layer does not match or no change handler is found the promise will be rejected.
 	 *
-	 * @param {string} sChangeType - Change type of a <code>sap.ui.fl.Change</code> change
+	 * @param {string} sChangeType - Change type of a <code>sap.ui.fl.apply._internal.flexObjects.FlexObject</code> change
 	 * @param {string} sControlType - Name of the ui5 control type i.e. sap.m.Button
 	 * @param {sap.ui.core.Control} oControl - Control instance for which the instance specific change handler will be retrieved
 	 * @param {sap.ui.core.util.reflection.BaseTreeModifier} oModifier - Control tree modifier
@@ -165,9 +183,19 @@ sap.ui.define([
 	 * @return {Promise.<object>} Change handler object wrapped in a promise
 	 */
 	ChangeHandlerStorage.getChangeHandler = function(sChangeType, sControlType, oControl, oModifier, sLayer) {
-		return getInstanceSpecificChangeRegistryItem(sChangeType, sControlType, oControl, oModifier).then(function(vInstanceSpecificRegistryItem) {
+		return getInstanceSpecificChangeRegistryItem(sChangeType, sControlType, oControl, oModifier)
+		.then(function(vInstanceSpecificRegistryItem) {
 			var oChangeRegistryItem = vInstanceSpecificRegistryItem || getRegistryItemOrThrowError(sControlType, sChangeType, sLayer);
-			return oChangeRegistryItem.getChangeHandler();
+			return resolveChangeHandlerIfNecessary(oChangeRegistryItem);
+		}).then(function(oChangeHandler) {
+			if (
+				typeof oChangeHandler.completeChangeContent !== "function"
+				|| typeof oChangeHandler.applyChange !== "function"
+				|| typeof oChangeHandler.revertChange !== "function"
+			) {
+				throw new Error("The ChangeHandler is either not available or does not have all required functions");
+			}
+			return oChangeHandler;
 		});
 	};
 

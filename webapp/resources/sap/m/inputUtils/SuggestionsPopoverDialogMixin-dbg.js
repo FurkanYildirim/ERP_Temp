@@ -11,6 +11,7 @@ sap.ui.define([
 	"sap/m/library",
 	"sap/ui/core/Core",
 	"sap/ui/core/IconPool",
+	"sap/ui/core/library",
 	"sap/m/Dialog",
 	"sap/m/Button",
 	"sap/m/Bar",
@@ -18,11 +19,14 @@ sap.ui.define([
 	"sap/m/Toolbar",
 	"sap/m/ToggleButton",
 	"sap/m/ValueStateHeader"
-], function (library, Core, IconPool, Dialog, Button, Bar, Title, Toolbar, ToggleButton, ValueStateHeader) {
+], function (library, Core, IconPool, coreLibrary, Dialog, Button, Bar, Title, Toolbar, ToggleButton, ValueStateHeader) {
 	"use strict";
 
 	// shortcut for sap.m.TitleAlignment
 	var TitleAlignment = library.TitleAlignment;
+
+	// shortcut for sap.ui.core.TitleLevel
+	var TitleLevel = coreLibrary.TitleLevel;
 
 	return function () {
 		/**
@@ -177,7 +181,9 @@ sap.ui.define([
 				titleAlignment: TitleAlignment.Auto,
 				customHeader: new Bar(oInput.getId() + "-popup-header", {
 					titleAlignment: TitleAlignment.Auto,
-					contentMiddle: new Title(),
+					contentMiddle: new Title({
+						level: TitleLevel.H1
+					}),
 					contentRight: new Button({
 						icon: IconPool.getIconURI("decline")
 					})

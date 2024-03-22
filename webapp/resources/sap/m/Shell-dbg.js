@@ -10,12 +10,13 @@ sap.ui.define([
 	'sap/ui/core/Core',
 	'sap/ui/core/Control',
 	'sap/ui/core/library',
+	'sap/m/Image',
 	'sap/m/ShellRenderer',
 	"sap/ui/util/Mobile",
 	"sap/base/Log",
 	"sap/ui/core/theming/Parameters"
 ],
-	function(library, Core, Control, coreLibrary, ShellRenderer, Mobile, Log, ThemeParameters) {
+	function(library, Core, Control, coreLibrary, Image, ShellRenderer, Mobile, Log, ThemeParameters) {
 		"use strict";
 
 
@@ -35,7 +36,7 @@ sap.ui.define([
 		 * The Shell control can be used as root element of applications. It can contain an App or a <code>SplitApp</code> control.
 		 * The Shell provides some overarching functionality for the overall application and takes care of visual adaptation, such as a frame around the App, on desktop browser platforms.
 		 * @extends sap.ui.core.Control
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -107,7 +108,7 @@ sap.ui.define([
 					backgroundOpacity : {type : "float", group : "Appearance", defaultValue : 1},
 
 					/**
-					 * Sets the icon used for the mobile device home screen and the icon to be used for bookmarks by desktop browsers.
+					 * The icon used for the mobile device home screen and the icon to be used for bookmarks by desktop browsers.
 					 *
 					 * This property should be only set once, and as early as possible. Subsequent calls replace the previous icon settings and may lead to different behavior depending on the browser.
 					 *
@@ -248,6 +249,15 @@ sap.ui.define([
 			return this.setProperty("backgroundOpacity", fOpacity, true); // no rerendering - live opacity change looks cooler
 		};
 
+		/**
+		 * Sets the icon used for the mobile device home screen and the icon to be used for bookmarks by desktop browsers.
+		 * This property should be only set once, and as early as possible.
+		 *
+		 * See {@link module:sap/ui/util/Mobile.setIcons} for full documentation.
+		 *
+		 * @param {Object<string, string>} oIcons Icon given as a JS object holding icon URLs and other settings.
+		 * @returns {this} Reference to <code>this</code> for method chaining
+		 */
 		Shell.prototype.setHomeIcon = function(oIcons) {
 			this.setProperty("homeIcon", oIcons, true); // no rerendering
 			Mobile.setIcons(oIcons);
@@ -256,7 +266,7 @@ sap.ui.define([
 
 		Shell.prototype._getImage = function() {
 			if (!this.oImg) {
-				this.oImg = new sap.m.Image(this.getId() + "-logo", {
+				this.oImg = new Image(this.getId() + "-logo", {
 					decorative: false,
 					alt: sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("SHELL_ARIA_LOGO")
 				});

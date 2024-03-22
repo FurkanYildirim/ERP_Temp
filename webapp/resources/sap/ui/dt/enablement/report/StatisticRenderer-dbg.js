@@ -10,7 +10,7 @@ sap.ui.define(function() {
 
 	/**
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @namespace
 	 */
 	var StatisticRenderer = {

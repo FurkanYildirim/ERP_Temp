@@ -38,7 +38,7 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.ui.fl.descriptorRelated.api.DescriptorInlineChangeFactory
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @deprecated Since version 1.76
 	 * @ui5-restricted sap.ui.rta, smart business
@@ -879,7 +879,7 @@ sap.ui.define([
 	 *
 	 * @private
 	 * @deprecated Since version 1.78
-	 * @ui5-restricted WebIDE
+	 * @ui5-restricted SAP Web IDE
 	 */
 	DescriptorInlineChangeFactory.create_ui5_setFlexExtensionPointEnabled = function(mParameters) {
 		var mPropertyBag = _preparePropertyBag("appdescr_ui5_setFlexExtensionPointEnabled", mParameters);
@@ -896,7 +896,7 @@ sap.ui.define([
 	 *
 	 * @private
 	 * @deprecated Since version 1.78
-	 * @ui5-restricted WebIDE
+	 * @ui5-restricted SAP Web IDE
 	 */
 	 DescriptorInlineChangeFactory.create_fiori_setAbstract = function(mParameters) {
 		var mPropertyBag = _preparePropertyBag("appdescr_fiori_setAbstract", mParameters);

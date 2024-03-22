@@ -4,8 +4,8 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-sap.ui.define(["./library", "sap/ui/core/Core", "sap/ui/Device", "sap/ui/core/InvisibleText", "sap/ui/core/InvisibleRenderer"],
-	function(library, Core, Device, InvisibleText, InvisibleRenderer) {
+sap.ui.define(["./library", "sap/ui/core/Core", "sap/ui/Device", "sap/ui/core/InvisibleText", "sap/ui/core/InvisibleRenderer", "sap/ui/core/Configuration"],
+	function(library, Core, Device, InvisibleText, InvisibleRenderer, Configuration) {
 	"use strict";
 
 
@@ -85,7 +85,7 @@ sap.ui.define(["./library", "sap/ui/core/Core", "sap/ui/Device", "sap/ui/core/In
 		oModeControl.removeStyleClass("sapMLIBSelectAnimation sapMLIBUnselectAnimation");
 
 		// determine whether animation is necessary or not
-		if (!Core.getConfiguration().getAnimation() || !oLI.getListProperty("modeAnimationOn")) {
+		if (Core.getConfiguration().getAnimationMode() === Configuration.AnimationMode.none || !oLI.getListProperty("modeAnimationOn")) {
 			return;
 		}
 
@@ -285,8 +285,7 @@ sap.ui.define(["./library", "sap/ui/core/Core", "sap/ui/Device", "sap/ui/core/In
 			sAriaDescribedBy = this.getAriaDescribedBy(oLI),
 			sRole = this.getAriaRole(oLI),
 			mAccessibilityState = {
-				role: sRole,
-				roledescription: sRole === "listitem" ? oLI.getAccessibilityType(Core.getLibraryResourceBundle("sap.m")) : null
+				role: sRole
 			};
 
 		if (sAriaLabelledBy) {
@@ -311,6 +310,7 @@ sap.ui.define(["./library", "sap/ui/core/Core", "sap/ui/Device", "sap/ui/core/In
 			mAccessibilityState.selected = null;
 			if (oLI.isGroupHeader()) {
 				mAccessibilityState.role = "group";
+				mAccessibilityState.roledescription = oLI.getAccessibilityType(Core.getLibraryResourceBundle("sap.m"));
 				var aGroupedItems = oLI.getGroupedItems();
 				if (aGroupedItems && aGroupedItems.length) {
 					mAccessibilityState.owns = aGroupedItems.join(" ");

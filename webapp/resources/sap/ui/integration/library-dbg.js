@@ -24,13 +24,13 @@ sap.ui.define([
 	 * @namespace
 	 * @alias sap.ui.integration
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.62
 	 * @public
 	 */
 	var thisLib = sap.ui.getCore().initLibrary({
 		name: "sap.ui.integration",
-		version: "1.108.14",
+		version: "1.115.1",
 		dependencies: [
 			"sap.ui.core",
 			"sap.f",
@@ -41,18 +41,22 @@ sap.ui.define([
 		types: [
 			"sap.ui.integration.CardActionType",
 			"sap.ui.integration.CardDataMode",
-			"sap.ui.integration.CardMenuAction"
+			"sap.ui.integration.CardMenuAction",
+			"sap.ui.integration.CardDesign",
+			"sap.ui.integration.CardBlockingMessageType"
 		],
 		controls: [
 			"sap.ui.integration.widgets.Card",
 			"sap.ui.integration.cards.filters.FilterBar",
 			"sap.ui.integration.cards.Header",
 			"sap.ui.integration.cards.NumericHeader",
-			"sap.ui.integration.controls.ListContentItem"
+			"sap.ui.integration.controls.ListContentItem",
+			"sap.ui.integration.controls.BlockingMessage"
 		],
 		elements: [
 			"sap.ui.integration.ActionDefinition",
-			"sap.ui.integration.Host"
+			"sap.ui.integration.Host",
+			"sap.ui.integration.Extension"
 		],
 		// define the custom elements that can be used in this library
 		customElements: {
@@ -144,6 +148,27 @@ sap.ui.define([
 	};
 
 	/**
+	 * Possible designs for <code>{@link sap.ui.integration.widgets.Card}</code>.
+	 *
+	 * @enum {string}
+	 * @experimental since 1.109
+	 * @public
+	 * @since 1.109
+	 */
+	thisLib.CardDesign = {
+		/**
+		 * When in this mode, the card has a solid background.
+		 * @public
+		 */
+		Solid: "Solid",
+		/**
+		 * When in this mode, the card background is transparent.
+		 * @public
+		 */
+		Transparent: "Transparent"
+	};
+
+	/**
 	 * Specifies different areas of a card where actions can be attached.
 	 *
 	 * @private
@@ -155,6 +180,33 @@ sap.ui.define([
 		ActionsStrip: "ActionsStrip",
 		ContentItemDetail: "ContentItemDetail",
 		Header: "Header"
+	};
+
+	/**
+	 * Card blocking message types.
+	 *
+	 * @enum {string}
+	 * @public
+	 * @experimental since 1.114
+	 */
+	thisLib.CardBlockingMessageType = {
+		/**
+		 * An error ocurred in the card.
+		 * @public
+		 */
+		Error: "Error",
+
+		/**
+		 * There is no data to be displayed.
+		 * @public
+		 */
+		NoData: "NoData",
+
+		/**
+		 * Information message.
+		 * @public
+		 */
+		Information: "Information"
 	};
 
 	/**
@@ -179,6 +231,35 @@ sap.ui.define([
 		 * @public
 		 */
 		Content: "Content"
+	};
+
+	/**
+	 * Preview modes for <code>{@link sap.ui.integration.widgets.Card}</code>.
+	 * Helpful in scenarios when the end user is choosing or configuring a card.
+	 *
+	 * @enum {string}
+	 * @public
+	 * @experimental since 1.112
+	 * @since 1.112
+	 */
+	thisLib.CardPreviewMode = {
+		/**
+		 * Card displays real data.
+		 * @public
+		 */
+		Off: "Off",
+
+		/**
+		 * Card displays mocked data, loaded using a data request as configured in the manifest.
+		 * @public
+		 */
+		MockData: "MockData",
+
+		/**
+		 * Card displays abstract preview. No data requests are made.
+		 * @public
+		 */
+		Abstract: "Abstract"
 	};
 
 	/**

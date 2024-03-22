@@ -112,7 +112,6 @@ sap.ui.define([
 						isAtoEnabled: false,
 						isAppVariantSaveAsEnabled: false,
 						isContextSharingEnabled: true,
-						isContextSharingEnabledForComp: true,
 						isContextBasedAdaptationEnabled: false,
 						isCondensingEnabled: false,
 						isProductiveSystem: true,
@@ -245,8 +244,8 @@ sap.ui.define([
 	 */
 	Settings.prototype.isContextBasedAdaptationEnabled = function() {
 		var oUriParameters = UriParameters.fromQuery(window.location.search);
-		var isContextBasedAdaptationEnabled = oUriParameters.get("sap-ui-xx-rta-adaptations");
-		return isContextBasedAdaptationEnabled === "true" || this._getBooleanProperty("isContextBasedAdaptationEnabled");
+		var bIsContextBasedAdaptationEnabled = oUriParameters.get("sap-ui-xx-rta-adaptations");
+		return bIsContextBasedAdaptationEnabled === "true" || this._getBooleanProperty("isContextBasedAdaptationEnabled");
 	};
 
 	/**
@@ -326,15 +325,6 @@ sap.ui.define([
 
 
 	/**
-	 * Checks whether sharing of <code>sap.ui.comp</code> variants can be based on contexts.
-	 *
-	 * @returns {boolean} <code>true</code> if context based sharing of <code>sap.ui.comp</code> variants is enabled
-	 */
-	Settings.prototype.isContextSharingEnabledForComp = function() {
-		return this._getBooleanProperty("isContextSharingEnabledForComp");
-	};
-
-	/**
 	 * Checks whether personalization of variants is enabled or not.
 	 *
 	 * @returns {boolean} <code>true</code> if personalization of variants is enabled
@@ -353,6 +343,15 @@ sap.ui.define([
 	};
 
 	/**
+	 * Checks whether the personalization connector is used.
+	 *
+	 * @returns {boolean} <code>true</code> if personalization connector is used
+	 */
+	Settings.prototype.hasPersoConnector = function() {
+		return this._getBooleanProperty("hasPersoConnector");
+	};
+
+	/**
 	 * Checks whether change transport mechanism is available for the current system or not.
 	 *
 	 * @returns {boolean} <code>true</code> if transport of changes is available
@@ -360,6 +359,16 @@ sap.ui.define([
 	 Settings.prototype.isSystemWithTransports = function() {
 		// Currently, transport mechanism is only available in ABAP stack which can be identified by system and client ids
 		return !!(this._oSettings.system && this._oSettings.client);
+	};
+
+	/**
+	 * Checks whether publishing of versions is available for the current backend or not.
+	 *
+	 * @returns {boolean} <code>true</code> if publishing of versions is available
+	 */
+	Settings.prototype.isPublishAvailable = function() {
+		// Currently, only Keyuser service with Content Agent integrated will return this settings value
+		return !!this._oSettings.isPublishAvailable;
 	};
 
 	/**
@@ -424,8 +433,7 @@ sap.ui.define([
 			? bIsCustomerSystem
 			// Fallback if back end has no info, guess based on hostname
 			: !(
-				sHostname.endsWith(".sap" + ".corp") // Prevent SEC-236 violation
-				|| sHostname === "localhost"
+				sHostname === "localhost"
 				|| sHostname === "127.0.0.1"
 			);
 	};

@@ -8,19 +8,23 @@ sap.ui.define([
 	"sap/ui/fl/LayerUtils",
 	"sap/ui/fl/Layer",
 	"sap/ui/fl/Utils",
+	"sap/ui/fl/apply/_internal/flexState/ManifestUtils",
 	"sap/ui/fl/write/api/Version",
 	"sap/ui/fl/write/api/VersionsAPI",
 	"sap/ui/fl/write/api/FeaturesAPI",
 	"sap/ui/fl/write/api/PersistenceWriteAPI",
+	"sap/ui/fl/write/_internal/flexState/compVariants/CompVariantState",
 	"sap/ui/fl/write/_internal/FlexInfoSession"
 ], function(
 	LayerUtils,
 	Layer,
 	Utils,
+	ManifestUtils,
 	Version,
 	VersionsAPI,
 	FeaturesAPI,
 	PersistenceWriteAPI,
+	CompVariantState,
 	FlexInfoSession
 ) {
 	"use strict";
@@ -79,7 +83,19 @@ sap.ui.define([
 			upToLayer: oReloadInfo.layer,
 			includeCtrlVariants: oReloadInfo.includeCtrlVariants,
 			includeDirtyChanges: true
+		})
+		.then(function(bResult) {
+			// not yet saved personalization on SmartVariantManagement controls is not tracked as a FlexObject,
+			// but it should be treated the same as already saved higher layer changes
+			return bResult || checkSVMControlsForDirty(oReloadInfo);
 		});
+	}
+
+	function checkSVMControlsForDirty(oReloadInfo) {
+		if (LayerUtils.isOverLayer(Layer.USER, oReloadInfo.layer)) {
+			return CompVariantState.checkSVMControlsForDirty((ManifestUtils.getFlexReferenceForControl(oReloadInfo.selector)));
+		}
+		return false;
 	}
 
 	/**
@@ -88,10 +104,12 @@ sap.ui.define([
 	 * If allContextsProvided=false, that means that EndUser hasn't some specific roles to see the views,
 	 * so the reload should happen in order to provide all views for a KeyUser.
 	 *
+	 * @param {object} oReloadInfo - Information needed for the reload
 	 * @param {sap.ui.core.Control} oReloadInfo.selector - Root control instance
 	 * @return {boolean} true if allContextsProvided false and RTA wasn't started yet, otherwise false.
 	 */
 	function needContextSpecificReload(oReloadInfo) {
+		//TODO: could be disabled when ContextBasedAdaptationAPI is enabled
 		var oFlexInfoSession = FlexInfoSession.get(oReloadInfo.selector);
 		if (oFlexInfoSession && oFlexInfoSession.initialAllContexts) {
 			return false; // if we are already in RTA mode, no reload needed again
@@ -120,6 +138,11 @@ sap.ui.define([
 		return oFlexInfoSession && !oFlexInfoSession.allContextsProvided;
 	}
 
+	function needAdaptationReloadOnExit(oControl) {
+		var oFlexInfoSession = FlexInfoSession.get(oControl);
+		return oFlexInfoSession && oFlexInfoSession.isEndUserAdaptation === false;
+	}
+
 	/**
 	 * Provides an API to get information about reload behavior in case of a draft and/or personalization changes.
 	 *
@@ -137,6 +160,7 @@ sap.ui.define([
 		 * @param {sap.ui.fl.Layer} oReloadInfo.layer - Current layer
 		 * @param {sap.ui.core.Control} oReloadInfo.selector - Root control instance
 		 * @param {boolean} [oReloadInfo.ignoreMaxLayerParameter] - Indicates that personalization is to be checked without max layer filtering
+		 * @param {string} [oReloadInfo.adaptationId] - Context-based adaptation ID of the currently displayed adaptation
 		 * @param {object} oReloadInfo.parsedHash - Parsed URL hash
 		 *
 		 * @returns {Promise<object>} Promise resolving to an object with the reload reasons
@@ -318,12 +342,14 @@ sap.ui.define([
 				oReloadInfo.isDraftAvailable = false;
 			}
 			oReloadInfo.allContexts = isAllContextsAvailable(oReloadInfo.selector);
+			oReloadInfo.switchEndUserAdaptation = needAdaptationReloadOnExit(oReloadInfo.selector);
 			if (oReloadInfo.changesNeedReload
 				|| oReloadInfo.isDraftAvailable
 				|| oReloadInfo.hasHigherLayerChanges
 				|| oReloadInfo.initialDraftGotActivated
 				|| oReloadInfo.activeVersionNotSelected
 				|| oReloadInfo.allContexts
+				|| oReloadInfo.switchEndUserAdaptation
 			) {
 				oReloadInfo.reloadMethod = oRELOAD.RELOAD_PAGE;
 				// always try cross app navigation (via hash); we only need a hard reload because of appdescr changes (changesNeedReload = true)

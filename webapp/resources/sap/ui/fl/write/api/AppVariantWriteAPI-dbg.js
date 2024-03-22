@@ -24,7 +24,7 @@ sap.ui.define([
 			return Promise.reject("Layer must be provided");
 		}
 
-		var oFlexController = ChangesController.getDescriptorFlexControllerInstance(mPropertyBag.selector);
+		var oFlexController = ChangesController.getFlexControllerInstance(mPropertyBag.selector);
 		mPropertyBag.reference = oFlexController.getComponentName();
 		mPropertyBag.url = "/sap/bc/lrep";
 		// Since this method is only called for Save As App Variant scenario on ABAP platform, the direct usage of write LrepConnector is triggered.
@@ -61,7 +61,7 @@ sap.ui.define([
 			if (!mPropertyBag.id) {
 				return Promise.reject("App variant ID must be provided");
 			}
-			var oFlexController = ChangesController.getDescriptorFlexControllerInstance(mPropertyBag.selector);
+			var oFlexController = ChangesController.getFlexControllerInstance(mPropertyBag.selector);
 			mPropertyBag.reference = oFlexController.getComponentName();
 			return FeaturesAPI.isVersioningEnabled(mPropertyBag.layer)
 				.then(function (bVersioningEnabled) {
@@ -86,7 +86,7 @@ sap.ui.define([
 			if (!mPropertyBag.layer) {
 				return Promise.reject("Layer must be provided");
 			}
-			var oFlexController = ChangesController.getDescriptorFlexControllerInstance(mPropertyBag.selector);
+			var oFlexController = ChangesController.getFlexControllerInstance(mPropertyBag.selector);
 			mPropertyBag.id = oFlexController.getComponentName();
 
 			return SaveAs.deleteAppVariant(mPropertyBag);

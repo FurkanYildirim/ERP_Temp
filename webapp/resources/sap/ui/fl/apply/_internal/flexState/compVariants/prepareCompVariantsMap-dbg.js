@@ -31,9 +31,10 @@ sap.ui.define([
 		return mMap[sPersistencyKey];
 	}
 
-	function initialize(mMap, sPersistencyKey, aVariants) {
+	function initialize(mMap, sPersistencyKey, aVariants, sSVMControlId) {
 		aVariants = aVariants || [];
 		var mMapOfKey = getOrCreate(mMap, sPersistencyKey);
+		mMapOfKey.controlId = sSVMControlId;
 
 		// clear all non-persisted variants in case of a reinitialization
 		mMapOfKey.nonPersistedVariants.forEach(function (oVariant) {
@@ -59,9 +60,9 @@ sap.ui.define([
 			if (sSubSection === "variants") {
 				oFlexObject = FlexObjectFactory.createCompVariant(oCompVariantChangeDefinition);
 			} else {
-				oFlexObject = new UpdatableChange(oCompVariantChangeDefinition);
+				oFlexObject = FlexObjectFactory.createFromFileContent(oCompVariantChangeDefinition, UpdatableChange);
 			}
-			oFlexObject.setState(States.PERSISTED); // prevent persisting these anew
+			oFlexObject.setState(States.LifecycleState.PERSISTED); // prevent persisting these anew
 			return oFlexObject;
 		});
 

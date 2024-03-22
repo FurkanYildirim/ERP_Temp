@@ -42,7 +42,6 @@ sap.ui.define([
 	"use strict";
 
 	var GroupEventType = library.GroupEventType;
-	var SortOrder = library.SortOrder;
 	var TreeAutoExpandMode = library.TreeAutoExpandMode;
 	var _private = TableUtils.createWeakMapFacade();
 
@@ -55,10 +54,10 @@ sap.ui.define([
 	 * @class
 	 * Table which handles analytical OData backends. The AnalyticalTable only works with an AnalyticalBinding and
 	 * correctly annotated OData services. Please check on the SAP Annotations for OData Version 2.0 documentation for further details.
-	 * @see http://scn.sap.com/docs/DOC-44986
+	 * @see https://github.com/SAP/odata-vocabularies/blob/main/docs/v2-annotations.md
 	 *
 	 * @extends sap.ui.table.Table
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -66,10 +65,10 @@ sap.ui.define([
 	 * @see {@link topic:08197fa68e4f479cbe30f639cc1cd22c sap.ui.table}
 	 * @see {@link fiori:/analytical-table-alv/ Analytical Table}
 	 */
-	var AnalyticalTable = Table.extend("sap.ui.table.AnalyticalTable", /** @lends sap.ui.table.AnalyticalTable.prototype */ { metadata : {
+	var AnalyticalTable = Table.extend("sap.ui.table.AnalyticalTable", /** @lends sap.ui.table.AnalyticalTable.prototype */ {metadata: {
 
-		library : "sap.ui.table",
-		properties : {
+		library: "sap.ui.table",
+		properties: {
 
 			/**
 			 * Specifies if the total values should be displayed in the group headers or on bottom of the row. Does not affect the total sum.
@@ -89,7 +88,7 @@ sap.ui.define([
 			 *
 			 * @deprecated As of version 1.44, replaced by the <code>sumOnTop</code> binding parameter
 			 */
-			sumOnTop : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true},
+			sumOnTop: {type: "boolean", group: "Appearance", defaultValue: false, deprecated: true},
 
 			/**
 			 * Number of levels, which should be opened initially (on first load of data).
@@ -109,7 +108,7 @@ sap.ui.define([
 			 *
 			 * @deprecated As of version 1.44, replaced by the <code>numberOfExpandedLevels</code> binding parameter
 			 */
-			numberOfExpandedLevels : {type : "int", group : "Misc", defaultValue : 0, deprecated: true},
+			numberOfExpandedLevels: {type: "int", group: "Misc", defaultValue: 0, deprecated: true},
 
 			/**
 			 * The kind of auto expansion algorithm, e.g. optimized filter conditions, per level requests, ...
@@ -136,7 +135,7 @@ sap.ui.define([
 			 * Functions which is used to sort the column visibility menu entries e.g.: function(ColumnA, ColumnB) { return 0 = equals, <0 lower, >0
 			 * greater }; Other values than functions will be ignored.
 			 */
-			columnVisibilityMenuSorter : {type : "any", group : "Appearance", defaultValue : null},
+			columnVisibilityMenuSorter: {type: "any", group: "Appearance", defaultValue: null},
 
 			/**
 			 * Setting collapseRecursive to true means, that when collapsing a node all subsequent child nodes will also be collapsed.
@@ -156,13 +155,13 @@ sap.ui.define([
 			 *
 			 * @deprecated As of version 1.76, replaced by the <code>collapseRecursive</code> binding parameter
 			 */
-			collapseRecursive : {type: "boolean", defaultValue: true, deprecated: true},
+			collapseRecursive: {type: "boolean", defaultValue: true, deprecated: true},
 
 			/**
 			 * If dirty the content of the Table will be overlayed.
 			 * @deprecated As of version 1.21.2, replaced by {@link sap.ui.table.Table#setShowOverlay}
 			 */
-			dirty : {type : "boolean", group : "Appearance", defaultValue : null, deprecated: true}
+			dirty: {type: "boolean", group: "Appearance", defaultValue: null, deprecated: true}
 		},
 		designtime: "sap/ui/table/designtime/AnalyticalTable.designtime"
 	}, renderer: TableRenderer});
@@ -346,15 +345,6 @@ sap.ui.define([
 	};
 
 	AnalyticalTable.prototype._applyAnalyticalBindingInfo = function(oBindingInfo) {
-		// extract the sorters from the columns (TODO: reconsider this!)
-		var aColumns = this.getColumns();
-		for (var i = 0, l = aColumns.length; i < l; i++) {
-			if (aColumns[i].getSorted()) {
-				oBindingInfo.sorter = oBindingInfo.sorter || [];
-				oBindingInfo.sorter.push(new Sorter(aColumns[i].getSortProperty() || aColumns[i].getLeadingProperty(), aColumns[i].getSortOrder() === SortOrder.Descending));
-			}
-		}
-
 		// Make sure all necessary parameters are given.
 		// The ODataModelAdapter (via bindList) needs these properties to determine if an AnalyticalBinding should be instantiated.
 		// This is the default for the AnalyticalTable.
@@ -521,7 +511,7 @@ sap.ui.define([
 			var iIndex = that._iGroupedLevel - 1;
 
 			if (that._aGroupedColumns[iIndex]) {
-				var oGroupedColumn = that.getColumns().filter(function(oColumn){
+				var oGroupedColumn = that.getColumns().filter(function(oColumn) {
 					return that._aGroupedColumns[iIndex] === oColumn.getId();
 				})[0];
 
@@ -549,7 +539,7 @@ sap.ui.define([
 							bShowIfGrouped = oColumn.getShowIfGrouped();
 						oColumn.setShowIfGrouped(!bShowIfGrouped);
 
-						that.fireGroup({column: oColumn, groupedColumns: oColumn.getParent()._aGroupedColumns, type:( !bShowIfGrouped ? GroupEventType.showGroupedColumn : GroupEventType.hideGroupedColumn )});
+						that.fireGroup({column: oColumn, groupedColumns: oColumn.getParent()._aGroupedColumns, type: (!bShowIfGrouped ? GroupEventType.showGroupedColumn : GroupEventType.hideGroupedColumn)});
 					}
 				}
 			});
@@ -642,7 +632,7 @@ sap.ui.define([
 
 					if (oGroupColumnInfo) {
 						var oColumn = oGroupColumnInfo.column;
-						oColumn.sort(false); //update Analytical Info triggered by aftersort in column
+						oColumn._sort(false); //update Analytical Info triggered by aftersort in column
 					}
 				},
 				icon: "sap-icon://up"
@@ -658,7 +648,7 @@ sap.ui.define([
 
 					if (oGroupColumnInfo) {
 						var oColumn = oGroupColumnInfo.column;
-						oColumn.sort(true); //update Analytical Info triggered by aftersort in column
+						oColumn._sort(true); //update Analytical Info triggered by aftersort in column
 					}
 				},
 				icon: "sap-icon://down"
@@ -839,7 +829,7 @@ sap.ui.define([
 
 	AnalyticalTable.prototype._getColumn = function(vColumn) {
 		if (typeof vColumn === "string") {
-			var oColumn =  new AnalyticalColumn({
+			var oColumn = new AnalyticalColumn({
 				leadingProperty: vColumn,
 				template: vColumn,
 				managed: true
@@ -1009,6 +999,21 @@ sap.ui.define([
 				return i;
 			}
 		}
+	};
+
+	AnalyticalTable.prototype._getTotalRowCount = function() {
+		var iTotalRowCount = Table.prototype._getTotalRowCount.apply(this, arguments);
+
+		if (iTotalRowCount === 1) {
+			var oBinding = this.getBinding();
+			var bHasGrandTotal = oBinding ? oBinding.providesGrandTotal() && oBinding.hasTotaledMeasures() : false;
+
+			if (bHasGrandTotal) {
+				iTotalRowCount = 0; // If there's only the grand total, the table has to act as if it's empty.
+			}
+		}
+
+		return iTotalRowCount;
 	};
 
 	/**

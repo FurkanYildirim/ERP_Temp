@@ -47,7 +47,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Element
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -135,8 +135,7 @@ sap.ui.define([
 			 * Merging only happens when rendering the <code>sap.m.Table</code> control, subsequent changes on the cell or item do not have any
 			 * effect on the merged state of the cells, therefore this feature should not be used together with two-way binding.
 			 * This property is ignored if any column is configured to be shown as a pop-in.
-			 * Merging is not supported if the <code>items</code> aggregation of the <code>sap.m.Table</code> control is
-			 * bound to an {@link sap.ui.model.odata.v4.ODataModel OData V4 model}.
+			 * Don't set this property for cells for which the content provides a user interaction, such as <code>sap.m.Link</code>.
 			 *
 			 * @since 1.16
 			 */
@@ -204,7 +203,7 @@ sap.ui.define([
 			 *
 			 * @since 1.98.0
 			 */
-			headerMenu: {type: "sap.ui.core.IColumnHeaderMenu", multiple: false, visibility: "hidden"}
+			headerMenu: {type: "sap.ui.core.IColumnHeaderMenu", multiple: false}
 		},
 		designtime: "sap/m/designtime/Column.designtime"
 	}});
@@ -270,6 +269,15 @@ sap.ui.define([
 	};
 
 	Column.prototype.onsapenter = Column.prototype.onsapspace;
+
+	Column.prototype.oncontextmenu = function (oEvent) {
+		var oMenu = this._getHeaderMenuInstance();
+
+		if (oMenu) {
+			oMenu.openBy(this);
+			oEvent.preventDefault();
+		}
+	};
 
 	Column.prototype.invalidate = function() {
 		var oParent = this.getParent();
@@ -699,7 +707,7 @@ sap.ui.define([
 	// hence overwriting the getFocusDomRef to restore the focus on the active column header
 	Column.prototype.getFocusDomRef = function() {
 		var oParent = this.getParent();
-		if (oParent && (oParent.bActiveHeaders || oParent.bFocusableHeaders || this.getAssociation("headerMenu"))) {
+		if (oParent && (oParent.bActiveHeaders || oParent.bFocusableHeaders || this.getHeaderMenu())) {
 			var oColumnDomRef = this.getDomRef();
 			if (oColumnDomRef) {
 				return oColumnDomRef.firstChild;
@@ -730,7 +738,7 @@ sap.ui.define([
 	 * @private
 	 */
 	Column.prototype._getHeaderMenuInstance = function () {
-		return sap.ui.getCore().byId(this.getAssociation("headerMenu"));
+		return sap.ui.getCore().byId(this.getHeaderMenu());
 	};
 
 	Column.prototype.setHeader = function (oControl) {

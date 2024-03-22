@@ -1,0 +1,40 @@
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ *      (c) Copyright 2009-2023 SAP SE. All rights reserved
+ */
+sap.ui.define(["sap/fe/core/helpers/StableIdHelper"], function (StableIdHelper) {
+  "use strict";
+
+  var _exports = {};
+  var generate = StableIdHelper.generate;
+  /**
+   * Method returns an VariantBackReference expression based on variantManagement and oConverterContext value.
+   *
+   * @function
+   * @name getVariantBackReference
+   * @param viewData Object Containing View Data
+   * @param converterContextObject Object containing converted context
+   * @returns {string}
+   */
+
+  const getVariantBackReference = function (viewData, converterContextObject) {
+    if (viewData && viewData.variantManagement === "Page") {
+      return "fe::PageVariantManagement";
+    }
+    if (viewData && viewData.variantManagement === "Control") {
+      return generate([converterContextObject.filterBarId, "VariantManagement"]);
+    }
+    return undefined;
+  };
+  _exports.getVariantBackReference = getVariantBackReference;
+  const getDefaultPath = function (aViews) {
+    for (let i = 0; i < aViews.length; i++) {
+      if (aViews[i].defaultPath) {
+        return aViews[i].defaultPath;
+      }
+    }
+  };
+  _exports.getDefaultPath = getDefaultPath;
+  return _exports;
+}, false);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJnZXRWYXJpYW50QmFja1JlZmVyZW5jZSIsInZpZXdEYXRhIiwiY29udmVydGVyQ29udGV4dE9iamVjdCIsInZhcmlhbnRNYW5hZ2VtZW50IiwiZ2VuZXJhdGUiLCJmaWx0ZXJCYXJJZCIsInVuZGVmaW5lZCIsImdldERlZmF1bHRQYXRoIiwiYVZpZXdzIiwiaSIsImxlbmd0aCIsImRlZmF1bHRQYXRoIl0sInNvdXJjZVJvb3QiOiIuIiwic291cmNlcyI6WyJMaXN0UmVwb3J0VGVtcGxhdGluZy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBUZW1wbGF0ZSBIZWxwZXJzIGZvciB0aGUgTGlzdCBSZXBvcnRcbmltcG9ydCB7IExpc3RSZXBvcnREZWZpbml0aW9uIH0gZnJvbSBcInNhcC9mZS9jb3JlL2NvbnZlcnRlcnMvdGVtcGxhdGVzL0xpc3RSZXBvcnRDb252ZXJ0ZXJcIjtcbmltcG9ydCB7IGdlbmVyYXRlIH0gZnJvbSBcInNhcC9mZS9jb3JlL2hlbHBlcnMvU3RhYmxlSWRIZWxwZXJcIjtcbmltcG9ydCB7IFZpZXdEYXRhIH0gZnJvbSBcInNhcC9mZS9jb3JlL3NlcnZpY2VzL1RlbXBsYXRlZFZpZXdTZXJ2aWNlRmFjdG9yeVwiO1xuXG4vKipcbiAqIE1ldGhvZCByZXR1cm5zIGFuIFZhcmlhbnRCYWNrUmVmZXJlbmNlIGV4cHJlc3Npb24gYmFzZWQgb24gdmFyaWFudE1hbmFnZW1lbnQgYW5kIG9Db252ZXJ0ZXJDb250ZXh0IHZhbHVlLlxuICpcbiAqIEBmdW5jdGlvblxuICogQG5hbWUgZ2V0VmFyaWFudEJhY2tSZWZlcmVuY2VcbiAqIEBwYXJhbSB2aWV3RGF0YSBPYmplY3QgQ29udGFpbmluZyBWaWV3IERhdGFcbiAqIEBwYXJhbSBjb252ZXJ0ZXJDb250ZXh0T2JqZWN0IE9iamVjdCBjb250YWluaW5nIGNvbnZlcnRlZCBjb250ZXh0XG4gKiBAcmV0dXJucyB7c3RyaW5nfVxuICovXG5cbmV4cG9ydCBjb25zdCBnZXRWYXJpYW50QmFja1JlZmVyZW5jZSA9IGZ1bmN0aW9uICh2aWV3RGF0YTogVmlld0RhdGEsIGNvbnZlcnRlckNvbnRleHRPYmplY3Q6IExpc3RSZXBvcnREZWZpbml0aW9uKSB7XG5cdGlmICh2aWV3RGF0YSAmJiB2aWV3RGF0YS52YXJpYW50TWFuYWdlbWVudCA9PT0gXCJQYWdlXCIpIHtcblx0XHRyZXR1cm4gXCJmZTo6UGFnZVZhcmlhbnRNYW5hZ2VtZW50XCI7XG5cdH1cblx0aWYgKHZpZXdEYXRhICYmIHZpZXdEYXRhLnZhcmlhbnRNYW5hZ2VtZW50ID09PSBcIkNvbnRyb2xcIikge1xuXHRcdHJldHVybiBnZW5lcmF0ZShbY29udmVydGVyQ29udGV4dE9iamVjdC5maWx0ZXJCYXJJZCwgXCJWYXJpYW50TWFuYWdlbWVudFwiXSk7XG5cdH1cblx0cmV0dXJuIHVuZGVmaW5lZDtcbn07XG5cbmV4cG9ydCBjb25zdCBnZXREZWZhdWx0UGF0aCA9IGZ1bmN0aW9uIChhVmlld3M6IGFueSkge1xuXHRmb3IgKGxldCBpID0gMDsgaSA8IGFWaWV3cy5sZW5ndGg7IGkrKykge1xuXHRcdGlmIChhVmlld3NbaV0uZGVmYXVsdFBhdGgpIHtcblx0XHRcdHJldHVybiBhVmlld3NbaV0uZGVmYXVsdFBhdGg7XG5cdFx0fVxuXHR9XG59O1xuIl0sIm1hcHBpbmdzIjoiO0FBQUE7QUFBQTtBQUFBOzs7Ozs7RUFLQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0VBRU8sTUFBTUEsdUJBQXVCLEdBQUcsVUFBVUMsUUFBa0IsRUFBRUMsc0JBQTRDLEVBQUU7SUFDbEgsSUFBSUQsUUFBUSxJQUFJQSxRQUFRLENBQUNFLGlCQUFpQixLQUFLLE1BQU0sRUFBRTtNQUN0RCxPQUFPLDJCQUEyQjtJQUNuQztJQUNBLElBQUlGLFFBQVEsSUFBSUEsUUFBUSxDQUFDRSxpQkFBaUIsS0FBSyxTQUFTLEVBQUU7TUFDekQsT0FBT0MsUUFBUSxDQUFDLENBQUNGLHNCQUFzQixDQUFDRyxXQUFXLEVBQUUsbUJBQW1CLENBQUMsQ0FBQztJQUMzRTtJQUNBLE9BQU9DLFNBQVM7RUFDakIsQ0FBQztFQUFDO0VBRUssTUFBTUMsY0FBYyxHQUFHLFVBQVVDLE1BQVcsRUFBRTtJQUNwRCxLQUFLLElBQUlDLENBQUMsR0FBRyxDQUFDLEVBQUVBLENBQUMsR0FBR0QsTUFBTSxDQUFDRSxNQUFNLEVBQUVELENBQUMsRUFBRSxFQUFFO01BQ3ZDLElBQUlELE1BQU0sQ0FBQ0MsQ0FBQyxDQUFDLENBQUNFLFdBQVcsRUFBRTtRQUMxQixPQUFPSCxNQUFNLENBQUNDLENBQUMsQ0FBQyxDQUFDRSxXQUFXO01BQzdCO0lBQ0Q7RUFDRCxDQUFDO0VBQUM7RUFBQTtBQUFBIn0=

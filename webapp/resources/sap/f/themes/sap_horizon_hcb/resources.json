@@ -14,7 +14,7 @@
 		},
 		{
 			"name": "Card.less",
-			"size": 961,
+			"size": 1045,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -26,13 +26,13 @@
 		},
 		{
 			"name": "DynamicPage.less",
-			"size": 3976,
+			"size": 4048,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "DynamicPageHeader.less",
-			"size": 722,
+			"size": 835,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -44,7 +44,7 @@
 		},
 		{
 			"name": "FlexibleColumnLayout.less",
-			"size": 1355,
+			"size": 1550,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -74,7 +74,7 @@
 		},
 		{
 			"name": "ShellBar.less",
-			"size": 9778,
+			"size": 9891,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -86,40 +86,40 @@
 		},
 		{
 			"name": "css_variables.css",
-			"size": 4581,
+			"size": 4702,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.less",
-			"size": 118242,
+			"size": 141867,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 117872,
+			"size": 141497,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 105071,
+			"size": 109909,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library-parameters.json",
 			"module": "sap/f/themes/sap_horizon_hcb/library-parameters.json",
-			"size": 1849,
+			"size": 1904,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.css",
-			"size": 105082,
+			"size": 109916,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library.less",
-			"size": 23162,
+			"size": 23739,
 			"designtime": true,
 			"theme": "sap_horizon_hcb"
 		},
@@ -131,17 +131,17 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 110213,
+			"size": 115625,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 110225,
+			"size": 115633,
 			"theme": "sap_horizon_hcb"
 		},
 		{
 			"name": "resources.json",
-			"size": 2676
+			"size": 2677
 		}
 	]
 }

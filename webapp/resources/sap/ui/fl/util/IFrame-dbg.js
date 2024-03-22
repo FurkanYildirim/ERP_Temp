@@ -53,7 +53,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @private
@@ -77,7 +77,7 @@ sap.ui.define([
 				/**
 				 * Defines the <code>IFrame</code> height.
 				 */
-				height: {type: "sap.ui.core.CSSSize", group: "Misc", defaultValue: "100%"},
+				height: {type: "sap.ui.core.CSSSize", group: "Misc", defaultValue: "50vh"},
 
 				/**
 				 * Defines the title of the item.
@@ -85,7 +85,17 @@ sap.ui.define([
 				title: {type: "string", group: "Misc", defaultValue: undefined},
 
 				/**
-				 * Backup of the initial settings for the dialogs
+				 * Defines whether the <code>IFrame</code> was added as a new container.
+				 */
+				asContainer: {type: "boolean", group: "Misc", defaultValue: undefined},
+
+				/**
+				 * Defines the information required for handling rename of <code>IFrame</code> containers.
+				 */
+				renameInfo: {type: "object", group: "Data", defaultValue: null},
+
+				/**
+				 * Backup of the initial settings for the dialogs.
 				 *
 				 * @ui5-restricted sap.ui.fl
 				 */

@@ -72,6 +72,15 @@
 
 	function noop() {}
 
+	var aEarlyLogs = [];
+
+	function earlyLog(level, message) {
+		aEarlyLogs.push({
+			level: level,
+			message: message
+		});
+	}
+
 	function forEach(obj, callback) {
 		Object.keys(obj).forEach(function(key) {
 			callback(key, obj[key]);
@@ -100,13 +109,14 @@
 	 * @type {{debug:function(),info:function(),warning:function(),error:function(),isLoggable:function():boolean}}
 	 * @private
 	 */
+
 	var log = {
-		debug: noop,
-		info: noop,
-		warning: noop,
-		error: noop,
+		debug: earlyLog.bind(this, 'debug'),
+		info: earlyLog.bind(this, 'info'),
+		warning: earlyLog.bind(this, 'warning'),
+		error: earlyLog.bind(this, 'error'),
 		isLoggable: noop
-	}; // Null Object pattern: dummy logger which is used as long as no logger is injected
+	};
 
 	/**
 	 * Basic assert functionality.
@@ -336,6 +346,144 @@
 	 */
 		iAnonymousModuleCount = 0;
 
+	// ---- break preload execution into tasks ----------------------------------------------------
+
+	/**
+	 * Default value for `iMaxTaskDuration`.
+	 *
+	 * A value of -1 switched the scheduling off, a value of zero postpones each execution
+	 */
+	var DEFAULT_MAX_TASK_DURATION = -1; // off
+
+	/**
+	 * Maximum accumulated task execution time (threshold)
+	 * Can be configured via the private API property `maxTaskDuration`.
+	 */
+	var iMaxTaskDuration = DEFAULT_MAX_TASK_DURATION;
+
+	/**
+	 * The earliest elapsed time at which a new browser task will be enforced.
+	 * Will be updated when a new task starts.
+	 */
+	var iMaxTaskTime = Date.now() + iMaxTaskDuration;
+
+	/**
+	 * A promise that fulfills when the new browser task has been reached.
+	 * All postponed callback executions will be executed after this promise.
+	 * `null` as long as the elapsed time threshold is not reached.
+	 */
+	var pWaitForNextTask;
+
+	/**
+	 * Message channel which will be used to create a new browser task
+	 * without being subject to timer throttling.
+	 * Will be created lazily on first usage.
+	 */
+	var oNextTaskMessageChannel;
+
+	/**
+	 * Update elapsed time threshold.
+	 *
+	 * The threshold will be updated only if executions currently are not postponed.
+	 * Otherwise, the next task will anyhow update the threshold.
+	 */
+	function updateMaxTaskTime() {
+		if ( pWaitForNextTask == null ) {
+			iMaxTaskTime = Date.now() + iMaxTaskDuration;
+		}
+	}
+
+	/**
+	 * Update duration limit and elapsed time threshold.
+	 */
+	function updateMaxTaskDuration(v) {
+		v = Number(v);
+
+		var iBeginOfCurrentTask = iMaxTaskTime - iMaxTaskDuration;
+
+		// limit to range [-1 ... Infinity], any other value incl. NaN restores the default
+		iMaxTaskDuration = v >= -1 ? v : DEFAULT_MAX_TASK_DURATION;
+
+		// Update the elapsed time threshold only if executions currently are not postponed.
+		// Otherwise, the next task will be the first to honor the new maximum duration.
+		if ( pWaitForNextTask == null ) {
+			iMaxTaskTime = iBeginOfCurrentTask + iMaxTaskDuration;
+		}
+	}
+
+	function waitForNextTask() {
+		if ( pWaitForNextTask == null ) {
+			/**
+			 * Post a message to a MessageChannel to create a new task, without suffering from timer throttling
+			 * In the new task, use a setTimeout(,0) to allow for better queuing of other events (like CSS loading)
+			 */
+			pWaitForNextTask = new Promise(function(resolve) {
+				if ( oNextTaskMessageChannel == null ) {
+					oNextTaskMessageChannel = new MessageChannel();
+					oNextTaskMessageChannel.port2.start();
+				}
+				oNextTaskMessageChannel.port2.addEventListener("message", function() {
+					setTimeout(function() {
+						pWaitForNextTask = null;
+						iMaxTaskTime = Date.now() + iMaxTaskDuration;
+						resolve();
+					}, 0);
+				}, {
+					once: true
+				});
+				oNextTaskMessageChannel.port1.postMessage(null);
+			});
+		}
+		return pWaitForNextTask;
+	}
+
+	/**
+	 * Creates a function which schedules the execution of the given callback.
+	 *
+	 * The scheduling tries to limit the duration of browser tasks. When the configurable
+	 * limit is reached, the creation of a new browser task is triggered and all subsequently
+	 * scheduled callbacks will be postponed until the new browser task starts executing.
+	 * In the new browser task, scheduling starts anew.
+	 *
+	 * The limit for the duration of browser tasks is configured via `iMaxTaskDuration`.
+	 * By setting `iMaxTaskDuration` to a negative value, the whole scheduling mechanism is
+	 * switched off. In that case, the returned function will execute the callback immediately.
+	 *
+	 * If a value of zero is set, each callback will be executed in a separate browser task.
+	 * For preloaded modules, this essentially mimics the browser behavior of single file loading,
+	 * but without the network and server delays.
+	 *
+	 * For larger values, at least one callback will be executed in each new browser task. When,
+	 * after the execution of the callback, the configured threshold has been reached, all further
+	 * callbacks will be postponed.
+	 *
+	 * Note: This is a heuristic only. Neither is the measurement of the task duration accurate,
+	 * nor is there a way to know in advance the execution time of a callback.
+	 *
+	 * @param {function(any):void} fnCallback
+	 *    Function to schedule
+	 * @returns {function(any):void}
+	 *    A function to call instead of the original callback; it takes care of scheduling
+	 *    and executing the original callback.
+	 * @private
+	 */
+	function scheduleExecution(fnCallback) {
+		if ( iMaxTaskDuration < 0 ) {
+			return fnCallback;
+		}
+		return function() {
+			if ( pWaitForNextTask == null ) {
+				fnCallback.call(undefined, arguments[0]);
+
+				// if time limit is reached now, postpone future task
+				if ( Date.now() >= iMaxTaskTime ) {
+					waitForNextTask();
+				}
+				return;
+			}
+			pWaitForNextTask.then(scheduleExecution(fnCallback).bind(undefined, arguments[0]));
+		};
+	}
 
 	// ---- Names and Paths -----------------------------------------------------------------------
 
@@ -1311,6 +1459,7 @@
 		var oScript;
 
 		function onload(e) {
+			updateMaxTaskTime();
 			if ( log.isLoggable() ) {
 				log.debug("JavaScript resource loaded: " + oModule.name);
 			}
@@ -1320,6 +1469,7 @@
 		}
 
 		function onerror(e) {
+			updateMaxTaskTime();
 			oScript.removeEventListener('load', onload);
 			oScript.removeEventListener('error', onerror);
 			if (sAlternativeURL) {
@@ -1792,8 +1942,7 @@
 		// avoid early evaluation of the module value
 		oModule.content = undefined;
 
-		// Note: dependencies will be resolved and converted from RJS to URN inside requireAll
-		requireAll(oModule, aDependencies, function(aModules) {
+		function onSuccess(aModules) {
 
 			// avoid double execution of the module, e.g. when async/sync conflict occurred while waiting for dependencies
 			if ( shouldSkipExecution() ) {
@@ -1854,7 +2003,10 @@
 
 			oModule.ready();
 
-		}, function(oErr) {
+		}
+
+		// Note: dependencies will be resolved and converted from RJS to URN inside requireAll
+		requireAll(oModule, aDependencies, bAsync && oModule.data ? scheduleExecution(onSuccess) : onSuccess, function(oErr) {
 			var oWrappedError = oModule.failWith("Failed to resolve dependencies of {id}", oErr);
 			if ( !bAsync ) {
 				throw oWrappedError;
@@ -2429,6 +2581,9 @@
 			},
 			set: function(v) {
 				log = v;
+				aEarlyLogs.forEach(function(earlyLog) {
+					log[earlyLog.level](earlyLog.message);
+				});
 			}
 		},
 		measure: {
@@ -2462,6 +2617,12 @@
 			set: function(v) {
 				simulateAsyncCallback = v ? executeInMicroTask : executeInSeparateTask;
 			}
+		},
+		maxTaskDuration: {
+			get: function() {
+				return iMaxTaskDuration;
+			},
+			set: updateMaxTaskDuration
 		}
 	});
 
@@ -2666,7 +2827,7 @@
 		 *   defined to be asynchronous, it can not be changed to synchronous behaviour again, also not
 		 *   via setting <code>amd</code> to false.
 		 *
-		 * @returns {object|undefined} UI5 loader configuration in use.
+		 * @returns {{amd: boolean, async: boolean, noConflict: boolean}|undefined} UI5 loader configuration in use.
 		 * @throws {Error} When trying to switch back from async mode to sync mode.
 		 * @public
 		 * @since 1.56.0
@@ -2680,6 +2841,7 @@
 		 *
 		 * Must not be used by code outside sap.ui.core.
 		 * @private
+		 * @ui5-restricted sap.ui.core
 		 */
 		_: privateAPI
 	};
@@ -2996,7 +3158,7 @@
 	 * @param {string} [sModuleName] ID of the module in simplified resource name syntax.
 	 *        When omitted, the loader determines the ID from the request.
 	 * @param {string[]} [aDependencies] List of dependencies of the module
-	 * @param {function|any} vFactory The module export value or a function that calculates that value
+	 * @param {function(...any):any|any} vFactory The module export value or a function that calculates that value
 	 * @param {boolean} [bExport] Whether an export to global names is required - should be used by SAP-owned code only
 	 * @since 1.27.0
 	 * @public
@@ -3061,8 +3223,8 @@
 	 * Relative module names are not supported.
 	 *
 	 * @param {string|string[]} vDependencies Dependency (dependencies) to resolve
-	 * @param {function} [fnCallback] Callback function to execute after resolving an array of dependencies
-	 * @param {function} [fnErrback] Callback function to execute if an error was detected while loading the
+	 * @param {function(...any)} [fnCallback] Callback function to execute after resolving an array of dependencies
+	 * @param {function(Error)} [fnErrback] Callback function to execute if an error was detected while loading the
 	 *                      dependencies or executing the factory function. Note that due to browser restrictions
 	 *                      not all errors will be reported via this callback. In general, module loading is
 	 *                      designed for the non-error case. Error handling is not complete.

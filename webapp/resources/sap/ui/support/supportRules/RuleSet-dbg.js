@@ -21,27 +21,22 @@ function (Log, Version, library, storage, constants) {
 	 * Contains all rulesets inside the RuleSet.
 	 *
 	 * @readonly
-	 * @name sap.ui.support.RuleSet.mRuleSets
-	 * @memberof sap.ui.support
 	 */
 	var mRuleSets = {};
 
 	/**
 	 * Creates a RuleSet.
+	 *
 	 * The RuleSet can store multiple rules concerning namespaces.
 	 * <h3>Usage</h3>
 	 * The RuleSet is an interface used to create, update and delete rulesets.
 	 *
 	 * @class
-	 * @public
-	 * @constructor
-	 * @namespace
-	 * @name sap.ui.support.RuleSet
-	 * @memberof sap.ui.support
+	 * @private
+	 * @alias sap.ui.support.RuleSet
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @param {object} oSettings Name of the initiated
-	 * @returns {void}
 	 */
 	var RuleSet = function (oSettings) {
 		oSettings = oSettings || {};
@@ -62,10 +57,6 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Clears all rulesets inside the RuleSet.
 	 * @public
-	 * @static
-	 * @method
-	 * @name sap.ui.support.RuleSet.clearAllRuleSets
-	 * @memberof sap.ui.support.RuleSet
 	 * @returns {void}
 	 */
 	RuleSet.clearAllRuleSets = function () {
@@ -75,10 +66,7 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Gets all rules from the RuleSet.
 	 * @public
-	 * @method
-	 * @name sap.ui.support.RuleSet.getRules
-	 * @memberof sap.ui.support.RuleSet
-	 * @returns {object} All rules within the current RuleSet
+	 * @returns {Object<string, sap.ui.support.RuleConfiguration>} All rules within the current RuleSet
 	 */
 	RuleSet.prototype.getRules = function () {
 		return this._mRules;
@@ -87,19 +75,16 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Updates rules from the RuleSet.
 	 * @public
-	 * @method
-	 * @name sap.ui.support.RuleSet.updateRule
-	 * @memberof sap.ui.support.RuleSet
 	 * @param {string} sRuleId Rule ID
-	 * @param {object} ORuleSettings Rule settings
+	 * @param {sap.ui.support.RuleConfiguration} oRuleSettings Rule settings
 	 * @returns {string} sRuleVerification Rule Verification status
 	 */
-	RuleSet.prototype.updateRule = function (sRuleId, ORuleSettings) {
-		var sRuleVerification = this._verifySettingsObject(ORuleSettings, true);
+	RuleSet.prototype.updateRule = function (sRuleId, oRuleSettings) {
+		var sRuleVerification = this._verifySettingsObject(oRuleSettings, true);
 
 		if (sRuleVerification === "success") {
 			delete this._mRules[sRuleId];
-			this._mRules[ORuleSettings.id] = ORuleSettings;
+			this._mRules[oRuleSettings.id] = oRuleSettings;
 		}
 
 		return sRuleVerification;
@@ -108,9 +93,6 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Verifies the settings object of the current RuleSet.
 	 * @private
-	 * @method
-	 * @name sap.ui.support.RuleSet._verifySettingsObject
-	 * @memberof sap.ui.support.RuleSet
 	 * @param {object} oSettings Settings object to be verified
 	 * @param {boolean} bUpdate Triggers update of passed settings object
 	 * @returns {string} Rule Verification status
@@ -195,10 +177,8 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Adds rules to RuleSet.
 	 * @public
-	 * @method
-	 * @name sap.ui.support.RuleSet.addRule
-	 * @memberof sap.ui.support.RuleSet
-	 * @param {object} oSettings Settings object with rule information
+	 * @param {sap.ui.support.RuleConfiguration} oSettings Settings object with rule information
+	 * @param {{version: string}} oVersionInfo The version
 	 * @returns {string} sRuleVerificationStatus Verification status
 	 */
 	RuleSet.prototype.addRule = function (oSettings, oVersionInfo) {
@@ -231,10 +211,7 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Remove rule from RuleSet.
 	 * @public
-	 * @method
-	 * @name sap.ui.support.RuleSet.removeRule
-	 * @memberof sap.ui.support.RuleSet
-	 * @param {object} oRule Rule object that will be removed
+	 * @param {sap.ui.support.RuleConfiguration} oRule Rule object that will be removed
 	 */
 	RuleSet.prototype.removeRule = function (oRule) {
 		if (this._mRules[oRule.id]) {
@@ -245,10 +222,6 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Stores which rules are selected to be run by the analyzer on the next check
 	 * @public
-	 * @static
-	 * @method
-	 * @name sap.ui.support.RuleSet.storeSelectionOfRules
-	 * @memberof sap.ui.support.RuleSet
 	 * @param {Object[]} aLibraries The data for the libraries and their rules
 	 */
 	RuleSet.storeSelectionOfRules = function (aLibraries) {
@@ -260,10 +233,6 @@ function (Log, Version, library, storage, constants) {
 	 * Loads the previous selection of the user - which rules are selected to be run by the Rule Analyzer.
 	 * The method applies the settings to the currently loaded rules.
 	 * @public
-	 * @static
-	 * @method
-	 * @name sap.ui.support.RuleSet.loadSelectionOfRules
-	 * @memberof sap.ui.support.RuleSet
 	 * @param {Object[]} aLibraries The current loaded libraries and their rules
 	 */
 	RuleSet.loadSelectionOfRules = function (aLibraries) {
@@ -289,10 +258,6 @@ function (Log, Version, library, storage, constants) {
 	/**
 	 * Extracts all the settings needed to be saved from the libraries rules.
 	 * @private
-	 * @method
-	 * @static
-	 * @name sap.ui.support.RuleSet._extractRulesSettingsToSave
-	 * @memberof sap.ui.support.RuleSet
 	 * @param {Object[]} aLibraries The libraries and rules loaded from the model
 	 */
 	RuleSet._extractRulesSettingsToSave = function (aLibraries) {

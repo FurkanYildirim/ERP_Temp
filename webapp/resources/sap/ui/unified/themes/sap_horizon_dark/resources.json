@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "Calendar.less",
-			"size": 20142,
+			"size": 21547,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -48,7 +48,7 @@
 		},
 		{
 			"name": "Menu.less",
-			"size": 3220,
+			"size": 4053,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -77,19 +77,19 @@
 		},
 		{
 			"name": "css_variables.less",
-			"size": 141256,
+			"size": 164945,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "css_variables.source.less",
-			"size": 140878,
+			"size": 164567,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library-RTL.css",
-			"size": 165244,
+			"size": 167816,
 			"theme": "sap_horizon_dark"
 		},
 		{
@@ -100,12 +100,12 @@
 		},
 		{
 			"name": "library.css",
-			"size": 165137,
+			"size": 167703,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library.less",
-			"size": 39380,
+			"size": 41618,
 			"designtime": true,
 			"theme": "sap_horizon_dark"
 		},
@@ -117,12 +117,12 @@
 		},
 		{
 			"name": "library_skeleton-RTL.css",
-			"size": 174269,
+			"size": 176841,
 			"theme": "sap_horizon_dark"
 		},
 		{
 			"name": "library_skeleton.css",
-			"size": 174162,
+			"size": 176728,
 			"theme": "sap_horizon_dark"
 		},
 		{

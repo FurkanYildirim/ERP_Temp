@@ -33,7 +33,7 @@ sap.ui.define([
 	 * @ui5-restricted sap.ui.mdc
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 */
 	var InteractiveRowMode = RowMode.extend("sap.ui.table.rowmodes.InteractiveRowMode", /** @lends sap.ui.table.rowmodes.InteractiveRowMode.prototype */ {
@@ -250,7 +250,7 @@ sap.ui.define([
 
 		if (iRowCount > 0) {
 			this.initTableRowsAfterDataRequested(iRowCount);
-			this.getRowContexts(iRowCount);  // Trigger data request.
+			this.getRowContexts(iRowCount); // Trigger data request.
 		}
 	};
 

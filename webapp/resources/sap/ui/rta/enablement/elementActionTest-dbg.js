@@ -8,8 +8,10 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/core/ComponentContainer",
+	"sap/ui/core/Core",
 	"sap/ui/core/mvc/XMLView",
 	"sap/ui/rta/command/CommandFactory",
+	"sap/ui/rta/util/changeVisualization/ChangeCategories",
 	"sap/ui/rta/util/changeVisualization/ChangeVisualization",
 	"sap/ui/dt/DesignTime",
 	"sap/ui/dt/DesignTimeStatus",
@@ -25,8 +27,10 @@ sap.ui.define([
 ], function(
 	UIComponent,
 	ComponentContainer,
+	Core,
 	XMLView,
 	CommandFactory,
+	ChangeCategories,
 	ChangeVisualization,
 	DesignTime,
 	DesignTimeStatus,
@@ -53,7 +57,7 @@ sap.ui.define([
 	 * E.g. <code>elementActionTest.only("Remove");</code>
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @static
 	 * @since 1.42
@@ -66,10 +70,12 @@ sap.ui.define([
 	 * @param {sap.ui.model.Model} [mOptions.model] - Any model to be assigned on the view
 	 * @param {string} [mOptions.placeAt="qunit-fixture"] - Id of tag to place view at runtime
 	 * @param {boolean} [mOptions.jsOnly] - Set to true, if change handler cannot work on xml view
+	 * @param {string} [mOptions.label] - Check the result of "getLabel" function from the control designtime metadata
 	 * @param {object} mOptions.action - Action to operate on <code>mOptions.xmlView</code>
 	 * @param {string} mOptions.action.name - Name of the action - e.g. 'remove', 'move', 'rename'
 	 * @param {string} [mOptions.action.controlId] - Id of the control the action is executed with - may be the parent of the control being 'touched'
 	 * @param {function():sap.ui.core.Control} [mOptions.action.control] - Function returning the control instance on which the change is being applied
+	 * @param {string} [mOptions.action.label] - Check the result of "getLabel" function from the action in the control designtime metadata
 	 * @param {function} mOptions.action.parameter - Function(oView) returning the parameter object of the action to be executed
 	 * @param {function} [mOptions.before] - Function(assert) hook before test execution is started
 	 * @param {function} [mOptions.after] - Function(assert) hook after test execution is finished
@@ -78,7 +84,7 @@ sap.ui.define([
 	 * @param {function} mOptions.afterAction - Function(oUiComponent, oView, assert) which checks the outcome of the action
 	 * @param {function} mOptions.afterUndo - Function(oUiComponent, oView, assert) which checks the execution of the action and an immediate undo
 	 * @param {function} mOptions.afterRedo - Function(oUiComponent, oView, assert) which checks the outcome of action with immediate undo and redo
-	 * @param {object} [mOptions.changeVisualization] - Change visualization information
+	 * @param {object|function} [mOptions.changeVisualization] - Change visualization information or function(oView) that returns the information
 	 * @param {string} [mOptions.changeVisualization.displayElementId] - ID of the element where the change indicator should be displayed
 	 * @param {object} [mOptions.changeVisualization.info] - Change visualization specific information from the change handler
 	 * @param {string[]} [mOptions.changeVisualization.info.affectedControls] - IDs of affected controls
@@ -167,7 +173,7 @@ sap.ui.define([
 					this.oView.setModel(mOptions.model);
 				}
 
-				sap.ui.getCore().applyChanges();
+				Core.applyChanges();
 
 				return mOptions.model && mOptions.model.getMetaModel() && mOptions.model.getMetaModel().loaded();
 			}.bind(this));
@@ -195,83 +201,94 @@ sap.ui.define([
 		}
 
 		function buildCommand(assert, oAction) {
-			return Promise.resolve().then(function() {
-				var oControl;
-				var mParameter;
-				var oElementDesignTimeMetadata;
+			var oControl;
+			var mParameter;
+			var oElementDesignTimeMetadata;
+			var sCommandName = oAction.name;
+			return Promise.resolve()
+			.then(function() {
 				if (typeof oAction.control === "function") {
-					oControl = oAction.control(this.oView);
-				} else {
-					oControl = this.oView.byId(oAction.controlId);
+					return oAction.control(this.oView);
 				}
-				var sCommandName = oAction.name;
-				return oControl.getMetadata().loadDesignTime(oControl).then(function() {
-					if (oAction.parameter) {
-						if (typeof oAction.parameter === "function") {
-							mParameter = oAction.parameter(this.oView);
-						} else {
-							mParameter = oAction.parameter;
-						}
-					} else {
-						mParameter = {};
-					}
-
-					sap.ui.getCore().applyChanges();
-					this.oDesignTime = new DesignTime({
-						rootElements: [
-							this.oView
-						]
-					});
-					return new Promise(function(resolve) {
-						this.oDesignTime.attachEventOnce("synced", function() {
-							var oControlOverlay = OverlayRegistry.getOverlay(oControl);
-							oElementDesignTimeMetadata = oControlOverlay.getDesignTimeMetadata();
-							var oResponsibleElement = oElementDesignTimeMetadata.getAction("getResponsibleElement", oControl);
-							var oAggregationOverlay;
-
-							if (oAction.name === "move") {
-								var oElementOverlay = OverlayRegistry.getOverlay(mParameter.movedElements[0].element || mParameter.movedElements[0].id);
-								var oRelevantContainer = oElementOverlay.getRelevantContainer();
-								oControl = oRelevantContainer;
-								oElementDesignTimeMetadata = oElementOverlay.getParentAggregationOverlay().getDesignTimeMetadata();
-							} else if (oAction.name === "addODataProperty") {
-								assert.ok(false, "addODataProperty action is deprecated. Use addViaDelegate action instead.");
-							} else if (Array.isArray(oAction.name)) {
-								var aAddActions = oElementDesignTimeMetadata.getActionDataFromAggregations(oAction.name[0], oControl, undefined, oAction.name[1]);
-								assert.equal(aAddActions.length, 1, "there should be only one aggregation with the possibility to do an add " + oAction.name[1] + " action");
-								oAggregationOverlay = oControlOverlay.getAggregationOverlay(aAddActions[0].aggregation);
-								oElementDesignTimeMetadata = oAggregationOverlay.getDesignTimeMetadata();
-								sCommandName = "addDelegateProperty";
-							} else if (oResponsibleElement) {
-								if (oAction.name === "reveal") {
-									oControl = oAction.revealedElement(this.oView);
-									oControlOverlay = OverlayRegistry.getOverlay(oAction.revealedElement(this.oView));
-									oElementDesignTimeMetadata = oControlOverlay.getDesignTimeMetadata();
-								} else {
-									oControl = oResponsibleElement;
-									oControlOverlay = OverlayRegistry.getOverlay(oControl);
-									oElementDesignTimeMetadata = oControlOverlay.getDesignTimeMetadata();
-									resolve(oControl.getMetadata().loadDesignTime(oControl));
-								}
-							}
-							resolve();
-						}.bind(this));
-					}.bind(this));
-				}.bind(this))
-				.then(function() {
-					var oCommandFactory = new CommandFactory({
-						flexSettings: {
-							layer: mOptions.layer || Layer.CUSTOMER
-						}
-					});
-					return oCommandFactory.getCommandFor(oControl, sCommandName, mParameter, oElementDesignTimeMetadata);
-				})
-				.then(function(oCommand) {
-					assert.ok(oCommand, "then the registration for action to change type, the registration for change and control type to change handler is available and " + mOptions.action.name + " is a valid action");
-					return oCommand;
-				});
+				return this.oView.byId(oAction.controlId);
 			}.bind(this))
+			.then(function(oRetrievedControl) {
+				oControl = oRetrievedControl;
+				return oControl.getMetadata().loadDesignTime(oControl);
+			})
+			.then(function() {
+				if (oAction.parameter) {
+					if (typeof oAction.parameter === "function") {
+						mParameter = oAction.parameter(this.oView);
+					} else {
+						mParameter = oAction.parameter;
+					}
+				} else {
+					mParameter = {};
+				}
 
+				Core.applyChanges();
+				this.oDesignTime = new DesignTime({
+					rootElements: [
+						this.oView
+					]
+				});
+				return new Promise(function(resolve) {
+					this.oDesignTime.attachEventOnce("synced", function() {
+						// The "settings" action doesn't require an overlay
+						if (oAction.name === "settings") {
+							return resolve();
+						}
+						var oControlOverlay = OverlayRegistry.getOverlay(oControl);
+						oElementDesignTimeMetadata = oControlOverlay.getDesignTimeMetadata();
+						var oResponsibleElement = oElementDesignTimeMetadata.getAction("getResponsibleElement", oControl);
+						var oAggregationOverlay;
+						if (mOptions.label) {
+							assert.strictEqual(oElementDesignTimeMetadata.getLabel(oControl), mOptions.label, "then the control label is correct");
+						}
+						if (oAction.name === "move") {
+							var oElementOverlay = OverlayRegistry.getOverlay(mParameter.movedElements[0].element || mParameter.movedElements[0].id);
+							var oRelevantContainer = oElementOverlay.getRelevantContainer();
+							oControl = oRelevantContainer;
+							oElementDesignTimeMetadata = oElementOverlay.getParentAggregationOverlay().getDesignTimeMetadata();
+						} else if (Array.isArray(oAction.name)) {
+							var aAddActions = oElementDesignTimeMetadata.getActionDataFromAggregations(oAction.name[0], oControl, undefined, oAction.name[1]);
+							assert.equal(aAddActions.length, 1, "there should be only one aggregation with the possibility to do an add " + oAction.name[1] + " action");
+							oAggregationOverlay = oControlOverlay.getAggregationOverlay(aAddActions[0].aggregation);
+							oElementDesignTimeMetadata = oAggregationOverlay.getDesignTimeMetadata();
+							sCommandName = "addDelegateProperty";
+						} else if (oResponsibleElement) {
+							if (oAction.name === "reveal") {
+								oControl = oAction.revealedElement(this.oView);
+								oControlOverlay = OverlayRegistry.getOverlay(oAction.revealedElement(this.oView));
+								oElementDesignTimeMetadata = oControlOverlay.getDesignTimeMetadata();
+								if (oAction.label) {
+									var oRevealAction = oElementDesignTimeMetadata.getAction("reveal");
+									assert.strictEqual(oRevealAction.getLabel(oControl), oAction.label, "then the control label is correct");
+								}
+							} else {
+								oControl = oResponsibleElement;
+								oControlOverlay = OverlayRegistry.getOverlay(oControl);
+								oElementDesignTimeMetadata = oControlOverlay.getDesignTimeMetadata();
+								resolve(oControl.getMetadata().loadDesignTime(oControl));
+							}
+						}
+						resolve();
+					}.bind(this));
+				}.bind(this));
+			}.bind(this))
+			.then(function() {
+				var oCommandFactory = new CommandFactory({
+					flexSettings: {
+						layer: mOptions.layer || Layer.CUSTOMER
+					}
+				});
+				return oCommandFactory.getCommandFor(oControl, sCommandName, mParameter, oElementDesignTimeMetadata);
+			})
+			.then(function(oCommand) {
+				assert.ok(oCommand, "then the registration for action to change type, the registration for change and control type to change handler is available and " + mOptions.action.name + " is a valid action");
+				return oCommand;
+			})
 			.catch(function(oMessage) {
 				throw new Error(oMessage);
 			});
@@ -337,6 +354,13 @@ sap.ui.define([
 				return Promise.resolve();
 			}
 
+			var oChangeVisualizationInput;
+			if (typeof mOptions.changeVisualization === "function") {
+				oChangeVisualizationInput = mOptions.changeVisualization(oView);
+			} else {
+				oChangeVisualizationInput = mOptions.changeVisualization;
+			}
+
 			var oChangeVisualization = new ChangeVisualization({
 				rootControlId: oView.getId(),
 				isActive: true
@@ -351,17 +375,17 @@ sap.ui.define([
 			return oChangeVisualization._updateChangeRegistry()
 
 			.then(function() {
-				return oChangeVisualization._selectChangeCategory("all");
+				return oChangeVisualization._selectChangeCategory(ChangeCategories.ALL);
 			})
 
 			.then(function() {
 				var oChangeIndicatorRegistry = oChangeVisualization._oChangeIndicatorRegistry;
 				var oData = oChangeIndicatorRegistry.getSelectorsWithRegisteredChanges();
-				var sDisplayElementId = mOptions.changeVisualization.displayElementId;
+				var sDisplayElementId = oChangeVisualizationInput.displayElementId;
 				var sSelector = sDisplayElementId ? oView.createId(sDisplayElementId) : oView.getId();
 				assert.ok(oData[sSelector] && oData[sSelector].length, "there is a change indicator at the correct element");
 				var oRegisteredChange = oChangeIndicatorRegistry.getAllRegisteredChanges()[0];
-				var mVisualizationInfo = mOptions.changeVisualization.info;
+				var mVisualizationInfo = oChangeVisualizationInput.info;
 
 				function mapIds(aIds) {
 					return aIds.map(function(sId) {
@@ -369,20 +393,22 @@ sap.ui.define([
 					});
 				}
 
-				if (mVisualizationInfo.affectedControls) {
-					var aAffectedControlIds = mapIds(mVisualizationInfo.affectedControls);
-					assert.deepEqual(aAffectedControlIds, oRegisteredChange.visualizationInfo.affectedElementIds, "then the affected control ids are correct");
-				}
-				if (mVisualizationInfo.dependentControls) {
-					var aDependentControlIds = mapIds(mVisualizationInfo.dependentControls);
-					assert.deepEqual(aDependentControlIds, oRegisteredChange.visualizationInfo.dependentElementIds, "then the dependent control ids are correct");
-				}
-				if (mVisualizationInfo.displayControls) {
-					var aDisplayControlIds = mapIds(mVisualizationInfo.displayControls);
-					assert.deepEqual(aDisplayControlIds, oRegisteredChange.visualizationInfo.displayElementIds, "then the display control ids are correct");
-				}
-				if (mVisualizationInfo.descriptionPayload) {
-					assert.deepEqual(mVisualizationInfo.descriptionPayload, oRegisteredChange.visualizationInfo.descriptionPayload, "then the descriptionPayload is correct");
+				if (mVisualizationInfo) {
+					if (mVisualizationInfo.affectedControls) {
+						var aAffectedControlIds = mapIds(mVisualizationInfo.affectedControls);
+						assert.deepEqual(aAffectedControlIds, oRegisteredChange.visualizationInfo.affectedElementIds, "then the affected control ids are correct");
+					}
+					if (mVisualizationInfo.dependentControls) {
+						var aDependentControlIds = mapIds(mVisualizationInfo.dependentControls);
+						assert.deepEqual(aDependentControlIds, oRegisteredChange.visualizationInfo.dependentElementIds, "then the dependent control ids are correct");
+					}
+					if (mVisualizationInfo.displayControls) {
+						var aDisplayControlIds = mapIds(mVisualizationInfo.displayControls);
+						assert.deepEqual(aDisplayControlIds, oRegisteredChange.visualizationInfo.displayElementIds, "then the display control ids are correct");
+					}
+					if (mVisualizationInfo.descriptionPayload) {
+						assert.deepEqual(mVisualizationInfo.descriptionPayload, oRegisteredChange.visualizationInfo.descriptionPayload, "then the descriptionPayload is correct");
+					}
 				}
 			});
 		}
@@ -487,7 +513,7 @@ sap.ui.define([
 					}.bind(this))
 
 					.then(function() {
-						sap.ui.getCore().applyChanges();
+						Core.applyChanges();
 						mOptions.afterUndo(this.oUiComponent, this.oView, assert);
 					}.bind(this));
 				});
@@ -516,7 +542,7 @@ sap.ui.define([
 					}.bind(this))
 
 					.then(function() {
-						sap.ui.getCore().applyChanges();
+						Core.applyChanges();
 						mOptions.afterRedo(this.oUiComponent, this.oView, assert);
 					}.bind(this));
 				});
@@ -567,7 +593,7 @@ sap.ui.define([
 				}.bind(this))
 
 				.then(function() {
-					sap.ui.getCore().applyChanges();
+					Core.applyChanges();
 					return mOptions.afterAction(this.oUiComponent, this.oView, assert);
 				}.bind(this));
 			});
@@ -580,7 +606,7 @@ sap.ui.define([
 				.then(cleanUpAfterUndo.bind(null, this.aCommands))
 
 				.then(function() {
-					sap.ui.getCore().applyChanges();
+					Core.applyChanges();
 					return mOptions.afterUndo(this.oUiComponent, this.oView, assert);
 				}.bind(this));
 			});
@@ -605,7 +631,7 @@ sap.ui.define([
 				}.bind(this))
 
 				.then(function() {
-					sap.ui.getCore().applyChanges();
+					Core.applyChanges();
 					return mOptions.afterRedo(this.oUiComponent, this.oView, assert);
 				}.bind(this));
 			});

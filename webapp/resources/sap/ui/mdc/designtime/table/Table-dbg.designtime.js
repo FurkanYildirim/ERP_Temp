@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define([
-	"sap/ui/mdc/p13n/Engine",
+	"sap/m/p13n/Engine",
 	"sap/ui/mdc/Table",
 	"../Util"
 ], function (Engine, Table, Util) {
@@ -19,7 +19,9 @@ sap.ui.define([
 				//RTA expects the settings to be returned as function
 				return {
 					handler: function (oControl, mPropertyBag) {
-						return Engine.getInstance().getRTASettingsActionHandler(oControl, mPropertyBag, oControl.getActiveP13nModes());
+						return oControl.finalizePropertyHelper().then(function(){
+							return Engine.getInstance().getRTASettingsActionHandler(oControl, mPropertyBag, oControl.getActiveP13nModes());
+						});
 					}
 				};
 			}
@@ -46,9 +48,9 @@ sap.ui.define([
 		}
 	};
 	// array containing all allowed control properties. Update the aAllowedProperties to enable a property for DTA
-	var aAllowedProperties = ["width", "height", "headerLevel",
+	var aAllowedProperties = ["width", "headerLevel",
 			"header", "headerVisible", "showRowCount", "threshold",
-			"noDataText", "enableExport", "busyIndicatorDelay","enableColumnResize",
+			"enableExport", "busyIndicatorDelay","enableColumnResize",
 			"showPasteButton", "multiSelectMode"],
 		// array containing all allowed control aggregations. Update the aAllowedAggregations to enable an aggregation for DTA
 		aAllowedAggregations = [

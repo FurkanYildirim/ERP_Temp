@@ -40,7 +40,7 @@ sap.ui.define([
 	 * @alias sap.ui.rta.util.changeVisualization.ChangeIndicator
 	 * @author SAP SE
 	 * @since 1.84.0
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 */
 	var ChangeIndicator = Control.extend("sap.ui.rta.util.changeVisualization.ChangeIndicator", {
@@ -106,6 +106,8 @@ sap.ui.define([
 							type: "object"
 						}
 					}
+				},
+				detailPopoverOpened: {
 				}
 			}
 		},
@@ -115,6 +117,10 @@ sap.ui.define([
 				oRm.openStart("div", oControl);
 				oRm.class("sapUiRtaChangeIndicator");
 				oRm.class("sapUiRtaChangeIndicatorChange");
+				var sTooltip = oControl.getTooltip_AsString();
+				if (sTooltip) {
+					oRm.attr("title", sTooltip);
+				}
 				if (oControl.getChanges().length > 4) {
 					oRm.class("sapUiRtaChangeIndicatorColorDark");
 				} else if (oControl.getChanges().length > 1) {
@@ -123,31 +129,41 @@ sap.ui.define([
 					oRm.class("sapUiRtaChangeIndicatorColorLight");
 				}
 				oRm.openEnd();
+				if (sTooltip) {
+					oRm.openStart("span", oControl.getId() + "-tooltip");
+					oRm.class("sapUiInvisibleText");
+					oRm.openEnd();
+					oRm.text(sTooltip);
+					oRm.close("span");
+				}
 				oRm.close("div");
 			}
 		},
 		constructor: function() {
 			this._oDetailModel = new JSONModel();
 			this._oDetailModel.setDefaultBindingMode("OneWay");
-
+			this._fnHoverTrue = this._setHoverStyleClasses.bind(this, true);
+			this._fnHoverFalse = this._setHoverStyleClasses.bind(this, false);
 			Control.prototype.constructor.apply(this, arguments);
-
-			this._fnHoverTrue = this._toggleHoverStyleClasses.bind(this, true);
-			this._fnHoverFalse = this._toggleHoverStyleClasses.bind(this, false);
 			// is needed to prevent that multiple events listeners are attached
 			// to the same overlay because setVisible is called multiple times
 			this._bEventAttachedToElement = false;
 		}
 	});
 
-	function handleBrowserEventsOnElement(oElement, sEventHandler) {
-		oElement[sEventHandler]("click", this._onSelect, this);
-		oElement[sEventHandler]("tap", this._onSelect, this);
-		oElement[sEventHandler]("keydown", this._onKeyDown, this);
-		oElement[sEventHandler]("mouseout", this._fnHoverFalse);
-		oElement[sEventHandler]("focusout", this._fnHoverFalse);
-		oElement[sEventHandler]("mouseover", this._fnHoverTrue);
-		oElement[sEventHandler]("focusin", this._fnHoverTrue);
+	function handleBrowserEventsOnOverlay(oOverlay, sEventHandler) {
+		oOverlay[sEventHandler]("click", this._onSelect, this);
+		oOverlay[sEventHandler]("tap", this._onSelect, this);
+		oOverlay[sEventHandler]("keydown", this._onKeyDown, this);
+		oOverlay[sEventHandler]("mouseover", this._fnHoverTrue);
+		oOverlay[sEventHandler]("focusin", this._fnHoverTrue);
+	}
+
+	// Hover/focus events are handled by the ChangeVisualization (because it can affect multiple indicators at once)
+	function handleBrowserEventsOnIndicator(oIndicator, sEventHandler) {
+		oIndicator[sEventHandler]("click", this._onSelect, this);
+		oIndicator[sEventHandler]("tap", this._onSelect, this);
+		oIndicator[sEventHandler]("keydown", this._onKeyDown, this);
 	}
 
 	function centerVertically(oIndicator) {
@@ -194,7 +210,6 @@ sap.ui.define([
 			sDescriptionText = oDescription.descriptionText;
 			sDescriptionTooltip = oDescription.descriptionTooltip || "";
 		} else {
-			sElementLabel = sElementLabel && "'" + sElementLabel + "'";
 			var sShortenedElementLabel = ChangeVisualizationUtils.shortenString(sElementLabel);
 			var sChangeTextKey = (
 				"TXT_CHANGEVISUALIZATION_CHANGE_"
@@ -249,7 +264,7 @@ sap.ui.define([
 
 	ChangeIndicator.prototype.init = function() {
 		this._iOldTabIndex = 0;
-		handleBrowserEventsOnElement.call(this, this, "attachBrowserEvent");
+		handleBrowserEventsOnIndicator.call(this, this, "attachBrowserEvent");
 	};
 
 	ChangeIndicator.prototype.setVisible = function(bVisible) {
@@ -258,11 +273,11 @@ sap.ui.define([
 		// needed because the change indicator cleanup is only triggered on save and exit
 		if (oOverlay) {
 			if (bVisible && !this._bEventAttachedToElement) {
-				handleBrowserEventsOnElement.call(this, oOverlay, "attachBrowserEvent");
+				handleBrowserEventsOnOverlay.call(this, oOverlay, "attachBrowserEvent");
 				this._bEventAttachedToElement = true;
 			}
 			if (!bVisible) {
-				handleBrowserEventsOnElement.call(this, oOverlay, "detachBrowserEvent");
+				handleBrowserEventsOnOverlay.call(this, oOverlay, "detachBrowserEvent");
 				this._bEventAttachedToElement = false;
 				if (this.getAggregation("_popover")) {
 					this.getAggregation("_popover").destroy();
@@ -300,7 +315,7 @@ sap.ui.define([
 	};
 
 	ChangeIndicator.prototype.onAfterRendering = function() {
-		var oOverlay = Core.getElementById(this.getOverlayId());
+		var oOverlay = Core.byId(this.getOverlayId());
 		if (oOverlay) {
 			// Attach to the overlay
 			oOverlay.getDomRef().appendChild(this.getDomRef());
@@ -312,7 +327,7 @@ sap.ui.define([
 		if (this._bScheduledForFocus) {
 			// Element was supposed to be focused before rendering
 			this.focus();
-			this._toggleHoverStyleClasses(true);
+			this._setHoverStyleClasses(true);
 		}
 	};
 
@@ -326,20 +341,26 @@ sap.ui.define([
 			if (this.getAggregation("_popover")) {
 				this.getAggregation("_popover").destroy();
 			}
-			handleBrowserEventsOnElement.call(this, oOverlay, "detachBrowserEvent");
+			handleBrowserEventsOnOverlay.call(this, oOverlay, "detachBrowserEvent");
 		}
-		handleBrowserEventsOnElement.call(this, this, "detachBrowserEvent");
+		handleBrowserEventsOnIndicator.call(this, this, "detachBrowserEvent");
 	};
 
 	ChangeIndicator.prototype.setChanges = function(aChanges) {
+		var oRtaResourceBundle = Core.getLibraryResourceBundle("sap.ui.rta");
 		this.setProperty("changes", aChanges);
 		this._oDetailModel.setData((aChanges || []).reverse().map(formatChangesModelItem.bind(this, this.getOverlayId())));
+		if (aChanges && aChanges.length === 1) {
+			this.setTooltip(oRtaResourceBundle.getText("TXT_CHANGEVISUALIZATION_INDICATOR_TOOLTIP_SING"));
+		} else if (aChanges) {
+			this.setTooltip(oRtaResourceBundle.getText("TXT_CHANGEVISUALIZATION_INDICATOR_TOOLTIP_PLUR", [aChanges.length]));
+		}
 	};
 
 	ChangeIndicator.prototype._onSelect = function(oEvent) {
 		this.focus();
 		oEvent.stopPropagation();
-		this._openDetailPopover();
+		this._toggleDetailPopover();
 	};
 
 	ChangeIndicator.prototype._onKeyDown = function(oEvent) {
@@ -352,11 +373,19 @@ sap.ui.define([
 		});
 	};
 
-	ChangeIndicator.prototype._toggleHoverStyleClasses = function(bAdd, oEvent) {
-		if (oEvent) {
-			oEvent.stopPropagation();
-			oEvent.preventDefault();
-		}
+	// When the detail popover is opened the overlay should be selected
+	ChangeIndicator.prototype.onDetailPopoverOpened = function(oEvent) {
+		oEvent.preventDefault();
+		this._setHoverStyleClasses(true);
+	};
+
+	ChangeIndicator.prototype.onIndicatorBrowserInteraction = function(bAdd, oEvent) {
+		oEvent.stopPropagation();
+		oEvent.preventDefault();
+		this._setHoverStyleClasses(bAdd);
+	};
+
+	ChangeIndicator.prototype._setHoverStyleClasses = function(bAdd) {
 		var oOverlay = Core.byId(this.getOverlayId());
 		if (oOverlay.getMetadata().getName() !== "sap.ui.dt.ElementOverlay") {
 			return;
@@ -366,25 +395,29 @@ sap.ui.define([
 		this[sFunctionName]("sapUiRtaHover");
 	};
 
-	ChangeIndicator.prototype._openDetailPopover = function() {
+	ChangeIndicator.prototype._toggleDetailPopover = function() {
 		if (!this.getAggregation("_popover")) {
 			//store the tabindex (tabindex will be removed on opening the popover)
 			this._iOldTabIndex = this.getDomRef().getAttribute("tabindex");
 			Fragment.load({
 				name: "sap.ui.rta.util.changeVisualization.ChangeIndicatorPopover",
+				id: this.sId + "Info",
 				controller: this
 			}).then(function(oPopover) {
 				oPopover._bOpenedByChangeIndicator = true;
 				this.setAggregation("_popover", oPopover);
 				oPopover.setModel(this._oDetailModel, "details");
 				oPopover.openBy(this);
+				this.fireDetailPopoverOpened();
 			}.bind(this));
 		} else {
 			if (this.getAggregation("_popover").isOpen()) {
 				return this.getAggregation("_popover").close();
 			}
 			this.getAggregation("_popover").openBy(this);
+			this.fireDetailPopoverOpened();
 		}
+		return undefined;
 	};
 
 	ChangeIndicator.prototype._showDependentElements = function(oEvent) {

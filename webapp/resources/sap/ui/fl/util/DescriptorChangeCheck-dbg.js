@@ -23,6 +23,43 @@ sap.ui.define([
 		}
 	}
 
+	/**
+	 * This method is especially for entity property changes.
+	 * Returns an array that has only cleared generic paths.
+	 * Generic paths are paths which end with /*. This ending will be removed from the paths.
+	 * @param {Array} aSupportedProperties - Array of supported properties by change merger
+	 * @returns {Array} Only cleared generic paths
+	 */
+	function getClearedGenericPath(aSupportedProperties) {
+		var aPropertiesClearedGenericPath = [];
+		var aPropertiesWithGenericPath = aSupportedProperties.filter(function(sProperty) {
+			return sProperty.endsWith("/*");
+		});
+
+		aPropertiesWithGenericPath.forEach(function(sProperty) {
+			var sClearedProperty = sProperty.replaceAll("/*", "");
+			if (sClearedProperty) {
+				aPropertiesClearedGenericPath.push(sClearedProperty);
+			}
+		});
+		return aPropertiesClearedGenericPath;
+	}
+
+	/**
+	 * This method is especially for entity property changes.
+	 * Iterates through the array which has cleared generic paths and checks whether these paths start with sPropertyPath.
+	 * If this is the case then true will be returned otherwise false.
+	 * @param {Array} aSupportedProperties - Array of supported properties by change merger
+	 * @param {string} sPropertyPath - Path to the property
+	 * @returns {boolean} Property Path is supported or is not supported
+	 */
+	function isGenericPropertyPathSupported(aSupportedProperties, sPropertyPath) {
+		var aClearedGenericPath = getClearedGenericPath(aSupportedProperties);
+		return aClearedGenericPath.some(function(path) {
+			return sPropertyPath.startsWith(path);
+		});
+	}
+
 	function formatEntityCheck(oChangeEntity, aSupportedProperties, aSupportedOperations) {
 		if (!oChangeEntity.propertyPath) {
 			throw new Error("Invalid change format: The mandatory 'propertyPath' is not defined. Please define the mandatory property 'propertyPath'");
@@ -30,10 +67,12 @@ sap.ui.define([
 		if (!oChangeEntity.operation) {
 			throw new Error("Invalid change format: The mandatory 'operation' is not defined. Please define the mandatory property 'operation'");
 		}
-		if (!oChangeEntity.propertyValue) {
-			throw new Error("Invalid change format: The mandatory 'propertyValue' is not defined. Please define the mandatory property 'propertyValue'");
+		if (oChangeEntity.operation.toUpperCase() !== "DELETE") {
+			if (!oChangeEntity.hasOwnProperty("propertyValue")) {
+				throw new Error("Invalid change format: The mandatory 'propertyValue' is not defined. Please define the mandatory property 'propertyValue'");
+			}
 		}
-		if (!includes(aSupportedProperties, oChangeEntity.propertyPath)) {
+		if (!includes(aSupportedProperties, oChangeEntity.propertyPath) && !isGenericPropertyPathSupported(aSupportedProperties, oChangeEntity.propertyPath)) {
 			throw new Error("Changing " + oChangeEntity.propertyPath + " is not supported. The supported 'propertyPath' is: " + aSupportedProperties.join("|"));
 		}
 		if (!includes(aSupportedOperations, oChangeEntity.operation)) {
@@ -45,7 +84,7 @@ sap.ui.define([
 	 * Checks the format consistency for change mergers (ChangeDataSource and ChangeInbound)
 	 * and other mergers with the prefix "change". The format of a change is valid if it includes the ID as well as <code>entityPropertyChange</code>.
 	 *
-	 * @param {sap.ui.fl.Change} oChange - Changes to be merged
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - Changes to be merged
 	 * @param {Array} aSupportedProperties - Array of supported properties by change merger
 	 * @param {Array} aSupportedOperations - Array of supported operations by change merger
 	 * @ui5-restricted sap.ui.fl, sap.suite.ui.generic.template
@@ -74,7 +113,7 @@ sap.ui.define([
 	 * Checks the namespace compliance of an ID for a given change.
 	 * The target layer is derived from the change.
 	 * @param {string} sId - The ID to check
-	 * @param {sap.ui.fl.Change} oChange - The change from where to derive the layer
+	 * @param {sap.ui.fl.apply._internal.flexObjects.FlexObject} oChange - The change from where to derive the layer
 	 * @ui5-restricted sap.ui.fl, sap.suite.ui.generic.template
 	 */
 	function checkIdNamespaceCompliance(sId, oChange) {
@@ -112,6 +151,8 @@ sap.ui.define([
 	return {
 		checkEntityPropertyChange: checkEntityPropertyChange,
 		checkIdNamespaceCompliance: checkIdNamespaceCompliance,
-		getNamespacePrefixForLayer: getNamespacePrefixForLayer
+		getNamespacePrefixForLayer: getNamespacePrefixForLayer,
+		getClearedGenericPath: getClearedGenericPath,
+		isGenericPropertyPathSupported: isGenericPropertyPathSupported
 	};
 });

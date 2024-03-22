@@ -26,8 +26,8 @@ sap.ui.predefine("sap/uxap/library.support", ["./rules/ObjectPageLayout.support"
 /**
  * Defines support rules of the ObjectPageHeader control of sap.uxap library.
  */
-sap.ui.predefine("sap/uxap/rules/ObjectPageLayout.support", ["sap/ui/support/library"],
-	function (SupportLib) {
+sap.ui.predefine("sap/uxap/rules/ObjectPageLayout.support", ["sap/ui/support/library", "sap/ui/base/Object"],
+	function (SupportLib, BaseObject) {
 		"use strict";
 
 		// shortcuts
@@ -64,7 +64,7 @@ sap.ui.predefine("sap/uxap/rules/ObjectPageLayout.support", ["sap/ui/support/lib
 
 						var parent = oControl.getParent();
 						while (parent) {
-							if (parent instanceof sap.ui.core.Component) {
+							if (BaseObject.isA(parent, "sap.ui.core.Component")) {
 								return parent;
 							} else {
 								parent = parent.getParent();

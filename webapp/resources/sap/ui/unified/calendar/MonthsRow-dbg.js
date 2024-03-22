@@ -19,7 +19,9 @@ sap.ui.define([
 	"sap/ui/dom/containsOrEquals",
 	"sap/ui/thirdparty/jquery",
 	"sap/ui/unified/DateRange",
-	"sap/ui/core/Configuration"
+	"sap/ui/core/Configuration",
+	'sap/ui/core/Core',
+	"sap/ui/core/date/UI5Date"
 ], function(
 	Control,
 	LocaleData,
@@ -34,12 +36,14 @@ sap.ui.define([
 	containsOrEquals,
 	jQuery,
 	DateRange,
-	Configuration
+	Configuration,
+	Core,
+	UI5Date
 ) {
 	"use strict";
 
 	/*
-	 * <code>CalendarDate</code> objects are used inside the <code>MonthsRow</code>, whereas JavaScript dates are used in the API.
+	 * <code>CalendarDate</code> objects are used inside the <code>MonthsRow</code>, whereas UI5Date or JavaScript dates are used in the API.
 	 * This means that a conversion must be performed for the API functions.
 	 */
 
@@ -57,10 +61,10 @@ sap.ui.define([
 	 * If used inside the CalendarMonthInterval the properties and aggregation are directly taken from the parent
 	 * (to not duplicate and synchronize DateRanges and so on...).
 	 *
-	 * The MontsRow works with JavaScript Date objects, but only the month and the year are used to display and interact.
+	 * The MontsRow works with UI5Date or JavaScript Date objects, but only the month and the year are used to display and interact.
 	 * As representation for a month, the 1st of the month will always be returned in the API.
 	 * @extends sap.ui.core.Control
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -72,7 +76,7 @@ sap.ui.define([
 		library : "sap.ui.unified",
 		properties : {
 			/**
-			 * A date as JavaScript Date object. The month including this date is rendered and this date is focused initially (if no other focus is set).
+			 * A date as UI5Date or JavaScript Date object. The month including this date is rendered and this date is focused initially (if no other focus is set).
 			 * If the date property is not in the range <code>startDate</code> + <code>months</code> in the rendering phase,
 			 * it is set to the <code>startDate</code>.
 			 * So after setting the <code>startDate</code> the date should be set to be in the visible range.
@@ -80,7 +84,7 @@ sap.ui.define([
 			date : {type : "object", group : "Data"},
 
 			/**
-			 * Start date, as JavaScript Date object, of the row. The month of this date is the first month of the displayed row.
+			 * Start date, as UI5Date or JavaScript Date object, of the row. The month of this date is the first month of the displayed row.
 			 */
 			startDate : {type : "object", group : "Data"},
 
@@ -112,7 +116,15 @@ sap.ui.define([
 			 * @private
 			 * @since 1.108.0
 			 */
-			primaryCalendarType : {type : "sap.ui.core.CalendarType", group : "Appearance", defaultValue : null}
+			primaryCalendarType : {type : "sap.ui.core.CalendarType", group : "Appearance"},
+
+			/**
+			 * If set, the days are also displayed in this calendar type
+			 * If not set, the dates are only displayed in the primary calendar type
+			 * @private
+			 * @since 1.109.0
+			 */
+			 secondaryCalendarType : {type : "sap.ui.core.CalendarType", group : "Appearance"}
 		},
 		aggregations : {
 
@@ -161,7 +173,7 @@ sap.ui.define([
 			focus : {
 				parameters : {
 					/**
-					 * First date, as JavaScript Date object, of the month that is focused.
+					 * First date, as UI5Date or JavaScript Date object, of the month that is focused.
 					 */
 					date : {type : "object"},
 					/**
@@ -174,16 +186,44 @@ sap.ui.define([
 	}, renderer: MonthsRowRenderer});
 
 	MonthsRow.prototype.init = function(){
-		var sCalendarType = this.getProperty("primaryCalendarType");
+		var sCalendarType = this._getPrimaryCalendarType();
+		//need day in pattern because in islamic calendar 2 Month can start in one gregorianic calendar
+		this._oFormatYyyymm = DateFormat.getInstance({pattern: "yyyyMMdd", calendarType: sCalendarType});
+		this._oFormatOnlyYearLong = DateFormat.getInstance({pattern: "yyyy", calendarType: sCalendarType});
+		this._oFormatLong = DateFormat.getInstance({pattern: "MMMM y", calendarType: sCalendarType});
+		this._mouseMoveProxy = jQuery.proxy(this._handleMouseMove, this);
+		this._rb = Core.getLibraryResourceBundle("sap.ui.unified");
+	};
 
+	MonthsRow.prototype.setPrimaryCalendarType = function (sCalendarType){
+		this.setProperty("primaryCalendarType", sCalendarType);
 		//need day in pattern because in islamic calendar 2 Month can start in one gregorianic calendar
 		this._oFormatYyyymm = DateFormat.getInstance({pattern: "yyyyMMdd", calendarType: sCalendarType});
 		this._oFormatLong = DateFormat.getInstance({pattern: "MMMM y", calendarType: sCalendarType});
 
-		this._mouseMoveProxy = jQuery.proxy(this._handleMouseMove, this);
+		return this;
+	};
 
-		this._rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.unified");
+	MonthsRow.prototype._getPrimaryCalendarType = function(){
+		return this.getProperty("primaryCalendarType") || Configuration.getCalendarType();
+	};
 
+	MonthsRow.prototype.setSecondaryCalendarType = function (sCalendarType){
+		this.setProperty("secondaryCalendarType", sCalendarType);
+		this._oFormatYearInSecType = DateFormat.getDateInstance({format: "y", calendarType: sCalendarType});
+		this._oFormatLongInSecType = DateFormat.getInstance({pattern: "MMMM y", calendarType: sCalendarType});
+
+		return this;
+	};
+
+	MonthsRow.prototype._getSecondaryCalendarType = function () {
+		var sSecondaryCalendarType = this.getSecondaryCalendarType();
+
+		if (sSecondaryCalendarType === this._getPrimaryCalendarType()) {
+			return undefined;
+		}
+
+		return sSecondaryCalendarType;
 	};
 
 	MonthsRow.prototype.exit = function(){
@@ -265,8 +305,10 @@ sap.ui.define([
 
 	/**
 	 * Sets a date for the months row.
-	 * @param {Date} oDate a JavaScript date
-	 * @return {this} <code>this</code> for method chaining
+	 *
+	 * @param {Date|module:sap/ui/core/date/UI5Date} oDate a date instance
+	 * @returns {this} Reference to <code>this</code> for method chaining
+	 * @public
 	 */
 	MonthsRow.prototype.setDate = function(oDate){
 		if (oDate) {
@@ -280,13 +322,42 @@ sap.ui.define([
 	};
 
 	/**
-	* @return {sap.ui.unified.calendar.CalendarDate} the last set calendar date or the current date
+	 * Calculates the first and last displayed date about a given month.
+	 * @param {integer} iCurrentMonth is the month on which the date calculations are based.
+	 * @param {integer} iCurrentYear is the year on which the date calculations are based.
+	 * @returns {object} object contains two values - start and end date (JSDates in secondary calendat type).
+	 */
+	MonthsRow.prototype._getDisplayedSecondaryDates = function (iCurrentMonth, iCurrentYear){
+		var sSecondaryCalendarType = this._getSecondaryCalendarType(),
+		oDate,
+		oFirstDate,
+		oLastDate;
+
+		if (this._oDate) {
+			oDate = new CalendarDate(this._oDate);
+		} else {
+			oDate = new CalendarDate(CalendarDate.fromLocalJSDate(UI5Date.getInstance()), this._getPrimaryCalendarType());
+		}
+
+		oDate.setYear(iCurrentYear);
+		oDate.setMonth(iCurrentMonth);
+		oDate.setDate(1);
+
+		oFirstDate = new CalendarDate(oDate, sSecondaryCalendarType);
+		oDate.setDate(CalendarUtils._daysInMonth(oDate));
+		oLastDate = new CalendarDate(oDate, sSecondaryCalendarType);
+
+		return {start: oFirstDate, end: oLastDate};
+	};
+
+	/**
+	* @returns {sap.ui.unified.calendar.CalendarDate} the last set calendar date or the current date
 	* @private
 	*/
 	MonthsRow.prototype._getDate = function(){
 
 		if (!this._oDate) {
-			this._oDate  = CalendarDate.fromLocalJSDate(new Date(), this.getProperty("primaryCalendarType"));
+			this._oDate  = CalendarDate.fromLocalJSDate(UI5Date.getInstance(), this.getProperty("primaryCalendarType"));
 		}
 
 		return this._oDate;
@@ -294,10 +365,12 @@ sap.ui.define([
 	};
 
 
-	/*
-	 * Sets a date for a start date of the months row.
-	 * @param {Date} oStartDate A JavaScript date
-	 * @return {this} <code>this</code> for method chaining
+	/**
+	 * Sets start date of the month row.
+	 *
+	 * @param {Date|module:sap/ui/core/date/UI5Date} oStartDate A date instance
+	 * @returns {this} Reference to <code>this</code> in order to allow method chaining
+	 * @public
 	 */
 	MonthsRow.prototype.setStartDate = function(oStartDate){
 		CalendarUtils._checkJSDateObject(oStartDate);
@@ -329,7 +402,7 @@ sap.ui.define([
 	MonthsRow.prototype._getStartDate = function(){
 
 		if (!this._oStartDate) {
-			this._oStartDate = CalendarDate.fromLocalJSDate(new Date(), this.getProperty("primaryCalendarType"));
+			this._oStartDate = CalendarDate.fromLocalJSDate(UI5Date.getInstance(), this.getProperty("primaryCalendarType"));
 			this._oStartDate.setDate(1); // always use begin of month as start date
 		}
 
@@ -339,8 +412,8 @@ sap.ui.define([
 	/**
 	 * Displays the month of a given date without setting the focus
 	 *
-	 * @param {object} oDate JavaScript Date object for focused date.
-	 * @returns {this} <code>this</code> to allow method chaining
+	 * @param {Date|module:sap/ui/core/date/UI5Date} oDate date instance for focused date.
+	 * @returns {this} Reference to <code>this</code> for method chaining
 	 * @public
 	 */
 	MonthsRow.prototype.displayDate = function(oDate){
@@ -544,10 +617,10 @@ sap.ui.define([
 		return this._ariaRole ? this._ariaRole : "gridcell";
 	};
 
-	/*
+	/**
 	 * Checks if a date is selected and what kind of selected
-	 * @param {sap.ui.unified.calendar.CalendarDate} oDate
-	 * @return {int} iSelected 0: not selected; 1: single day selected, 2: interval start, 3: interval end, 4: interval between, 5: one day interval (start = end)
+	 * @param {sap.ui.unified.calendar.CalendarDate} oDate A CalendarDate
+	 * @returns {int} iSelected 0: not selected; 1: single day selected, 2: interval start, 3: interval end, 4: interval between, 5: one day interval (start = end)
 	 * @private
 	 */
 	MonthsRow.prototype._checkDateSelected = function(oDate){
@@ -614,10 +687,11 @@ sap.ui.define([
 
 	};
 
-	/*
-	 * gets the type of a single date checking the specialDates aggregation
+	/**
+	 * Gets the type of a single date checking the specialDates aggregation
 	 * the first hit is used
-	 * @return {sap.ui.unified.calendar.CalendarDate} date type and tooltip defined in CalendarDayType
+	 * @param {object} oDate A date object.
+	 * @returns {sap.ui.unified.calendar.CalendarDate} date type and tooltip defined in CalendarDayType
 	 * @private
 	 */
 	MonthsRow.prototype._getDateType = function(oDate){
@@ -662,11 +736,11 @@ sap.ui.define([
 
 	};
 
-	/*
+	/**
 	 * Checks if a Month is enabled
 	 * the min. and max. date of the CalendarMonthInterval are used
-	 * @param {sap.ui.unified.calendar.CalendarDate} oDate
-	 * @return {boolean} Flag if enabled
+	 * @param {sap.ui.unified.calendar.CalendarDate} oDate A CalendarDate
+	 * @returns {boolean} Flag if enabled
 	 * @private
 	 */
 	MonthsRow.prototype._checkMonthEnabled = function(oDate){
@@ -852,7 +926,7 @@ sap.ui.define([
 	 * Checks if a date is focusable in the current rendered output.
 	 * This means that if it is not rendered, it is not focusable.
 	 *
-	 * @param {object} oDateTime JavaScript Date object for focused date.
+	 * @param {Date|module:sap/ui/core/date/UI5Date} oDateTime date instance for focused date.
 	 * @returns {boolean} flag if focusable
 	 * @public
 	 */

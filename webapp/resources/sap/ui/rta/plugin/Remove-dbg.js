@@ -29,7 +29,7 @@ sap.ui.define([
 	 * @class The Remove allows trigger remove operations on the overlay
 	 * @extends sap.ui.rta.plugin.Plugin
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @constructor
 	 * @private
 	 * @since 1.34
@@ -174,7 +174,7 @@ sap.ui.define([
 	 * @private
 	 */
 	Remove.prototype._onKeyDown = function(oEvent) {
-		if (oEvent.keyCode === KeyCodes.DELETE) {
+		if (oEvent.keyCode === KeyCodes.DELETE || oEvent.keyCode === KeyCodes.BACKSPACE) {
 			oEvent.stopPropagation();
 			this.removeElement();
 		}

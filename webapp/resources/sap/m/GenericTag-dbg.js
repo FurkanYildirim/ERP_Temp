@@ -53,7 +53,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 *
 	 * @constructor
 	 * @public
@@ -318,9 +318,10 @@ sap.ui.define([
 
 	/**
 	 * Sets the behavior of the <code>GenericTag</code> inside an <code>OverflowToolbar</code> configuration.
+	 * Required by the {@link sap.m.IOverflowToolbarContent} interface.
 	 *
 	 * @public
-	 * @returns {object} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface.
+	 * @returns {sap.m.OverflowToolbarConfig} Configuration information for the <code>sap.m.IOverflowToolbarContent</code> interface.
 	 */
 	GenericTag.prototype.getOverflowToolbarConfig = function() {
 		var oConfig = {

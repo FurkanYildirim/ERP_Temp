@@ -13,9 +13,10 @@ sap.ui.define([
 	"sap/base/i18n/ResourceBundle",
 	"sap/base/Log",
 	"sap/base/util/fetch",
-	"sap/base/util/syncFetch"
+	"sap/base/util/syncFetch",
+	"sap/ui/core/Lib"
 ],
-	function(URI, ResourceBundle, Log, fetch, syncFetch) {
+	function(URI, ResourceBundle, Log, fetch, syncFetch, Library) {
 		"use strict";
 
 		/**
@@ -34,7 +35,8 @@ sap.ui.define([
 					fontFamily: SAP_ICON_FONT_FAMILY
 				},
 				metadataLoaded: true,
-				inserted: true
+				inserted: true,
+				deprecatedNames: new Set(["soccor", "clinical-tast-tracker"])
 			}
 		};
 
@@ -332,6 +334,7 @@ sap.ui.define([
 				'commission-check': 0x1e116,
 				'collections-insight': 0x1e117,
 				'clinical-tast-tracker': 0xe118,
+				'clinical-task-tracker': 0xe118,
 				'citizen-connect': 0xe119,
 				'cart-approval': 0x1e11a,
 				'capital-projects': 0x1e11b,
@@ -732,7 +735,13 @@ sap.ui.define([
 				'locate-me-2': 0xe302,
 				'map-fill': 0xe303,
 				'cloud-check': 0x1e304,
-				'enablement': 0x1e305
+				'enablement': 0x1e305,
+				'biometric-thumb': 0xe306,
+				'biometric-face': 0xe307,
+				'people-connected': 0xe308,
+				'light-mode': 0xe309,
+				'dark-mode': 0xe30a,
+				'select-appointments': 0x1e30b
 			}
 		};
 
@@ -741,7 +750,7 @@ sap.ui.define([
 		// Lazy load core resource bundle
 		function getCoreResourceBundle() {
 			if (!oCoreResourceBundle) {
-				oCoreResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.core");
+				oCoreResourceBundle = Library.get("sap.ui.core").getResourceBundle();
 			}
 			return oCoreResourceBundle;
 		}
@@ -974,8 +983,16 @@ sap.ui.define([
 		 * See IconPool.getIconNames
 		 */
 		_IconRegistry.getIconNames = function (collectionName) {
-			var collection = mRegistry[collectionName];
-			return collection ? Object.keys(collection) : [];
+			var collection = mRegistry[collectionName],
+				deprecatedNames = mFontRegistry[collectionName] && mFontRegistry[collectionName].deprecatedNames,
+				res = [];
+
+			for (var name in collection) {
+				if (collection.hasOwnProperty(name) && (!deprecatedNames || !deprecatedNames.has(name))) {
+					res.push(name);
+				}
+			}
+			return res;
 		};
 
 		/*

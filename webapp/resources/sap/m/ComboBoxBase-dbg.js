@@ -66,7 +66,7 @@ sap.ui.define([
 		 * @abstract
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @public
@@ -92,18 +92,17 @@ sap.ui.define([
 
 					/**
 					 * Indicates whether the picker is opened.
-					 *
+					 * @deprecated since version 1.110
 					 * @private
 					 */
 					 open: {
 						type: "boolean",
-						defaultValue: false,
-						hidden: true
+						defaultValue: false
 					},
 
 					/**
 					 * Specifies whether clear icon is shown.
-					 * Pressing the icon will clear input's value and fire the change and liveChange events.
+					 * Pressing the icon will clear input's value.
 					 * @since 1.96
 					 */
 					showClearIcon: { type: "boolean", defaultValue: false },
@@ -199,6 +198,9 @@ sap.ui.define([
 		ComboBoxBase.prototype.updateItems = function(sReason) {
 			this.bItemsUpdated = false;
 
+			var iItemsCount = this.getItems().length;
+			var oList;
+
 			// for backward compatibility and to keep the old data binding behavior,
 			// the items should be destroyed before calling .updateAggregation("items")
 			this.destroyItems();
@@ -214,6 +216,15 @@ sap.ui.define([
 
 				this.onItemsLoaded();
 			}
+
+			oList = this._getList();
+
+			// when there are no items both before the update and after it, we have to remove the busy state
+			if (oList && iItemsCount === this.getItems().length) {
+				oList.setBusy(false);
+				oList.setShowNoData(!this.getItems().length);
+				this.bInitialBusyIndicatorState = false;
+			}
 		};
 
 		/**
@@ -224,7 +235,7 @@ sap.ui.define([
 		 * The function should return a Boolean value (true or false) which represents whether an item will be shown in the dropdown or not.
 		 *
 		 * @public
-		 * @param {function} fnFilter A callback function called when typing in a ComboBoxBase control or ancestor.
+		 * @param {function(string=, sap.ui.core.Item=, boolean=):boolean|undefined|function} fnFilter A callback function called when typing in a ComboBoxBase control or ancestor.
 		 * @returns {this} <code>this</code> to allow method chaining.
 		 * @since 1.58
 		 */
@@ -253,7 +264,7 @@ sap.ui.define([
 		ComboBoxBase.prototype.highlightList = function (sValue) {
 			var aListItemsDOM = [];
 
-			aListItemsDOM = this._getList().$().find('.sapMSLIInfo, .sapMSLITitleOnly');
+			aListItemsDOM = this._getList().$().find('.sapMSLIInfo [id$=-infoText], .sapMSLITitleOnly [id$=-titleText]');
 
 			highlightDOMElements(aListItemsDOM, sValue);
 		};
@@ -658,12 +669,6 @@ sap.ui.define([
 				If the input has FormattedText aggregation while the suggestions popover is open then
 				it's new, because the old is already switched to have the value state header as parent */
 				this._updateSuggestionsPopoverValueState();
-			}
-
-			if (this.getShowClearIcon()) {
-				this._getClearIcon().setVisible(this.shouldShowClearIcon());
-			} else if (this._oClearIcon) {
-				this._getClearIcon().setVisible(false);
 			}
 		};
 
@@ -1518,11 +1523,10 @@ sap.ui.define([
 		/**
 		 * Opens the <code>SuggestionsPopover</code> with the available items.
 		 *
-		 * @param {function} fnFilter Function to filter the items shown in the SuggestionsPopover
+		 * @param {function|undefined} fnFilter Function to filter the items shown in the SuggestionsPopover
 		 * @returns {void}
 		 *
 		 * @since 1.64
-		 * @experimental Since 1.64
 		 * @public
 		 */
 		ComboBoxBase.prototype.showItems = function (fnFilter) {

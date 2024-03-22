@@ -19,8 +19,7 @@ sap.ui.define([
 	 * Available for both runtime and build {@link sap.ui.fl.apply._internal.changes.descriptor.Registration}.
 	 *
 	 * @namespace sap.ui.fl.apply._internal.changes.descriptor.app.SetTitle
-	 * @experimental
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @private
 	 * @ui5-restricted sap.ui.fl.apply._internal
 	 */
@@ -28,7 +27,7 @@ sap.ui.define([
 
 		/**
 		 * Method to apply the <code>appdescr_app_setTitle</code> change to the manifest.
-		 * @param {object} oManifest Original manifest
+		 * @param {object} oManifest - Original manifest
 		 * @returns {object} Updated manifest with changed title used as a placeholder for postprocessing
 		 *
 		 * @private

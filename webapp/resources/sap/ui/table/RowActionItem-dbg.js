@@ -24,7 +24,7 @@ sap.ui.define([
 	 * @extends sap.ui.core.Element
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.45
 	 *
 	 * @constructor
@@ -62,14 +62,16 @@ sap.ui.define([
 				 * The <code>press</code> is fired when the user triggers the corresponding action.
 				 */
 				press: {
-					/**
-					 * The item which was pressed.
-					 */
-					item: {type: "sap.ui.table.RowActionItem"},
-					/**
-					 * The table row to which the pressed item belongs to.
-					 */
-					row: {type: "sap.ui.table.Row"}
+					parameters: {
+						/**
+						 * The item which was pressed.
+						 */
+						item: {type: "sap.ui.table.RowActionItem"},
+						/**
+						 * The table row to which the pressed item belongs to.
+						 */
+						row: {type: "sap.ui.table.Row"}
+					}
 				}
 			}
 		}

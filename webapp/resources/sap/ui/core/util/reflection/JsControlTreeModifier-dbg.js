@@ -198,6 +198,30 @@ sap.ui.define([
 		/**
 		 * @inheritDoc
 		 */
+		getCustomDataInfo: function(oControl, sCustomDataKey) {
+			var oCustomData;
+			if (oControl.getCustomData) {
+				oControl.getCustomData().some(function(oCurrentCustomData) {
+					if (oCurrentCustomData.getKey() === sCustomDataKey) {
+						oCustomData = oCurrentCustomData;
+						return true;
+					}
+					return false;
+				});
+			}
+			if (oCustomData) {
+				return {
+					customData: oCustomData,
+					customDataValue: oCustomData.getValue()
+				};
+			} else {
+				return {};
+			}
+		},
+
+		/**
+		 * @inheritDoc
+		 */
 		createControl: function (sClassName, oAppComponent, oView, oSelector, mSettings) {
 			sClassName = sClassName.replace(/\./g,"/");
 			if (this.bySelector(oSelector, oAppComponent)) {
@@ -311,7 +335,7 @@ sap.ui.define([
 		 */
 		insertAggregation: function (oParent, sName, oObject, iIndex) {
 			//special handling without invalidation for customData
-			if ( sName === "customData"){
+			if (sName === "customData") {
 				return oParent.insertAggregation(sName, oObject, iIndex, /*bSuppressInvalidate=*/true);
 			}
 			return this.findAggregation(oParent, sName)
@@ -332,7 +356,7 @@ sap.ui.define([
 		 */
 		removeAggregation: function (oControl, sName, oObject) {
 			//special handling without invalidation for customData
-			if ( sName === "customData"){
+			if (sName === "customData") {
 				oControl.removeAggregation(sName, oObject, /*bSuppressInvalidate=*/true);
 				return Promise.resolve();
 			}
@@ -349,7 +373,7 @@ sap.ui.define([
 		 */
 		removeAllAggregation: function (oControl, sName) {
 			//special handling without invalidation for customData
-			if ( sName === "customData"){
+			if (sName === "customData") {
 				oControl.removeAllAggregation(sName, /*bSuppressInvalidate=*/true);
 				return Promise.resolve();
 			}

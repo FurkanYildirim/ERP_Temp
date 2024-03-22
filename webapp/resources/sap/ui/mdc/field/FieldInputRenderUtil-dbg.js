@@ -16,7 +16,7 @@ sap.ui.define([
 	 * @class Functions uses in <code>FieldInputRenderer</code> and <code>FieldMultiInputRenderer</code> to adjust aria attributes.
 	 *
 	 * @author SAP SE
-	 * @version 1.108.14
+	 * @version 1.115.1
 	 * @since 1.86.0
 	 * @alias sap.ui.mdc.field.FieldInputRenderUtil
 	 *

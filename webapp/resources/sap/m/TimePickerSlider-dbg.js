@@ -28,7 +28,7 @@ sap.ui.define([
 		 * @extends sap.ui.core.Control
 		 *
 		 * @author SAP SE
-		 * @version 1.108.14
+		 * @version 1.115.1
 		 *
 		 * @constructor
 		 * @private
@@ -87,7 +87,9 @@ sap.ui.define([
 			renderer: TimePickerSliderRenderer
 		});
 
-		var SCROLL_ANIMATION_DURATION = Configuration.getAnimation() ? 200 : 0;
+		var sAnimationMode = Configuration.getAnimationMode();
+		var bUseAnimations = sAnimationMode !== Configuration.AnimationMode.none && sAnimationMode !== Configuration.AnimationMode.minimal;
+		var SCROLL_ANIMATION_DURATION = bUseAnimations ? 200 : 0;
 		var MIN_ITEMS = 50;
 		var LABEL_HEIGHT = 32;
 		var ARROW_HEIGHT = 32;
